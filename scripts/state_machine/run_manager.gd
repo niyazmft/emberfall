@@ -1,22 +1,8 @@
-class_name RunManager
 extends BaseStateMachine
 
 ## RunManager
 ## Implements the Run Manager state machine from System Specification §5.
 ## Manages game-phase flow: SANCTUM → BIOME_GENERATION → ROOM → ... → RUN_RESOLUTION.
-##
-## Valid Transitions (explicit, guarded):
-##   SANCTUM          --start_run()      → BIOME_GENERATION  (guard: memory_state_loaded)
-##   BIOME_GENERATION --topology_ready() → ROOM              (action: generate room_queue)
-##   ROOM             --combat_resolved()→ MORAL_EVAL
-##   ROOM             --next_room()      → ROOM | BIOME_THRESHOLD | RUN_RESOLUTION
-##   MORAL_EVAL       --flags_updated()  → ROOM
-##   BIOME_THRESHOLD  --echo_triggered() → ROOM
-##   RUN_RESOLUTION   --return_sanctum() → SANCTUM
-##
-## Frame-rate independent: all timers use delta accumulation.
-## Config-driven: biome counts, room ranges, dying duration loaded from config.
-## Emits signals for UI programmer; never implements UI logic directly.
 
 enum RunState {
 	SANCTUM,
@@ -57,12 +43,12 @@ var _moral_eval_timer: float = 0.0
 var _dying_duration: float = 0.0
 
 # Signals consumed by UI programmer
-signal run_started(seed: int)
-signal room_entered(room_index: int, room_data: Dictionary)
-signal combat_resolved(room_index: int)
-signal moral_flags_updated(deltas: Array)
-signal biome_echo_triggered(biome_index: int)
-signal run_ended(result: StringName, run_context: Dictionary)
+signal run_started(p_seed: int)
+signal room_entered(p_room_index: int, p_room_data: Dictionary)
+signal combat_resolved_signal(p_room_index: int)
+signal moral_flags_updated(p_deltas: Array)
+signal biome_echo_triggered(p_biome_index: int)
+signal run_ended(p_result: StringName, p_run_context: Dictionary)
 
 func _ready() -> void:
 	_load_config_values()
@@ -73,8 +59,6 @@ func _ready() -> void:
 
 func _on_mwt_reached(_moral_flag: int, _remaining: int) -> void:
 	# When MWT is reached, the Burden Event system takes over.
-	# The RunManager stays in MORAL_EVAL until external narrative system
-	# calls cmd_flags_updated() or we auto-resolve after a minimum tick.
 	_moral_eval_waiting_burden = true
 
 func _load_config_values() -> void:
@@ -126,7 +110,7 @@ func _register_transitions() -> void:
 	register_transition(RunState.ROOM, RunState.ROOM,
 		Callable(self, "_guard_next_room_normal"), Callable(self, "_action_increment_room"))
 	register_transition(RunState.ROOM, RunState.BIOME_THRESHOLD,
-		Callable(self, "_guard_next_room_biome_boundary"), Callable(self, "_action_increment_room"))
+		Callable(self, "_guard_next_room_boundary"), Callable(self, "_action_increment_room"))
 	register_transition(RunState.ROOM, RunState.RUN_RESOLUTION,
 		Callable(self, "_guard_run_end"), Callable(self, "_action_record_result"))
 
@@ -184,7 +168,7 @@ func cmd_next_room() -> void:
 		# Determine target by guards
 		if _guard_run_end({}):
 			transition_to(RunState.RUN_RESOLUTION)
-		elif _guard_next_room_biome_boundary({}):
+		elif _guard_next_room_boundary({}):
 			transition_to(RunState.BIOME_THRESHOLD)
 		elif _guard_next_room_normal({}):
 			transition_to(RunState.ROOM)
@@ -221,8 +205,8 @@ func _enter_sanctum(_ctx: Dictionary) -> void:
 	room_index = -1
 	run_seed = 0
 	# Reset burden tracking for new sanctum session.
-	if BurdenManager:
-		BurdenManager.reset()
+	if get_node_or_null("/root/BurdenManager"):
+		get_node("/root/BurdenManager").reset()
 
 func _enter_biome_generation(_ctx: Dictionary) -> void:
 	_biome_gen_timer = 0.0
@@ -231,8 +215,6 @@ func _enter_biome_generation(_ctx: Dictionary) -> void:
 func _update_biome_generation(delta: float, _elapsed: float) -> void:
 	_biome_gen_timer += delta
 	# Stub: generation is instantaneous for framework validation.
-	# In production, this would be replaced by async topology generator.
-	# To prevent orphaned coroutines, we use time accumulation.
 	if _biome_gen_timer >= 0.016: # one frame at 60fps minimum
 		cmd_topology_ready()
 
@@ -240,12 +222,11 @@ func _enter_room(_ctx: Dictionary) -> void:
 	# Reset one-shot flags that are room-scoped
 	_combat_resolved = false
 	# Emit event for UI / encounter spawner
-	var room_data := _get_current_room_data()
+	var room_data: Dictionary = _get_current_room_data()
 	room_entered.emit(room_index, room_data)
 
-func _update_room(delta: float, _elapsed: float) -> void:
+func _update_room(_delta: float, _elapsed: float) -> void:
 	# Frame-rate independent room logic stub.
-	# Future: spawn animations, ambient updates, trap timers.
 	pass
 
 func _enter_moral_eval(_ctx: Dictionary) -> void:
@@ -254,9 +235,9 @@ func _enter_moral_eval(_ctx: Dictionary) -> void:
 	_moral_eval_waiting_burden = false
 
 	if _entity_lifecycle and _entity_lifecycle.get("player_entity"):
-		_entity_lifecycle.resolve_moral_queue()
+		_entity_lifecycle.call("resolve_moral_queue")
 	else:
-		var deltas := _compute_moral_deltas()
+		var deltas: Array = _compute_moral_deltas()
 		moral_flags_updated.emit(deltas)
 
 func _update_moral_eval(delta: float, _elapsed: float) -> void:
@@ -270,17 +251,16 @@ func _update_moral_eval(delta: float, _elapsed: float) -> void:
 
 func _enter_biome_threshold(_ctx: Dictionary) -> void:
 	_echo_triggered = false
-	var biome_index := _get_current_biome_index()
+	var biome_index: int = _get_current_biome_index()
 	biome_echo_triggered.emit(biome_index)
 
 func _update_biome_threshold(delta: float, _elapsed: float) -> void:
 	# Frame-rate independent echo timer.
-	# Stub: auto-resolve for framework validation.
 	state_time += delta
 	if state_time >= 0.016:
 		cmd_echo_triggered()
 
-func _enter_run_resolution(ctx: Dictionary) -> void:
+func _enter_run_resolution(_ctx: Dictionary) -> void:
 	var result := &"DEFEAT"
 	if _final_encounter_won:
 		result = &"TRIUMPH"
@@ -293,7 +273,6 @@ func _enter_run_resolution(ctx: Dictionary) -> void:
 
 func _enter_error(_ctx: Dictionary) -> void:
 	push_error("RunManager entered ERROR state — run may be unrecoverable.")
-	# Recovery path exists via transition to SANCTUM.
 
 # ---------------------------------------------------------------------------
 # Guards
@@ -324,7 +303,7 @@ func _guard_next_room_normal(_ctx: Dictionary) -> bool:
 		return false
 	return not _is_biome_boundary(next_idx)
 
-func _guard_next_room_biome_boundary(_ctx: Dictionary) -> bool:
+func _guard_next_room_boundary(_ctx: Dictionary) -> bool:
 	if room_index < 0 or room_queue.is_empty():
 		return false
 	if _player_hp_zero or _final_encounter_won:
@@ -345,16 +324,12 @@ func _guard_run_end(_ctx: Dictionary) -> bool:
 
 func _action_start_run(_ctx: Dictionary) -> void:
 	_run_count += 1
-	# Deterministic seed: hash of run_count + stable base
-	# Spec §6: seed ← hash(player_id + timestamp + run_count)
-	# Stub: simplified deterministic seed for framework validation.
 	run_seed = hash(str(_run_count) + str(Time.get_ticks_msec()))
 	room_queue.clear()
 	room_index = -1
 	run_started.emit(run_seed)
 
 func _action_generate_rooms(_ctx: Dictionary) -> void:
-	# Stub: generate a deterministic queue of rooms per spec §5.1
 	var rng := RandomNumberGenerator.new()
 	rng.seed = run_seed
 	for b in range(biome_count):
@@ -367,14 +342,12 @@ func _action_generate_rooms(_ctx: Dictionary) -> void:
 				"encounter_seed": hash(str(run_seed) + "ENC" + str(room_queue.size())),
 			})
 	total_rooms = room_queue.size()
-	# Start first room in the same transition context
 	room_index = 0
 
 func _action_increment_room(_ctx: Dictionary) -> void:
 	room_index += 1
 
 func _action_record_result(_ctx: Dictionary) -> void:
-	# Placeholder for run-to-run persistence hook.
 	pass
 
 func _action_reset_run(_ctx: Dictionary) -> void:
@@ -383,20 +356,12 @@ func _action_reset_run(_ctx: Dictionary) -> void:
 	_player_hp_zero = false
 	_final_encounter_won = false
 	if _entity_lifecycle:
-		_entity_lifecycle.reset_moral_queue()
-		_entity_lifecycle.clear_timers()
-	# Reset burden tracking on run resolution / return to sanctum.
-	if BurdenManager:
-		BurdenManager.reset()
+		_entity_lifecycle.call("reset_moral_queue")
+		_entity_lifecycle.call("clear_timers")
+	if get_node_or_null("/root/BurdenManager"):
+		get_node("/root/BurdenManager").reset()
 
 func _compute_moral_deltas() -> Array:
-	## Stub: computes moral flag deltas from the current room's combat results.
-	## In production this queries the player Entity moral_flag and room kill log.
-	## For now we return an empty delta list and rely on explicit
-	## BurdenManager.record_sentient_kill() calls from the combat system.
-	##
-	## Note: BurdenManager.update_moral_weight() should be called by EntityLifecycle
-	## when the player moral_flag changes; the RunManager only coordinates timing.
 	return []
 
 
@@ -409,13 +374,13 @@ func _is_biome_boundary(next_room_index: int) -> bool:
 		return false
 	if next_room_index >= room_queue.size():
 		return false
-	var current_biome: int = room_queue[room_index]["biome"]
-	var next_biome: int = room_queue[next_room_index]["biome"]
+	var current_biome: int = int(room_queue[room_index]["biome"])
+	var next_biome: int = int(room_queue[next_room_index]["biome"])
 	return current_biome != next_biome
 
 func _get_current_biome_index() -> int:
 	if room_index >= 0 and room_index < room_queue.size():
-		return room_queue[room_index]["biome"]
+		return int(room_queue[room_index]["biome"])
 	return 0
 
 func _get_current_room_data() -> Dictionary:

@@ -10,6 +10,14 @@ cd "$PROJECT_DIR"
 echo "=== Emberfall Test Suite ==="
 
 echo ""
+echo "--- Running: validate_math.py (Python) ---"
+python3 tests/validate_math.py
+
+echo ""
+echo "--- Running: test_deterministic_math.gd (In-Engine) ---"
+godot --headless --path . -s tests/test_deterministic_math.gd
+
+echo ""
 echo "--- Running: test_entity_lifecycle.gd ---"
 godot --headless --path . -s tests/test_entity_lifecycle.gd
 

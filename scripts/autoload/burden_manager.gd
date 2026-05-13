@@ -1,20 +1,8 @@
-class_name BurdenManager
 extends Node
 
 ## BurdenManager
 ## Autoload that tracks sentient enemy kills and exposes the composite
 ## apparition lookup for the Burden Event (Memory Weight Threshold = 3).
-##
-## Gate 2-2 additions (DON-87):
-##   - Config-driven Burden Event parameter schema
-##   - Cross-run persistence: memory_state.echo_flags.burden_noun_index
-##   - Deterministic noun rotation via SeedGovernance
-##   - Variant pool selection with fallback
-##   - Numbness cap: silent Phase B after N=5 triggers per run
-##
-## References: DON-83 Apparition Composite Render Pipeline
-##            DON-26 Burden Event Asset Spec §2.2
-##            burden-event-keyed.json (DON-81)
 
 const KILL_HISTORY_CAP: int = 3
 const BURDEN_CONFIG_PATH := "res://config/burden_event_config.json"
@@ -71,7 +59,7 @@ func _load_burden_config() -> void:
 		var file := FileAccess.open(BURDEN_CONFIG_PATH, FileAccess.READ)
 		if file:
 			var text := file.get_as_text()
-			var parsed := JSON.parse_string(text)
+			var parsed: Variant = JSON.parse_string(text)
 			if parsed is Dictionary:
 				_config = parsed
 				_config_loaded = true
@@ -138,9 +126,9 @@ func load_memory_state(state: Dictionary) -> void:
 	if state.has("echo_flags") and state["echo_flags"] is Dictionary:
 		var flags: Dictionary = state["echo_flags"]
 		if flags.has("burden_noun_index") and flags["burden_noun_index"] is int:
-			_burden_noun_index = DeterministicMath.clampi(flags["burden_noun_index"], 0, _noun_pool_size - 1)
+			_burden_noun_index = DeterministicMath.clampi(int(flags["burden_noun_index"]), 0, _noun_pool_size - 1)
 		if flags.has("burden_trigger_history") and flags["burden_trigger_history"] is int:
-			_lifetime_trigger_count = maxi(0, flags["burden_trigger_history"])
+			_lifetime_trigger_count = maxi(0, int(flags["burden_trigger_history"]))
 	_print_debug("loaded memory_state: noun_index=%d, lifetime_triggers=%d" % [_burden_noun_index, _lifetime_trigger_count])
 
 ## Returns a Dictionary compatible with save_schema.json §memory_state.echo_flags
@@ -251,8 +239,8 @@ func select_variant_first(run_seed: int, room_index: int, variant_state: int) ->
 	if not result.is_empty():
 		return result.duplicate()
 	## Fallback: scan for fallback_variant_id
-	for v: Dictionary in _variants_first:
-		if v.get("id", "") == _fallback_variant_id:
+	for v: Variant in _variants_first:
+		if v is Dictionary and v.get("id", "") == _fallback_variant_id:
 			return v.duplicate()
 	return _variants_first[0].duplicate()
 
@@ -289,7 +277,7 @@ func trigger_burden_event(run_seed: int, topology_seed: int, room_index: int, va
 	result.localization_key_suffix = _numbness_localization_key if result.numbness_cap_reached else ""
 
 	## --- Phase A (Stillness) ---
-	result.phase_a_duration_ms = _phase_timing.get("A", 10000)
+	result.phase_a_duration_ms = int(_phase_timing.get("A", 10000))
 	result.phase_a_localization_key = "BE_PHASE_A"
 
 	## --- Phase B (Witness / Silent) ---
@@ -297,7 +285,7 @@ func trigger_burden_event(run_seed: int, topology_seed: int, room_index: int, va
 	if result.numbness_cap_reached:
 		## AC-3: Silent Phase B after trigger_count >= 5
 		result.phase_b_text = ""
-		result.phase_b_duration_ms = _phase_timing.get("B_repeat", 10000)
+		result.phase_b_duration_ms = int(_phase_timing.get("B_repeat", 10000))
 		result.phase_b_localization_key = _numbness_localization_key
 		result.phase_b_variant_id = ""
 		result.phase_b_cadence_ms = 0
@@ -307,34 +295,34 @@ func trigger_burden_event(run_seed: int, topology_seed: int, room_index: int, va
 		var variant: Dictionary
 		if is_first:
 			variant = select_variant_first(run_seed, room_index, variant_state)
-			result.phase_b_duration_ms = _phase_timing.get("B_first", 15000)
+			result.phase_b_duration_ms = int(_phase_timing.get("B_first", 15000))
 			result.phase_b_text = _expand_template(_template_first, _count_first, noun, variant)
 		else:
 			variant = select_variant_repeat(run_seed, room_index, variant_state)
-			result.phase_b_duration_ms = _phase_timing.get("B_repeat", 10000)
+			result.phase_b_duration_ms = int(_phase_timing.get("B_repeat", 10000))
 			result.phase_b_text = _expand_template(_template_repeat, _count_repeat, noun, variant)
-		result.phase_b_localization_key = variant.get("localization_key", "")
-		result.phase_b_variant_id = variant.get("id", "")
-		result.phase_b_cadence_ms = variant.get("cadence_ms_estimate", 0)
-		result.phase_b_word_count = variant.get("word_count", 0)
+		result.phase_b_localization_key = str(variant.get("localization_key", ""))
+		result.phase_b_variant_id = str(variant.get("id", ""))
+		result.phase_b_cadence_ms = int(variant.get("cadence_ms_estimate", 0))
+		result.phase_b_word_count = int(variant.get("word_count", 0))
 
 	## AC-4: Persist updated noun index immediately after selection
 	result.noun_index = _burden_noun_index
 
 	## --- Phase C (Choiceless Choice) ---
 	var phase_c: Dictionary = _config.get("phases", {}).get("C", {})
-	result.phase_c_text = phase_c.get("text", "The memory passes into you.")
-	result.phase_c_duration_ms = _phase_timing.get("C", 15000)
-	result.phase_c_hold_ms = _phase_timing.get("C_hold", 5000)
-	result.phase_c_mandatory_input_hold_ms = _phase_timing.get("C_mandatory_input_hold", 5000)
-	result.phase_c_localization_key = phase_c.get("localization_key", "BE_PHASE_C")
-	result.phase_c_legend_template = phase_c.get("legend_line_template", "")
+	result.phase_c_text = str(phase_c.get("text", "The memory passes into you."))
+	result.phase_c_duration_ms = int(phase_c.get("C", 15000))
+	result.phase_c_hold_ms = int(phase_c.get("C_hold", 5000))
+	result.phase_c_mandatory_input_hold_ms = int(phase_c.get("C_mandatory_input_hold", 5000))
+	result.phase_c_localization_key = str(phase_c.get("localization_key", "BE_PHASE_C"))
+	result.phase_c_legend_template = str(phase_c.get("legend_line_template", ""))
 
 	## --- Phase D (Return) ---
 	var phase_d: Dictionary = _config.get("phases", {}).get("D", {})
-	result.phase_d_text = phase_d.get("text", "You exhale. The embers cool.")
-	result.phase_d_duration_ms = _phase_timing.get("D", 2000)
-	result.phase_d_localization_key = phase_d.get("localization_key", "BE_PHASE_D")
+	result.phase_d_text = str(phase_d.get("text", "You exhale. The embers cool."))
+	result.phase_d_duration_ms = int(phase_d.get("D", 2000))
+	result.phase_d_localization_key = str(phase_d.get("localization_key", "BE_PHASE_D"))
 
 	## AC-1: Validate Phase B timing window
 	if not result.numbness_cap_reached and not is_within_phase_b_window(result.phase_b_duration_ms):
