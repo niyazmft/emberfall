@@ -1,0 +1,25 @@
+# Godot 4 .gitignore
+# https://github.com/github/gitignore/blob/main/Godot.gitignore
+
+# Godot-specific ignores
+.import/
+export.cfg
+export_presets.cfg
+
+# Imported translations (automatically generated from CSV files)
+*.translation
+
+# Mono-specific ignores
+.mono/
+data_*/
+.mono_assembly/
+
+# System/tool-specific
+.DS_Store
+*~
+*.swp
+*.swo
+
+# Build artifacts
+*.tmp
+*.import
