@@ -23,7 +23,7 @@ import hashlib, json, math, random, sys, os
 
 # ── Resolve paths ──────────────────────────────────────────────────
 HERE: str = os.path.dirname(os.path.abspath(__file__))
-REPO_ROOT: str = os.path.join(HERE, "..", "..")
+REPO_ROOT: str = os.path.join(HERE, "..")
 
 sys.path.insert(0, os.path.join(REPO_ROOT, "prototype"))
 from core_mechanic_prototype import Entity, position_modifier, compute_damage, dist
