@@ -1,0 +1,55 @@
+{
+  "$schema": "emberfall-save-schema-v1",
+  "_description": "Gate-2-2 cross-run persistence schema. All fields are optional on load (backward compatibility).",
+  "player_profile": {
+    "player_id": "string — stable opaque identifier",
+    "total_runs": "int — cumulative run count",
+    "sanctum_unlocks": "Array[string] — persistent upgrade keys"
+  },
+  "memory_state": {
+    "_description": "Echo / narrative memory that persists across runs (Gate 2-2).",
+    "echo_flags": {
+      "_description": "Bit-field style container for echo-system persistence. All keys optional.",
+      "burden_noun_index": {
+        "type": "int",
+        "range": "[0, collective_noun_pool_size - 1]",
+        "default": 0,
+        "description": "Index into the Burden Event collective_noun pool. Rotated deterministically per seed_room_topology. Persists across runs so the same noun does not repeat immediately."
+      },
+      "burden_trigger_history": {
+        "type": "int",
+        "range": "[0, ∞)",
+        "default": 0,
+        "description": "Cumulative count of Burden Event triggers across all runs. Used to ensure the 5-trigger-per-run numbness cap resets per run, while global analytics can be computed."
+      },
+      "legacy_flags": {
+        "type": "Dictionary<string, bool>",
+        "default": {},
+        "description": "Key-value flags for Legacy Archive triggers (e.g., 'legacy_once' = true)."
+      }
+    },
+    "moral_flag_lifetime": {
+      "type": "int",
+      "default": 0,
+      "description": "Highest moral_flag ever reached across all runs (achievement / unlock gating)."
+    }
+  },
+  "run_state": {
+    "_description": "Resumed during mid-run save (sleep / checkpoint), NOT persisted across runs.",
+    "seed": "int",
+    "room_index": "int",
+    "room_queue": "Array<Dictionary>",
+    "biome_index": "int",
+    "player_entity_snapshot": "Dictionary — full Entity serialization",
+    "inventory_snapshot": "Dictionary",
+    "burden_run_snapshot": {
+      "trigger_count_this_run": "int — 0 at run start, increments on each burden event trigger",
+      "last_noun_index_used": "int — copied from memory_state.echo_flags.burden_noun_index at run start; may update during run"
+    }
+  },
+  "meta": {
+    "schema_version": "1.0.0",
+    "save_timestamp_iso": "string",
+    "platform": "string"
+  }
+}

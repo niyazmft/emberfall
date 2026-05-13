@@ -1,0 +1,91 @@
+{
+  "_description": "Burden Event parameter schema — wired from burden-event-keyed.json (DON-81 / Gate 2-2). Systems Designer validation: DON-87.",
+  "version": "1.0.0",
+  "mwt": 3,
+  "voice": "world-voice-second-person-present",
+  "tone": "mourning-not-judgment",
+  "forbidden_lexicon": ["wrong", "evil", "sin", "guilty", "punish", "deserve", "blood"],
+  "phase_timing_ms": {
+    "A": 10000,
+    "B_first": 15000,
+    "B_repeat": 10000,
+    "B_window_min": 10000,
+    "B_window_max": 40000,
+    "C": 15000,
+    "D": 2000,
+    "C_hold": 5000,
+    "C_mandatory_input_hold": 5000
+  },
+  "collective_nouns": ["keepers", "bearers", "remnants", "echoes", "carriers", "vessels", "witnesses", "threads"],
+  "selection": {
+    "variant_hash_seed_formula": "run_seed + encounter_room_index + variant_state",
+    "noun_rotation_seed_formula": "seed_room_topology hash mod noun_pool size",
+    "noun_pool_size": 8,
+    "variant_first_pool_size": 3,
+    "variant_repeat_pool_size": 2,
+    "fallback_variant_id": "BE_B_FIRST_A"
+  },
+  "numbness_cap": {
+    "trigger_count": 5,
+    "silent_phase_b": true,
+    "phase_a_and_c_continue": true,
+    "localization_key": "BE_NUMBNESS_CAP"
+  },
+  "persist_field": "memory_state.echo_flags.burden_noun_index",
+  "phases": {
+    "A": {
+      "title": "The Stillness",
+      "text": "",
+      "duration_ms": 10000,
+      "localization_key": "BE_PHASE_A",
+      "note": "Audio-visual only. No narrative text displayed."
+    },
+    "B": {
+      "title": "The Witness",
+      "localization_key_prefix_first": "BE_B_FIRST",
+      "localization_key_prefix_repeat": "BE_B_REPEAT",
+      "variants_first": [
+        {"id": "BE_B_FIRST_A", "title": "The Holding", "text": "Three keepers of their own small truths. You hold them now. That is the burden.", "word_count": 15, "emotion": "acknowledgement-of-transfer", "cadence_ms_estimate": 6000, "localization_key": "BE_B_FIRST_A"},
+        {"id": "BE_B_FIRST_B", "title": "The Silence", "text": "Three echoes, and the world is quieter for their leaving. You carry what remains.", "word_count": 14, "emotion": "absence-and-continuation", "cadence_ms_estimate": 5600, "localization_key": "BE_B_FIRST_B"},
+        {"id": "BE_B_FIRST_C", "title": "The Cost", "text": "Three bearers, each walking their own uncertain path. That path ends with you.", "word_count": 13, "emotion": "interrupted-futurity", "cadence_ms_estimate": 5200, "localization_key": "BE_B_FIRST_C"}
+      ],
+      "variants_repeat": [
+        {"id": "BE_B_REPEAT_R1", "title": "The Addition", "text": "More remnants. The burden holds.", "word_count": 5, "emotion": "accumulation-without-elaboration", "cadence_ms_estimate": 2000, "localization_key": "BE_B_REPEAT_R1"},
+        {"id": "BE_B_REPEAT_R2", "title": "The Doubling", "text": "More echoes. The world does not forget.", "word_count": 8, "emotion": "persistent-memory", "cadence_ms_estimate": 3200, "localization_key": "BE_B_REPEAT_R2"}
+      ],
+      "template_first": "{count} {collective_noun} of their own small truths. You hold them now. That is the burden.",
+      "count_first": "Three",
+      "template_repeat": "{count} {collective_noun}. The burden holds.",
+      "count_repeat": "More"
+    },
+    "C": {
+      "title": "The Choiceless Choice",
+      "text": "The memory passes into you.",
+      "legend_line_template": "Burden acknowledged — {run_count} spectral echo added to next encounter.",
+      "mechanical_note": "Next room: one fewer enemy, replaced by a spectral echo (cosmetic).",
+      "hold_duration_ms": 5000,
+      "mandatory_input_hold_ms": 5000,
+      "duration_ms": 15000,
+      "localization_key": "BE_PHASE_C"
+    },
+    "D": {
+      "title": "Return to Tactical",
+      "text": "You exhale. The embers cool.",
+      "duration_ms": 2000,
+      "localization_key": "BE_PHASE_D"
+    }
+  },
+  "legacy_archive": {
+    "voice": "world-voice-third-person-past",
+    "entries": [
+      {"id": "BE_LEGACY_ONCE", "trigger": "MORAL_FLAG >= 3 reached at least once in run", "template": "The Keeper carried {count} {collective_noun}. The burden was borne.", "localization_key": "BE_LEGACY_ONCE"},
+      {"id": "BE_LEGACY_TWICE", "trigger": "MORAL_FLAG >= 3 reached twice in same run", "template": "The Keeper carried {count} {collective_noun}, then more. The burden deepened.", "localization_key": "BE_LEGACY_TWICE"},
+      {"id": "BE_LEGACY_ZERO", "trigger": "MORAL_FLAG = 0 at run end (all enemies spared)", "template": "The Keeper laid down no weight. The path remained light.", "localization_key": "BE_LEGACY_ZERO"}
+    ]
+  },
+  "localization": {
+    "context": "The apparition is the voice of the world itself, mourning deaths the player has caused. Second-person present during the event; third-person past in Legacy Archive.",
+    "target_languages": ["en", "ja", "fr", "de", "es", "ko", "zh-Hans"],
+    "note": "Avoid idioms that do not translate literally. Abstract metaphors of carrying, holding, and silence travel better."
+  }
+}

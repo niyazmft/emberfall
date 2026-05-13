@@ -1,0 +1,51 @@
+{
+  "_description": "Emberfall Tier-1 gameplay constants. All tunable values live here.",
+  "ap_economy": {
+    "AP_MAX": 6,
+    "AP_REGEN": 2,
+    "AP_START_PLAYER_PHASE": "min(AP_MAX, AP_CARRIED_OVER + AP_REGEN)"
+  },
+  "combat": {
+    "D_BASE": 10,
+    "CRIT_MULT": 1.5,
+    "MIN_DAMAGE": 1,
+    "POSITION_MODIFIER_MIN": 0.5,
+    "POSITION_MODIFIER_MAX": 1.5,
+    "BACKSTAB_BONUS": 0.25,
+    "ELEVATION_1_BONUS": 0.15,
+    "ELEVATION_2_BONUS": 0.25,
+    "LIGHT_COVER_PENALTY": -0.15,
+    "HEAVY_COVER_PENALTY": -0.30,
+    "BACKSTAB_DOT_THRESHOLD": -0.7
+  },
+  "elemental": {
+    "FIRE_OIL_MODIFIER": 2.0,
+    "WIND_FIRE_MODIFIER": 1.5,
+    "WATER_FIRE_MODIFIER": 0.5,
+    "OIL_SLIP_SPEED_MULT": 0.8,
+    "FIRE_DURATION_TURNS": 1,
+    "FIRE_OIL_DURATION_TURNS": 1
+  },
+  "entity": {
+    "HP_MAX_DEFAULT": 40,
+    "OFF_DEFAULT": 12,
+    "DEF_DEFAULT": 6,
+    "MWT": 3,
+    "MORAL_DELTA_KILL": 1,
+    "MORAL_DELTA_SPARE": -1,
+    "MORAL_DELTA_ENV": 0
+  },
+  "run_manager": {
+    "BIOME_COUNT": 3,
+    "ROOMS_PER_BIOME_MIN": 8,
+    "ROOMS_PER_BIOME_MAX": 12,
+    "ECHO_COUNT": "BIOME_COUNT - 1",
+    "DYING_DURATION_TURNS": 1
+  },
+  "golden_seed": "0xDEADBEEF",
+  "grid": {
+    "GRID_W": 12,
+    "GRID_H": 12,
+    "GRID_RESOLUTION_METRES": 1
+  }
+}
