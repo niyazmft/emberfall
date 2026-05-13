@@ -1,22 +1,26 @@
 # Jules PR Validation Checklist
 
-This checklist must be completed for every PR submitted by Google Jules before it can be merged into `main`.
+All PRs submitted by Google Jules must pass this checklist before being considered for merge.
 
-## Automated Tests
-- [ ] **Deterministic Math**: Run `python3 tests/validate_math.py`. All tests must pass.
-- [ ] **In-Engine Tests**: Run `godot --script tests/test_deterministic_math.gd --headless`. All tests must pass.
-- [ ] **Smoke Tests**: Run any additional tactical smoke tests identified for the specific changes.
+## 1. Automated Testing
+- [ ] **Deterministic Math Validation**: Run `python3 tests/validate_math.py`. All tests must pass with 0 errors.
+- [ ] **In-Engine Math Validation**: Run `godot --script tests/test_deterministic_math.gd --headless`. All engine-side math must match expected deterministic outputs.
+- [ ] **Full Test Suite**: Run `bash tests/run_all_tests.sh`. All unit and integration tests must pass.
 
-## Integrity Checks
-- [ ] **Project Config**: No unintended changes to `project.godot`.
-- [ ] **Core Scenes**: No unintended changes to core scene files (`.tscn`).
-- [ ] **Dependencies**: No new external dependencies introduced without approval.
+## 2. Integrity Checks
+- [ ] **Project Configuration**: No unintended changes to `project.godot`.
+- [ ] **Core Scene Integrity**: No regressions or broken dependencies in core scene files (`scenes/*.tscn`).
+- [ ] **Resource UIDs**: Ensure `.uid` files are updated correctly if new resources are added or existing ones modified.
 
-## Code Quality
-- [ ] **GDScript Style**: Code follows the project's GDScript style guide.
-- [ ] **Type Safety**: Proper use of static typing where applicable.
-- [ ] **No Dead Code**: No commented-out blocks or unused variables.
+## 3. Code Quality & Style
+- [ ] **GDScript Style**: Adheres to the project's GDScript style guide.
+- [ ] **Type Safety**: All variables and functions must have explicit type hints where possible.
+- [ ] **Static Analysis**: No new warnings or errors in the Godot script editor/LSP.
 
-## Sign-off
-- [ ] QA Lead Signature: ________________
-- [ ] Release Manager Signature: ________________
+## 4. Documentation & PR Description
+- [ ] **Clear Description**: PR includes a summary of changes and why they were made.
+- [ ] **Issue Linking**: PR links to the relevant DON issue.
+- [ ] **QA Notes**: PR includes notes on any specific areas that require manual verification.
+
+---
+**Sign-off required from QA Lead and Release Manager before merge.**
