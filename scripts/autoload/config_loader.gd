@@ -1,4 +1,3 @@
-class_name ConfigLoader
 extends Node
 
 ## Autoload: ConfigLoader
@@ -53,8 +52,8 @@ func _load_config() -> void:
 	if FileAccess.file_exists(CONFIG_PATH):
 		var file := FileAccess.open(CONFIG_PATH, FileAccess.READ)
 		if file:
-			var text := file.get_as_text()
-			var parsed := JSON.parse_string(text)
+			var text: String = file.get_as_text()
+			var parsed: Variant = JSON.parse_string(text)
 			if parsed is Dictionary:
 				_config = parsed
 				_loaded = true
@@ -67,7 +66,7 @@ func _load_config() -> void:
 
 ## Get a gameplay constant. First checks config JSON, then falls back to DEFAULTS.
 ## Usage: ConfigLoader.get_value("AP_MAX") or ConfigLoader.get_value("combat", "D_BASE")
-func get_value(section_or_key: String, key: String = "", fallback = null):
+func get_value(section_or_key: String, key: String = "", fallback: Variant = null) -> Variant:
 	if not key.is_empty():
 		# Two-arg mode: section + key
 		if _config.has(section_or_key) and _config[section_or_key] is Dictionary:
@@ -83,16 +82,17 @@ func get_value(section_or_key: String, key: String = "", fallback = null):
 		if _config.has(section_or_key):
 			return _config[section_or_key]
 		# Scan sub-sections for key
-		for section in _config.values():
+		for section: Variant in _config.values():
 			if section is Dictionary and section.has(section_or_key):
 				return section[section_or_key]
 		if DEFAULTS.has(section_or_key):
 			return DEFAULTS[section_or_key]
 		return fallback
 
+
 ## Convenience typed getters for hot-path values.
 func get_int(key: String, fallback: int = 0) -> int:
-	var v = get_value(key, "", fallback)
+	var v: Variant = get_value(key, "", fallback)
 	if v is float:
 		return int(v)
 	if v is int:
@@ -100,13 +100,13 @@ func get_int(key: String, fallback: int = 0) -> int:
 	return fallback
 
 func get_float(key: String, fallback: float = 0.0) -> float:
-	var v = get_value(key, "", fallback)
+	var v: Variant = get_value(key, "", fallback)
 	if v is float or v is int:
 		return float(v)
 	return fallback
 
 func get_string(key: String, fallback: String = "") -> String:
-	var v = get_value(key, "", fallback)
+	var v: Variant = get_value(key, "", fallback)
 	if v is String:
 		return v
 	return fallback
