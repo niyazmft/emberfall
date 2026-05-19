@@ -1,0 +1,4 @@
+[gd_resource type="Resource" format=3]
+
+[resource]
+metadata/colors = [Color(1, 1, 1, 1), Color(0.1, 0.1, 0.1, 1), Color(0.5, 0.5, 0.5, 1)]

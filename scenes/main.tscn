@@ -1,8 +1,11 @@
-[gd_scene load_steps=2 format=3 uid="uid://b1m4n7k8p9q2r"]
+[gd_scene load_steps=3 format=3 uid="uid://b1m4n7k8p9q2r"]
 
 [ext_resource type="Script" path="res://scripts/core/deterministic_math.gd" id="1_7x3a9"]
+[ext_resource type="PackedScene" uid="uid://cvdsim123456" path="res://scenes/debug_cvd.tscn" id="2_cvd"]
 
 [node name="Main" type="Node2D"]
 
 [node name="DeterministicMath" type="Node" parent="."]
 script = ExtResource("1_7x3a9")
+
+[node name="DebugCVD" parent="." instance=ExtResource("2_cvd")]
