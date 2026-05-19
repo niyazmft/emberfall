@@ -48,74 +48,97 @@ def a_star_path(
 ) -> Optional[List[GridPos]]:
     """
     A* pathfinding on a square grid.
-
-    Parameters
-    ----------
-    start, goal : (x, y)
-    blocked : set of non-walkable tiles.
-    width, height : grid dimensions.
-    elevations : optional dict mapping tile → elevation tier.
-    max_elevation_diff : maximum |Δelevation| between adjacent tiles.
-
-    Returns
-    -------
-    List of grid positions from start to goal (inclusive), or None if unreachable.
+    Optimized for performance using flat arrays and minimal object creation.
     """
     if start == goal:
         return [start]
-    if not _in_bounds(goal, width, height) or goal in blocked:
+
+    goal_x, goal_y = goal
+    if not (0 <= goal_x < width and 0 <= goal_y < height) or goal in blocked:
         return None
 
-    elevations = elevations or {}
+    # Pre-process grid data into flat arrays for fast access
+    size = width * height
+    blocked_arr = [False] * size
+    for x, y in blocked:
+        if 0 <= x < width and 0 <= y < height:
+            blocked_arr[y * width + x] = True
 
-    # Priority queue: (f_score, tie_breaker, node)
-    open_set: List[Tuple[int, int, GridPos]] = []
-    heapq.heappush(open_set, (_manhattan(start, goal), 0, start))
+    elevations_arr = [0] * size
+    if elevations:
+        for (x, y), elev in elevations.items():
+            if 0 <= x < width and 0 <= y < height:
+                elevations_arr[y * width + x] = elev
 
-    came_from: Dict[GridPos, GridPos] = {}
-    g_score: Dict[GridPos, int] = {start: 0}
+    # Flat arrays for A* scores and path reconstruction
+    # Using a large enough number for infinity that doesn't overflow
+    INF = 1000000
+    g_score = [INF] * size
+    came_from = [-1] * size
 
+    start_idx = start[1] * width + start[0]
+    goal_idx = goal_y * width + goal_x
+
+    g_score[start_idx] = 0
+
+    # Priority queue: (f_score, tie_breaker, current_idx)
+    # f_score uses Manhattan distance as an admissible heuristic
+    f_start = abs(start[0] - goal_x) + abs(start[1] - goal_y)
+    open_set: List[Tuple[int, int, int]] = [(f_start, 0, start_idx)]
     tie = 1
 
-    while open_set:
-        _, _, current = heapq.heappop(open_set)
+    # Pre-calculate offsets and movement metadata
+    # Neighbors: N, E, S, W, NE, SE, SW, NW
+    offsets = [-width, 1, width, -1, 1-width, 1+width, -1+width, -1-width]
+    costs = [1, 1, 1, 1, 2, 2, 2, 2]
+    dxs = [0, 1, 0, -1, 1, 1, -1, -1]
+    dys = [-1, 0, 1, 0, -1, 1, 1, -1]
+    # For diagonal corner-cutting checks: (cardinal1_offset, cardinal2_offset)
+    diag_checks = [None, None, None, None, (1, -width), (1, width), (-1, width), (-1, -width)]
 
-        if current == goal:
+    while open_set:
+        _, _, curr_idx = heapq.heappop(open_set)
+
+        if curr_idx == goal_idx:
             # Reconstruct path
-            path = [current]
-            while current in came_from:
-                current = came_from[current]
-                path.append(current)
+            path = []
+            while curr_idx != -1:
+                path.append((curr_idx % width, curr_idx // width))
+                curr_idx = came_from[curr_idx]
             return path[::-1]
 
-        curr_elev = elevations.get(current, 0)
+        curr_g = g_score[curr_idx]
+        curr_x = curr_idx % width
+        curr_y = curr_idx // width
+        curr_elev = elevations_arr[curr_idx]
 
-        for (dx, dy), cost in zip(ALL_DIRS, ALL_COSTS):
-            nxt = (current[0] + dx, current[1] + dy)
-            if not _in_bounds(nxt, width, height):
+        for i in range(8):
+            nx, ny = curr_x + dxs[i], curr_y + dys[i]
+
+            # Bounds check
+            if not (0 <= nx < width and 0 <= ny < height):
                 continue
-            if nxt in blocked:
+
+            nxt_idx = curr_idx + offsets[i]
+            if blocked_arr[nxt_idx]:
                 continue
 
             # Elevation check
-            nxt_elev = elevations.get(nxt, 0)
-            if abs(nxt_elev - curr_elev) > max_elevation_diff:
+            if abs(elevations_arr[nxt_idx] - curr_elev) > max_elevation_diff:
                 continue
 
-            # Corner-cutting prevention: if moving diagonally, both
-            # intermediate cardinal neighbours must be walkable.
-            if cost == DIAGONAL_COST:
-                c1 = (current[0] + dx, current[1])
-                c2 = (current[0], current[1] + dy)
-                if c1 in blocked or c2 in blocked:
+            # Corner-cutting prevention
+            check = diag_checks[i]
+            if check:
+                if blocked_arr[curr_idx + check[0]] or blocked_arr[curr_idx + check[1]]:
                     continue
 
-            tentative_g = g_score[current] + cost
-            if tentative_g < g_score.get(nxt, 2**31):
-                came_from[nxt] = current
-                g_score[nxt] = tentative_g
-                f = tentative_g + _manhattan(nxt, goal)
-                heapq.heappush(open_set, (f, tie, nxt))
+            tentative_g = curr_g + costs[i]
+            if tentative_g < g_score[nxt_idx]:
+                came_from[nxt_idx] = curr_idx
+                g_score[nxt_idx] = tentative_g
+                f = tentative_g + abs(nx - goal_x) + abs(ny - goal_y)
+                heapq.heappush(open_set, (f, tie, nxt_idx))
                 tie += 1
 
     return None
@@ -144,46 +167,76 @@ def nearest_reachable_toward(
 ) -> Optional[GridPos]:
     """
     Flood-fill from *start* to find the tile closest to *target* that is reachable.
-    Returns the best tile (or start if no movement is possible).
+    Optimized version using flat arrays and deque.
     """
     if start == target:
         return start
 
     from collections import deque
 
-    elevations = elevations or {}
-    visited = {start}
-    q = deque([start])
-    best = start
-    best_dist = _manhattan(start, target)
+    size = width * height
+    blocked_arr = [False] * size
+    for x, y in blocked:
+        if 0 <= x < width and 0 <= y < height:
+            blocked_arr[y * width + x] = True
+
+    elevations_arr = [0] * size
+    if elevations:
+        for (x, y), elev in elevations.items():
+            if 0 <= x < width and 0 <= y < height:
+                elevations_arr[y * width + x] = elev
+
+    visited = [False] * size
+    start_idx = start[1] * width + start[0]
+    visited[start_idx] = True
+
+    q = deque([start_idx])
+    best_idx = start_idx
+    tx, ty = target
+    best_dist = abs(start[0] - tx) + abs(start[1] - ty)
+
+    offsets = [-width, 1, width, -1, 1-width, 1+width, -1+width, -1-width]
+    dxs = [0, 1, 0, -1, 1, 1, -1, -1]
+    dys = [-1, 0, 1, 0, -1, 1, 1, -1]
+    diag_checks = [None, None, None, None, (1, -width), (1, width), (-1, width), (-1, -width)]
 
     while q:
-        current = q.popleft()
-        curr_elev = elevations.get(current, 0)
-        curr_dist = _manhattan(current, target)
+        curr_idx = q.popleft()
+
+        curr_x = curr_idx % width
+        curr_y = curr_idx // width
+        curr_dist = abs(curr_x - tx) + abs(curr_y - ty)
+
         if curr_dist < best_dist:
-            best = current
             best_dist = curr_dist
+            best_idx = curr_idx
+            if best_dist == 0: # Found target
+                break
 
-        for dx, dy in ALL_DIRS:
-            nxt = (current[0] + dx, current[1] + dy)
-            if nxt in visited or not _in_bounds(nxt, width, height) or nxt in blocked:
+        curr_elev = elevations_arr[curr_idx]
+
+        for i in range(8):
+            nx, ny = curr_x + dxs[i], curr_y + dys[i]
+            if not (0 <= nx < width and 0 <= ny < height):
                 continue
 
-            nxt_elev = elevations.get(nxt, 0)
-            if abs(nxt_elev - curr_elev) > max_elevation_diff:
+            nxt_idx = curr_idx + offsets[i]
+            if visited[nxt_idx] or blocked_arr[nxt_idx]:
                 continue
 
-            if dx != 0 and dy != 0:
-                c1 = (current[0] + dx, current[1])
-                c2 = (current[0], current[1] + dy)
-                if c1 in blocked or c2 in blocked:
+            if abs(elevations_arr[nxt_idx] - curr_elev) > max_elevation_diff:
+                continue
+
+            # Corner cutting
+            check = diag_checks[i]
+            if check:
+                if blocked_arr[curr_idx + check[0]] or blocked_arr[curr_idx + check[1]]:
                     continue
 
-            visited.add(nxt)
-            q.append(nxt)
+            visited[nxt_idx] = True
+            q.append(nxt_idx)
 
-    return best
+    return (best_idx % width, best_idx // width)
 
 
 # ── Debug helpers ───────────────────────────────────────────────────
