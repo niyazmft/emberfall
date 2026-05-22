@@ -11,4 +11,5 @@ script = ExtResource("1_7x3a9")
 [node name="VersionLabel" type="Label" parent="."]
 offset_right = 40.0
 offset_bottom = 23.0
+text = "@@VERSION@@"
 script = ExtResource("2_vlabel")
