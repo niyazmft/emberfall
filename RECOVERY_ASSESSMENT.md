@@ -15,9 +15,9 @@ Rationale: No existing repo dedicated to the game. The local workspace contains 
 
 ### 2. First Batch of Jules-Ready Programming Tasks
 These are self-contained, programming-only, low-dependency tasks ideal for Jules:
-- [DON-36](/DON/issues/DON-36) — `version_label.gd` + `export_presets` (GDScript, no deps)
-- [DON-100](/DON/issues/DON-100) — Entity Lifecycle stat blocks + `MORAL_FLAG` queue (GDScript, blocked by DON-24 but can be unblocked if architectural spec is provided)
-- [DON-94](/DON/issues/DON-94) — `AStarGrid.find_path()` perf optimization (algorithmic, isolated)
+- [DON-36](/DON/issues/DON-36) — `version_label.gd` + `export_presets` (GDScript, no deps) — **MERGED**
+- [DON-100](/DON/issues/DON-100) — Entity Lifecycle stat blocks + `MORAL_FLAG` queue (GDScript) — **COMPLETE** (impl + 11 tests merged to main)
+- [DON-94](/DON/issues/DON-94) — `AStarGrid.find_path()` perf optimization (algorithmic, isolated) — **MERGED**
 - [DON-84](/DON/issues/DON-84) — Dark backing plates for semantic icons (GDScript/UI, no deps)
 - [DON-85](/DON/issues/DON-85) — EPT accent palette governance & build lint (scripting/config)
 - [DON-35](/DON/issues/DON-35) — Replace Steam AppID + depot IDs in `depot_build.vdf` (config)
@@ -27,7 +27,15 @@ These are self-contained, programming-only, low-dependency tasks ideal for Jules
 - [DON-103](/DON/issues/DON-103) — Smoke + regression tests (QA-gated)
 - [DON-13](/DON/issues/DON-13) — Moral Weight Feel Test (creative gate)
 
-### 3. `jules` Label Gating Protocol (Draft — pending Release Manager)
+### 3. `jules` Label Gating Protocol (Approved — Release Manager)
+
+**CEO Delegation Queue — ready for agent assignment:**
+- [ ] DON-84 — Dark backing plates for semantic icons
+- [ ] DON-85 — EPT accent palette governance & build lint
+- [ ] DON-35 — Replace Steam AppID + depot IDs in `depot_build.vdf`
+
+> **Note:** CEO/CTO agents handle `jules` label assignment and delegation to Jules.
+> Board does not interpose directly on programming tasks.
 1. **Programming-only** — no design docs, no narrative, no art pipeline changes.
 2. **Zero open dependencies** — issue must not be blocked by another open issue.
 3. **No core interface changes** — issues that modify `CombatFormula`, `DeterministicMath`, `SeedGovernance`, or `Entity` base signatures require TD pre-approval.
