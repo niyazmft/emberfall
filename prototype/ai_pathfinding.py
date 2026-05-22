@@ -71,8 +71,7 @@ def a_star_path(
                 elevations_arr[y * width + x] = elev
 
     # Flat arrays for A* scores and path reconstruction
-    # Using a large enough number for infinity that doesn't overflow
-    INF = 1000000
+    INF = 2**31 - 1
     g_score = [INF] * size
     came_from = [-1] * size
 

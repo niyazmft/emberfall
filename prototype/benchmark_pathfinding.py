@@ -19,12 +19,15 @@ def run_benchmark(width=12, height=12, num_runs=1000):
 
     # We want to measure the performance of individual pathfinding calls
     for _ in range(num_runs):
-        start = (random.randint(0, width - 1), random.randint(0, height - 1))
-        goal = (random.randint(0, width - 1), random.randint(0, height - 1))
-
-        # Ensure start and goal are not blocked
-        if start in blocked: blocked.remove(start)
-        if goal in blocked: blocked.remove(goal)
+        # Pick start and goal that are not blocked
+        while True:
+            start = (random.randint(0, width - 1), random.randint(0, height - 1))
+            if start not in blocked:
+                break
+        while True:
+            goal = (random.randint(0, width - 1), random.randint(0, height - 1))
+            if goal not in blocked:
+                break
 
         t0 = time.perf_counter()
         a_star_path(start, goal, blocked, width, height, elevations)
