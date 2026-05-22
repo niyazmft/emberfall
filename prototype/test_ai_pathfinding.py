@@ -2,6 +2,7 @@
 """Automated smoke tests for ai_pathfinding.py"""
 
 import sys
+import time
 sys.path.insert(0, '.')
 
 from ai_pathfinding import (
@@ -73,8 +74,6 @@ def test_elevation_blocking():
         elevations=elevations, max_elevation_diff=1,
     )
     # Direct step to (1,0) has Δelevation = 2 → blocked.
-    # It could go around if path exists, but on a 1-row strip it may be None.
-    # We just verify no invalid elevation step is in the path.
     if path:
         for i in range(len(path) - 1):
             e0 = elevations.get(path[i], 0)
@@ -117,24 +116,54 @@ def test_nearest_reachable():
     assert best in {(4, 5), (6, 5), (5, 4), (5, 6), (4, 4), (6, 6), (4, 6), (6, 4)}
 
 
-def test_performance_budget():
+def test_performance_budget_random():
     """
-    Smoke-test performance on a 12×12 grid worst-case open field.
-    Sprint plan hard budget: ≤2ms per query on target hardware (GDScript).
-    Python prototype is ~100× slower; we assert < 1 s for 144 pathfinds
-    (≈ 7 ms each in interpreted Python) which leaves headroom for GDScript.
+    Performance test on a 12x12 grid with random obstacles.
+    Target: Average query time <= 2ms on Android (approx 0.1ms on high-end PC).
     """
-    import time
+    import random
+    random.seed(42)
+    w, h = 12, 12
+    blocked = {(random.randint(0, w-1), random.randint(0, h-1)) for _ in range(30)}
+    elevations = {(x, y): random.randint(0, 2) for x in range(w) for y in range(h)}
+
+    num_runs = 1000
+    t0 = time.perf_counter()
+    for _ in range(num_runs):
+        start = (random.randint(0, w-1), random.randint(0, h-1))
+        goal = (random.randint(0, w-1), random.randint(0, h-1))
+        if start in blocked: start = (0,0)
+        if goal in blocked: goal = (w-1,h-1)
+        a_star_path(start, goal, blocked, w, h, elevations)
+    elapsed = (time.perf_counter() - t0) / num_runs * 1000
+
+    print(f"   ({elapsed:.4f} ms/pathfind avg in random grid)")
+    # Local budget is much tighter than 2ms to ensure it meets 2ms on mobile.
+    assert elapsed < 0.5, f"Performance too slow: {elapsed:.4f}ms"
+
+
+def test_performance_budget_worst_case():
+    """
+    Performance test on a 12x12 maze (worst case).
+    """
     w, h = 12, 12
     blocked = set()
+    for y in range(1, h, 2):
+        if (y // 2) % 2 == 0:
+            for x in range(w - 1): blocked.add((x, y))
+        else:
+            for x in range(1, w): blocked.add((x, y))
+
+    start, goal = (0, 0), (0, h - 1)
+
+    num_runs = 200
     t0 = time.perf_counter()
-    for x in range(w):
-        for y in range(h):
-            a_star_path((0, 0), (x, y), blocked, w, h)
-    elapsed = time.perf_counter() - t0
-    assert elapsed < 1.0, f"Python prototype budget exceeded: {elapsed:.3f}s"
-    per_call_ms = (elapsed / (w * h)) * 1000
-    print(f"   ({per_call_ms:.2f} ms/pathfind in Python)")
+    for _ in range(num_runs):
+        a_star_path(start, goal, blocked, w, h)
+    elapsed = (time.perf_counter() - t0) / num_runs * 1000
+
+    print(f"   ({elapsed:.4f} ms/pathfind avg in worst-case maze)")
+    assert elapsed < 1.0, f"Worst-case performance too slow: {elapsed:.4f}ms"
 
 
 if __name__ == "__main__":
@@ -159,7 +188,10 @@ if __name__ == "__main__":
     test_nearest_reachable()
     print("✓ test_nearest_reachable passed")
 
-    test_performance_budget()
-    print("✓ test_performance_budget passed")
+    test_performance_budget_random()
+    print("✓ test_performance_budget_random passed")
+
+    test_performance_budget_worst_case()
+    print("✓ test_performance_budget_worst_case passed")
 
     print("\nAll ai_pathfinding tests passed.")
