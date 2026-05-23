@@ -2,6 +2,7 @@
 # https://github.com/github/gitignore/blob/main/Godot.gitignore
 
 # Godot-specific ignores
+.godot/
 .import/
 export.cfg
 export_presets.cfg
