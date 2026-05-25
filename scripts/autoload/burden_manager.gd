@@ -192,7 +192,7 @@ func reset() -> void:
 # ---------------------------------------------------------------------------
 
 func update_moral_weight(moral_flag: int) -> void:
-	var threshold: int = ConfigLoader.get_int("MWT", GameConstants.MWT)
+	var threshold: int = get_node("/root/ConfigLoader").get_int("MWT", GameConstants.MWT)
 	var should_be_active := moral_flag >= threshold
 	if should_be_active != burden_active:
 		burden_active = should_be_active

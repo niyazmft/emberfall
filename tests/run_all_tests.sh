@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/bash
+#!/bin/bash
 ## Run all Emberfall test suites sequentially.
 ## Exit code 0 = all passed; non-zero = at least one failure.
 

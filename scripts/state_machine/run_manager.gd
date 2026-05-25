@@ -1,4 +1,4 @@
-extends BaseStateMachine
+extends "res://scripts/state_machine/base_state_machine.gd"
 
 ## RunManager
 ## Implements the Run Manager state machine from System Specification §5.
@@ -64,10 +64,10 @@ func _on_mwt_reached(_moral_flag: int, _remaining: int) -> void:
 func _load_config_values() -> void:
 	if Engine.is_editor_hint():
 		return
-	biome_count = ConfigLoader.get_int("BIOME_COUNT", 3)
-	rooms_per_biome_min = ConfigLoader.get_int("ROOMS_PER_BIOME_MIN", 8)
-	rooms_per_biome_max = ConfigLoader.get_int("ROOMS_PER_BIOME_MAX", 12)
-	_dying_duration = float(ConfigLoader.get_int("DYING_DURATION_TURNS", 1))
+	biome_count = get_node("/root/ConfigLoader").get_int("BIOME_COUNT", 3)
+	rooms_per_biome_min = get_node("/root/ConfigLoader").get_int("ROOMS_PER_BIOME_MIN", 8)
+	rooms_per_biome_max = get_node("/root/ConfigLoader").get_int("ROOMS_PER_BIOME_MAX", 12)
+	_dying_duration = float(get_node("/root/ConfigLoader").get_int("DYING_DURATION_TURNS", 1))
 
 # ---------------------------------------------------------------------------
 # State Registration

@@ -48,9 +48,9 @@ class MoralDeltaRecord extends RefCounted:
 
 # ── State timers ─────────────────────────────────────────────────────────
 ## Entity instance_id → turns remaining in DYING
-var _dying_turns: Dictionary[int, int] = {}
+var _dying_turns: Dictionary = {}
 ## Entity instance_id → turns remaining in STUNNED
-var _stunned_turns: Dictionary[int, int] = {}
+var _stunned_turns: Dictionary = {}
 
 # ── Moral queue ────────────────────────────────────────────────────────────
 var _moral_queue: Array[MoralDeltaRecord] = []

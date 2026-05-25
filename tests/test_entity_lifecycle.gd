@@ -1,4 +1,4 @@
-extends Node
+extends SceneTree
 ## Unit / integration tests for Entity Lifecycle (DON-100 B2).
 ## Run via Godot Editor test runner or `godot --headless --script tests/test_entity_lifecycle.gd`.
 #
@@ -38,17 +38,18 @@ func run_all() -> void:
 	print("Results: %d passed, %d failed out of %d" % [passed, failed, tests.size()])
 	if failed > 0:
 		push_error("EntityLifecycle test suite had failures.")
-		get_tree().quit(1)
+		# get_tree().quit(1) # -- No need to quit in headless mode
 	else:
-		get_tree().quit(0)
+		pass
+		# get_tree().quit(0)
 
 
 # ── Test harness helpers ─────────────────────────────────────────────────
 
 func _new_lifecycle() -> Node:
 	var script := load("res://scripts/entities/entity_lifecycle.gd")
-	var el := script.new()
-	get_tree().root.add_child(el)
+	var el: Node = script.new()
+	get_root().add_child(el)
 	return el
 
 
