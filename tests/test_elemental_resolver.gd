@@ -93,9 +93,7 @@ func test_oil_slip_speed() -> void:
 	var effects: Array[ElementalTypes.TileEffect] = []
 	effects = ElementalInteractionResolver.apply_element(effects, ElementalTypes.Element.OIL, 0, 2)
 
-	var speed: float = ElementalInteractionResolver.calculate_movement_speed_multiplier(
-		[], effects, 0
-	)
+	var speed: float = ElementalInteractionResolver.calculate_movement_speed_multiplier(effects, 0)
 	_assert_eqf("oil_slip_speed", speed, 0.8)
 
 
@@ -103,9 +101,7 @@ func test_oil_slip_speed() -> void:
 func test_no_elements_default() -> void:
 	var effects: Array[ElementalTypes.TileEffect] = []
 	var dmg: float = ElementalInteractionResolver.compute_tile_damage_multiplier(effects, 0)
-	var spd: float = ElementalInteractionResolver.calculate_movement_speed_multiplier(
-		[], effects, 0
-	)
+	var spd: float = ElementalInteractionResolver.calculate_movement_speed_multiplier(effects, 0)
 	_assert_eqf("no_elem_damage", dmg, 1.0)
 	_assert_eqf("no_elem_speed", spd, 1.0)
 
@@ -138,7 +134,7 @@ func test_fifo_water_before_fire() -> void:
 	effects = ElementalInteractionResolver.apply_element(effects, ElementalTypes.Element.FIRE, 0, 2)
 
 	var result: Dictionary = ElementalInteractionResolver.process_turn_tick(
-		effects, 0, Vector2i(0, 0), null
+		effects, 0, Vector2i(0, 0), []
 	)
 	var out_effects: Array[ElementalTypes.TileEffect] = result["effects"]
 	var extinguished: bool = result["extinguished"]
@@ -164,7 +160,7 @@ func test_fifo_fire_then_oil_then_wind() -> void:
 	effects = ElementalInteractionResolver.apply_element(effects, ElementalTypes.Element.WIND, 0, 2)
 
 	var result: Dictionary = ElementalInteractionResolver.process_turn_tick(
-		effects, 0, Vector2i(1, 1), null
+		effects, 0, Vector2i(1, 1), []
 	)
 	var out_effects: Array[ElementalTypes.TileEffect] = result["effects"]
 
@@ -189,16 +185,16 @@ func test_fire_spread_basic() -> void:
 
 	var bounds: Array[Vector2i] = [Vector2i(0, 0), Vector2i(2, 2)]
 	var result: Dictionary = ElementalInteractionResolver.process_turn_tick(
-		effects, 0, Vector2i(1, 1), null, bounds
+		effects, 0, Vector2i(1, 1), bounds
 	)
-	var spread: PackedVector2Array = result["spread_positions"]
+	var spread: Array[Vector2i] = result["spread_positions"]
 
 	# From (1,1) with wind fanning fire, spread to 4 adjacent cardinal tiles
 	_assert_eq("spread_count", spread.size(), 4)
-	_assert_true("spread_has_0_1", spread.has(Vector2(0, 1)))
-	_assert_true("spread_has_2_1", spread.has(Vector2(2, 1)))
-	_assert_true("spread_has_1_0", spread.has(Vector2(1, 0)))
-	_assert_true("spread_has_1_2", spread.has(Vector2(1, 2)))
+	_assert_true("spread_has_0_1", spread.has(Vector2i(0, 1)))
+	_assert_true("spread_has_2_1", spread.has(Vector2i(2, 1)))
+	_assert_true("spread_has_1_0", spread.has(Vector2i(1, 0)))
+	_assert_true("spread_has_1_2", spread.has(Vector2i(1, 2)))
 
 
 # ── AC-7: Spread blocked by water tiles ───────────────────────────────
@@ -207,15 +203,15 @@ func test_spread_blocked_by_water() -> void:
 	var bounds: Array[Vector2i] = [Vector2i(0, 0), Vector2i(2, 2)]
 	var water_tiles: Array[Vector2i] = [Vector2i(2, 1), Vector2i(1, 0)]
 
-	var targets: PackedVector2Array = ElementalInteractionResolver.compute_fire_spread_targets(
+	var targets: Array[Vector2i] = ElementalInteractionResolver.compute_fire_spread_targets(
 		fire_pos, bounds, water_tiles
 	)
 
 	_assert_eq("spread_blocked_count", targets.size(), 2)
-	_assert_true("spread_blocked_has_0_1", targets.has(Vector2(0, 1)))
-	_assert_true("spread_blocked_has_1_2", targets.has(Vector2(1, 2)))
-	_assert_false("spread_blocked_no_2_1", targets.has(Vector2(2, 1)))
-	_assert_false("spread_blocked_no_1_0", targets.has(Vector2(1, 0)))
+	_assert_true("spread_blocked_has_0_1", targets.has(Vector2i(0, 1)))
+	_assert_true("spread_blocked_has_1_2", targets.has(Vector2i(1, 2)))
+	_assert_false("spread_blocked_no_2_1", targets.has(Vector2i(2, 1)))
+	_assert_false("spread_blocked_no_1_0", targets.has(Vector2i(1, 0)))
 
 
 # ── AC-7: Out-of-bounds spread rejected ────────────────────────────────
@@ -227,9 +223,9 @@ func test_out_of_bounds_spread_rejected() -> void:
 	# Tile at (0,0) with bounds [0,0] to [0,0] — no room to spread
 	var bounds: Array[Vector2i] = [Vector2i(0, 0), Vector2i(0, 0)]
 	var result: Dictionary = ElementalInteractionResolver.process_turn_tick(
-		effects, 0, Vector2i(0, 0), null, bounds
+		effects, 0, Vector2i(0, 0), bounds
 	)
-	var spread: PackedVector2Array = result["spread_positions"]
+	var spread: Array[Vector2i] = result["spread_positions"]
 
 	_assert_eq("oob_spread_count", spread.size(), 0)
 
@@ -250,7 +246,7 @@ func test_multiple_overlapping_elements() -> void:
 	# Process tick: Fire (oldest) burns Oil first; Water then extinguishes Fire.
 	# Per FIFO ordering, Oil is consumed by Fire before Water gets to act.
 	var result: Dictionary = ElementalInteractionResolver.process_turn_tick(
-		effects, 0, Vector2i(0, 0), null
+		effects, 0, Vector2i(0, 0), []
 	)
 	var out: Array[ElementalTypes.TileEffect] = result["effects"]
 	_assert_eq("multiple_after_tick_fire_gone", _count_element(out, ElementalTypes.Element.FIRE), 0)
@@ -268,7 +264,7 @@ func test_oil_burns_off_completely() -> void:
 	effects = ElementalInteractionResolver.apply_element(effects, ElementalTypes.Element.FIRE, 0, 3)
 
 	var result: Dictionary = ElementalInteractionResolver.process_turn_tick(
-		effects, 0, Vector2i(0, 0), null
+		effects, 0, Vector2i(0, 0), []
 	)
 	var out: Array[ElementalTypes.TileEffect] = result["effects"]
 
@@ -289,7 +285,7 @@ func test_extinguish_bidirectional() -> void:
 	)
 
 	var result_a: Dictionary = ElementalInteractionResolver.process_turn_tick(
-		effects_a, 0, Vector2i(0, 0), null
+		effects_a, 0, Vector2i(0, 0), []
 	)
 	_assert_true("extinguish_fire_then_water", result_a["extinguished"])
 	_assert_eq(
@@ -308,7 +304,7 @@ func test_extinguish_bidirectional() -> void:
 	)
 
 	var result_b: Dictionary = ElementalInteractionResolver.process_turn_tick(
-		effects_b, 0, Vector2i(0, 0), null
+		effects_b, 0, Vector2i(0, 0), []
 	)
 	_assert_true("extinguish_water_then_fire", result_b["extinguished"])
 	_assert_eq(
@@ -352,11 +348,9 @@ func test_stacked_elements_tick_independently() -> void:
 func test_empty_effects_safe() -> void:
 	var effects: Array[ElementalTypes.TileEffect] = []
 	var mult: float = ElementalInteractionResolver.compute_tile_damage_multiplier(effects, 0)
-	var spd: float = ElementalInteractionResolver.calculate_movement_speed_multiplier(
-		[], effects, 0
-	)
+	var spd: float = ElementalInteractionResolver.calculate_movement_speed_multiplier(effects, 0)
 	var result: Dictionary = ElementalInteractionResolver.process_turn_tick(
-		effects, 0, Vector2i(0, 0), null
+		effects, 0, Vector2i(0, 0), []
 	)
 	_assert_eqf("empty_damage", mult, 1.0)
 	_assert_eqf("empty_speed", spd, 1.0)
@@ -372,10 +366,10 @@ func test_turn_tick_idempotent() -> void:
 	effects = ElementalInteractionResolver.apply_element(effects, ElementalTypes.Element.OIL, 0, 2)
 
 	var result1: Dictionary = ElementalInteractionResolver.process_turn_tick(
-		effects, 0, Vector2i(0, 0), null
+		effects, 0, Vector2i(0, 0), []
 	)
 	var result2: Dictionary = ElementalInteractionResolver.process_turn_tick(
-		effects, 0, Vector2i(0, 0), null
+		effects, 0, Vector2i(0, 0), []
 	)
 
 	# Same inputs should produce same outputs

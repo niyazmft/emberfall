@@ -12,6 +12,7 @@ const REMAP_SAVE_PATH: String = "user://remap.save"
 var remapping_action: String = ""
 var remapping_button: Button = null
 
+
 func _ready() -> void:
 	load_bindings()
 	create_action_list()
@@ -22,12 +23,15 @@ func _ready() -> void:
 	# Focus the first item for keyboard/gamepad accessibility when the list is populated
 	call_deferred("_focus_first_item")
 
+
 func _focus_first_item() -> void:
-	if not action_list: return
+	if not action_list:
+		return
 	if action_list.get_child_count() > 0:
-		var first_hbox = action_list.get_child(0)
+		var first_hbox: Node = action_list.get_child(0)
 		if first_hbox.get_child_count() > 1 and first_hbox.get_child(1) is Button:
-			first_hbox.get_child(1).grab_focus()
+			(first_hbox.get_child(1) as Button).grab_focus()
+
 
 func create_action_list() -> void:
 	for child: Node in action_list.get_children():
@@ -52,6 +56,7 @@ func create_action_list() -> void:
 
 		action_list.add_child(h_box)
 
+
 func get_action_text(action: StringName) -> String:
 	var events: Array[InputEvent] = InputMap.action_get_events(action)
 	if events.is_empty():
@@ -63,14 +68,15 @@ func get_action_text(action: StringName) -> String:
 		current_device = int(router.get("current_device"))
 
 	for event: InputEvent in events:
-		if current_device == 0: # KEYBOARD_MOUSE
+		if current_device == 0:  # KEYBOARD_MOUSE
 			if event is InputEventKey or event is InputEventMouseButton:
 				return event.as_text()
-		else: # GAMEPAD
+		else:  # GAMEPAD
 			if event is InputEventJoypadButton or event is InputEventJoypadMotion:
 				return event.as_text()
 
 	return events[0].as_text()
+
 
 func get_action_icon(action: StringName) -> Texture2D:
 	var events: Array[InputEvent] = InputMap.action_get_events(action)
@@ -83,14 +89,15 @@ func get_action_icon(action: StringName) -> Texture2D:
 		current_device = int(router.get("current_device"))
 
 	for event: InputEvent in events:
-		if current_device == 0: # KEYBOARD_MOUSE
+		if current_device == 0:  # KEYBOARD_MOUSE
 			if event is InputEventKey or event is InputEventMouseButton:
 				return _find_icon_for_event(event)
-		else: # GAMEPAD
+		else:  # GAMEPAD
 			if event is InputEventJoypadButton or event is InputEventJoypadMotion:
 				return _find_icon_for_event(event)
 
 	return _find_icon_for_event(events[0])
+
 
 func _find_icon_for_event(event: InputEvent) -> Texture2D:
 	# Icons would be loaded from res://assets/ui/icons/
@@ -110,11 +117,13 @@ func _find_icon_for_event(event: InputEvent) -> Texture2D:
 		return load(path) as Texture2D
 	return null
 
+
 func _on_remap_button_pressed(action: StringName, button: Button) -> void:
 	remapping_action = action
 	remapping_button = button
 	button.text = "Press any key..."
 	set_process_unhandled_input(true)
+
 
 func _unhandled_input(event: InputEvent) -> void:
 	if remapping_action == "":
@@ -123,10 +132,10 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	# Support keys, mouse buttons, joy buttons, and joy motion (triggers/sticks)
 	var is_valid_input: bool = (
-		event is InputEventKey or
-		event is InputEventMouseButton or
-		event is InputEventJoypadButton or
-		(event is InputEventJoypadMotion and abs(event.axis_value) > 0.5)
+		event is InputEventKey
+		or event is InputEventMouseButton
+		or event is InputEventJoypadButton
+		or (event is InputEventJoypadMotion and abs(event.axis_value) > 0.5)
 	)
 
 	if is_valid_input:
@@ -138,6 +147,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		remapping_action = ""
 		remapping_button = null
 		set_process_unhandled_input(false)
+
 
 func remap_action_to(action: StringName, event: InputEvent) -> void:
 	var conflict: StringName = find_conflict(event, action)
@@ -156,21 +166,25 @@ func remap_action_to(action: StringName, event: InputEvent) -> void:
 	# Refocus the button that was just remapped
 	call_deferred("_focus_action_button", action)
 
+
 func _focus_action_button(action: StringName) -> void:
-	if not action_list: return
-	for child in action_list.get_children():
+	if not action_list:
+		return
+	for child: Node in action_list.get_children():
 		if child is HBoxContainer and child.get_child_count() > 1:
-			var label = child.get_child(0) as Label
+			var label: Label = child.get_child(0) as Label
 			if label and label.text == String(action).capitalize():
-				var btn = child.get_child(1) as Button
+				var btn: Button = child.get_child(1) as Button
 				if btn:
 					btn.grab_focus()
 				break
+
 
 func is_same_device_type(e1: InputEvent, e2: InputEvent) -> bool:
 	var is_kbm1: bool = e1 is InputEventKey or e1 is InputEventMouseButton
 	var is_kbm2: bool = e2 is InputEventKey or e2 is InputEventMouseButton
 	return is_kbm1 == is_kbm2
+
 
 func find_conflict(event: InputEvent, current_action: StringName) -> StringName:
 	for action in InputMap.get_actions():
@@ -180,6 +194,7 @@ func find_conflict(event: InputEvent, current_action: StringName) -> StringName:
 			if a_event.is_match(event):
 				return action
 	return &""
+
 
 func show_conflict_warning(other_action: StringName) -> void:
 	if conflict_toast:
@@ -191,9 +206,11 @@ func show_conflict_warning(other_action: StringName) -> void:
 		var timer: SceneTreeTimer = get_tree().create_timer(2.0)
 		timer.timeout.connect(conflict_toast.hide)
 
+
 func _on_device_changed(_device_type: String) -> void:
 	create_action_list()
 	call_deferred("_focus_first_item")
+
 
 func save_bindings() -> void:
 	var save_data: Dictionary = {}
@@ -210,6 +227,7 @@ func save_bindings() -> void:
 	if file:
 		file.store_var(save_data)
 		file.close()
+
 
 func load_bindings() -> void:
 	if not FileAccess.file_exists(REMAP_SAVE_PATH):
@@ -229,6 +247,7 @@ func load_bindings() -> void:
 					for event_dict: Dictionary in event_list:
 						var event: InputEvent = dict_to_inst(event_dict) as InputEvent
 						InputMap.action_add_event(action, event)
+
 
 func _on_reset_pressed() -> void:
 	InputMap.load_from_project_settings()

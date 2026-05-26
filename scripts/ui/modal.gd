@@ -6,6 +6,7 @@ extends Control
 @onready var button_row: HBoxContainer = %ButtonRow as HBoxContainer
 @onready var close_button: Button = %CloseButton as Button
 
+
 func _ready() -> void:
 	close_button.pressed.connect(dismiss)
 
@@ -22,6 +23,7 @@ func _ready() -> void:
 func setup(title_key: String, body_key: String) -> void:
 	title_label.text = tr(title_key)
 	body_label.text = tr(body_key)
+
 
 func dismiss() -> void:
 	var tween: Tween = create_tween()
