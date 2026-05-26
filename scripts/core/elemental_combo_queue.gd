@@ -21,11 +21,17 @@ static func add_status(queue: Array[ElementalStatus], element: ElementalTypes.El
 
 ## Processes a turn tick: decrements durations and removes expired statuses.
 ## Returns true if any status was removed.
-static func tick(queue: Array[ElementalStatus], current_turn: int) -> bool:
+static func tick(queue: Array[ElementalStatus], _current_turn: int) -> bool:
 	var initial_size: int = queue.size()
 	var i: int = 0
 	while i < queue.size():
-		if queue[i].is_expired(current_turn):
+		# (DON-101) Durations tick down each turn.
+		# Note: Hazards typically have -1 or special handling, but the spec
+		# says "durations tick down".
+		if queue[i].duration > 0:
+			queue[i].duration -= 1
+
+		if queue[i].duration == 0:
 			queue.remove_at(i)
 		else:
 			i += 1

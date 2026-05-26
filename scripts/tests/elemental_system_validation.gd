@@ -106,11 +106,13 @@ func test_case_8_fifo_ordering() -> void:
 
 func test_case_9_duration_tick() -> void:
 	var queue: Array[ElementalStatus] = [
-		ElementalStatus.new(ElementalTypes.Element.FIRE, 1, 0)
+		ElementalStatus.new(ElementalTypes.Element.FIRE, 2, 0)
 	]
+	# (DON-101) tick down: 2 -> 1
 	_assert_false("tc9_not_expired_t0", _ElementalComboQueue.tick(queue, 0))
-	_assert_false("tc9_not_expired_t1", _ElementalComboQueue.tick(queue, 1))
-	_assert_true("tc9_expired_t2", _ElementalComboQueue.tick(queue, 2))
+	_assert_eq("tc9_dur1", queue[0].duration, 1)
+	# 1 -> 0, removed
+	_assert_true("tc9_expired_t1", _ElementalComboQueue.tick(queue, 1))
 	_assert_eq("tc9_empty", queue.size(), 0)
 
 func test_case_10_oil_slip_debuff() -> void:
@@ -122,7 +124,7 @@ func test_case_10_oil_slip_debuff() -> void:
 func test_case_11_spread_blocked_by_cover() -> void:
 	var mock_grid: Node = Node.new()
 	var script: GDScript = GDScript.new()
-	script.source_code = "func is_in_bounds(x: int, y: int) -> bool: return true\nfunc get_tile(x: int, y: int) -> RefCounted:\n\tvar t: RefCounted = RefCounted.new()\n\tt.set('blocks_movement', false)\n\tt.set('cover', 0)\n\tif x == 1 and y == 0: t.set('cover', 2) # Heavy\n\treturn t"
+	script.source_code = "func is_in_bounds(x: int, y: int) -> bool: return true\nfunc get_tile(x: int, y: int) -> RefCounted:\n\tvar t: RefCounted = RefCounted.new()\n\tvar s = load('res://scripts/core/tile_data.gd').new()\n\tt.set_script(s.get_script())\n\tt.set('blocks_movement', false)\n\tt.set('cover', 0)\n\tif x == 1 and y == 0: t.set('cover', 2) # Heavy\n\treturn t"
 	mock_grid.set_script(script)
 
 	var targets: PackedVector2Array = ElementalInteractionResolver.get_spread_targets(Vector2i(0, 0), mock_grid)
