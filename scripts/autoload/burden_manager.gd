@@ -46,6 +46,12 @@ var _count_first: String = "Three"
 var _count_repeat: String = "More"
 var _numbness_localization_key: String = "BE_NUMBNESS_CAP"
 
+## Caption trigger cache (DON-225)
+var _caption_transitions: Dictionary = {}
+var _caption_channel_isolation: bool = true
+var _caption_tolerance_sec: float = 0.2
+var _bd_climb_config: Dictionary = {}
+
 
 func _ready() -> void:
 	_load_burden_config()
@@ -94,6 +100,13 @@ func _apply_config() -> void:
 	_template_repeat = phase_b.get("template_repeat", "{count} {collective_noun}. The burden holds.")
 	_count_first = phase_b.get("count_first", "Three")
 	_count_repeat = phase_b.get("count_repeat", "More")
+
+	## Load caption trigger metadata (DON-225)
+	var caption_cfg: Dictionary = _config.get("caption_triggers", {})
+	_caption_transitions = caption_cfg.get("transitions", {})
+	_caption_channel_isolation = caption_cfg.get("channel_isolation", true)
+	_caption_tolerance_sec = caption_cfg.get("timing_tolerance_sec", 0.2)
+	_bd_climb_config = _config.get("bd_climb", {})
 
 func _apply_defaults() -> void:
 	## Hard-coded defaults mirroring burden-event-keyed.json v1.0.0
@@ -185,17 +198,34 @@ func reset() -> void:
 	total_sentient_kills = 0
 	burden_active = false
 	_burden_trigger_count = 0
+	## Flush any pending Burden captions on reset
+	var cm := _caption_node()
+	if cm and cm.has_method("cancel_channel"):
+		cm.call("cancel_channel", 1)  ## CaptionManager.Channel.BURDEN
 	_print_debug("reset run-local state (persisted noun_index=%d)" % _burden_noun_index)
 
 # ---------------------------------------------------------------------------
 # Global parameter binding (backward compatible)
 # ---------------------------------------------------------------------------
 
+## Safe helper to access ConfigLoader autoload without static-call parse errors.
+func _config_node() -> Node:
+	return get_node_or_null("/root/ConfigLoader")
+
+func _config_int(key: String, fallback: int) -> int:
+	var n := _config_node()
+	if n and n.has_method("get_int"):
+		return n.get_int(key, fallback)
+	return fallback
+
 func update_moral_weight(moral_flag: int) -> void:
-	var threshold: int = ConfigLoader.get_int("MWT", GameConstants.MWT)
+	var threshold: int = _config_int("MWT", GameConstants.MWT)
+	var old_active: bool = burden_active
 	var should_be_active := moral_flag >= threshold
 	if should_be_active != burden_active:
 		burden_active = should_be_active
+		## Schedule transition captions on threshold crossing (DON-225)
+		_schedule_transition_caption(old_active, burden_active)
 		_print_debug("burden_active toggled → %s (flag=%d, threshold=%d)" % [str(burden_active), moral_flag, threshold])
 
 # ---------------------------------------------------------------------------
@@ -328,6 +358,9 @@ func trigger_burden_event(run_seed: int, topology_seed: int, room_index: int, va
 	if not result.numbness_cap_reached and not is_within_phase_b_window(result.phase_b_duration_ms):
 		push_warning("BurdenManager: Phase B duration %d ms is outside the configured 10–40 s window." % result.phase_b_duration_ms)
 
+	## --- Caption scheduling (DON-225) ---
+	_schedule_burden_event_captions(result)
+
 	burden_event_triggered.emit(result)
 	_print_debug("burden event #%d triggered (first=%s, noun=%s, variant=%s)" % [_burden_trigger_count, str(is_first), noun if not result.numbness_cap_reached else "SILENT", result.phase_b_variant_id])
 	return result
@@ -345,6 +378,123 @@ func _expand_template(template_str: String, count: String, noun: String, variant
 # ---------------------------------------------------------------------------
 # Debug
 # ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+# Caption Integration (DON-225)
+# ---------------------------------------------------------------------------
+
+func _caption_node() -> Node:
+	return get_node_or_null("/root/CaptionManager")
+
+## Schedule a transition caption based on old→new burden_active state.
+func _schedule_transition_caption(old_active: bool, new_active: bool) -> void:
+	var cm := _caption_node()
+	if cm == null:
+		return
+	var key: String = ""
+	if not old_active and new_active:
+		key = "0_to_1"
+	elif old_active and not new_active:
+		## Determine normal vs emergency 3→0 based on current moral context.
+		## Emergency: if player_moral_flag <= 1 (rapid drop).
+		## For now, default to normal; caller can override via schedule_transition_caption_explicit.
+		key = "3_to_0_normal"
+	else:
+		return
+	var data: Dictionary = _caption_transitions.get(key, {})
+	if data.is_empty():
+		return
+	var text: String = str(data.get("text", ""))
+	if text.is_empty():
+		return
+	var offset_sec: float = float(data.get("offset_sec", 0.0))
+	var duration_sec: float = float(data.get("duration_sec", 2.0))
+	var curve_str: String = str(data.get("curve", "LINEAR"))
+	var loc_key: String = str(data.get("localization_key", ""))
+	var curve: int = _curve_from_string(curve_str)
+	## Call CaptionManager.schedule if the method exists
+	if cm.has_method("schedule"):
+		cm.call("schedule", text, 1, offset_sec, duration_sec, curve, loc_key)  ## Channel.BURDEN = 1
+		_print_debug("scheduled transition caption %s (offset=%.2f, dur=%.2f, curve=%s)" % [key, offset_sec, duration_sec, curve_str])
+
+## Public API: explicitly schedule a named transition caption (for emergency 3→0 override).
+func schedule_transition_caption_explicit(transition_key: String) -> void:
+	var cm := _caption_node()
+	if cm == null:
+		return
+	var data: Dictionary = _caption_transitions.get(transition_key, {})
+	if data.is_empty():
+		push_warning("BurdenManager: unknown caption transition key '%s'" % transition_key)
+		return
+	var text: String = str(data.get("text", ""))
+	if text.is_empty():
+		return
+	var offset_sec: float = float(data.get("offset_sec", 0.0))
+	var duration_sec: float = float(data.get("duration_sec", 2.0))
+	var curve_str: String = str(data.get("curve", "LINEAR"))
+	var loc_key: String = str(data.get("localization_key", ""))
+	var curve: int = _curve_from_string(curve_str)
+	if cm.has_method("schedule"):
+		cm.call("schedule", text, 1, offset_sec, duration_sec, curve, loc_key)
+		_print_debug("scheduled explicit transition caption %s" % transition_key)
+
+## Schedule captions tied to a BurdenEventResult phases.
+func _schedule_burden_event_captions(result: BurdenEventResult) -> void:
+	var cm := _caption_node()
+	if cm == null:
+		return
+	## Phase A: stillness caption (ambient, not BURDEN channel)
+	if not result.phase_a_localization_key.is_empty() and cm.has_method("schedule"):
+		cm.call("schedule", "[The world stills]", 2, 0.0, result.phase_a_duration_ms / 1000.0, 0, result.phase_a_localization_key + "_CAP")  ## Channel.AMBIENT = 2
+
+	## Phase B: the witness text (BURDEN channel)
+	if not result.phase_b_text.is_empty() and cm.has_method("schedule"):
+		var b_curve: int = 2 if result.is_first else 2  ## EXPONENTIAL for first, same for repeat
+		cm.call("schedule", result.phase_b_text, 1, 0.0, result.phase_b_duration_ms / 1000.0, b_curve, result.phase_b_localization_key)
+
+	## Phase C: choiceless choice (BURDEN channel)
+	if not result.phase_c_text.is_empty() and cm.has_method("schedule"):
+		cm.call("schedule", result.phase_c_text, 1, 0.0, result.phase_c_duration_ms / 1000.0, 1, result.phase_c_localization_key)  ## LINEAR
+
+	## Phase D: return (BURDEN channel, short fade)
+	if not result.phase_d_text.is_empty() and cm.has_method("schedule"):
+		cm.call("schedule", result.phase_d_text, 1, 0.0, result.phase_d_duration_ms / 1000.0, 1, result.phase_d_localization_key)
+
+## Map curve string name to CaptionManager.CaptionCurve enum.
+func _curve_from_string(curve_str: String) -> int:
+	match curve_str.to_upper():
+		"INSTANT": return 0
+		"LINEAR": return 1
+		"EXPONENTIAL": return 2
+		"LOGARITHMIC": return 3
+		"STEEP_EXPONENTIAL": return 4
+		_: return 1  ## default LINEAR
+
+## Public API: report BD-CLIMB width from audio middleware so per-stem captions align.
+func report_bd_climb_width(width_norm: float) -> void:
+	var cm := _caption_node()
+	if cm and cm.has_method("report_bd_climb_width"):
+		cm.call("report_bd_climb_width", width_norm)
+		_print_debug("reported BD-CLIMB width=%.3f" % width_norm)
+
+## Public API: report explicit BD-CLIMB loop phase.
+func report_bd_climb_phase(phase_norm: float) -> void:
+	var cm := _caption_node()
+	if cm and cm.has_method("report_bd_climb_phase"):
+		cm.call("report_bd_climb_phase", phase_norm)
+
+## Public API: enable/disable BD-CLIMB loop tracking.
+func set_bd_climb_enabled(enabled: bool) -> void:
+	var cm := _caption_node()
+	if cm and cm.has_method("set_bd_climb_enabled"):
+		cm.call("set_bd_climb_enabled", enabled)
+
+## Returns the current BD-CLIMB width caption strings from config.
+func get_bd_climb_width_captions() -> Dictionary:
+	return _bd_climb_config.get("width_captions", {
+		"expanding": {"text": "[The walls widen]", "localization_key": "BE_CAP_CLIMB_EXPAND"},
+		"converging": {"text": "[Everything converges]", "localization_key": "BE_CAP_CLIMB_CONVERGE"}
+	})
 
 func _print_debug(msg: String) -> void:
 	if OS.is_debug_build():
