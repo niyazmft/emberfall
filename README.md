@@ -8,27 +8,33 @@ This project is built by a team of AI agents, each with a specific role, managed
 
 ```mermaid
 graph TD
-    subgraph "AI Development Workforce"
-        A[PaperclipAI <br><i>High-Level Strategy & Planning</i>] --> B{You / Hermes <br><i>Lead Architect & QA</i>};
-        B --> C{Google Jules <br><i>Junior Developer</i>};
-        C --> D[GitHub <br><i>Pull Requests</i>];
-        D -- CI/CD --> B;
+    subgraph "High-Level Direction"
+        A(You / Hermes <br><i>'The Board'</i>) -- "Set High-Level Goals" --> B{PaperclipAI};
     end
 
-    subgraph "Human Oversight"
-        E(Human Director <br><i>Final Approval & Direction</i>) -.-> B;
+    subgraph "Termux Environment"
+        B -- "Executes tasks locally" --> B;
+        B -- "Offloads coding tasks" --> C{Google Jules};
     end
 
-    subgraph "Engine & Output"
-        D -- Merged --> F[Godot 4.2.2 Game <br><i>(Optimized for Termux)</i>];
+    subgraph "GitHub Operations"
+        C -- "Creates Pull Request" --> D[GitHub Repo];
+        D -- "CI/CD Quality Gates" --> E{Automated Review};
+        E -- "Pass" --> F(You / Hermes <br><i>Approval & Merge</i>);
+        E -- "Fail" --> C;
+    end
+    
+    subgraph "Final Output"
+        F -- "Merges to main" --> G((Emberfall Game));
     end
 
-    style A fill:#D6EAF8,stroke:#3498DB,stroke-width:2px
-    style B fill:#D1F2EB,stroke:#1ABC9C,stroke-width:2px
+    style A fill:#D1F2EB,stroke:#1ABC9C,stroke-width:2px
+    style B fill:#D6EAF8,stroke:#3498DB,stroke-width:2px
     style C fill:#FEF9E7,stroke:#F1C40F,stroke-width:2px
     style D fill:#F5EEF8,stroke:#9B59B6,stroke-width:2px
     style E fill:#FDEDEC,stroke:#E74C3C,stroke-width:2px
-    style F fill:#E5E7E9,stroke:#839192,stroke-width:2px
+    style F fill:#D1F2EB,stroke:#1ABC9C,stroke-width:2px
+    style G fill:#E8DAEF,stroke:#8E44AD,stroke-width:2px
 ```
 
 -   **PaperclipAI**: The high-level strategist, responsible for defining project goals and long-term planning.
