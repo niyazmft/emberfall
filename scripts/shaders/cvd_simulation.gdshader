@@ -16,21 +16,20 @@ uniform bool u_active = true;
 void fragment() {
 	vec4 col = texture(screen_texture, SCREEN_UV);
 	if (u_active) {
-		// Convert to linear RGB (approximate)
-		vec3 rgb = pow(col.rgb, vec3(2.2));
+		// Convert to linear RGB
+		vec3 rgb_linear = col.rgb * col.rgb;
 
 		// Deuteranopia simulation matrix (Machado, Oliveira, and Fernandes 2009)
-		// Note: mat3 constructor in GLSL/GDShader is COLUMN-MAJOR.
-		mat3 deut_mat = mat3(
-			vec3(0.367, 0.280, -0.012), // Column 1
-			vec3(0.633, 0.720, 0.027),  // Column 2
-			vec3(0.000, 0.000, 0.985)   // Column 3
+		const mat3 deut_mat = mat3(
+			vec3(0.367, 0.633, 0.000), // R output
+			vec3(0.280, 0.720, 0.000), // G output
+			vec3(-0.012, 0.027, 0.985)  // B output
 		);
 
-		vec3 sim = deut_mat * rgb;
+		vec3 sim = rgb_linear * deut_mat;
 
 		// Convert back to gamma space
-		col.rgb = pow(clamp(sim, 0.0, 1.0), vec3(1.0 / 2.2));
+		col.rgb = sqrt(clamp(sim, 0.0, 1.0));
 	}
 	COLOR = col;
 }

@@ -44,7 +44,9 @@ uniform sampler2D u_differential_mask : source_color, hint_default_black;
 
 // Procedural helpers for EPT tokens
 float ept_hash(vec2 p) {
-	return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+	vec3 p3  = fract(vec3(p.xyx) * .1031);
+    p3 += dot(p3, p3.yzx + 33.33);
+    return fract((p3.x + p3.y) * p3.z);
 }
 
 float strike_pattern(vec2 uv) {
@@ -59,12 +61,12 @@ float ripple_pattern(vec2 uv) {
 
 float crack_pattern(vec2 uv) {
 	vec2 g = fract(uv * 10.0);
-	return step(0.95, g.x) + step(0.95, g.y);
+	return max(step(0.95, g.x), step(0.95, g.y));
 }
 
 float poro_pattern(vec2 uv) {
 	vec2 g = fract(uv * 20.0);
-	return step(0.4, distance(g, vec2(0.5)));
+	return 1.0 - smoothstep(0.4, 0.5, distance(g, vec2(0.5)));
 }
 
 void fragment() {
@@ -124,7 +126,7 @@ void fragment() {
 
 	// Apply Outline (Inner)
 	if (u_HAS_OUTLINE) {
-		vec2 size = TEXTURE_PIXEL_SIZE;
+		vec2 size = vec2(1.0) / vec2(textureSize(TEXTURE, 0));
 		float alpha = texture(TEXTURE, UV).a;
 		float alpha_n = texture(TEXTURE, UV + vec2(0, -size.y)).a;
 		float alpha_s = texture(TEXTURE, UV + vec2(0, size.y)).a;
