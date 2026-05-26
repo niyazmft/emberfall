@@ -8,6 +8,7 @@ signal modal_closed
 
 var _modal_stack: Array[Node] = []
 var _dim_rect: ColorRect
+var _dim_tween: Tween
 
 func _ready() -> void:
 	layer = 100 # Ensure UI is on top
@@ -40,15 +41,18 @@ func _on_modal_exited(modal: Node) -> void:
 		modal_closed.emit()
 
 func _update_dim(show_dim: bool) -> void:
-	var tween = create_tween()
+	if _dim_tween and _dim_tween.is_valid():
+		_dim_tween.kill()
+
+	_dim_tween = create_tween()
 	var target_alpha = 0.5 if show_dim else 0.0
 
 	if show_dim:
 		_dim_rect.visible = true
-		tween.tween_property(_dim_rect, "color:a", target_alpha, 0.2)
+		_dim_tween.tween_property(_dim_rect, "color:a", target_alpha, 0.2)
 	else:
-		tween.tween_property(_dim_rect, "color:a", target_alpha, 0.2)
-		tween.finished.connect(func(): _dim_rect.visible = false)
+		_dim_tween.tween_property(_dim_rect, "color:a", target_alpha, 0.2)
+		_dim_tween.finished.connect(func(): _dim_rect.visible = false)
 
 func is_modal_active() -> bool:
 	return not _modal_stack.is_empty()

@@ -20,5 +20,4 @@ func setup(title_key: String, body_key: String) -> void:
 func dismiss() -> void:
 	var tween = create_tween()
 	tween.tween_property(self, "modulate:a", 0.0, 0.2)
-	await tween.finished
-	queue_free()
+	tween.finished.connect(queue_free)
