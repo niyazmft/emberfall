@@ -13,10 +13,10 @@ const COST_STRAIGHT: int = 10
 ## Four positive-direction quadrants. connect_points(bidirectional=true)
 ## mirrors the edge so the graph is undirected without duplicate calls.
 const DIRS: Array[Vector2i] = [
-	Vector2i( 1,  0),
-	Vector2i( 0,  1),
-	Vector2i( 1,  1),
-	Vector2i( 1, -1),
+	Vector2i(1, 0),
+	Vector2i(0, 1),
+	Vector2i(1, 1),
+	Vector2i(1, -1),
 ]
 
 ## Native A* graph. Points are pre-registered in _init(); connections are
@@ -25,6 +25,7 @@ var _astar: AStar3D
 
 ## Cache to avoid rebuilding graph when the room topology is unchanged.
 var _cached_room_id: String = ""
+
 
 func _init() -> void:
 	_astar = AStar3D.new()
@@ -37,10 +38,12 @@ func _init() -> void:
 		var fy: float = float(i / GRID_SIZE) * float(COST_STRAIGHT)
 		_astar.add_point(i, Vector3(fx, fy, 0.0), 1.0)
 
+
 ## Backward-compatibility stub. The old interpreted A* needed an explicit
 ## buffer reset; the native backend manages its own state.
 func _reset_search() -> void:
 	pass
+
 
 ## ------------------------------------------------------------------
 ## Public API
@@ -56,8 +59,8 @@ func find_path(start: Vector2i, goal: Vector2i) -> Array[Vector2i]:
 		return [start]
 
 	var goal_i: int = GridSystem.index(goal.x, goal.y)
-	var goal_tile: TacTileData = GridSystem.get_tile_by_index(goal_i)
-	if goal_tile == null or goal_tile.is_blocked():
+	var goal_tile: Resource = GridSystem.get_tile_by_index(goal_i)
+	if goal_tile == null or bool(goal_tile.call("is_blocked")):
 		return []
 
 	## Sync graph topology with GridSystem when the room has changed.
@@ -77,6 +80,7 @@ func find_path(start: Vector2i, goal: Vector2i) -> Array[Vector2i]:
 		path[idx] = Vector2i(id % GRID_SIZE, id / GRID_SIZE)
 	return path
 
+
 ## ------------------------------------------------------------------
 ## Graph rebuild (room change only)
 ## ------------------------------------------------------------------
@@ -94,8 +98,8 @@ func _rebuild_graph() -> void:
 	for x: int in range(GRID_SIZE):
 		for y: int in range(GRID_SIZE):
 			var i: int = GridSystem.index(x, y)
-			var tile: TacTileData = GridSystem.get_tile_by_index(i)
-			if tile == null or tile.is_blocked():
+			var tile: Resource = GridSystem.get_tile_by_index(i)
+			if tile == null or bool(tile.call("is_blocked")):
 				continue
 			for d: Vector2i in DIRS:
 				var nx: int = x + d.x
@@ -103,8 +107,8 @@ func _rebuild_graph() -> void:
 				if not GridSystem.is_in_bounds(nx, ny):
 					continue
 				var ni: int = GridSystem.index(nx, ny)
-				var ntile: TacTileData = GridSystem.get_tile_by_index(ni)
-				if ntile == null or ntile.is_blocked():
+				var ntile: Resource = GridSystem.get_tile_by_index(ni)
+				if ntile == null or bool(ntile.call("is_blocked")):
 					continue
 				## Prevent corner-cutting: diagonals require both adjacent
 				## cardinal cells to be passable from the start tile.
@@ -112,10 +116,16 @@ func _rebuild_graph() -> void:
 				var reverse_ok: bool = GridSystem.can_move(nx, ny, x, y)
 				if d.x != 0 and d.y != 0:
 					if forward_ok:
-						if not GridSystem.can_move(x, y, x + d.x, y) or not GridSystem.can_move(x, y, x, y + d.y):
+						if (
+							not GridSystem.can_move(x, y, x + d.x, y)
+							or not GridSystem.can_move(x, y, x, y + d.y)
+						):
 							forward_ok = false
 					if reverse_ok:
-						if not GridSystem.can_move(nx, ny, x + d.x, y) or not GridSystem.can_move(nx, ny, x, y + d.y):
+						if (
+							not GridSystem.can_move(nx, ny, x + d.x, y)
+							or not GridSystem.can_move(nx, ny, x, y + d.y)
+						):
 							reverse_ok = false
 
 				if forward_ok and reverse_ok:
