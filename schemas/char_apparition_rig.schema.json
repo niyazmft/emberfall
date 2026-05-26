@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Apparition Rig Schema",
+  "description": "Structural contract for the MWT-3 apparition composite rig (DON-267).",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "stack": {
+      "type": "object",
+      "properties": {
+        "count": { "type": "integer", "enum": [3] },
+        "vertical_offsets": {
+          "type": "array",
+          "items": { "type": "integer" },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "opacity_tiers": {
+          "type": "array",
+          "items": { "type": "number", "minimum": 0, "maximum": 1 },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "scale_tiers": {
+          "type": "array",
+          "items": { "type": "number", "minimum": 0, "maximum": 2 },
+          "minItems": 3,
+          "maxItems": 3
+        }
+      },
+      "required": ["count", "vertical_offsets", "opacity_tiers", "scale_tiers"]
+    },
+    "breathing": {
+      "type": "object",
+      "properties": {
+        "amplitude": { "type": "number", "minimum": 0, "maximum": 0.5 },
+        "frequency": { "type": "number", "minimum": 0, "maximum": 10.0 }
+      },
+      "required": ["amplitude", "frequency"]
+    },
+    "recoil": {
+      "type": "object",
+      "properties": {
+        "shear_intensity": { "type": "number", "minimum": 0, "maximum": 2.0 },
+        "duration_ms": { "type": "integer", "minimum": 0 },
+        "z_promotion": { "type": "integer" }
+      },
+      "required": ["shear_intensity", "duration_ms", "z_promotion"]
+    },
+    "dissolve": {
+      "type": "object",
+      "properties": {
+        "duration_ms": { "type": "integer", "minimum": 0 },
+        "noise_frequency": { "type": "number", "minimum": 0 }
+      },
+      "required": ["duration_ms"]
+    },
+    "trail": {
+      "type": "object",
+      "properties": {
+        "count": { "type": "integer", "minimum": 0, "maximum": 6 },
+        "lifetime_ms": { "type": "integer", "minimum": 0 },
+        "intensity": { "type": "number", "minimum": 0, "maximum": 1.0 }
+      },
+      "required": ["count", "lifetime_ms", "intensity"]
+    },
+    "colors": {
+      "type": "object",
+      "properties": {
+        "spectral_tint": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+        "inner_bleed": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+        "after_image": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" }
+      },
+      "required": ["spectral_tint", "inner_bleed", "after_image"]
+    }
+  },
+  "required": ["version", "stack", "breathing", "recoil", "dissolve", "trail", "colors"]
+}
