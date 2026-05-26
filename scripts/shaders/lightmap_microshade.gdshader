@@ -27,6 +27,42 @@ uniform float u_diffuse_boost : hint_range(0.0, 2.0) = 1.0;
 uniform float u_specular_power : hint_range(1.0, 64.0) = 16.0;
 uniform float u_specular_intensity : hint_range(0.0, 1.0) = 0.2;
 
+group_uniforms "EPT Differentials (DON-258)";
+uniform bool u_HAS_SPEC = false;
+uniform bool u_HAS_DIR_AO = false;
+uniform bool u_HAS_TRAN = false;
+uniform bool u_HAS_CREEP = false;
+uniform bool u_HAS_CRACK = false;
+uniform bool u_HAS_RIPPLE = false;
+uniform bool u_HAS_EMIT = false;
+uniform bool u_HAS_PORO = false;
+uniform bool u_HAS_STRI = false;
+
+// Procedural helpers for EPT tokens
+float ept_hash(vec2 p) {
+	return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+}
+
+float strike_pattern(vec2 uv) {
+	return step(0.5, fract(uv.x * 20.0 + uv.y * 10.0));
+}
+
+float ripple_pattern(vec2 uv) {
+	vec2 center = vec2(0.5);
+	float d = distance(uv, center);
+	return step(0.5, fract(d * 30.0));
+}
+
+float crack_pattern(vec2 uv) {
+	vec2 g = fract(uv * 10.0);
+	return step(0.95, g.x) + step(0.95, g.y);
+}
+
+float poro_pattern(vec2 uv) {
+	vec2 g = fract(uv * 20.0);
+	return step(0.8, distance(g, vec2(0.5)));
+}
+
 void fragment() {
 	vec4 tex = texture(TEXTURE, UV);
 	if (tex.a < 0.001) {
@@ -47,9 +83,47 @@ void fragment() {
 	// Specular term (Blinn-Phong-ish)
 	vec3 view = vec3(0.0, 0.0, 1.0);
 	vec3 half_vec = normalize(light + view);
-	float spec = pow(max(dot(normal, half_vec), 0.0), u_specular_power);
-	float specular = spec * u_specular_intensity * ndotl;
+	float spec_base = pow(max(dot(normal, half_vec), 0.0), u_specular_power);
+
+	float spec_mult = 1.0;
+	if (u_HAS_SPEC) {
+		spec_mult = 3.0; // Stronger specular for SPEC flag
+	}
+	float specular = spec_base * u_specular_intensity * ndotl * spec_mult;
 
 	vec3 lit = tex.rgb * diffuse + vec3(specular);
+
+	// Apply DIR_AO
+	if (u_HAS_DIR_AO) {
+		float ao = clamp(dot(normal, vec3(0.7, 0.7, 0.0)) * 0.5 + 0.5, 0.4, 1.0);
+		lit *= ao;
+	}
+
+	// Apply EMIT
+	if (u_HAS_EMIT) {
+		lit += tex.rgb * 0.4; // Soft additive glow
+	}
+
+	// Procedural Textures for other flags (tokens)
+	float token = 0.0;
+	if (u_HAS_STRI) token = max(token, strike_pattern(UV) * 0.3);
+	if (u_HAS_RIPPLE) token = max(token, ripple_pattern(UV) * 0.3);
+	if (u_HAS_CRACK) token = max(token, crack_pattern(UV) * 0.4);
+	if (u_HAS_PORO) token = max(token, poro_pattern(UV) * 0.2);
+
+	// Apply token as darkening
+	lit = mix(lit, lit * 0.5, token);
+
+	// CREEP: noise-like overlay
+	if (u_HAS_CREEP) {
+		float creep = step(0.7, ept_hash(UV * 5.0));
+		lit = mix(lit, vec3(0.1, 0.2, 0.1), creep * 0.3);
+	}
+
+	// TRAN: pseudo-translucency (just brighten slightly)
+	if (u_HAS_TRAN) {
+		lit += vec3(0.05, 0.1, 0.1);
+	}
+
 	COLOR = vec4(lit, tex.a);
 }
