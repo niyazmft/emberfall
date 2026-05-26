@@ -48,3 +48,20 @@ func _on_caption_completed(event: CaptionManager.CaptionEvent) -> void:
 		var label: Label = _active_labels[event]
 		_active_labels.erase(event)
 		label.queue_free()
+
+## ICaptionPresenter implementation
+func present_caption(marker: RefCounted) -> void:
+	if not CaptionManager:
+		return
+
+	# Map SparseEventMarker to CaptionManager.schedule call
+	# Channel.BURDEN = 1
+	# CaptionCurve.LINEAR = 1
+	CaptionManager.schedule(
+		marker.default_text,
+		1, # Channel.BURDEN
+		0.0,
+		marker.duration_ms / 1000.0,
+		1, # CaptionCurve.LINEAR
+		"BE_CAP_" + marker.event_id.to_upper()
+	)
