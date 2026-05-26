@@ -15,33 +15,41 @@ func _ready() -> void:
 # ── Internal ────────────────────────────────────────────────────────────────
 
 func _connect_signals() -> void:
-	var bm := get_node_or_null("/root/BurdenManager")
-	if bm and bm.has_signal("burden_event_triggered"):
-		bm.burden_event_triggered.connect(_on_burden_event_triggered)
+	if BurdenManager and BurdenManager.has_signal("burden_event_triggered"):
+		BurdenManager.burden_event_triggered.connect(_on_burden_event_triggered)
 
-	if bm and bm.has_signal("burden_active_changed"):
-		bm.burden_active_changed.connect(_on_burden_active_changed)
+	if BurdenManager and BurdenManager.has_signal("burden_active_changed"):
+		BurdenManager.burden_active_changed.connect(_on_burden_active_changed)
 
 func _on_burden_event_triggered(result: Variant) -> void:
 	# Start audio stems based on the triggered event
-	var am := get_node_or_null("/root/AudioMiddleware")
-	if not am:
+	if not AudioMiddleware:
 		return
 
 	_print_debug("Coordinating audio for Burden Event #%d" % result.trigger_count)
 
-	# In a real implementation, we would load the actual AudioStream resources.
-	# For now, we assume the system is ready to receive play commands.
-	# am.play_stem("BD-BASS", load("res://audio/stems/bd_bass.ogg"))
-	# ... etc
+	# Start stems. In production, these paths would be defined in a config or constants.
+	var stems: Dictionary = {
+		"BD-BASS": "res://audio/stems/bd_bass.ogg",
+		"BD-MECH": "res://audio/stems/bd_mech.ogg",
+		"BD-STRESS": "res://audio/stems/bd_stress.ogg",
+		"BD-CLIMB": "res://audio/stems/bd_climb.ogg"
+	}
+
+	for stem_id in stems:
+		var path: String = stems[stem_id]
+		if ResourceLoader.exists(path):
+			var stream: AudioStream = load(path) as AudioStream
+			AudioMiddleware.play_stem(stem_id, stream)
+		else:
+			_print_debug("Stem asset missing: %s" % path)
 
 func _on_burden_active_changed(active: bool) -> void:
-	var am := get_node_or_null("/root/AudioMiddleware")
-	if not am:
+	if not AudioMiddleware:
 		return
 
 	if not active:
-		am.stop_all()
+		AudioMiddleware.stop_all()
 		_print_debug("Burden deactivated - stopping audio stems")
 
 func _print_debug(msg: String) -> void:
