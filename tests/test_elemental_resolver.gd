@@ -24,7 +24,7 @@ func _initialize() -> void:
 func run_all() -> void:
 	print("\n=== EMBERFALL ELEMENTAL RESOLVER TESTS ===\n")
 
-	var tests := [
+	var tests: Array[String] = [
 		"test_fire_oil_modifier",
 		"test_wind_fire_modifier",
 		"test_water_fire_modifier",
@@ -47,6 +47,7 @@ func run_all() -> void:
 	for name: String in tests:
 		print("Running %s ..." % name)
 		call(name)
+
 
 	print("\n=== RESULTS ===")
 	print("Passed: %d" % _passed)

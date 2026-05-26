@@ -1,4 +1,5 @@
 extends Node
+class_name _BurdenManager
 
 ## BurdenManager
 ## Autoload that tracks sentient enemy kills and exposes the composite
