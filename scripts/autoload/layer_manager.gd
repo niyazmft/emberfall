@@ -60,6 +60,10 @@ func add_modal(modal: Node) -> void:
 
 	_modal_stack.append(modal)
 	add_child(modal)
+
+	if modal is Control:
+		FocusManager.push_modal_focus(modal as Control)
+
 	_update_dim(true)
 	modal_opened.emit()
 
@@ -68,6 +72,10 @@ func add_modal(modal: Node) -> void:
 
 func _on_modal_exited(modal: Node) -> void:
 	_modal_stack.erase(modal)
+
+	if modal is Control:
+		FocusManager.pop_modal_focus()
+
 	if _modal_stack.is_empty():
 		_update_dim(false)
 		modal_closed.emit()
