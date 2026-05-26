@@ -12,6 +12,10 @@ render_mode unshaded;
 
 // Global skip-gate logic
 global uniform bool u_burden_active;
+global uniform sampler2D u_burden_scratch_buffer;
+
+// Godot 4 Screen Texture
+uniform sampler2D screen_texture : hint_screen_texture, filter_linear_mipmap;
 
 // --- Vignette Uniforms ---
 group_uniforms "Vignette Shape";
@@ -61,7 +65,7 @@ vec3 lut_sample(sampler3D lut_tex, vec3 colour) {
 void fragment() {
 	// Skip-gate check (redundant with node visibility but safe)
 	if (!u_burden_active) {
-		COLOR = texture(SCREEN_TEXTURE, SCREEN_UV);
+		COLOR = texture(screen_texture, SCREEN_UV);
 		return;
 	}
 
@@ -86,9 +90,9 @@ void fragment() {
 	vec2 r_uv = uv + offset_dir * r_offset / aspect;
 	vec2 b_uv = uv + offset_dir * b_offset / aspect;
 
-	float r = texture(SCREEN_TEXTURE, r_uv).r;
-	float g = texture(SCREEN_TEXTURE, uv).g;
-	float b = texture(SCREEN_TEXTURE, b_uv).b;
+	float r = texture(screen_texture, r_uv).r;
+	float g = texture(screen_texture, uv).g;
+	float b = texture(screen_texture, b_uv).b;
 	vec3 raw_col = vec3(r, g, b);
 
 	// 2. Colour Grading
