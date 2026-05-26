@@ -12,6 +12,8 @@ func _input(event: InputEvent) -> void:
 			_sub_moral(1)
 		elif event.keycode == KEY_F3:
 			_trigger_test_burden()
+		elif event.keycode == KEY_F4:
+			simulate_burden_event("BD-BASS", "impact")
 
 
 func _add_moral(_amount: int) -> void:
@@ -34,3 +36,11 @@ func _trigger_test_burden() -> void:
 	if BurdenManager:
 		BurdenManager.trigger_burden_event(123, 456, 1, 0, true)
 		print("Debug: Triggered test Burden Event")
+
+
+func simulate_burden_event(stem_id: String, event_id: String) -> void:
+	if AudioMiddleware and AudioMiddleware.has_method("get_stem_router"):
+		var router: Node = AudioMiddleware.get_stem_router() as Node
+		if router:
+			router.call("dispatch_event", stem_id, event_id)
+			print("Debug: Simulated burden event %s/%s" % [stem_id, event_id])
