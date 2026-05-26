@@ -12,13 +12,13 @@ extends Node2D
 const STACK_COUNT: int = 3
 
 ## Default vertical offsets in pixels (composite stack).
-const VERTICAL_OFFSETS: Array[int] = [0, 8, 16]
+const VERTICAL_OFFSETS: PackedInt32Array = PackedInt32Array([0, 8, 16])
 
 ## Opacity tiers (front → back).
-const OPACITY_TIERS: Array[float] = [0.55, 0.45, 0.35]
+const OPACITY_TIERS: PackedFloat32Array = PackedFloat32Array([0.55, 0.45, 0.35])
 
 ## Scale multipliers (front → back).
-const SCALE_TIERS: Array[float] = [1.00, 0.95, 0.90]
+const SCALE_TIERS: PackedFloat32Array = PackedFloat32Array([1.00, 0.95, 0.90])
 
 ## Sentinel when no silhouette is available.
 const PLACEHOLDER_ATLAS_UID := "placeholder:silhouette"
@@ -49,7 +49,6 @@ var state_machine: ApparitionStateMachine
 # Lifecycle
 # ---------------------------------------------------------------------------
 
-
 func _ready() -> void:
 	z_index = owner_z_index_offset
 	_create_tint_material()
@@ -65,32 +64,26 @@ func _ready() -> void:
 	_on_burden_active_changed(BurdenManager.burden_active)
 	_refresh_stack()
 
-
 func _process(delta: float) -> void:
 	if state_machine:
 		state_machine.update(delta)
 
-
 # ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
-
 
 ## Call when the owner entity is recoiling (e.g. on hit).
 func trigger_recoil() -> void:
 	if state_machine:
 		state_machine.cmd_recoil()
 
-
 ## Call every frame to sync position to owner.
 func sync_to_owner(owner_position: Vector2) -> void:
 	global_position = owner_position
 
-
 ## Force refresh silhouette stack from BurdenManager.
 func refresh_stack() -> void:
 	_refresh_stack()
-
 
 ## Set opacity of the entire composite stack (0.0 – 1.0).
 ## Called by the state machine during manifest / absolve fades.
@@ -100,7 +93,6 @@ func set_stack_opacity(alpha: float) -> void:
 		var tier_alpha: float = OPACITY_TIERS[i] if i < OPACITY_TIERS.size() else 0.35
 		sprite.modulate.a = tier_alpha * alpha
 
-
 ## Promote z-index during recoil.
 func promote_z_index() -> void:
 	var owner_node := _owner.get_ref() as Node2D if _owner else null
@@ -108,7 +100,6 @@ func promote_z_index() -> void:
 		z_index = owner_node.z_index + recoil_z_index_offset
 	else:
 		z_index = owner_z_index_offset + recoil_z_index_offset + 1
-
 
 ## Restore default z-index.
 func restore_z_index() -> void:
@@ -118,41 +109,29 @@ func restore_z_index() -> void:
 	else:
 		z_index = owner_z_index_offset
 
-
 ## Inject owner reference (call after instantiation / reparent).
 func bind_owner(owner_entity: Node2D) -> void:
 	_owner = weakref(owner_entity)
 	_update_z_index()
 
-
 # ---------------------------------------------------------------------------
 # BurdenManager callbacks
 # ---------------------------------------------------------------------------
 
-
 func _on_kill_history_changed(_queue: Array[BurdenManager.BurdenKillRecord]) -> void:
 	_refresh_stack()
 
-
 func _on_burden_active_changed(active: bool) -> void:
 	if active:
-		if (
-			state_machine
-			and state_machine.current_state == ApparitionStateMachine.ApparitionState.INACTIVE
-		):
+		if state_machine and state_machine.current_state == ApparitionStateMachine.ApparitionState.INACTIVE:
 			state_machine.cmd_manifest()
 	else:
-		if (
-			state_machine
-			and state_machine.current_state != ApparitionStateMachine.ApparitionState.INACTIVE
-		):
+		if state_machine and state_machine.current_state != ApparitionStateMachine.ApparitionState.INACTIVE:
 			state_machine.cmd_absolve()
-
 
 # ---------------------------------------------------------------------------
 # Internals
 # ---------------------------------------------------------------------------
-
 
 func _create_tint_material() -> void:
 	var shader := load("res://scripts/shaders/apparition_composite.gdshader") as Shader
@@ -168,7 +147,6 @@ func _create_tint_material() -> void:
 	_tint_material.set_shader_parameter("u_after_trail_opacity", 0.2)
 	_tint_material.set_shader_parameter("u_intensity", 1.0)
 
-
 func _create_stack_sprites() -> void:
 	for i in range(STACK_COUNT):
 		var sprite := Sprite2D.new()
@@ -182,7 +160,6 @@ func _create_stack_sprites() -> void:
 		sprite.modulate.a = OPACITY_TIERS[i]
 		_silhouette_sprites.append(sprite)
 		add_child(sprite)
-
 
 func _refresh_stack() -> void:
 	if not BurdenManager:
@@ -205,14 +182,12 @@ func _refresh_stack() -> void:
 		sprite.scale = Vector2(SCALE_TIERS[i], SCALE_TIERS[i])
 		sprite.modulate.a = OPACITY_TIERS[i]
 
-
 func _update_z_index() -> void:
 	var owner_node := _owner.get_ref() as Node2D if _owner else null
 	if owner_node:
 		z_index = owner_node.z_index + owner_z_index_offset
 	else:
 		z_index = owner_z_index_offset
-
 
 func _get_placeholder_texture() -> Texture2D:
 	var cached := BurdenManager.get_silhouette_texture(PLACEHOLDER_ATLAS_UID)

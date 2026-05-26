@@ -7,7 +7,6 @@ extends SceneTree
 ##   AC-2: Burden Event fires at MWT = 3
 ##   AC-3: State transitions deterministic and reversible where required
 
-
 func run_all() -> void:
 	var passed: int = 0
 	var failed: int = 0
@@ -45,7 +44,6 @@ func run_all() -> void:
 
 
 # ── Test harness helpers ─────────────────────────────────────────────────
-
 
 func _new_lifecycle() -> _EntityLifecycle:
 	# Add required autoloads to the root if they aren't there (for headless script runs)
@@ -194,11 +192,10 @@ func test_mwt_fires_at_three() -> bool:
 	player.moral_flag = 2
 	el.player_entity = player
 
-	var results := {"hit": false, "flag": -1}
-	el.mwt_reached.connect(
-		func(flag: int, remaining: int) -> void:
-			results.hit = true
-			results.flag = flag
+	var results := { "hit": false, "flag": -1 }
+	el.mwt_reached.connect(func(flag: int, remaining: int) -> void:
+		results.hit = true
+		results.flag = flag
 	)
 
 	var enemy: Entity = Entity.new("TestEnemy", 0, 0, 10, 5, 3)

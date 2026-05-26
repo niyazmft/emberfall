@@ -26,18 +26,20 @@ signal moral_delta_processed(delta: int, source: String, sentient: bool)
 ## Emitted when a dying enemy is spared (true) or executed (false).
 signal spare_or_execute(entity: Entity, was_spared: bool)
 
-
 # ── Queued moral delta record ────────────────────────────────────────────
-class MoralDeltaRecord:
-	extends RefCounted
+class MoralDeltaRecord extends RefCounted:
 	var delta: int
 	var enemy_id: String
 	var enemy_name: String
 	var sentient: bool
-	var source: String  ## "kill", "spare", "environmental"
+	var source: String ## "kill", "spare", "environmental"
 
 	func _init(
-		p_delta: int, p_enemy_id: String, p_enemy_name: String, p_sentient: bool, p_source: String
+		p_delta: int,
+		p_enemy_id: String,
+		p_enemy_name: String,
+		p_sentient: bool,
+		p_source: String
 	) -> void:
 		delta = p_delta
 		enemy_id = p_enemy_id
@@ -45,12 +47,11 @@ class MoralDeltaRecord:
 		sentient = p_sentient
 		source = p_source
 
-
 # ── State timers ─────────────────────────────────────────────────────────
 ## Entity instance_id → turns remaining in DYING
-var _dying_turns: Dictionary = {}
+var _dying_turns: Dictionary[int, int] = {}
 ## Entity instance_id → turns remaining in STUNNED
-var _stunned_turns: Dictionary = {}
+var _stunned_turns: Dictionary[int, int] = {}
 
 # ── Moral queue ────────────────────────────────────────────────────────────
 var _moral_queue: Array[MoralDeltaRecord] = []
@@ -60,47 +61,38 @@ var player_entity: Entity = null:
 	set(value):
 		player_entity = value
 
-
 # ── Safe autoload helpers (avoid class_name / autoload ambiguity) ────────
 func _config_node() -> Node:
-	var ml: MainLoop = Engine.get_main_loop()
+	var ml := Engine.get_main_loop()
 	if ml is SceneTree:
 		var loader: Node = ml.root.get_node_or_null("ConfigLoader")
-		if loader:
-			return loader
+		if loader: return loader
 	return get_node_or_null("/root/ConfigLoader")
 
-
 func _burden_node() -> Node:
-	var ml: MainLoop = Engine.get_main_loop()
+	var ml := Engine.get_main_loop()
 	if ml is SceneTree:
 		var burden: Node = ml.root.get_node_or_null("BurdenManager")
-		if burden:
-			return burden
+		if burden: return burden
 	return get_node_or_null("/root/BurdenManager")
 
-
 func _config_int(key: String, fallback: int) -> int:
-	var n: Node = _config_node()
+	var n := _config_node()
 	if n and n.has_method("get_int"):
 		return n.get_int(key, fallback)
 	return fallback
 
-
 func _update_burden_weight(flag: int) -> void:
-	var n: Node = _burden_node()
+	var n := _burden_node()
 	if n and n.has_method("update_moral_weight"):
 		n.update_moral_weight(flag)
 
-
 func _record_kill(enemy_id: String, enemy_name: String) -> void:
-	var n: Node = _burden_node()
+	var n := _burden_node()
 	if n and n.has_method("record_sentient_kill"):
 		n.record_sentient_kill(enemy_id, enemy_name)
 
-
 # ── Damage & State ───────────────────────────────────────────────────────
-
 
 ## Canonical damage application. Updates defender HP and transitions state
 ## deterministically. If damage is lethal, targets enter DYING (not DEAD).
@@ -109,16 +101,12 @@ func apply_damage(attacker: Entity, defender: Entity, damage: int) -> void:
 	var new_hp: int = DeterministicMath.clampi(old_hp - damage, 0, defender.hp_max)
 	defender.hp = new_hp
 
-	if (
-		new_hp == 0
-		and defender.state != Entity.State.DYING
-		and defender.state != Entity.State.DEAD
-		and defender.state != Entity.State.GHOST
-	):
+	if new_hp == 0 and defender.state != Entity.State.DYING \
+			and defender.state != Entity.State.DEAD \
+			and defender.state != Entity.State.GHOST:
 		_change_state(defender, Entity.State.DYING)
 		var dying_duration: int = _config_int("DYING_DURATION_TURNS", 1)
 		_dying_turns[defender.get_instance_id()] = dying_duration
-
 
 ## Heal an entity. If healed while DYING and HP > 0, reverses to IDLE.
 ## Deterministic: always clamps to HP_MAX.
@@ -129,7 +117,6 @@ func heal(entity: Entity, amount: int) -> void:
 		_change_state(entity, Entity.State.IDLE)
 		_dying_turns.erase(entity.get_instance_id())
 
-
 ## Apply stun to an entity for a fixed number of turns.
 ## Reversible: STUNNED → IDLE after duration expires in process_end_of_turn().
 func stun(entity: Entity, duration_turns: int = 1) -> void:
@@ -138,9 +125,7 @@ func stun(entity: Entity, duration_turns: int = 1) -> void:
 	_change_state(entity, Entity.State.STUNNED)
 	_stunned_turns[entity.get_instance_id()] = duration_turns
 
-
 # ── Kill / Spare / Execute ───────────────────────────────────────────────
-
 
 ## Record a sentient enemy kill and queue the moral delta.
 ## Does NOT transition the defender to DEAD — that happens via
@@ -162,22 +147,13 @@ func process_kill(
 	if defender.hp > 0:
 		apply_damage(attacker, defender, defender.hp)
 
-	var delta: int = (
-		_config_int("MORAL_DELTA_KILL", 1) if sentient else _config_int("MORAL_DELTA_ENV", 0)
-	)
-	var record: MoralDeltaRecord = MoralDeltaRecord.new(
-		delta, enemy_id, enemy_name, sentient, "kill"
-	)
+	var delta: int = _config_int("MORAL_DELTA_KILL", 1) if sentient else _config_int("MORAL_DELTA_ENV", 0)
+	var record := MoralDeltaRecord.new(delta, enemy_id, enemy_name, sentient, "kill")
 	_moral_queue.append(record)
 
 	if sentient and attacker != null and attacker.is_player:
-		var id: String = (
-			enemy_id
-			if not enemy_id.is_empty()
-			else (enemy_name if not enemy_name.is_empty() else "unknown")
-		)
+		var id: String = enemy_id if not enemy_id.is_empty() else (enemy_name if not enemy_name.is_empty() else "unknown")
 		_record_kill(id, enemy_name)
-
 
 ## Spare a dying enemy. Costs 1 AP, applies –1 MORAL_DELTA, transitions target
 ## to GHOST. Returns true if successful, false if player lacks AP or target is
@@ -194,8 +170,12 @@ func spare_entity(player: Entity, target: Entity) -> bool:
 	player.ap = DeterministicMath.clampi(player.ap - 1, 0, player.ap)
 
 	var delta: int = _config_int("MORAL_DELTA_SPARE", -1)
-	var record: MoralDeltaRecord = MoralDeltaRecord.new(
-		delta, target.entity_name, target.entity_name, true, "spare"
+	var record := MoralDeltaRecord.new(
+		delta,
+		target.entity_name,
+		target.entity_name,
+		true,
+		"spare"
 	)
 	_moral_queue.append(record)
 
@@ -203,7 +183,6 @@ func spare_entity(player: Entity, target: Entity) -> bool:
 	_dying_turns.erase(target.get_instance_id())
 	spare_or_execute.emit(target, true)
 	return true
-
 
 ## Execute a dying enemy. Transitions target to DEAD. The +1 MORAL_DELTA is
 ## already queued by process_kill(); this call only finalises the state.
@@ -215,9 +194,7 @@ func execute_entity(target: Entity) -> void:
 	_dying_turns.erase(target.get_instance_id())
 	spare_or_execute.emit(target, false)
 
-
 # ── Moral Flag Queue ─────────────────────────────────────────────────────
-
 
 ## Resolve queued moral deltas sequentially, checking MWT after each increment.
 ## Per spec §11.3: first kill that hits MWT triggers Burden Event; subsequent
@@ -235,7 +212,11 @@ func resolve_moral_queue() -> void:
 			continue
 
 		var old_flag: int = player_entity.moral_flag
-		var new_flag: int = DeterministicMath.clampi(old_flag + record.delta, 0, 999)
+		var new_flag: int = DeterministicMath.clampi(
+			old_flag + record.delta,
+			0,
+			999
+		)
 		player_entity.moral_flag = new_flag
 
 		moral_flag_changed.emit(player_entity, old_flag, new_flag)
@@ -253,31 +234,25 @@ func resolve_moral_queue() -> void:
 	## Queue exhausted without hitting MWT — still sync BurdenManager state.
 	_update_burden_weight(player_entity.moral_flag)
 
-
 ## Returns the number of deltas still queued (for UI / debug).
 func get_queued_delta_count() -> int:
 	return _moral_queue.size()
-
 
 ## Peek at remaining queued deltas. Returns a shallow copy.
 func get_queued_deltas() -> Array:
 	return _moral_queue.duplicate()
 
-
 ## Reset the moral queue (e.g. on run start / sanctum return).
 func reset_moral_queue() -> void:
 	_moral_queue.clear()
 
-
 # ── Turn-Based State Resolution ──────────────────────────────────────────
-
 
 ## Call at end of every combat turn. Decrements state timers and resolves
 ## expired states deterministically.
 func process_end_of_turn() -> void:
 	_resolve_dying_timers()
 	_resolve_stunned_timers()
-
 
 func _resolve_dying_timers() -> void:
 	var to_remove: Array[int] = []
@@ -287,14 +262,13 @@ func _resolve_dying_timers() -> void:
 			to_remove.append(id)
 
 	for id: int in to_remove:
-		var obj: Object = instance_from_id(id)
+		var obj := instance_from_id(id)
 		if obj is Entity:
-			var ent: Entity = obj as Entity
+			var ent := obj as Entity
 			if ent.alive() and ent.state == Entity.State.DYING:
 				## Expired without player choice → DEAD
 				_change_state(ent, Entity.State.DEAD)
 		_dying_turns.erase(id)
-
 
 func _resolve_stunned_timers() -> void:
 	var to_remove: Array[int] = []
@@ -304,16 +278,14 @@ func _resolve_stunned_timers() -> void:
 			to_remove.append(id)
 
 	for id: int in to_remove:
-		var obj: Object = instance_from_id(id)
+		var obj := instance_from_id(id)
 		if obj is Entity:
-			var ent: Entity = obj as Entity
+			var ent := obj as Entity
 			if ent.state == Entity.State.STUNNED:
 				_change_state(ent, Entity.State.IDLE)
 		_stunned_turns.erase(id)
 
-
 # ── Helpers ──────────────────────────────────────────────────────────────
-
 
 func _change_state(entity: Entity, new_state: Entity.State) -> void:
 	var old_state: Entity.State = entity.state
@@ -321,7 +293,6 @@ func _change_state(entity: Entity, new_state: Entity.State) -> void:
 		return
 	entity.state = new_state
 	entity_state_changed.emit(entity, old_state, new_state)
-
 
 ## Clear all tracked timers (useful on scene teardown / run reset).
 func clear_timers() -> void:

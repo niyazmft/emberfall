@@ -9,11 +9,10 @@ extends Node
 ##   AC-4: Noun rotation is deterministic per seed and persists across runs
 ##   AC-5: Localization keys are unique in the master table
 
-
 func run_all() -> void:
-	var passed: int = 0
-	var failed: int = 0
-	var tests: Array[String] = [
+	var passed := 0
+	var failed := 0
+	var tests := [
 		"test_config_loads",
 		"test_save_roundtrip",
 		"test_numbness_cap_exactly_five",
@@ -25,7 +24,7 @@ func run_all() -> void:
 
 	for name: String in tests:
 		print("Running %s ..." % name)
-		var ok: Variant = call(name)
+		var ok := call(name)
 		if ok is bool and ok:
 			passed += 1
 			print("  PASS")
@@ -44,7 +43,7 @@ func run_all() -> void:
 
 # ── AC-1: Config loads and schema validates ──────────────────────────────
 func test_config_loads() -> bool:
-	var bm: Node = BurdenManager
+	var bm := BurdenManager.new()
 	# _ready() will attempt to load config automatically
 	bm._ready()
 
@@ -68,30 +67,22 @@ func test_config_loads() -> bool:
 
 # ── AC-2: Save schema round-trip ─────────────────────────────────────────
 func test_save_roundtrip() -> bool:
-	var bm: Node = BurdenManager
+	var bm := BurdenManager.new()
 	bm._ready()
 	bm.reset()
 
 	## Simulate a previous run that persisted noun_index = 3 and lifetime_triggers = 7
-	(
-		bm
-		. load_memory_state(
-			{
-				"echo_flags":
-				{
-					"burden_noun_index": 3,
-					"burden_trigger_history": 7,
-				}
-			}
-		)
-	)
+	bm.load_memory_state({
+		"echo_flags": {
+			"burden_noun_index": 3,
+			"burden_trigger_history": 7,
+		}
+	})
 	if bm._burden_noun_index != 3:
 		push_error("Expected noun_index 3 after load, got %d" % bm._burden_noun_index)
 		return false
 	if bm._lifetime_trigger_count != 7:
-		push_error(
-			"Expected lifetime_trigger_count 7 after load, got %d" % bm._lifetime_trigger_count
-		)
+		push_error("Expected lifetime_trigger_count 7 after load, got %d" % bm._lifetime_trigger_count)
 		return false
 
 	## Run a new run, trigger once, then save
@@ -102,17 +93,12 @@ func test_save_roundtrip() -> bool:
 		push_error("Save noun_index mismatch")
 		return false
 	if saved["burden_trigger_history"] != 8:
-		push_error(
-			(
-				"Expected lifetime_triggers 8 after one trigger, got %d"
-				% saved["burden_trigger_history"]
-			)
-		)
+		push_error("Expected lifetime_triggers 8 after one trigger, got %d" % saved["burden_trigger_history"])
 		return false
 
 	## Reset and reload must preserve cross-run values
-	var noun_before: int = bm._burden_noun_index
-	var lifetime_before: int = bm._lifetime_trigger_count
+	var noun_before := bm._burden_noun_index
+	var lifetime_before := bm._lifetime_trigger_count
 	bm.reset()
 	if bm._burden_noun_index != noun_before:
 		push_error("Reset must NOT clear persisted noun_index")
@@ -125,7 +111,7 @@ func test_save_roundtrip() -> bool:
 
 # ── AC-3: Numbness cap triggers at exactly N=5 with silent Phase B ───────
 func test_numbness_cap_exactly_five() -> bool:
-	var bm: Node = BurdenManager
+	var bm := BurdenManager.new()
 	bm._ready()
 	bm.reset()
 
@@ -133,10 +119,8 @@ func test_numbness_cap_exactly_five() -> bool:
 	var topo_seed: int = 99
 	var room_index: int = 0
 
-	for i: int in range(1, 7):
-		var result: _BurdenManager.BurdenEventResult = bm.trigger_burden_event(
-			run_seed, topo_seed, room_index, i, i == 1
-		)
+	for i in range(1, 7):
+		var result: BurdenManager.BurdenEventResult = bm.trigger_burden_event(run_seed, topo_seed, room_index, i, i == 1)
 		if i < 5:
 			if result.numbness_cap_reached:
 				push_error("Trigger #%d should NOT be numb" % i)
@@ -160,7 +144,7 @@ func test_numbness_cap_exactly_five() -> bool:
 
 # ── AC-4: Noun rotation deterministic per seed and persists ─────────────
 func test_noun_rotation_deterministic() -> bool:
-	var bm1: Node = BurdenManager
+	var bm1 := BurdenManager.new()
 	bm1._ready()
 	bm1.reset()
 
@@ -174,10 +158,10 @@ func test_noun_rotation_deterministic() -> bool:
 		return false
 
 	## Different topology seed → potentially different noun
-	var bm2: Node = BurdenManager
+	var bm2 := BurdenManager.new()
 	bm2._ready()
 	bm2.reset()
-	var _noun3: String = bm2.select_collective_noun(topo + 1, 0)
+	var noun3: String = bm2.select_collective_noun(topo + 1, 0)
 	## We only assert determinism, not that different seeds ALWAYS differ.
 	## But we do assert the index is in range.
 	if bm1._burden_noun_index < 0 or bm1._burden_noun_index >= bm1._noun_pool_size:
@@ -194,7 +178,7 @@ func test_noun_rotation_deterministic() -> bool:
 
 # ── Variant selection fallback ────────────────────────────────────────────
 func test_variant_selection_fallback() -> bool:
-	var bm: Node = BurdenManager
+	var bm := BurdenManager.new()
 	bm._ready()
 	bm.reset()
 
@@ -219,15 +203,15 @@ func test_variant_selection_fallback() -> bool:
 
 # ── AC-5: Localization keys unique ───────────────────────────────────────
 func test_localization_keys_unique() -> bool:
-	var bm: Node = BurdenManager
+	var bm := BurdenManager.new()
 	bm._ready()
 	bm.reset()
 
 	var keys: Array[String] = []
 	for v: Dictionary in bm._variants_first:
-		keys.append(str(v.get("localization_key", "")))
+		keys.append(v.get("localization_key", ""))
 	for v: Dictionary in bm._variants_repeat:
-		keys.append(str(v.get("localization_key", "")))
+		keys.append(v.get("localization_key", ""))
 
 	keys.append("BE_PHASE_A")
 	keys.append("BE_PHASE_C")
@@ -247,7 +231,7 @@ func test_localization_keys_unique() -> bool:
 
 # ── Phase B timing window verification ────────────────────────────────────
 func test_phase_b_timing_window() -> bool:
-	var bm: Node = BurdenManager
+	var bm := BurdenManager.new()
 	bm._ready()
 	bm.reset()
 

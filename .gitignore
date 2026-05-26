@@ -28,12 +28,3 @@ data_*/
 __pycache__/
 *.py[cod]
 *$py.class
-# Logs and Reports
-*.log
-tools/*.log
-tests/*.json
-!config/*.json
-
-# Project Management / Protection artifacts
-*_protection.json
-.antigravitycli/

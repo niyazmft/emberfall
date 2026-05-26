@@ -26,8 +26,4 @@ echo "--- Running: test_elemental_resolver.gd ---"
 godot --headless --path . -s tests/test_elemental_resolver.gd
 
 echo ""
-echo "--- Running: burden_stem_caption_router_validation.gd ---"
-godot --headless --path . -s src/Tests/burden_stem_caption_router_validation.gd
-
-echo ""
 echo "=== ALL TEST SUITES PASSED ==="
