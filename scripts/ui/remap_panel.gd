@@ -155,7 +155,7 @@ func remap_action_to(action: StringName, event: InputEvent) -> void:
 		show_conflict_warning(conflict)
 
 	var events: Array[InputEvent] = InputMap.action_get_events(action)
-	for old_event in events:
+	for old_event: InputEvent in events:
 		if is_same_device_type(old_event, event):
 			InputMap.action_erase_event(action, old_event)
 
@@ -187,10 +187,10 @@ func is_same_device_type(e1: InputEvent, e2: InputEvent) -> bool:
 
 
 func find_conflict(event: InputEvent, current_action: StringName) -> StringName:
-	for action in InputMap.get_actions():
+	for action: StringName in InputMap.get_actions():
 		if action == current_action:
 			continue
-		for a_event in InputMap.action_get_events(action):
+		for a_event: InputEvent in InputMap.action_get_events(action):
 			if a_event.is_match(event):
 				return action
 	return &""
@@ -209,7 +209,6 @@ func show_conflict_warning(other_action: StringName) -> void:
 
 func _on_device_changed(_device_type: String) -> void:
 	create_action_list()
-	call_deferred("_focus_first_item")
 
 
 func save_bindings() -> void:
@@ -253,4 +252,3 @@ func _on_reset_pressed() -> void:
 	InputMap.load_from_project_settings()
 	save_bindings()
 	create_action_list()
-	call_deferred("_focus_first_item")
