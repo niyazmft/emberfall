@@ -8,14 +8,11 @@ class_name _BurdenEventCoordinator
 
 # ── Lifecycle ────────────────────────────────────────────────────────────────
 
-
 func _ready() -> void:
 	_connect_signals()
 	_print_debug("BurdenEventCoordinator ready")
 
-
 # ── Internal ────────────────────────────────────────────────────────────────
-
 
 func _connect_signals() -> void:
 	if BurdenManager and BurdenManager.has_signal("burden_event_triggered"):
@@ -23,7 +20,6 @@ func _connect_signals() -> void:
 
 	if BurdenManager and BurdenManager.has_signal("burden_active_changed"):
 		BurdenManager.burden_active_changed.connect(_on_burden_active_changed)
-
 
 func _on_burden_event_triggered(result: Variant) -> void:
 	# Start audio stems based on the triggered event
@@ -40,14 +36,13 @@ func _on_burden_event_triggered(result: Variant) -> void:
 		"BD-CLIMB": "res://audio/stems/bd_climb.ogg"
 	}
 
-	for stem_id: String in stems.keys():
+	for stem_id in stems:
 		var path: String = stems[stem_id]
 		if ResourceLoader.exists(path):
 			var stream: AudioStream = load(path) as AudioStream
 			AudioMiddleware.play_stem(stem_id, stream)
 		else:
 			_print_debug("Stem asset missing: %s" % path)
-
 
 func _on_burden_active_changed(active: bool) -> void:
 	if not AudioMiddleware:
@@ -56,7 +51,6 @@ func _on_burden_active_changed(active: bool) -> void:
 	if not active:
 		AudioMiddleware.stop_all()
 		_print_debug("Burden deactivated - stopping audio stems")
-
 
 func _print_debug(msg: String) -> void:
 	if OS.is_debug_build():

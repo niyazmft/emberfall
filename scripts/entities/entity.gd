@@ -1,5 +1,4 @@
 class_name Entity
-extends Resource
 ## Stat block for player and enemy entities.
 ## References: system-specification-core.md §4.1
 ##
@@ -51,7 +50,6 @@ enum State { IDLE, STUNNED, DYING, DEAD, GHOST }
 # ── Identity ────────────────────────────────────────────────────────
 @export var entity_name: String = "Unnamed"
 @export var is_player: bool = false
-
 
 # ── Constructors ──────────────────────────────────────────────────
 func _init(

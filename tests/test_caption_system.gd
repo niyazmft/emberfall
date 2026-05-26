@@ -11,7 +11,6 @@ const BURDEN_SCRIPT := preload("res://scripts/autoload/burden_manager.gd")
 var _passed: int = 0
 var _failed: int = 0
 
-
 func _ready() -> void:
 	print("=== Caption System Test Suite (DON-225) ===")
 	_test_caption_manager_channels()
@@ -29,9 +28,7 @@ func _ready() -> void:
 	else:
 		get_tree().quit(0)
 
-
 # ── Helpers ──────────────────────────────────────────────────────────────────
-
 
 func _assert(condition: bool, msg: String) -> void:
 	if condition:
@@ -39,7 +36,6 @@ func _assert(condition: bool, msg: String) -> void:
 	else:
 		_failed += 1
 		push_error("ASSERT FAILED: %s" % msg)
-
 
 func _assertf(a: float, b: float, tolerance: float, msg: String) -> void:
 	var diff: float = absf(a - b)
@@ -49,9 +45,7 @@ func _assertf(a: float, b: float, tolerance: float, msg: String) -> void:
 		_failed += 1
 		push_error("ASSERT FAILED: %s (|%.4f - %.4f| = %.4f > %.4f)" % [msg, a, b, diff, tolerance])
 
-
 # ── Test: Channel Enum & Priority ────────────────────────────────────────────
-
 
 func _test_caption_manager_channels() -> void:
 	print("\n[Test] CaptionManager channels")
@@ -71,9 +65,7 @@ func _test_caption_manager_channels() -> void:
 
 	print("  channel tests done")
 
-
 # ── Test: Opacity Curves ─────────────────────────────────────────────────────
-
 
 func _test_caption_event_opacity_curves() -> void:
 	print("\n[Test] CaptionEvent opacity curves")
@@ -137,9 +129,7 @@ func _test_caption_event_opacity_curves() -> void:
 
 	print("  curve tests done")
 
-
 # ── Test: BurdenManager Transition Caption Scheduling ───────────────────────
-
 
 func _test_burden_transition_captions() -> void:
 	print("\n[Test] BurdenManager transition captions")
@@ -168,10 +158,7 @@ func _test_burden_transition_captions() -> void:
 
 	var t_emerg: Dictionary = bm._caption_transitions["3_to_0_emergency"]
 	_assertf(float(t_emerg.get("offset_sec", 0.0)), 0.5, 0.001, "emergency 3→0 offset = 0.5 s")
-	_assert(
-		str(t_emerg.get("curve", "")) == "STEEP_EXPONENTIAL",
-		"emergency 3→0 curve = STEEP_EXPONENTIAL"
-	)
+	_assert(str(t_emerg.get("curve", "")) == "STEEP_EXPONENTIAL", "emergency 3→0 curve = STEEP_EXPONENTIAL")
 
 	var t2_1: Dictionary = bm._caption_transitions["2_to_1"]
 	_assertf(float(t2_1.get("offset_sec", 0.0)), 1.0, 0.001, "2→1 offset = 1.0 s")
@@ -188,9 +175,7 @@ func _test_burden_transition_captions() -> void:
 
 	print("  transition caption tests done")
 
-
 # ── Test: BD-CLIMB Loop Phase ──────────────────────────────────────────────
-
 
 func _test_bd_climb_loop_phase() -> void:
 	print("\n[Test] BD-CLIMB loop-phase gate")
@@ -212,13 +197,8 @@ func _test_bd_climb_loop_phase() -> void:
 
 	cm.report_stem_transient("BD-CLIMB", "peak", 0.8)
 	_assert(cm.was_stem_transient_recent("BD-CLIMB", "peak", 1.0) == true, "stem transient recent")
-	_assert(
-		cm.was_stem_transient_recent("BD-CLIMB", "valley", 1.0) == false,
-		"different event id not recent"
-	)
-	_assert(
-		cm.was_stem_transient_recent("BD-MECH", "peak", 1.0) == false, "different stem not recent"
-	)
+	_assert(cm.was_stem_transient_recent("BD-CLIMB", "valley", 1.0) == false, "different event id not recent")
+	_assert(cm.was_stem_transient_recent("BD-MECH", "peak", 1.0) == false, "different stem not recent")
 
 	## Width captions from BurdenManager config
 	var bm := BURDEN_SCRIPT.new()
@@ -231,9 +211,7 @@ func _test_bd_climb_loop_phase() -> void:
 
 	print("  BD-CLIMB tests done")
 
-
 # ── Test: Caption Timing Tolerance ───────────────────────────────────────────
-
 
 func _test_caption_timing_tolerance() -> void:
 	print("\n[Test] Timing tolerance (±0.2 s)")
@@ -249,9 +227,7 @@ func _test_caption_timing_tolerance() -> void:
 
 	print("  tolerance tests done")
 
-
 # ── Test: Channel Isolation ──────────────────────────────────────────────────
-
 
 func _test_caption_channel_isolation() -> void:
 	print("\n[Test] BURDEN channel isolation")
@@ -273,9 +249,7 @@ func _test_caption_channel_isolation() -> void:
 
 	print("  isolation tests done")
 
-
 # ── Test: Normal 3→0 Transition ────────────────────────────────────────────
-
 
 func _test_normal_3_to_0_transition() -> void:
 	print("\n[Test] Normal 3→0 transition caption")

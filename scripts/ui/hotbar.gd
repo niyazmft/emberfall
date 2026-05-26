@@ -11,11 +11,9 @@ const MAX_VISIBLE_SLOTS: int = 6
 const SLOT_WIDTH: float = 48.0
 const SPACING: float = 4.0
 
-
 func _ready() -> void:
 	get_tree().root.size_changed.connect(_on_viewport_resized)
 	_on_viewport_resized()
-
 
 func _on_viewport_resized() -> void:
 	var viewport_width := get_viewport().get_visible_rect().size.x
@@ -32,4 +30,4 @@ func _on_viewport_resized() -> void:
 	else:
 		left_arrow.hide()
 		right_arrow.hide()
-		scroll_container.custom_minimum_size.x = 0  # Expand naturally
+		scroll_container.custom_minimum_size.x = 0 # Expand naturally

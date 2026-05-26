@@ -28,41 +28,31 @@ const FLAG_ELEVATION_2: int = 1 << 4
 const FLAG_BLOCKED_MOVE: int = 1 << 5
 const FLAG_BLOCKED_VISION: int = 1 << 6
 
-
 ## Recompute cover_flags from current properties. Call once after
 ## deserialising or mutating a tile (mutations should only happen
 ## during room load, never mid-combat).
 func recompute_flags() -> void:
 	cover_flags = 0
 	match elevation:
-		Elevation.GROUND:
-			cover_flags |= FLAG_ELEVATION_0
-		Elevation.MID:
-			cover_flags |= FLAG_ELEVATION_1
-		Elevation.HIGH:
-			cover_flags |= FLAG_ELEVATION_2
+		Elevation.GROUND: cover_flags |= FLAG_ELEVATION_0
+		Elevation.MID:    cover_flags |= FLAG_ELEVATION_1
+		Elevation.HIGH:   cover_flags |= FLAG_ELEVATION_2
 	match cover:
-		CoverType.LIGHT:
-			cover_flags |= FLAG_COVER_LIGHT
-		CoverType.HEAVY:
-			cover_flags |= FLAG_COVER_HEAVY
+		CoverType.LIGHT:  cover_flags |= FLAG_COVER_LIGHT
+		CoverType.HEAVY:  cover_flags |= FLAG_COVER_HEAVY
 	if blocks_movement:
 		cover_flags |= FLAG_BLOCKED_MOVE
 	if blocks_vision:
 		cover_flags |= FLAG_BLOCKED_VISION
 
-
 func has_cover() -> bool:
 	return (cover_flags & (FLAG_COVER_LIGHT | FLAG_COVER_HEAVY)) != 0
-
 
 func is_light_cover() -> bool:
 	return (cover_flags & FLAG_COVER_LIGHT) != 0
 
-
 func is_heavy_cover() -> bool:
 	return (cover_flags & FLAG_COVER_HEAVY) != 0
-
 
 func is_blocked() -> bool:
 	return (cover_flags & FLAG_BLOCKED_MOVE) != 0

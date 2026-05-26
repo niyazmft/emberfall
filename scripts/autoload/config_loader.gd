@@ -46,10 +46,8 @@ const DEFAULTS: Dictionary = {
 var _config: Dictionary = {}
 var _loaded: bool = false
 
-
 func _ready() -> void:
 	_load_config()
-
 
 func _load_config() -> void:
 	if FileAccess.file_exists(CONFIG_PATH):
@@ -62,13 +60,10 @@ func _load_config() -> void:
 				_loaded = true
 				print("ConfigLoader: loaded config from %s" % CONFIG_PATH)
 			else:
-				push_warning(
-					"ConfigLoader: config file was not a valid JSON object; using defaults."
-				)
+				push_warning("ConfigLoader: config file was not a valid JSON object; using defaults.")
 			file.close()
 	else:
 		push_warning("ConfigLoader: config file not found at %s; using defaults." % CONFIG_PATH)
-
 
 ## Get a gameplay constant. First checks config JSON, then falls back to DEFAULTS.
 ## Usage: ConfigLoader.get_value("AP_MAX") or ConfigLoader.get_value("combat", "D_BASE")
@@ -105,20 +100,17 @@ func get_int(key: String, fallback: int = 0) -> int:
 		return v
 	return fallback
 
-
 func get_float(key: String, fallback: float = 0.0) -> float:
 	var v: Variant = get_value(key, "", fallback)
 	if v is float or v is int:
 		return float(v)
 	return fallback
 
-
 func get_string(key: String, fallback: String = "") -> String:
 	var v: Variant = get_value(key, "", fallback)
 	if v is String:
 		return v
 	return fallback
-
 
 func is_loaded() -> bool:
 	return _loaded
