@@ -23,7 +23,7 @@ grow_vertical = 2
 alignment = 1
 
 [node name="LeftArrow" type="Button" parent="HBoxContainer"]
-custom_minimum_size = Vector2(32, 0)
+custom_minimum_size = Vector2(44, 44)
 layout_mode = 2
 text = "<"
 
@@ -75,6 +75,6 @@ layout_mode = 2
 text = "7"
 
 [node name="RightArrow" type="Button" parent="HBoxContainer"]
-custom_minimum_size = Vector2(32, 0)
+custom_minimum_size = Vector2(44, 44)
 layout_mode = 2
 text = ">"
