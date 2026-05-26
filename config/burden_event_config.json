@@ -83,6 +83,32 @@
       {"id": "BE_LEGACY_ZERO", "trigger": "MORAL_FLAG = 0 at run end (all enemies spared)", "template": "The Keeper laid down no weight. The path remained light.", "localization_key": "BE_LEGACY_ZERO"}
     ]
   },
+  "caption_triggers": {
+    "_description": "Caption timing offsets and curves per Audio Director review DON-220. All offsets are seconds from transition start. Tolerance ±0.2 s per DON-225.",
+    "channel": "BURDEN",
+    "channel_isolation": true,
+    "timing_tolerance_sec": 0.2,
+    "transitions": {
+      "0_to_1": {"offset_sec": 2.0, "duration_sec": 2.0, "curve": "EXPONENTIAL", "text": "[The world stills]", "localization_key": "BE_CAP_0_TO_1"},
+      "1_to_2": {"offset_sec": 0.0, "duration_sec": 0.0, "curve": "INSTANT", "text": "", "localization_key": ""},
+      "2_to_3": {"offset_sec": 2.5, "duration_sec": 2.0, "curve": "EXPONENTIAL", "text": "[The weight gathers]", "localization_key": "BE_CAP_2_TO_3"},
+      "3_to_2": {"offset_sec": 0.0, "duration_sec": 0.0, "curve": "INSTANT", "text": "", "localization_key": ""},
+      "2_to_1": {"offset_sec": 1.0, "duration_sec": 2.0, "curve": "LINEAR", "text": "[The memory loosens]", "localization_key": "BE_CAP_2_TO_1"},
+      "1_to_0": {"offset_sec": 1.0, "duration_sec": 2.0, "curve": "LINEAR", "text": "[The embers cool]", "localization_key": "BE_CAP_1_TO_0"},
+      "3_to_0_emergency": {"offset_sec": 0.5, "duration_sec": 1.5, "curve": "STEEP_EXPONENTIAL", "text": "[The burden drops]", "localization_key": "BE_CAP_3_TO_0_EMERGENCY"},
+      "3_to_0_normal": {"offset_sec": 2.5, "duration_sec": 5.0, "curve": "LOGARITHMIC", "text": "[The burden fades slowly]", "localization_key": "BE_CAP_3_TO_0_NORMAL"}
+    }
+  },
+  "bd_climb": {
+    "_description": "BD-CLIMB stem configuration for per-stem width-modulation caption alignment.",
+    "stems": ["BD-BASS", "BD-MECH", "BD-STRESS", "BD-CLIMB"],
+    "width_captions": {
+      "expanding": {"text": "[The walls widen]", "localization_key": "BE_CAP_CLIMB_EXPAND"},
+      "converging": {"text": "[Everything converges]", "localization_key": "BE_CAP_CLIMB_CONVERGE"}
+    },
+    "phase_gate_tolerance_sec": 0.2,
+    "min_width_for_caption": 0.15
+  },
   "localization": {
     "context": "The apparition is the voice of the world itself, mourning deaths the player has caused. Second-person present during the event; third-person past in Legacy Archive.",
     "target_languages": ["en", "ja", "fr", "de", "es", "ko", "zh-Hans"],
