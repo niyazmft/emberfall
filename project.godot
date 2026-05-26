@@ -46,6 +46,8 @@ BurdenEventCoordinator="*res://scripts/autoload/burden_event_coordinator.gd"
 EntityLifecycle="*res://scripts/entities/entity_lifecycle.gd"
 RunManager="*res://scripts/state_machine/run_manager.gd"
 GridSystem="*res://scripts/autoload/grid_system.gd"
+LayerManager="*res://scripts/autoload/layer_manager.gd"
+ToastManager="*res://scripts/autoload/toast_manager.gd"
 
 [physics]
 2d/run_on_separate_thread=true
