@@ -46,6 +46,7 @@ var _silhouette_sprites: Array[Sprite2D] = []
 var _trail_sprites: Array[Sprite2D] = []
 var _trail_timer: float = 0.0
 var _trail_index: int = 0
+var _master_alpha: float = 1.0
 
 ## Shared shader material for tinting.
 var _tint_material: ShaderMaterial
@@ -101,11 +102,11 @@ func _load_rig_config() -> void:
 	var json_text := file.get_as_text()
 	var json := JSON.new()
 	var error := json.parse(json_text)
-	if error == OK:
+	if error == OK and json.data is Dictionary:
 		_rig_config = json.data
 		_apply_rig_config()
 	else:
-		push_error("ApparitionRenderer: failed to parse JSON config: %s" % json.get_error_message())
+		push_error("ApparitionRenderer: failed to parse JSON config or config is not a Dictionary: %s" % json.get_error_message())
 
 func _apply_rig_config() -> void:
 	if _rig_config.is_empty():
@@ -113,9 +114,17 @@ func _apply_rig_config() -> void:
 
 	var stack := _rig_config.get("stack", {})
 	if not stack.is_empty():
-		vertical_offsets = PackedInt32Array(stack.get("vertical_offsets", [0, 8, 16]))
-		opacity_tiers = PackedFloat32Array(stack.get("opacity_tiers", [0.55, 0.45, 0.35]))
-		scale_tiers = PackedFloat32Array(stack.get("scale_tiers", [1.00, 0.95, 0.90]))
+		var offsets = stack.get("vertical_offsets", [0, 8, 16])
+		if offsets.size() >= STACK_COUNT:
+			vertical_offsets = PackedInt32Array(offsets)
+
+		var opacities = stack.get("opacity_tiers", [0.55, 0.45, 0.35])
+		if opacities.size() >= STACK_COUNT:
+			opacity_tiers = PackedFloat32Array(opacities)
+
+		var scales = stack.get("scale_tiers", [1.00, 0.95, 0.90])
+		if scales.size() >= STACK_COUNT:
+			scale_tiers = PackedFloat32Array(scales)
 
 	var recoil := _rig_config.get("recoil", {})
 	if not recoil.is_empty():
@@ -141,15 +150,14 @@ func refresh_stack() -> void:
 ## Set opacity of the entire composite stack (0.0 – 1.0).
 ## Called by the state machine during manifest / absolve fades.
 func set_stack_opacity(alpha: float) -> void:
+	_master_alpha = alpha
 	for i in range(_silhouette_sprites.size()):
 		var sprite := _silhouette_sprites[i]
+		# The _silhouette_sprites array is indexed i = 0 (Front) to i = STACK_COUNT-1 (Back)
+		# BUT they were added to the tree in REVERSE order in _create_stack_sprites.
+		# The sprite at _silhouette_sprites[i] corresponds to opacity_tiers[i].
 		var tier_alpha: float = opacity_tiers[i] if i < opacity_tiers.size() else 0.35
 		sprite.modulate.a = tier_alpha * alpha
-
-	# Also affect trail opacity
-	var trail_intensity := _rig_config.get("trail", {}).get("intensity", 0.2)
-	for sprite in _trail_sprites:
-		sprite.modulate.a = alpha * trail_intensity
 
 ## Promote z-index during recoil.
 func promote_z_index() -> void:
@@ -224,28 +232,29 @@ func _create_tint_material() -> void:
 	_tint_material.set_shader_parameter("u_dissolve_noise", _dissolve_noise)
 
 func _create_stack_sprites() -> void:
-	for i in range(STACK_COUNT):
+	# Add in reverse order so Index 0 is on top (rendered last)
+	for i in range(STACK_COUNT - 1, -1, -1):
 		var sprite := Sprite2D.new()
 		sprite.name = "Silhouette_%d" % i
 		sprite.centered = true
 		if _tint_material:
-			sprite.material = _tint_material.duplicate()
+			sprite.material = _tint_material
 		# Default layout behind owner
 		sprite.position = Vector2(0, -vertical_offsets[i])
 		sprite.scale = Vector2(scale_tiers[i], scale_tiers[i])
 		sprite.modulate.a = opacity_tiers[i]
-		_silhouette_sprites.append(sprite)
+		# Keep track of them in the order 0 (front) -> 2 (back) for easier indexing elsewhere
+		_silhouette_sprites.insert(0, sprite)
 		add_child(sprite)
 
 func _create_trail_sprites() -> void:
-	var trail_intensity := _rig_config.get("trail", {}).get("intensity", 0.2)
 	for i in range(TRAIL_COUNT):
 		var sprite := Sprite2D.new()
 		sprite.name = "Trail_%d" % i
 		sprite.centered = true
 		sprite.top_level = true # Trail stays in world space
 		if _tint_material:
-			sprite.material = _tint_material.duplicate()
+			sprite.material = _tint_material
 		sprite.modulate.a = 0.0 # Start invisible
 		_trail_sprites.append(sprite)
 		add_child(sprite)
@@ -269,7 +278,7 @@ func _refresh_stack() -> void:
 		# Ensure layout constants are reapplied
 		sprite.position = Vector2(0, -vertical_offsets[i])
 		sprite.scale = Vector2(scale_tiers[i], scale_tiers[i])
-		sprite.modulate.a = opacity_tiers[i]
+		sprite.modulate.a = opacity_tiers[i] * _master_alpha
 
 func _update_shader_uniforms(delta: float) -> void:
 	if not state_machine:
@@ -289,21 +298,17 @@ func _update_shader_uniforms(delta: float) -> void:
 			var duration: float = _rig_config.get("dissolve", {}).get("duration_ms", 400) / 1000.0
 			dissolve_threshold = clampf(state_machine._absorb_timer / duration, 0.0, 1.0)
 		ApparitionStateMachine.ApparitionState.RECOIL:
-			shear_intensity = _rig_config.get("recoil", {}).get("shear_intensity", 1.2)
-			# Alternate shear direction based on recoil timer or some other factor if needed
-			# For now, just fixed shear.
+			var base_shear = _rig_config.get("recoil", {}).get("shear_intensity", 1.2)
+			# Shear direction depends on owner facing vs. damage source if available,
+			# but here we can just use a simple sine jitter or fixed offset.
+			# For DON-267, we just ensure it's applied correctly.
+			shear_intensity = base_shear
 
-	# Apply to all sprites in the stack
-	for sprite in _silhouette_sprites:
-		if sprite.material is ShaderMaterial:
-			sprite.material.set_shader_parameter("u_dissolve_threshold", dissolve_threshold)
-			sprite.material.set_shader_parameter("u_shear_intensity", shear_intensity)
-			sprite.material.set_shader_parameter("u_intensity", breathing_intensity)
-
-	# Also apply to trail sprites
-	for sprite in _trail_sprites:
-		if sprite.material is ShaderMaterial:
-			sprite.material.set_shader_parameter("u_dissolve_threshold", dissolve_threshold)
+	# Apply to shared material
+	if _tint_material:
+		_tint_material.set_shader_parameter("u_dissolve_threshold", dissolve_threshold)
+		_tint_material.set_shader_parameter("u_shear_intensity", shear_intensity)
+		_tint_material.set_shader_parameter("u_intensity", breathing_intensity)
 
 func _update_trail(delta: float) -> void:
 	if _trail_sprites.is_empty() or not state_machine:
@@ -317,9 +322,9 @@ func _update_trail(delta: float) -> void:
 		return
 
 	var trail_config := _rig_config.get("trail", {})
-	var lifetime_ms: float = trail_config.get("lifetime_ms", 300)
+	var lifetime_ms: float = maxf(trail_config.get("lifetime_ms", 300), 1.0)
 	var interval: float = (lifetime_ms / 1000.0) / TRAIL_COUNT
-	var intensity: float = trail_config.get("intensity", 0.2)
+	var intensity: float = trail_config.get("intensity", 0.2) * _master_alpha
 
 	_trail_timer += delta
 	if _trail_timer >= interval:
