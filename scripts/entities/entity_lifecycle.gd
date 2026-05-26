@@ -1,4 +1,5 @@
 extends Node
+class_name _EntityLifecycle
 
 ## Canonical owner of entity state transitions per system-spec §4.2, §4.3, §4.4.
 ## All Entity state changes should flow through this class; Entity itself is a
@@ -62,9 +63,17 @@ var player_entity: Entity = null:
 
 # ── Safe autoload helpers (avoid class_name / autoload ambiguity) ────────
 func _config_node() -> Node:
+	var ml := Engine.get_main_loop()
+	if ml is SceneTree:
+		var loader: Node = ml.root.get_node_or_null("ConfigLoader")
+		if loader: return loader
 	return get_node_or_null("/root/ConfigLoader")
 
 func _burden_node() -> Node:
+	var ml := Engine.get_main_loop()
+	if ml is SceneTree:
+		var burden: Node = ml.root.get_node_or_null("BurdenManager")
+		if burden: return burden
 	return get_node_or_null("/root/BurdenManager")
 
 func _config_int(key: String, fallback: int) -> int:

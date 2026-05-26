@@ -73,7 +73,7 @@ func _test_golden_seed_hash() -> void:
 
 # ── 2. Damage Formula: 100 Edge Cases ───────────────────────────
 func _test_damage_formula_100_edge_cases() -> void:
-	var rng := RandomNumberGenerator.new()
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.seed = GameConstants.GOLDEN_SEED
 
 	for i: int in range(100):
@@ -142,8 +142,8 @@ func _test_ap_economy_state_machine() -> void:
 
 # ── 4. Position Modifier Matrix ───────────────────────────────────
 func _test_position_modifier_matrix() -> void:
-	var p := Entity.new("P", 1, 1, 10, 5, 3, 1, 0, 0)
-	var e := Entity.new("E", 2, 1, 10, 5, 3, 1, 0, 0)
+	var p: Entity = Entity.new("P", 1, 1, 10, 5, 3, 1, 0, 0)
+	var e: Entity = Entity.new("E", 2, 1, 10, 5, 3, 1, 0, 0)
 	var cover: Array[Vector2i] = []
 
 	# Frontal
@@ -220,7 +220,7 @@ func _test_elemental_modifiers() -> void:
 
 # ── 7. Entity Stat Clamping ─────────────────────────────────────────
 func _test_entity_stat_clamping() -> void:
-	var ent := Entity.new("Test", 0, 0, 500, 50, 30)
+	var ent: Entity = Entity.new("Test", 0, 0, 500, 50, 30)
 	ent.hp = -10
 	_assert_eq("clamp_hp_neg", ent.hp, 0)
 	ent.hp = 10000
