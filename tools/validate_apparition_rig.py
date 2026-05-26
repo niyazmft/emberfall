@@ -33,6 +33,10 @@ def validate_rig(json_path, schema_path):
     stack = instance["stack"]
     if not isinstance(stack, dict):
         print("Error: 'stack' must be an object")
+    # Stack validation
+    stack = instance["stack"]
+    if not isinstance(stack, dict):
+        print("Error: 'stack' must be an object")
         return False
     if stack.get("count") != 3:
         print("Error: stack.count must be 3")
