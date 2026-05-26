@@ -9,6 +9,7 @@ extends Control
 @onready var quit_btn: Button = %QuitButton
 @onready var button_container: VBoxContainer = %ButtonContainer
 
+
 func _ready() -> void:
 	# Localize text
 	continue_btn.text = tr("menu.title.continue")
@@ -25,7 +26,7 @@ func _ready() -> void:
 	quit_btn.pressed.connect(_on_quit_pressed)
 
 	# Enforce touch targets
-	for btn in [continue_btn, new_game_btn, settings_btn, quit_btn]:
+	for btn: Button in [continue_btn, new_game_btn, settings_btn, quit_btn]:
 		TouchTargetEnforcer.enforce(btn)
 
 	# Setup vertical wrap-around focus
