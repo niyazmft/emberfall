@@ -47,7 +47,8 @@ jobs:
           echo "Godot installed: $(godot --version)"
 
           # Install export templates
-          mkdir -p "${HOME}/.local/share/godot/export_templates/${GODOT_VERSION}.stable"
+          # Note: .tpz contains a top-level version folder (e.g. 4.2.2.stable/);
+          # extract to the parent directory so the folder lands at the correct path.
           TPZ="Godot_v${GODOT_VERSION}-stable_export_templates.tpz"
           echo "Downloading export templates..."
           wget --tries=5 --waitretry=5 \
@@ -55,8 +56,10 @@ jobs:
             || wget --tries=5 --waitretry=5 \
               "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/${TPZ}"
 
-          unzip -q "${TPZ}" -d "${HOME}/.local/share/godot/export_templates/${GODOT_VERSION}.stable/"
+          mkdir -p "${HOME}/.local/share/godot/export_templates"
+          unzip -oq "${TPZ}" -d "${HOME}/.local/share/godot/export_templates/"
           echo "Export templates installed."
+          ls -la "${HOME}/.local/share/godot/export_templates/${GODOT_VERSION}.stable/" 
 
       - name: Run validation tests
         run: |
