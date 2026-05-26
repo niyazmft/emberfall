@@ -23,3 +23,13 @@ data_*/
 # Build artifacts
 *.tmp
 *.import
+
+# Logs and Reports
+*.log
+tools/*.log
+tests/*.json
+!config/*.json
+
+# Project Management / Protection artifacts
+*_protection.json
+.antigravitycli/
