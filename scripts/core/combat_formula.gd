@@ -49,12 +49,20 @@ static func compute_damage_from_entities(
 	## Convenience overload: derive OFF/DEF from entity stat blocks
 	## and compute position modifier automatically.
 	var pos_mod: float = calculate_position_modifier(attacker, defender, cover_tiles)
-	return compute_damage(attacker.off, defender.def_, pos_mod, elemental_modifier, memory_synergy)
+	return compute_damage(
+		attacker.off,
+		defender.def_,
+		pos_mod,
+		elemental_modifier,
+		memory_synergy
+	)
 
 
 # ── Position Modifier §3.3 ────────────────────────────────────────
 static func calculate_position_modifier(
-	attacker: Entity, defender: Entity, cover_tiles: Array[Vector2i]
+	attacker: Entity,
+	defender: Entity,
+	cover_tiles: Array[Vector2i]
 ) -> float:
 	## POSITION_MODIFIER = 1.0
 	##   + BACKSTAB_BONUS    (if attacker behind defender)
@@ -85,7 +93,9 @@ static func calculate_position_modifier(
 	modifier -= cover_penalty
 
 	return DeterministicMath.clampf(
-		modifier, GameConstants.POSITION_MODIFIER_MIN, GameConstants.POSITION_MODIFIER_MAX
+		modifier,
+		GameConstants.POSITION_MODIFIER_MIN,
+		GameConstants.POSITION_MODIFIER_MAX
 	)
 
 
@@ -124,7 +134,8 @@ static func _calculate_cover_penalty(defender: Entity, cover_tiles: Array[Vector
 
 	# Check adjacent tiles for heavy cover
 	var directions: Array[Vector2i] = [
-		Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)
+		Vector2i(1, 0), Vector2i(-1, 0),
+		Vector2i(0, 1), Vector2i(0, -1)
 	]
 	for d: Vector2i in directions:
 		if (defender_pos + d) in cover_tiles:
@@ -137,16 +148,11 @@ static func elemental_modifier(interaction_type: String) -> float:
 	## Returns the deterministic modifier for a known elemental interaction.
 	## No random procs; all states are deliberate consequences.
 	match interaction_type:
-		"fire_to_oil":
-			return GameConstants.ELEM_FIRE_TO_OIL
-		"wind_to_fire":
-			return GameConstants.ELEM_WIND_TO_FIRE
-		"oil_slip":
-			return GameConstants.ELEM_OIL_SLIP_SPEED
-		"water_to_fire":
-			return GameConstants.ELEM_WATER_TO_FIRE
-		_:
-			return 1.0
+		"fire_to_oil":    return GameConstants.ELEM_FIRE_TO_OIL
+		"wind_to_fire":   return GameConstants.ELEM_WIND_TO_FIRE
+		"oil_slip":       return GameConstants.ELEM_OIL_SLIP_SPEED
+		"water_to_fire":  return GameConstants.ELEM_WATER_TO_FIRE
+		_:                return 1.0
 
 
 # ── Memory Synergy ──────────────────────────────────────────────────
@@ -160,25 +166,14 @@ static func action_cost(action_type: String) -> int:
 	## Returns AP cost for standard actions.
 	## Ranged and ability costs are parameterized elsewhere.
 	match action_type:
-		"move_cardinal":
-			return 1
-		"move_diagonal":
-			return 2
-		"attack_basic":
-			return 2
-		"attack_ranged_1":
-			return 2
-		"attack_ranged_2":
-			return 3
-		"attack_ranged_3":
-			return 4
-		"ability_min":
-			return 3
-		"ability_max":
-			return 5
-		"interact":
-			return 1
-		"end_turn":
-			return 0
-		_:
-			return 0
+		"move_cardinal":   return 1
+		"move_diagonal":   return 2
+		"attack_basic":    return 2
+		"attack_ranged_1": return 2
+		"attack_ranged_2": return 3
+		"attack_ranged_3": return 4
+		"ability_min":     return 3
+		"ability_max":     return 5
+		"interact":        return 1
+		"end_turn":        return 0
+		_:                 return 0

@@ -8,7 +8,6 @@ class_name DeterministicMath
 # ── Floating-Point Bounds ──────────────────────────────────────────
 const EPSILON: float = 1e-9
 
-
 # ── Floor / Ceil ────────────────────────────────────────────────────
 static func floori(value: float) -> int:
 	## Floor to integer: largest integer ≤ value.

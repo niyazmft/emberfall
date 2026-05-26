@@ -46,15 +46,11 @@ var _initialized: bool = false
 # Subclass API
 # ---------------------------------------------------------------------------
 
-
 ## Register a state. Subclass constructor must call this for every valid state.
-func register_state(
-	id: int,
-	name: StringName,
-	entry: Callable = Callable(),
-	exit: Callable = Callable(),
-	update: Callable = Callable()
-) -> void:
+func register_state(id: int, name: StringName,
+					entry: Callable = Callable(),
+					exit: Callable = Callable(),
+					update: Callable = Callable()) -> void:
 	_states[id] = {
 		"name": name,
 		"entry": entry,
@@ -65,34 +61,25 @@ func register_state(
 	if not _transitions.has(id):
 		_transitions[id] = []
 
-
 ## Register a valid directed transition with optional guard and transition action.
 ## Guard( Dictionary context ) -> bool. Must return true for transition to proceed.
 ## Action( Dictionary context ) -> void. Runs only on accepted transition, before entry.
-func register_transition(
-	from_id: int, to_id: int, guard: Callable = Callable(), action: Callable = Callable()
-) -> void:
+func register_transition(from_id: int, to_id: int,
+						 guard: Callable = Callable(),
+						 action: Callable = Callable()) -> void:
 	if not _transitions.has(from_id):
 		_transitions[from_id] = []
-	(
-		_transitions[from_id]
-		. append(
-			{
-				"to_id": to_id,
-				"guard": guard,
-				"action": action,
-			}
-		)
-	)
-
+	_transitions[from_id].append({
+		"to_id": to_id,
+		"guard": guard,
+		"action": action,
+	})
 
 func set_default_state(id: int) -> void:
 	_default_state_id = id
 
-
 func set_error_state(id: int) -> void:
 	_error_state_id = id
-
 
 ## Subclass should call this after all register_state/register_transition calls.
 func initialize() -> void:
@@ -102,11 +89,9 @@ func initialize() -> void:
 		_change_state(_default_state_id, {})
 	_initialized = true
 
-
 # ---------------------------------------------------------------------------
 # Runtime API
 # ---------------------------------------------------------------------------
-
 
 ## Public request to transition. Checks guards, runs exit/entry, emits signals.
 ## Returns true if the transition was accepted.
@@ -129,7 +114,6 @@ func transition_to(target_id: int, context: Dictionary = {}) -> bool:
 	state_transition_attempted.emit(from_name, to_name, true)
 	return true
 
-
 ## Frame-rate-independent update. Must be called every frame (or tick) with delta.
 func update(delta: float) -> void:
 	if not _initialized:
@@ -141,11 +125,9 @@ func update(delta: float) -> void:
 		if st["update"].is_valid():
 			st["update"].call(delta, state_time)
 
-
 ## Force a state change without guard checks. Use for emergency/error recovery only.
 func force_state(id: int, context: Dictionary = {}) -> void:
 	_change_state(id, context)
-
 
 ## Recover to default state. Useful for reset.
 func reset(context: Dictionary = {}) -> void:
@@ -154,16 +136,13 @@ func reset(context: Dictionary = {}) -> void:
 	else:
 		push_error("StateMachine: reset called but no default state configured.")
 
-
 ## Return the human-readable name of the current state.
 func get_current_state_name() -> StringName:
 	return state_names.get(current_state, &"UNKNOWN")
 
-
 # ---------------------------------------------------------------------------
 # Internal
 # ---------------------------------------------------------------------------
-
 
 func _is_valid_transition(from_id: int, to_id: int, context: Dictionary) -> bool:
 	if not _transitions.has(from_id):
@@ -183,7 +162,6 @@ func _is_valid_transition(from_id: int, to_id: int, context: Dictionary) -> bool
 					return true
 	return false
 
-
 func _run_transition_actions(from_id: int, to_id: int, context: Dictionary) -> void:
 	if not _transitions.has(from_id):
 		return
@@ -194,7 +172,6 @@ func _run_transition_actions(from_id: int, to_id: int, context: Dictionary) -> v
 			if dict["to_id"] == to_id and dict["action"].is_valid():
 				dict["action"].call(context)
 				return
-
 
 func _change_state(to_id: int, context: Dictionary) -> void:
 	var old_id := current_state
@@ -217,7 +194,6 @@ func _change_state(to_id: int, context: Dictionary) -> void:
 		push_error("StateMachine: attempted to change to unregistered state id %d" % to_id)
 		if _error_state_id != -1:
 			_change_state(_error_state_id, {"error": "unregistered_state", "target": to_id})
-
 
 ## Move to error state with a message. Can be called by subclass when unexpected condition occurs.
 func _error(message: String) -> void:

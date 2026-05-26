@@ -1,5 +1,4 @@
 extends Node
-class_name _CaptionManager
 
 ## CaptionManager
 ## Autoload that manages closed-caption / subtitle events across channels.
@@ -16,10 +15,10 @@ class_name _CaptionManager
 
 # ── Channel Enum ───────────────────────────────────────────────────────────
 enum Channel {
-	DIALOGUE = 0,  ## NPC speech, player voice-over
-	BURDEN = 1,  ## Burden Event world-voice captions (isolated surface)
-	AMBIENT = 2,  ## Environmental / world narration
-	SFX = 3,  ## Sound-effect captions (non-spatial for accessibility)
+	DIALOGUE = 0,   ## NPC speech, player voice-over
+	BURDEN = 1,     ## Burden Event world-voice captions (isolated surface)
+	AMBIENT = 2,    ## Environmental / world narration
+	SFX = 3,        ## Sound-effect captions (non-spatial for accessibility)
 }
 
 ## Priority mapping: higher value = higher priority for pre-emption.
@@ -33,18 +32,18 @@ const CHANNEL_PRIORITY: Dictionary = {
 ## Which channels share a display surface. BURDEN is ALWAYS isolated.
 const CHANNEL_SURFACE_GROUP: Dictionary = {
 	Channel.DIALOGUE: 0,
-	Channel.BURDEN: 1,  ## isolated surface
+	Channel.BURDEN: 1,   ## isolated surface
 	Channel.AMBIENT: 0,  ## shares with DIALOGUE
-	Channel.SFX: 0,  ## shares with DIALOGUE
+	Channel.SFX: 0,      ## shares with DIALOGUE
 }
 
 # ── Curve Types ────────────────────────────────────────────────────────────
 enum CaptionCurve {
-	INSTANT,  ## No fade; appear at full opacity
-	LINEAR,  ## Constant rate fade-in / fade-out
-	EXPONENTIAL,  ## Exponential fade-in (perceptual midpoint focus)
-	LOGARITHMIC,  ## Logarithmic tail-off (slow decay)
-	STEEP_EXPONENTIAL,  ## Rapid drop for emergency transitions
+	INSTANT,          ## No fade; appear at full opacity
+	LINEAR,           ## Constant rate fade-in / fade-out
+	EXPONENTIAL,      ## Exponential fade-in (perceptual midpoint focus)
+	LOGARITHMIC,      ## Logarithmic tail-off (slow decay)
+	STEEP_EXPONENTIAL,## Rapid drop for emergency transitions
 }
 
 # ── Signals ────────────────────────────────────────────────────────────────
@@ -65,21 +64,17 @@ var _event_queue: Array[CaptionEvent] = []
 var _active_events: Array[CaptionEvent] = []
 var _time_source_sec: float = 0.0
 var _last_stem_states: Dictionary = {}
-var _bd_climb_loop_phase: float = 0.0  ## 0.0 → 1.0 within one BD-CLIMB cycle
-var _bd_climb_width: float = 0.0  ## Normalized width 0.0 → 1.0
+var _bd_climb_loop_phase: float = 0.0   ## 0.0 → 1.0 within one BD-CLIMB cycle
+var _bd_climb_width: float = 0.0        ## Normalized width 0.0 → 1.0
 var _bd_climb_enabled: bool = false
 
 # ── Configuration ────────────────────────────────────────────────────────────
-var _stem_ids: PackedStringArray = PackedStringArray(
-	["BD-BASS", "BD-MECH", "BD-STRESS", "BD-CLIMB"]
-)
+var _stem_ids: PackedStringArray = PackedStringArray(["BD-BASS", "BD-MECH", "BD-STRESS", "BD-CLIMB"])
 var _caption_timing_tolerance_sec: float = 0.2  ## ±0.2 s per acceptance criteria
-
 
 # ── Lifecycle ────────────────────────────────────────────────────────────────
 func _ready() -> void:
 	_print_debug("CaptionManager ready")
-
 
 func _process(delta: float) -> void:
 	_time_source_sec += delta
@@ -87,9 +82,7 @@ func _process(delta: float) -> void:
 	_update_active_events(delta)
 	_update_bd_climb_loop(delta)
 
-
 # ── Public API: Caption Events ─────────────────────────────────────────────
-
 
 ## Schedule a caption event. Returns the event handle for cancellation.
 func schedule(
@@ -113,18 +106,11 @@ func schedule(
 
 	_event_queue.append(event)
 	# Sort by trigger time so earliest events are processed first.
-	_event_queue.sort_custom(
-		func(a: CaptionEvent, b: CaptionEvent) -> bool:
-			return a.trigger_time_sec() < b.trigger_time_sec()
+	_event_queue.sort_custom(func(a: CaptionEvent, b: CaptionEvent) -> bool:
+		return a.trigger_time_sec() < b.trigger_time_sec()
 	)
-	_print_debug(
-		(
-			"scheduled caption [channel=%d, offset=%.2f, dur=%.2f]: %s"
-			% [p_channel, p_offset_sec, p_duration_sec, p_text]
-		)
-	)
+	_print_debug("scheduled caption [channel=%d, offset=%.2f, dur=%.2f]: %s" % [p_channel, p_offset_sec, p_duration_sec, p_text])
 	return event
-
 
 ## Cancel a previously scheduled event. Returns true if found and removed.
 func cancel(event: CaptionEvent) -> bool:
@@ -139,7 +125,6 @@ func cancel(event: CaptionEvent) -> bool:
 		return true
 	return false
 
-
 ## Cancel all scheduled and active events for a specific channel.
 func cancel_channel(channel: Channel) -> void:
 	_event_queue = _event_queue.filter(func(e: CaptionEvent) -> bool: return e.channel != channel)
@@ -151,7 +136,6 @@ func cancel_channel(channel: Channel) -> void:
 		_active_events.erase(e)
 		caption_completed.emit(e)
 
-
 ## Flush all pending and active captions.
 func flush_all() -> void:
 	for e: CaptionEvent in _active_events.duplicate():
@@ -159,9 +143,7 @@ func flush_all() -> void:
 		caption_completed.emit(e)
 	_event_queue.clear()
 
-
 # ── Public API: BD-CLIMB Loop-Phase Gate ────────────────────────────────────
-
 
 ## Enable or disable BD-CLIMB width-modulation tracking.
 func set_bd_climb_enabled(enabled: bool) -> void:
@@ -169,7 +151,6 @@ func set_bd_climb_enabled(enabled: bool) -> void:
 	if not enabled:
 		_bd_climb_loop_phase = 0.0
 		_bd_climb_width = 0.0
-
 
 ## Report a real-time width value from the audio middleware (0.0 → 1.0).
 ## This drives the loop-phase gate and per-stem caption alignment.
@@ -180,40 +161,31 @@ func report_bd_climb_width(width_norm: float) -> void:
 	_bd_climb_loop_phase = _bd_climb_width
 	bd_climb_width_changed.emit(_bd_climb_width, _bd_climb_loop_phase)
 
-
 ## Report an explicit loop phase (0.0 = start of cycle, 1.0 = end).
 func report_bd_climb_phase(phase_norm: float) -> void:
 	_bd_climb_loop_phase = clampf(phase_norm, 0.0, 1.0)
-
 
 ## Returns true if the current loop phase is within the given window [from, to].
 func is_phase_within(from_norm: float, to_norm: float) -> bool:
 	return _bd_climb_loop_phase >= from_norm and _bd_climb_loop_phase <= to_norm
 
-
 ## Returns the current normalized width (0.0 → 1.0).
 func get_bd_climb_width() -> float:
 	return _bd_climb_width
-
 
 ## Returns the current loop phase (0.0 → 1.0).
 func get_bd_climb_phase() -> float:
 	return _bd_climb_loop_phase
 
-
 # ── Public API: Stem Transients ────────────────────────────────────────────
-
 
 ## Register a transient event for a specific stem (e.g. BD-CLIMB peak).
 ## This emits `stem_transient` so per-stem captions can align.
 func report_stem_transient(stem_id: String, event_id: String, intensity: float = 1.0) -> void:
 	var clamped_intensity: float = clampf(intensity, 0.0, 1.0)
-	_last_stem_states[stem_id] = {
-		"event_id": event_id, "intensity": clamped_intensity, "time": _time_source_sec
-	}
+	_last_stem_states[stem_id] = {"event_id": event_id, "intensity": clamped_intensity, "time": _time_source_sec}
 	stem_transient.emit(stem_id, event_id, clamped_intensity)
 	_print_debug("stem transient %s/%s intensity=%.2f" % [stem_id, event_id, clamped_intensity])
-
 
 ## Check whether a stem fired a specific transient within the last `window_sec`.
 func was_stem_transient_recent(stem_id: String, event_id: String, window_sec: float) -> bool:
@@ -223,7 +195,6 @@ func was_stem_transient_recent(stem_id: String, event_id: String, window_sec: fl
 	if rec.get("event_id", "") != event_id:
 		return false
 	return (_time_source_sec - rec.get("time", 0.0)) <= window_sec
-
 
 # ── Internal: Queue Processing ─────────────────────────────────────────────
 func _process_queue() -> void:
@@ -236,7 +207,6 @@ func _process_queue() -> void:
 	for e: CaptionEvent in triggered:
 		_event_queue.erase(e)
 		_activate_event(e)
-
 
 func _activate_event(event: CaptionEvent) -> void:
 	## If this event is on the BURDEN channel (isolated surface), it always displays.
@@ -252,7 +222,6 @@ func _activate_event(event: CaptionEvent) -> void:
 	_active_events.append(event)
 	caption_display_requested.emit(event)
 
-
 func _update_active_events(delta: float) -> void:
 	var completed: Array[CaptionEvent] = []
 	for e: CaptionEvent in _active_events:
@@ -263,7 +232,6 @@ func _update_active_events(delta: float) -> void:
 		_active_events.erase(e)
 		caption_completed.emit(e)
 
-
 func _update_bd_climb_loop(delta: float) -> void:
 	if not _bd_climb_enabled:
 		return
@@ -272,17 +240,13 @@ func _update_bd_climb_loop(delta: float) -> void:
 	## In production, the audio middleware should drive this explicitly.
 	_bd_climb_loop_phase = fmod(_bd_climb_loop_phase + delta * 1.0, 1.0)
 
-
 func _print_debug(msg: String) -> void:
 	if OS.is_debug_build():
 		print("CaptionManager: %s" % msg)
 
-
 # ── Data Classes ───────────────────────────────────────────────────────────
 
-
-class CaptionEvent:
-	extends RefCounted
+class CaptionEvent extends RefCounted:
 	var text: String = ""
 	var channel: CaptionManager.Channel = CaptionManager.Channel.DIALOGUE
 	var offset_sec: float = 0.0

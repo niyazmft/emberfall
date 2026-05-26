@@ -1,9 +1,8 @@
-extends _Modal
+extends "res://scripts/ui/modal.gd"
 
 signal confirmed
 
-@onready var confirm_button: Button = %ConfirmButton as Button
-
+@onready var confirm_button = %ConfirmButton
 
 func _ready() -> void:
 	super._ready()
@@ -12,7 +11,6 @@ func _ready() -> void:
 	# Override default focus to the primary action
 	if confirm_button:
 		confirm_button.grab_focus()
-
 
 func _on_confirm_pressed() -> void:
 	confirmed.emit()

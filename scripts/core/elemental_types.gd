@@ -5,16 +5,21 @@ class_name ElementalTypes
 ## All values are config-driven with sensible defaults.
 
 # ── Element Enumeration ───────────────────────────────────────────────
-enum Element { NONE, FIRE, WATER, WIND, OIL }  ## No active element  ## Fire: spreads, extinguished by water, amplified by oil  ## Water: extinguishes fire, blocks fire spread  ## Wind: fans fire (1.5×), spreads it to adjacent tiles  ## Oil: amplifies fire to 2.0×, causes slip terrain (0.8× speed)
+enum Element {
+	NONE,   ## No active element
+	FIRE,   ## Fire: spreads, extinguished by water, amplified by oil
+	WATER,  ## Water: extinguishes fire, blocks fire spread
+	WIND,   ## Wind: fans fire (1.5×), spreads it to adjacent tiles
+	OIL     ## Oil: amplifies fire to 2.0×, causes slip terrain (0.8× speed)
+}
 
 
 # ── Tile Effect Record ────────────────────────────────────────────────
-class TileEffect:
-	extends RefCounted
+class TileEffect extends RefCounted:
 	## A single elemental effect active on a grid tile.
 	var element: Element
-	var duration: int  ## Remaining turns before expiry
-	var applied_turn: int  ## Turn number when this effect was placed
+	var duration: int       ## Remaining turns before expiry
+	var applied_turn: int   ## Turn number when this effect was placed
 	var source_pos: Vector2i  ## Origin tile for spread tracking
 
 	func _init(
@@ -38,17 +43,18 @@ class TileEffect:
 
 
 # ── Combo Result Record ───────────────────────────────────────────────
-class ComboResult:
-	extends RefCounted
+class ComboResult extends RefCounted:
 	## Output of resolving an elemental interaction on a tile.
 	var damage_multiplier: float
 	var movement_speed_multiplier: float
-	var new_effects: Array[TileEffect]  ## Effects to add (e.g. spread fire)
-	var removed_elements: Array[Element]  ## Elements consumed/removed
+	var new_effects: Array[TileEffect]   ## Effects to add (e.g. spread fire)
+	var removed_elements: Array[Element] ## Elements consumed/removed
 	var description: String
 
 	func _init(
-		p_damage_mult: float = 1.0, p_speed_mult: float = 1.0, p_description: String = ""
+		p_damage_mult: float = 1.0,
+		p_speed_mult: float = 1.0,
+		p_description: String = ""
 	) -> void:
 		damage_multiplier = p_damage_mult
 		movement_speed_multiplier = p_speed_mult
