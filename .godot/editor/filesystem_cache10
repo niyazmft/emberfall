@@ -99,9 +99,9 @@ apparition_state_machine.gd::GDScript::4725671822314889715::1779828128::0::1::::
 base_state_machine.gd::GDScript::987227527150770283::1779828128::0::1::::BaseStateMachine<>Node<><>0<>0<><>::
 run_manager.gd::GDScript::8023596786716991964::1779828128::0::1::::<>BaseStateMachine<><>0<>0<><>::
 ::res://scripts/tests/::1779828147
-benchmark_pathfinding.gd::GDScript::1469227341158101265::1779828141::0::1::::<>Node2D<><>0<>0<><>::
+benchmark_pathfinding.gd::GDScript::1469227341158101265::1779828960::0::1::::<>Node2D<><>0<>0<><>::
 benchmark_pathfinding.tscn::PackedScene::-1::1779794559::0::1::::<><><>0<>0<><>::res://scripts/tests/benchmark_pathfinding.gd
-test_astar_grid.gd::GDScript::3441187170488330119::1779828141::0::1::::<>Node2D<><>0<>0<><>::
+test_astar_grid.gd::GDScript::3441187170488330119::1779829068::0::1::::<>Node2D<><>0<>0<><>::
 test_astar_grid.tscn::PackedScene::-1::1779794559::0::1::::<><><>0<>0<><>::res://scripts/tests/test_astar_grid.gd
 ::res://scripts/ui/::1779828128
 burden_modal.gd::GDScript::8856319272954219546::1779828128::0::1::::<>_Modal<><>0<>0<><>::
@@ -132,10 +132,10 @@ test_run_determinism.gd::GDScript::8397026447220013829::1779828128::0::1::::<>Sc
 test_state_machine.gd::GDScript::1074577206078713533::1779828128::0::1::::<>Node<><>0<>0<><>::
 test_ui_reflow.gd::GDScript::1111236756695193904::1779828128::0::1::::<>Node<><>0<>0<><>::
 test_ui_systems.gd::GDScript::7262888079804446769::1779828128::0::1::::<>Node<><>0<>0<><>::
-validate_math_report.json::JSON::-1::1779828194::0::1::::<><><>0<>0<><>::
+validate_math_report.json::JSON::-1::1779829076::0::1::::<><><>0<>0<><>::
 ::res://tools/::1779828144
-godot_lint.log::TextFile::-1::1779828197::0::1::::<><><>0<>0<><>::
-math_validation.log::TextFile::-1::1779828195::0::1::::<><><>0<>0<><>::
+godot_lint.log::TextFile::-1::1779829079::0::1::::<><><>0<>0<><>::
+math_validation.log::TextFile::-1::1779829077::0::1::::<><><>0<>0<><>::
 ::res://ui/::1779820649
 ::res://ui/dev/::1779828128
 debug_menu_overlay.gd::GDScript::1347949204477558183::1779828128::0::1::::<>CanvasLayer<><>0<>0<><>::
