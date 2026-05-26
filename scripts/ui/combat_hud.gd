@@ -8,17 +8,21 @@ extends Control
 @onready var prompts: Control = $MarginContainer/BottomChrome/Prompts
 @onready var status_icons: Control = $MarginContainer/BottomChrome/StatusIcons
 
+
 func _ready() -> void:
 	SafeZoneManager.safe_area_changed.connect(_on_safe_area_changed)
 	SafeZoneManager.aspect_ratio_changed.connect(_on_aspect_ratio_changed)
 	_apply_safe_area()
 	_reflow_bottom_chrome()
 
+
 func _on_safe_area_changed(_rect: Rect2) -> void:
 	_apply_safe_area()
 
+
 func _on_aspect_ratio_changed(_mode: SafeZoneManager.AspectMode) -> void:
 	_reflow_bottom_chrome()
+
 
 func _apply_safe_area() -> void:
 	var margins := SafeZoneManager.get_safe_margins()
@@ -26,6 +30,7 @@ func _apply_safe_area() -> void:
 	margin_container.add_theme_constant_override("margin_top", margins.top)
 	margin_container.add_theme_constant_override("margin_right", margins.right)
 	margin_container.add_theme_constant_override("margin_bottom", margins.bottom)
+
 
 func _reflow_bottom_chrome() -> void:
 	# AC: Bottom chrome priority reflow (hotbar → prompts → status icons)

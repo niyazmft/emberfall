@@ -11,35 +11,66 @@ signal stem_event_detected(stem_id: String, event_type: String, intensity: float
 
 # ── Properties ────────────────────────────────────────────────────────────
 var _stems: Dictionary = {}
+var _stem_router: Node
+var _climb_expanded: bool = false
+var _climb_converged: bool = false
 
 # ── Lifecycle ────────────────────────────────────────────────────────────────
 
+
 func _ready() -> void:
+	_setup_router()
 	_setup_stems()
 	_print_debug("AudioMiddleware ready")
 
+
 # ── Public API ─────────────────────────────────────────────────────────────
+
+
+func get_stem_router() -> Node:
+	return _stem_router
+
 
 func play_stem(stem_id: String, stream: AudioStream) -> void:
 	if _stems.has(stem_id):
-		var playback: _StemPlayback = _stems[stem_id]
-		playback.play_stream(stream)
+		var playback: Node = _stems[stem_id] as Node
+		if playback.has_method("play_stream"):
+			playback.call("play_stream", stream)
 		_print_debug("Playing stem: %s" % stem_id)
 	else:
 		push_warning("AudioMiddleware: Unknown stem_id '%s'" % stem_id)
 
+
 func stop_stem(stem_id: String) -> void:
 	if _stems.has(stem_id):
-		var playback: _StemPlayback = _stems[stem_id]
-		playback.stop()
+		var playback: Node = _stems[stem_id] as Node
+		if playback.has_method("stop"):
+			playback.call("stop")
 		_print_debug("Stopped stem: %s" % stem_id)
 
+
 func stop_all() -> void:
-	for stem_id in _stems:
-		_stems[stem_id].stop()
+	for stem_id: String in _stems.keys():
+		var playback: Node = _stems[stem_id] as Node
+		if playback.has_method("stop"):
+			playback.call("stop")
 	_print_debug("Stopped all stems")
 
+
 # ── Internal ────────────────────────────────────────────────────────────────
+
+
+func _setup_router() -> void:
+	var router_script: GDScript = (
+		load("res://scripts/core/burden_stem_caption_router.gd") as GDScript
+	)
+	if router_script:
+		_stem_router = router_script.new()
+		_stem_router.name = "BurdenStemCaptionRouter"
+		add_child(_stem_router)
+		# Note: SubtitleManager is not yet in the scene tree during autoload _ready().
+		# The router will lazily resolve the presenter at runtime.
+
 
 func _setup_stems() -> void:
 	var stem_ids: Array[String] = ["BD-BASS", "BD-MECH", "BD-STRESS", "BD-CLIMB"]
@@ -52,25 +83,49 @@ func _setup_stems() -> void:
 			push_warning("AudioMiddleware: Bus '%s' not found, using 'Master'" % bus_name)
 			bus_name = "Master"
 
-		var playback := _StemPlayback.new(id, bus_name)
+		var script: GDScript = load("res://scripts/core/stem_playback.gd") as GDScript
+		var playback: Node = script.new(id, bus_name)
 		playback.name = id.replace("-", "_")
 		add_child(playback)
 		_stems[id] = playback
 
-		playback.transient_detected.connect(_on_stem_transient_detected.bind(id))
-		playback.feature_updated.connect(_on_stem_feature_updated.bind(id))
+		playback.connect("transient_detected", _on_stem_transient_detected.bind(id))
+		playback.connect("feature_updated", _on_stem_feature_updated.bind(id))
+
 
 func _on_stem_transient_detected(type: String, intensity: float, stem_id: String) -> void:
 	stem_event_detected.emit(stem_id, type, intensity)
+
+	if _stem_router:
+		_stem_router.call("dispatch_event", stem_id, type)
+
 	_print_debug("Stem event: %s | %s | %.2f" % [stem_id, type, intensity])
+
 
 func _on_stem_feature_updated(feature: String, value: float, stem_id: String) -> void:
 	# Convert continuous feature updates to discrete events if necessary
 	if stem_id == "BD-CLIMB" and feature == "width":
 		stem_event_detected.emit(stem_id, "width_change", value)
+		if _stem_router:
+			if value > 0.7:
+				if not _climb_expanded:
+					_climb_expanded = true
+					_climb_converged = false
+					_stem_router.call("dispatch_event", stem_id, "expand")
+			elif value < 0.3:
+				if not _climb_converged:
+					_climb_converged = true
+					_climb_expanded = false
+					_stem_router.call("dispatch_event", stem_id, "converge")
+			else:
+				_climb_expanded = false
+				_climb_converged = false
 	elif stem_id == "BD-STRESS" and feature == "swell":
 		if value > 0.8:
 			stem_event_detected.emit(stem_id, "high_stress", value)
+			if _stem_router:
+				_stem_router.call("dispatch_event", stem_id, "swell_start")
+
 
 func _print_debug(msg: String) -> void:
 	if OS.is_debug_build():

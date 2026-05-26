@@ -8,6 +8,7 @@ class_name SeedGovernance
 # ── Internal ────────────────────────────────────────────────────────
 const _BLACKLISTED_SEEDS: Array[int] = []
 
+
 # ── Core Hash ───────────────────────────────────────────────────────
 static func hash_seed(input: String) -> int:
 	## SHA-256 of UTF-8 input, truncated to the first 64 bits,
@@ -23,7 +24,7 @@ static func hash_seed(input: String) -> int:
 	var bytes: PackedByteArray = ctx.finish()
 	# Truncate to 63-bit positive: concatenate first 8 bytes, mask sign bit
 	var h: int = 0
-		
+
 	for i: int in range(8):
 		h = (h << 8) | (bytes[i] & 0xFF)
 	return h & 0x7FFFFFFFFFFFFFFF
