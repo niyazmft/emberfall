@@ -36,6 +36,7 @@ var _echo_triggered: bool = false
 var _flags_updated: bool = false
 var _topology_ready: bool = false
 var _run_count: int = 0
+var _requested_seed: int = 0
 
 # Timers (frame-rate independent)
 var _biome_gen_timer: float = 0.0
@@ -135,7 +136,9 @@ func _register_transitions() -> void:
 # ---------------------------------------------------------------------------
 
 ## Call from gameplay when the player chooses "Start Run" in the Sanctum.
-func cmd_start_run() -> void:
+## Passing a value < 0 (e.g. -1) will generate a new session-deterministic seed.
+func cmd_start_run(p_seed: int = -1) -> void:
+	_requested_seed = p_seed
 	transition_to(RunState.BIOME_GENERATION)
 
 ## Call from Level/Topology system when room generation is complete.
@@ -324,7 +327,13 @@ func _guard_run_end(_ctx: Dictionary) -> bool:
 
 func _action_start_run(_ctx: Dictionary) -> void:
 	_run_count += 1
-	run_seed = hash(str(_run_count) + str(Time.get_ticks_msec()))
+	if _requested_seed >= 0:
+		run_seed = _requested_seed
+	else:
+		var entropy := OS.get_unique_id() + str(Time.get_unix_time_from_system()) + str(_run_count)
+		run_seed = SeedGovernance.hash_seed(entropy)
+
+	_requested_seed = -1
 	room_queue.clear()
 	room_index = -1
 	run_started.emit(run_seed)
@@ -335,11 +344,12 @@ func _action_generate_rooms(_ctx: Dictionary) -> void:
 	for b in range(biome_count):
 		var count := rng.randi_range(rooms_per_biome_min, rooms_per_biome_max)
 		for r in range(count):
+			var current_room_idx := room_queue.size()
 			room_queue.append({
 				"biome": b,
 				"room_in_biome": r,
-				"topology_seed": hash(str(run_seed) + "TOPO" + str(room_queue.size())),
-				"encounter_seed": hash(str(run_seed) + "ENC" + str(room_queue.size())),
+				"topology_seed": SeedGovernance.hash_int(run_seed, "TOPO" + str(current_room_idx)),
+				"encounter_seed": SeedGovernance.hash_int(run_seed, "ENC" + str(current_room_idx)),
 			})
 	total_rooms = room_queue.size()
 	room_index = 0
@@ -390,3 +400,33 @@ func _get_current_room_data() -> Dictionary:
 
 func get_current_state_name() -> StringName:
 	return state_names.get(current_state, &"UNKNOWN")
+
+## Returns a Dictionary containing the current run's state for persistence.
+## Matches save_schema.json §run_state.
+func save_run_state() -> Dictionary:
+	return {
+		"seed": run_seed,
+		"room_index": room_index,
+		"room_queue": room_queue.duplicate(true),
+		"biome_index": _get_current_biome_index(),
+	}
+
+## Restores the run's state from a saved Dictionary.
+func load_run_state(p_data: Dictionary) -> void:
+	if p_data.has("seed"):
+		run_seed = int(p_data["seed"])
+	if p_data.has("room_index"):
+		room_index = int(p_data["room_index"])
+	if p_data.has("room_queue") and p_data["room_queue"] is Array:
+		room_queue = p_data["room_queue"].duplicate(true)
+
+	memory_state_loaded = true
+	_topology_ready = true
+
+## Convert a 64-bit seed to a 16-character hex replay code.
+static func seed_to_replay_code(p_seed: int) -> String:
+	return "%016X" % p_seed
+
+## Convert a 16-character hex replay code back to a 64-bit seed.
+static func replay_code_to_seed(p_code: String) -> int:
+	return p_code.hex_to_int()
