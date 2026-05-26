@@ -14,7 +14,8 @@ func _ready() -> void:
 	tween.tween_property(self, "modulate:a", 1.0, 0.2)
 
 	# Grab focus for keyboard/gamepad accessibility
-	close_button.grab_focus()
+	if close_button:
+		close_button.grab_focus()
 
 func setup(title_key: String, body_key: String) -> void:
 	title_label.text = tr(title_key)
