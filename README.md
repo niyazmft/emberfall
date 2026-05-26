@@ -9,18 +9,18 @@ This project is built by a team of AI agents, each with a specific role, managed
 ```mermaid
 graph TD
     subgraph "High-Level Direction"
-        A(You / Hermes <br><i>'The Board'</i>) -- "Set High-Level Goals" --> B{PaperclipAI};
+        A(The Board) -- "Set High-Level Goals" --> B{PaperclipAI <br> in Termux};
     end
 
-    subgraph "Termux Environment"
-        B -- "Executes tasks locally" --> B;
-        B -- "Offloads coding tasks" --> C{Google Jules};
+    subgraph "Development & Offloading"
+        B -- "Executes local tasks" --> B;
+        B -- "Offloads coding to cloud" --> C{Google Jules <br> Cloud Agent};
     end
 
     subgraph "GitHub Operations"
         C -- "Creates Pull Request" --> D[GitHub Repo];
         D -- "CI/CD Quality Gates" --> E{Automated Review};
-        E -- "Pass" --> F(You / Hermes <br><i>Approval & Merge</i>);
+        E -- "Pass" --> F(You / Hermes <br> Approval & Merge);
         E -- "Fail" --> C;
     end
     
