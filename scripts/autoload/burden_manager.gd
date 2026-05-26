@@ -23,6 +23,7 @@ var burden_active: bool = false:
 var _kill_queue: Array[BurdenKillRecord] = []
 var _atlas_cache: Dictionary = {}
 var total_sentient_kills: int = 0
+var current_mwt_level: int = 0
 
 ## ── Gate 2-2 State ──────────────────────────────────────────────
 var _config: Dictionary = {}
@@ -53,9 +54,14 @@ var _caption_channel_isolation: bool = true
 var _caption_tolerance_sec: float = 0.2
 var _bd_climb_config: Dictionary = {}
 
+## MWT Matrix (DON-222)
+var _mwt_matrix_script := preload("res://ui/framework/mwt_caption_matrix.gd")
+var _mwt_matrix: Node = null
+
 
 func _ready() -> void:
 	_load_burden_config()
+	_mwt_matrix = _mwt_matrix_script.new()
 
 # ---------------------------------------------------------------------------
 # Config Loading
@@ -198,6 +204,7 @@ func reset() -> void:
 	_atlas_cache.clear()
 	total_sentient_kills = 0
 	burden_active = false
+	current_mwt_level = 0
 	_burden_trigger_count = 0
 	## Flush any pending Burden captions on reset
 	var cm := _caption_node()
@@ -221,12 +228,20 @@ func _config_int(key: String, fallback: int) -> int:
 
 func update_moral_weight(moral_flag: int) -> void:
 	var threshold: int = _config_int("MWT", GameConstants.MWT)
-	var old_active: bool = burden_active
+
+	var old_level := current_mwt_level
+	## Map moral_flag to MWT level (0-3) as a ratio of threshold.
+	var new_level := clampi(floori(float(moral_flag) / float(threshold) * 3.0), 0, 3)
+
+	if new_level != old_level:
+		var is_emergency := (old_level == 3 and new_level <= 1)
+		current_mwt_level = new_level
+		_schedule_mwt_transition_caption(old_level, new_level, is_emergency)
+		_schedule_mwt_state_caption(new_level)
+
 	var should_be_active := moral_flag >= threshold
 	if should_be_active != burden_active:
 		burden_active = should_be_active
-		## Schedule transition captions on threshold crossing (DON-225)
-		_schedule_transition_caption(old_active, burden_active)
 		_print_debug("burden_active toggled → %s (flag=%d, threshold=%d)" % [str(burden_active), moral_flag, threshold])
 
 # ---------------------------------------------------------------------------
@@ -363,7 +378,7 @@ func trigger_burden_event(run_seed: int, topology_seed: int, room_index: int, va
 	_schedule_burden_event_captions(result)
 
 	burden_event_triggered.emit(result)
-	_print_debug("burden event #%d triggered (first=%s, noun=%s, variant=%s)" % [_burden_trigger_count, str(is_first), noun if not result.numbness_cap_reached else "SILENT", result.phase_b_variant_id])
+	_print_debug("burden_event #%d triggered (first=%s, noun=%s, variant=%s)" % [_burden_trigger_count, str(is_first), noun if not result.numbness_cap_reached else "SILENT", result.phase_b_variant_id])
 	return result
 
 ## Expand a template string with count, collective_noun, and variant text.
@@ -387,36 +402,31 @@ func _expand_template(template_str: String, count: String, noun: String, variant
 func _caption_node() -> Node:
 	return get_node_or_null("/root/CaptionManager")
 
-## Schedule a transition caption based on old→new burden_active state.
-func _schedule_transition_caption(old_active: bool, new_active: bool) -> void:
+func _schedule_mwt_transition_caption(from_level: int, to_level: int, is_emergency: bool = false) -> void:
 	var cm := _caption_node()
-	if cm == null:
+	if cm == null or _mwt_matrix == null:
 		return
-	var key: String = ""
-	if not old_active and new_active:
-		key = "0_to_1"
-	elif old_active and not new_active:
-		## Determine normal vs emergency 3→0 based on current moral context.
-		## Emergency: if player_moral_flag <= 1 (rapid drop).
-		## For now, default to normal; caller can override via schedule_transition_caption_explicit.
-		key = "3_to_0_normal"
-	else:
+
+	var data: MWTCaptionEntry = _mwt_matrix.get_transition_caption(from_level, to_level, is_emergency)
+	if data == null:
 		return
-	var data: Dictionary = _caption_transitions.get(key, {})
-	if data.is_empty():
+
+	if cm.has_method("schedule") and not data.text.is_empty():
+		cm.call("schedule", data.text, 1, data.offset_sec, data.duration_sec, data.curve, data.localization_key)
+		_print_debug("scheduled MWT transition caption %d->%d (emergency=%s)" % [from_level, to_level, str(is_emergency)])
+
+func _schedule_mwt_state_caption(level: int) -> void:
+	var cm := _caption_node()
+	if cm == null or _mwt_matrix == null:
 		return
-	var text: String = str(data.get("text", ""))
-	if text.is_empty():
+
+	var data: MWTCaptionEntry = _mwt_matrix.get_state_caption(level)
+	if data == null:
 		return
-	var offset_sec: float = float(data.get("offset_sec", 0.0))
-	var duration_sec: float = float(data.get("duration_sec", 2.0))
-	var curve_str: String = str(data.get("curve", "LINEAR"))
-	var loc_key: String = str(data.get("localization_key", ""))
-	var curve: int = _curve_from_string(curve_str)
-	## Call CaptionManager.schedule if the method exists
+
 	if cm.has_method("schedule"):
-		cm.call("schedule", text, 1, offset_sec, duration_sec, curve, loc_key)  ## Channel.BURDEN = 1
-		_print_debug("scheduled transition caption %s (offset=%.2f, dur=%.2f, curve=%s)" % [key, offset_sec, duration_sec, curve_str])
+		cm.call("schedule", data.text, 1, 0.0, data.duration_sec, data.curve, data.localization_key)
+		_print_debug("scheduled MWT state caption for level %d" % level)
 
 ## Public API: explicitly schedule a named transition caption (for emergency 3→0 override).
 func schedule_transition_caption_explicit(transition_key: String) -> void:
@@ -444,9 +454,14 @@ func _schedule_burden_event_captions(result: BurdenEventResult) -> void:
 	var cm := _caption_node()
 	if cm == null:
 		return
-	## Phase A: stillness caption (ambient, not BURDEN channel)
+	## Phase A: stillness caption (BURDEN channel, per DON-222 requirement)
 	if not result.phase_a_localization_key.is_empty() and cm.has_method("schedule"):
-		cm.call("schedule", "[The world stills]", 2, 0.0, result.phase_a_duration_ms / 1000.0, 0, result.phase_a_localization_key + "_CAP")  ## Channel.AMBIENT = 2
+		## Per DON-222: Phase A caption fires at the exact moment control is seized.
+		cm.call("schedule", "[The world stills]", 1, 0.0, result.phase_a_duration_ms / 1000.0, 0, result.phase_a_localization_key + "_CAP")  ## Channel.BURDEN = 1
+
+	## Numbness cap caption
+	if result.numbness_cap_reached and cm.has_method("schedule"):
+		cm.call("schedule", "[The burden is silent]", 1, 0.0, 4.0, 1, "BE_CAP_NUMBNESS")
 
 	## Phase B: the witness text (BURDEN channel)
 	if not result.phase_b_text.is_empty() and cm.has_method("schedule"):
