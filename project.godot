@@ -41,6 +41,7 @@ BurdenManager="*res://scripts/autoload/burden_manager.gd"
 CaptionManager="*res://scripts/autoload/caption_manager.gd"
 EntityLifecycle="*res://scripts/entities/entity_lifecycle.gd"
 RunManager="*res://scripts/state_machine/run_manager.gd"
+GridSystem="*res://scripts/autoload/grid_system.gd"
 
 [physics]
 2d/run_on_separate_thread=true
