@@ -12,22 +12,23 @@ extends Node2D
 
 const STACK_COUNT: int = 3
 const TRAIL_COUNT: int = 6
-const RIG_CONFIG_PATH := "res://char_apparition_rig.json"
+const RIG_CONFIG_PATH: String = "res://char_apparition_rig.json"
+
+## Default layout constants (exposed for tests and fallback)
+const VERTICAL_OFFSETS: Array[int] = [0, 8, 16]
+const OPACITY_TIERS: Array[float] = [0.55, 0.45, 0.35]
+const SCALE_TIERS: Array[float] = [1.00, 0.95, 0.90]
 
 ## Configuration data from JSON
 var _rig_config: Dictionary = {}
 
-## Default vertical offsets in pixels (composite stack).
-var vertical_offsets: PackedInt32Array = PackedInt32Array([0, 8, 16])
-
-## Opacity tiers (front → back).
-var opacity_tiers: PackedFloat32Array = PackedFloat32Array([0.55, 0.45, 0.35])
-
-## Scale multipliers (front → back).
-var scale_tiers: PackedFloat32Array = PackedFloat32Array([1.00, 0.95, 0.90])
+## Instance-specific layout (initialized from constants, overridden by config)
+var vertical_offsets: Array[int] = [0, 8, 16]
+var opacity_tiers: Array[float] = [0.55, 0.45, 0.35]
+var scale_tiers: Array[float] = [1.00, 0.95, 0.90]
 
 ## Sentinel when no silhouette is available.
-const PLACEHOLDER_ATLAS_UID := "placeholder:silhouette"
+const PLACEHOLDER_ATLAS_UID: String = "placeholder:silhouette"
 
 @export var owner_z_index_offset: int = -1:
 	set(value):
@@ -64,6 +65,7 @@ var _dissolve_noise: NoiseTexture2D
 # Lifecycle
 # ---------------------------------------------------------------------------
 
+
 func _ready() -> void:
 	_load_rig_config()
 	z_index = owner_z_index_offset
@@ -79,8 +81,10 @@ func _ready() -> void:
 		BurdenManager.burden_active_changed.connect(_on_burden_active_changed)
 
 	# Initial sync.
-	_on_burden_active_changed(BurdenManager.burden_active)
+	if BurdenManager:
+		_on_burden_active_changed(BurdenManager.burden_active)
 	_refresh_stack()
+
 
 func _process(delta: float) -> void:
 	if state_machine:
@@ -89,126 +93,168 @@ func _process(delta: float) -> void:
 	_update_trail(delta)
 	_update_shader_uniforms(delta)
 
+
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
 
+
 func _load_rig_config() -> void:
 	if not FileAccess.file_exists(RIG_CONFIG_PATH):
-		push_warning("ApparitionRenderer: config file not found at %s. Using defaults." % RIG_CONFIG_PATH)
+		push_warning(
+			"ApparitionRenderer: config file not found at %s. Using defaults." % RIG_CONFIG_PATH
+		)
 		return
 
-	var file := FileAccess.open(RIG_CONFIG_PATH, FileAccess.READ)
-	var json_text := file.get_as_text()
-	var json := JSON.new()
-	var error := json.parse(json_text)
+	var file: FileAccess = FileAccess.open(RIG_CONFIG_PATH, FileAccess.READ)
+	if file == null:
+		return
+	var json_text: String = file.get_as_text()
+	file.close()
+
+	var json: JSON = JSON.new()
+	var error: Error = json.parse(json_text)
 	if error == OK and json.data is Dictionary:
-		_rig_config = json.data
+		_rig_config = json.data as Dictionary
 		_apply_rig_config()
 	else:
-		push_error("ApparitionRenderer: failed to parse JSON config or config is not a Dictionary: %s" % json.get_error_message())
+		push_error(
+			(
+				"ApparitionRenderer: failed to parse JSON config or config is not a Dictionary: %s"
+				% json.get_error_message()
+			)
+		)
+
 
 func _apply_rig_config() -> void:
 	if _rig_config.is_empty():
 		return
 
-	var stack := _rig_config.get("stack", {})
+	var stack: Dictionary = _rig_config.get("stack", {}) as Dictionary
 	if not stack.is_empty():
-		var offsets = stack.get("vertical_offsets", [0, 8, 16])
-		if offsets.size() >= STACK_COUNT:
-			vertical_offsets = PackedInt32Array(offsets)
+		var v_offsets: Variant = stack.get("vertical_offsets")
+		if v_offsets is Array and v_offsets.size() >= STACK_COUNT:
+			vertical_offsets.clear()
+			for val: Variant in v_offsets:
+				vertical_offsets.append(int(val))
 
-		var opacities = stack.get("opacity_tiers", [0.55, 0.45, 0.35])
-		if opacities.size() >= STACK_COUNT:
-			opacity_tiers = PackedFloat32Array(opacities)
+		var o_tiers: Variant = stack.get("opacity_tiers")
+		if o_tiers is Array and o_tiers.size() >= STACK_COUNT:
+			opacity_tiers.clear()
+			for val: Variant in o_tiers:
+				opacity_tiers.append(float(val))
 
-		var scales = stack.get("scale_tiers", [1.00, 0.95, 0.90])
-		if scales.size() >= STACK_COUNT:
-			scale_tiers = PackedFloat32Array(scales)
+		var s_tiers: Variant = stack.get("scale_tiers")
+		if s_tiers is Array and s_tiers.size() >= STACK_COUNT:
+			scale_tiers.clear()
+			for val: Variant in s_tiers:
+				scale_tiers.append(float(val))
 
-	var recoil := _rig_config.get("recoil", {})
+	var recoil: Dictionary = _rig_config.get("recoil", {}) as Dictionary
 	if not recoil.is_empty():
-		recoil_z_index_offset = recoil.get("z_promotion", 2)
+		recoil_z_index_offset = int(recoil.get("z_promotion", 2))
+
 
 # ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
+
 
 ## Call when the owner entity is recoiling (e.g. on hit).
 func trigger_recoil() -> void:
 	if state_machine:
 		state_machine.cmd_recoil()
 
+
 ## Call every frame to sync position to owner.
 func sync_to_owner(owner_position: Vector2) -> void:
 	global_position = owner_position
+
 
 ## Force refresh silhouette stack from BurdenManager.
 func refresh_stack() -> void:
 	_refresh_stack()
 
+
 ## Set opacity of the entire composite stack (0.0 – 1.0).
 ## Called by the state machine during manifest / absolve fades.
 func set_stack_opacity(alpha: float) -> void:
 	_master_alpha = alpha
-	for i in range(_silhouette_sprites.size()):
-		var sprite := _silhouette_sprites[i]
-		# The _silhouette_sprites array is indexed i = 0 (Front) to i = STACK_COUNT-1 (Back)
-		# BUT they were added to the tree in REVERSE order in _create_stack_sprites.
-		# The sprite at _silhouette_sprites[i] corresponds to opacity_tiers[i].
+	for i: int in range(_silhouette_sprites.size()):
+		var sprite: Sprite2D = _silhouette_sprites[i]
 		var tier_alpha: float = opacity_tiers[i] if i < opacity_tiers.size() else 0.35
 		sprite.modulate.a = tier_alpha * alpha
 
+
 ## Promote z-index during recoil.
 func promote_z_index() -> void:
-	var owner_node := _owner.get_ref() as Node2D if _owner else null
+	var owner_node: Node2D = _owner.get_ref() as Node2D if _owner else null
 	if owner_node:
 		z_index = owner_node.z_index + recoil_z_index_offset
 	else:
 		z_index = owner_z_index_offset + recoil_z_index_offset + 1
 
+
 ## Restore default z-index.
 func restore_z_index() -> void:
-	var owner_node := _owner.get_ref() as Node2D if _owner else null
+	var owner_node: Node2D = _owner.get_ref() as Node2D if _owner else null
 	if owner_node:
 		z_index = owner_node.z_index + owner_z_index_offset
 	else:
 		z_index = owner_z_index_offset
+
 
 ## Inject owner reference (call after instantiation / reparent).
 func bind_owner(owner_entity: Node2D) -> void:
 	_owner = weakref(owner_entity)
 	_update_z_index()
 
+
 # ---------------------------------------------------------------------------
 # BurdenManager callbacks
 # ---------------------------------------------------------------------------
 
+
 func _on_kill_history_changed(_queue: Array[BurdenManager.BurdenKillRecord]) -> void:
 	_refresh_stack()
 
+
 func _on_burden_active_changed(active: bool) -> void:
 	if active:
-		if state_machine and state_machine.current_state == ApparitionStateMachine.ApparitionState.INACTIVE:
+		if (
+			state_machine
+			and (
+				state_machine.current_state == ApparitionStateMachine.ApparitionState.INACTIVE
+				or state_machine.current_state == ApparitionStateMachine.ApparitionState.ERROR
+			)
+		):
 			state_machine.cmd_manifest()
 	else:
-		if state_machine and state_machine.current_state != ApparitionStateMachine.ApparitionState.INACTIVE:
+		if (
+			state_machine
+			and state_machine.current_state != ApparitionStateMachine.ApparitionState.INACTIVE
+		):
 			state_machine.cmd_absolve()
+
 
 # ---------------------------------------------------------------------------
 # Internals
 # ---------------------------------------------------------------------------
 
+
 func _create_dissolve_noise() -> void:
 	_dissolve_noise = NoiseTexture2D.new()
 	_dissolve_noise.width = 128
 	_dissolve_noise.height = 128
-	var noise := FastNoiseLite.new()
-	noise.frequency = _rig_config.get("dissolve", {}).get("noise_frequency", 4.0) / 100.0
+	var noise: FastNoiseLite = FastNoiseLite.new()
+	noise.frequency = (
+		float((_rig_config.get("dissolve", {}) as Dictionary).get("noise_frequency", 4.0)) / 100.0
+	)
 	_dissolve_noise.noise = noise
 
+
 func _create_tint_material() -> void:
-	var shader := load("res://scripts/shaders/apparition_composite.gdshader") as Shader
+	var shader: Shader = load("res://scripts/shaders/apparition_composite.gdshader") as Shader
 	if shader == null:
 		push_warning("ApparitionRenderer: could not load apparition_composite.gdshader")
 		return
@@ -216,25 +262,35 @@ func _create_tint_material() -> void:
 	_tint_material.shader = shader
 
 	# Apply colors from config
-	var colors := _rig_config.get("colors", {})
+	var colors: Dictionary = _rig_config.get("colors", {}) as Dictionary
 	if not colors.is_empty():
-		_tint_material.set_shader_parameter("u_spectral_tint_color", Color(colors.get("spectral_tint", "#2A6F6F")))
-		_tint_material.set_shader_parameter("u_inner_bleed_color", Color(colors.get("inner_bleed", "#9A8C98")))
-		_tint_material.set_shader_parameter("u_after_trail_color", Color(colors.get("after_image", "#C9ADA7")))
+		_tint_material.set_shader_parameter(
+			"u_spectral_tint_color", Color(colors.get("spectral_tint", "#2A6F6F"))
+		)
+		_tint_material.set_shader_parameter(
+			"u_inner_bleed_color", Color(colors.get("inner_bleed", "#9A8C98"))
+		)
+		_tint_material.set_shader_parameter(
+			"u_after_trail_color", Color(colors.get("after_image", "#C9ADA7"))
+		)
 
 	# Ensure default uniforms match spec §2.2
 	_tint_material.set_shader_parameter("u_desaturation_amount", 0.2)
 	_tint_material.set_shader_parameter("u_spectral_tint_opacity", 0.4)
 	_tint_material.set_shader_parameter("u_inner_bleed_opacity", 0.15)
-	_tint_material.set_shader_parameter("u_after_trail_opacity", _rig_config.get("trail", {}).get("intensity", 0.2))
+	_tint_material.set_shader_parameter(
+		"u_after_trail_opacity",
+		float((_rig_config.get("trail", {}) as Dictionary).get("intensity", 0.2))
+	)
 	_tint_material.set_shader_parameter("u_intensity", 1.0)
 
 	_tint_material.set_shader_parameter("u_dissolve_noise", _dissolve_noise)
 
+
 func _create_stack_sprites() -> void:
 	# Add in reverse order so Index 0 is on top (rendered last)
-	for i in range(STACK_COUNT - 1, -1, -1):
-		var sprite := Sprite2D.new()
+	for i: int in range(STACK_COUNT - 1, -1, -1):
+		var sprite: Sprite2D = Sprite2D.new()
 		sprite.name = "Silhouette_%d" % i
 		sprite.centered = true
 		if _tint_material:
@@ -247,28 +303,30 @@ func _create_stack_sprites() -> void:
 		_silhouette_sprites.insert(0, sprite)
 		add_child(sprite)
 
+
 func _create_trail_sprites() -> void:
-	for i in range(TRAIL_COUNT):
-		var sprite := Sprite2D.new()
+	for i: int in range(TRAIL_COUNT):
+		var sprite: Sprite2D = Sprite2D.new()
 		sprite.name = "Trail_%d" % i
 		sprite.centered = true
-		sprite.top_level = true # Trail stays in world space
+		sprite.top_level = true  # Trail stays in world space
 		if _tint_material:
 			sprite.material = _tint_material
-		sprite.modulate.a = 0.0 # Start invisible
+		sprite.modulate.a = 0.0  # Start invisible
 		_trail_sprites.append(sprite)
 		add_child(sprite)
+
 
 func _refresh_stack() -> void:
 	if not BurdenManager:
 		return
-	var ids := BurdenManager.get_last_enemy_ids(STACK_COUNT)
+	var ids: PackedStringArray = BurdenManager.get_last_enemy_ids(STACK_COUNT)
 	_current_stack = ids
 
-	for i in range(STACK_COUNT):
-		var sprite := _silhouette_sprites[i]
+	for i: int in range(STACK_COUNT):
+		var sprite: Sprite2D = _silhouette_sprites[i]
 		if i < ids.size():
-			var tex := BurdenManager.get_silhouette_texture(ids[i])
+			var tex: Texture2D = BurdenManager.get_silhouette_texture(ids[i])
 			if tex:
 				sprite.texture = tex
 			else:
@@ -280,7 +338,8 @@ func _refresh_stack() -> void:
 		sprite.scale = Vector2(scale_tiers[i], scale_tiers[i])
 		sprite.modulate.a = opacity_tiers[i] * _master_alpha
 
-func _update_shader_uniforms(delta: float) -> void:
+
+func _update_shader_uniforms(_delta: float) -> void:
 	if not state_machine:
 		return
 
@@ -288,17 +347,24 @@ func _update_shader_uniforms(delta: float) -> void:
 	var shear_intensity: float = 0.0
 
 	# Breathing idle animation
-	var breathing := _rig_config.get("breathing", {})
-	var amplitude: float = breathing.get("amplitude", 0.08)
-	var frequency: float = breathing.get("frequency", 2.734)
-	var breathing_intensity := 1.0 + sin(Time.get_ticks_msec() * 0.001 * frequency * TAU) * amplitude
+	var breathing: Dictionary = _rig_config.get("breathing", {}) as Dictionary
+	var amplitude: float = float(breathing.get("amplitude", 0.08))
+	var frequency: float = float(breathing.get("frequency", 2.734))
+	var breathing_intensity: float = (
+		1.0 + sin(Time.get_ticks_msec() * 0.001 * frequency * TAU) * amplitude
+	)
 
 	match state_machine.current_state:
 		ApparitionStateMachine.ApparitionState.ABSORB:
-			var duration: float = _rig_config.get("dissolve", {}).get("duration_ms", 400) / 1000.0
+			var duration: float = (
+				float((_rig_config.get("dissolve", {}) as Dictionary).get("duration_ms", 400))
+				/ 1000.0
+			)
 			dissolve_threshold = clampf(state_machine._absorb_timer / duration, 0.0, 1.0)
 		ApparitionStateMachine.ApparitionState.RECOIL:
-			var base_shear = _rig_config.get("recoil", {}).get("shear_intensity", 1.2)
+			var base_shear: float = float(
+				(_rig_config.get("recoil", {}) as Dictionary).get("shear_intensity", 1.2)
+			)
 			# Shear direction depends on owner facing vs. damage source if available,
 			# but here we can just use a simple sine jitter or fixed offset.
 			# For DON-267, we just ensure it's applied correctly.
@@ -310,28 +376,31 @@ func _update_shader_uniforms(delta: float) -> void:
 		_tint_material.set_shader_parameter("u_shear_intensity", shear_intensity)
 		_tint_material.set_shader_parameter("u_intensity", breathing_intensity)
 
+
 func _update_trail(delta: float) -> void:
 	if _trail_sprites.is_empty() or not state_machine:
 		return
 
-	if state_machine.current_state == ApparitionStateMachine.ApparitionState.INACTIVE or \
-	   state_machine.current_state == ApparitionStateMachine.ApparitionState.ABSORB:
+	if (
+		state_machine.current_state == ApparitionStateMachine.ApparitionState.INACTIVE
+		or state_machine.current_state == ApparitionStateMachine.ApparitionState.ABSORB
+	):
 		# Fade out trails if inactive or absorbing
-		for sprite in _trail_sprites:
+		for sprite: Sprite2D in _trail_sprites:
 			sprite.modulate.a = lerpf(sprite.modulate.a, 0.0, delta * 10.0)
 		return
 
-	var trail_config := _rig_config.get("trail", {})
-	var lifetime_ms: float = maxf(trail_config.get("lifetime_ms", 300), 1.0)
+	var trail_config: Dictionary = _rig_config.get("trail", {}) as Dictionary
+	var lifetime_ms: float = maxf(float(trail_config.get("lifetime_ms", 300)), 1.0)
 	var interval: float = (lifetime_ms / 1000.0) / TRAIL_COUNT
-	var intensity: float = trail_config.get("intensity", 0.2) * _master_alpha
+	var intensity: float = float(trail_config.get("intensity", 0.2)) * _master_alpha
 
 	_trail_timer += delta
 	if _trail_timer >= interval:
 		_trail_timer = 0.0
 
 		# Update trail sprite
-		var sprite := _trail_sprites[_trail_index]
+		var sprite: Sprite2D = _trail_sprites[_trail_index]
 
 		# Pick the front-most silhouette texture for the trail
 		if not _silhouette_sprites.is_empty():
@@ -345,24 +414,39 @@ func _update_trail(delta: float) -> void:
 
 	# Continuous fade for all trail sprites
 	var fade_speed: float = 1.0 / (lifetime_ms / 1000.0)
-	for sprite in _trail_sprites:
+	for sprite: Sprite2D in _trail_sprites:
 		if sprite.modulate.a > 0.0:
 			sprite.modulate.a = clampf(sprite.modulate.a - delta * fade_speed * intensity, 0.0, 1.0)
 
+
 func _update_z_index() -> void:
-	var owner_node := _owner.get_ref() as Node2D if _owner else null
+	var owner_node: Node2D = _owner.get_ref() as Node2D if _owner else null
 	if owner_node:
 		z_index = owner_node.z_index + owner_z_index_offset
 	else:
 		z_index = owner_z_index_offset
 
+
 func _get_placeholder_texture() -> Texture2D:
-	var cached := BurdenManager.get_silhouette_texture(PLACEHOLDER_ATLAS_UID)
+	var cached: Texture2D = BurdenManager.get_silhouette_texture(PLACEHOLDER_ATLAS_UID)
 	if cached:
 		return cached
 	# Create a procedural 64×64 silhouette placeholder (white blob).
-	var img := Image.create(64, 64, false, Image.FORMAT_RGBA8)
+	var img: Image = Image.create(64, 64, false, Image.FORMAT_RGBA8)
 	img.fill(Color(1.0, 1.0, 1.0, 1.0))
-	var tex := ImageTexture.create_from_image(img)
+	var tex: ImageTexture = ImageTexture.create_from_image(img)
 	BurdenManager.register_silhouette(PLACEHOLDER_ATLAS_UID, tex)
 	return tex
+
+
+func _on_manifested() -> void:
+	_print_debug("Manifested signal received")
+
+
+func _on_absolved() -> void:
+	_print_debug("Absolved signal received")
+
+
+func _print_debug(msg: String) -> void:
+	if OS.is_debug_build():
+		print("ApparitionRenderer: %s" % msg)
