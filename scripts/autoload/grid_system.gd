@@ -1,4 +1,5 @@
 extends Node
+class_name _GridSystem
 ## GridSystem (autoload)
 ## Owns the 12×12 tactical grid, tile metadata, and pre-computed cover
 ## tables. Loads room definitions from JSON and exposes a clean API
@@ -94,29 +95,31 @@ func all_tiles() -> Array[TacTileData]:
 func load_room(data: Dictionary) -> Error:
 	_reset_grid()
 	if data.has("id"):
-		room_id = data["id"]
-	if not data.has("tiles"):
+		room_id = str(data["id"])
+	if not data.has("tiles") or not data["tiles"] is Array:
 		return ERR_INVALID_DATA
-	var tile_list: Array = data["tiles"]
+	var tile_list: Array = data["tiles"] as Array
 	for entry: Variant in tile_list:
 		if not entry is Dictionary:
 			continue
-		var d: Dictionary = entry
-		var x: int = d.get("x", -1)
-		var y: int = d.get("y", -1)
+		var d: Dictionary = entry as Dictionary
+		var x: int = int(d.get("x", -1))
+		var y: int = int(d.get("y", -1))
 		if not is_in_bounds(x, y):
 			continue
 		var t: TacTileData = get_tile(x, y)
-		t.elevation = d.get("elevation", 0)
-		t.cover = d.get("cover", 0)
-		t.blocks_movement = d.get("blocks_movement", false)
-		t.blocks_vision = d.get("blocks_vision", false)
+		t.elevation = int(d.get("elevation", 0)) as TacTileData.Elevation
+		t.cover = int(d.get("cover", 0)) as TacTileData.CoverType
+		t.blocks_movement = bool(d.get("blocks_movement", false))
+		t.blocks_vision = bool(d.get("blocks_vision", false))
 		if d.has("tags") and d["tags"] is Array:
-			for tag: Variant in d["tags"]:
+			var tag_list: Array = d["tags"] as Array
+			for tag: Variant in tag_list:
 				t.tags.append(str(tag))
 		t.recompute_flags()
 	_recompute_cover_cache()
 	return OK
+
 
 ## Convenience: load from a JSON file path (async-friendly wrapper).
 func load_room_from_file(path: String) -> Error:
@@ -129,6 +132,8 @@ func load_room_from_file(path: String) -> Error:
 	var err: Error = json.parse(text)
 	if err != OK:
 		return err
+	if not json.data is Dictionary:
+		return ERR_INVALID_DATA
 	return load_room(json.data)
 
 ## ------------------------------------------------------------------

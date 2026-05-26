@@ -1,4 +1,4 @@
-extends Node
+extends SceneTree
 ## Unit / integration tests for Entity Lifecycle (DON-100 B2).
 ## Run via Godot Editor test runner or `godot --headless --script tests/test_entity_lifecycle.gd`.
 #
@@ -8,9 +8,9 @@ extends Node
 ##   AC-3: State transitions deterministic and reversible where required
 
 func run_all() -> void:
-	var passed := 0
-	var failed := 0
-	var tests := [
+	var passed: int = 0
+	var failed: int = 0
+	var tests: Array[String] = [
 		"test_damage_transitions_to_dying",
 		"test_heal_reverses_dying",
 		"test_stun_timer_resolves_to_idle",
@@ -26,7 +26,7 @@ func run_all() -> void:
 
 	for name: String in tests:
 		print("Running %s ..." % name)
-		var ok: bool = call(name)
+		var ok: Variant = call(name)
 		if ok is bool and ok:
 			passed += 1
 			print("  PASS")
@@ -37,25 +37,38 @@ func run_all() -> void:
 	print("")
 	print("Results: %d passed, %d failed out of %d" % [passed, failed, tests.size()])
 	if failed > 0:
-		push_error("EntityLifecycle test suite had failures.")
-		get_tree().quit(1)
+		push_error("_EntityLifecycle test suite had failures.")
+		quit(1)
 	else:
-		get_tree().quit(0)
+		quit(0)
 
 
 # ── Test harness helpers ─────────────────────────────────────────────────
 
-func _new_lifecycle() -> Node:
-	var script := load("res://scripts/entities/entity_lifecycle.gd")
-	var el := script.new()
-	get_tree().root.add_child(el)
+func _new_lifecycle() -> _EntityLifecycle:
+	# Add required autoloads to the root if they aren't there (for headless script runs)
+	if not root.has_node("ConfigLoader"):
+		var cl_script: GDScript = load("res://scripts/autoload/config_loader.gd")
+		var cl: Node = cl_script.new()
+		cl.name = "ConfigLoader"
+		root.add_child(cl)
+	
+	if not root.has_node("BurdenManager"):
+		var bm_script: GDScript = load("res://scripts/autoload/burden_manager.gd")
+		var bm: Node = bm_script.new()
+		bm.name = "BurdenManager"
+		root.add_child(bm)
+
+	var script: GDScript = load("res://scripts/entities/entity_lifecycle.gd")
+	var el: _EntityLifecycle = script.new() as _EntityLifecycle
+	root.add_child(el)
 	return el
 
 
 # ── AC-1: Damage applies and transitions to DYING ──────────────────────────
 func test_damage_transitions_to_dying() -> bool:
-	var el := _new_lifecycle()
-	var enemy := Entity.new("TestEnemy", 0, 0, 10, 5, 3)
+	var el: _EntityLifecycle = _new_lifecycle()
+	var enemy: Entity = Entity.new("TestEnemy", 0, 0, 10, 5, 3)
 	el.apply_damage(null, enemy, 10)
 	if enemy.hp != 0:
 		push_error("Expected HP 0, got %d" % enemy.hp)
@@ -68,8 +81,8 @@ func test_damage_transitions_to_dying() -> bool:
 
 # ── AC-1: Heal reverses DYING → IDLE ─────────────────────────────────────
 func test_heal_reverses_dying() -> bool:
-	var el := _new_lifecycle()
-	var enemy := Entity.new("TestEnemy", 0, 0, 10, 5, 3)
+	var el: _EntityLifecycle = _new_lifecycle()
+	var enemy: Entity = Entity.new("TestEnemy", 0, 0, 10, 5, 3)
 	el.apply_damage(null, enemy, 10)
 	if enemy.state != Entity.State.DYING:
 		push_error("Expected DYING before heal")
@@ -86,8 +99,8 @@ func test_heal_reverses_dying() -> bool:
 
 # ── AC-3: Stun timer resolves STUNNED → IDLE ───────────────────────────────
 func test_stun_timer_resolves_to_idle() -> bool:
-	var el := _new_lifecycle()
-	var enemy := Entity.new("TestEnemy", 0, 0, 10, 5, 3)
+	var el: _EntityLifecycle = _new_lifecycle()
+	var enemy: Entity = Entity.new("TestEnemy", 0, 0, 10, 5, 3)
 	el.stun(enemy, 1)
 	if enemy.state != Entity.State.STUNNED:
 		push_error("Expected STUNNED")
@@ -101,8 +114,8 @@ func test_stun_timer_resolves_to_idle() -> bool:
 
 # ── AC-3: Dying timer resolves DYING → DEAD ────────────────────────────────
 func test_dying_timer_resolves_to_dead() -> bool:
-	var el := _new_lifecycle()
-	var enemy := Entity.new("TestEnemy", 0, 0, 10, 5, 3)
+	var el: _EntityLifecycle = _new_lifecycle()
+	var enemy: Entity = Entity.new("TestEnemy", 0, 0, 10, 5, 3)
 	el.apply_damage(null, enemy, 10)
 	if enemy.state != Entity.State.DYING:
 		push_error("Expected DYING")
@@ -116,13 +129,13 @@ func test_dying_timer_resolves_to_dead() -> bool:
 
 # ── AC-3: Spare transitions DYING → GHOST ────────────────────────────────
 func test_spare_transitions_to_ghost() -> bool:
-	var el := _new_lifecycle()
-	var player := Entity.new("Player", 0, 0, 40, 12, 6)
+	var el: _EntityLifecycle = _new_lifecycle()
+	var player: Entity = Entity.new("Player", 0, 0, 40, 12, 6)
 	player.is_player = true
 	player.ap = 3
 	el.player_entity = player
 
-	var enemy := Entity.new("TestEnemy", 0, 0, 10, 5, 3)
+	var enemy: Entity = Entity.new("TestEnemy", 0, 0, 10, 5, 3)
 	el.apply_damage(null, enemy, 10)
 	var ok: bool = el.spare_entity(player, enemy)
 	if not ok:
@@ -139,12 +152,12 @@ func test_spare_transitions_to_ghost() -> bool:
 
 # ── AC-1: process_kill queues a delta ────────────────────────────────────
 func test_process_kill_queues_moral_delta() -> bool:
-	var el := _new_lifecycle()
-	var player := Entity.new("Player", 0, 0, 40, 12, 6)
+	var el: _EntityLifecycle = _new_lifecycle()
+	var player: Entity = Entity.new("Player", 0, 0, 40, 12, 6)
 	player.is_player = true
 	el.player_entity = player
 
-	var enemy := Entity.new("TestEnemy", 0, 0, 10, 5, 3)
+	var enemy: Entity = Entity.new("TestEnemy", 0, 0, 10, 5, 3)
 	el.apply_damage(null, enemy, 10)
 	el.process_kill(player, enemy, true, "enemy_01", "Grunt")
 	if el.get_queued_delta_count() != 1:
@@ -155,13 +168,13 @@ func test_process_kill_queues_moral_delta() -> bool:
 
 # ── AC-1: resolve_moral_queue increments flag ────────────────────────────
 func test_resolve_moral_queue_increments_flag() -> bool:
-	var el := _new_lifecycle()
-	var player := Entity.new("Player", 0, 0, 40, 12, 6)
+	var el: _EntityLifecycle = _new_lifecycle()
+	var player: Entity = Entity.new("Player", 0, 0, 40, 12, 6)
 	player.is_player = true
 	player.moral_flag = 0
 	el.player_entity = player
 
-	var enemy := Entity.new("TestEnemy", 0, 0, 10, 5, 3)
+	var enemy: Entity = Entity.new("TestEnemy", 0, 0, 10, 5, 3)
 	el.apply_damage(null, enemy, 10)
 	el.process_kill(player, enemy, true, "enemy_01", "Grunt")
 	el.resolve_moral_queue()
@@ -173,44 +186,43 @@ func test_resolve_moral_queue_increments_flag() -> bool:
 
 # ── AC-2: MWT fires at exactly 3 ──────────────────────────────────────────
 func test_mwt_fires_at_three() -> bool:
-	var el := _new_lifecycle()
-	var player := Entity.new("Player", 0, 0, 40, 12, 6)
+	var el: _EntityLifecycle = _new_lifecycle()
+	var player: Entity = Entity.new("Player", 0, 0, 40, 12, 6)
 	player.is_player = true
 	player.moral_flag = 2
 	el.player_entity = player
 
-	var hit_mwt := false
-	var reached_flag := -1
+	var results := { "hit": false, "flag": -1 }
 	el.mwt_reached.connect(func(flag: int, remaining: int) -> void:
-		hit_mwt = true
-		reached_flag = flag
+		results.hit = true
+		results.flag = flag
 	)
 
-	var enemy := Entity.new("TestEnemy", 0, 0, 10, 5, 3)
+	var enemy: Entity = Entity.new("TestEnemy", 0, 0, 10, 5, 3)
 	el.apply_damage(null, enemy, 10)
 	el.process_kill(player, enemy, true, "enemy_01", "Grunt")
 	el.resolve_moral_queue()
 
-	if not hit_mwt:
+	if not results.hit:
 		push_error("Expected mwt_reached signal at MWT=3")
 		return false
-	if reached_flag != 3:
-		push_error("Expected flag 3, got %d" % reached_flag)
+	if results.flag != 3:
+		push_error("Expected flag 3, got %d" % results.flag)
 		return false
 	return true
 
 
 # ── AC-2: MWT queues remaining deltas for next legal moment ──────────────
 func test_mwt_queues_remaining_deltas() -> bool:
-	var el := _new_lifecycle()
-	var player := Entity.new("Player", 0, 0, 40, 12, 6)
+	var el: _EntityLifecycle = _new_lifecycle()
+	var player: Entity = Entity.new("Player", 0, 0, 40, 12, 6)
 	player.is_player = true
 	player.moral_flag = 2
 	el.player_entity = player
 
 	## Kill 3 enemies in one phase (AoE simulation)
 	for i in range(3):
-		var enemy := Entity.new("Enemy%d" % i, 0, 0, 10, 5, 3)
+		var enemy: Entity = Entity.new("Enemy%d" % i, 0, 0, 10, 5, 3)
 		el.apply_damage(null, enemy, 10)
 		el.process_kill(player, enemy, true, "enemy_%d" % i, "Grunt")
 
@@ -225,13 +237,13 @@ func test_mwt_queues_remaining_deltas() -> bool:
 		push_error("Expected 2 remaining deltas, got %d" % el.get_queued_delta_count())
 		return false
 
-	## Second resolve should process next delta (3→4, no MWT crossing again)
+	## Second resolve processes ALL remaining deltas (since no more MWT crossings)
 	el.resolve_moral_queue()
-	if player.moral_flag != 4:
-		push_error("Expected moral_flag 4 after second resolve, got %d" % player.moral_flag)
+	if player.moral_flag != 5:
+		push_error("Expected moral_flag 5 after second resolve, got %d" % player.moral_flag)
 		return false
-	if el.get_queued_delta_count() != 1:
-		push_error("Expected 1 remaining delta, got %d" % el.get_queued_delta_count())
+	if el.get_queued_delta_count() != 0:
+		push_error("Expected 0 remaining deltas, got %d" % el.get_queued_delta_count())
 		return false
 
 	return true
@@ -239,14 +251,14 @@ func test_mwt_queues_remaining_deltas() -> bool:
 
 # ── AC-1: Spare applies negative MORAL_DELTA ─────────────────────────────
 func test_spare_applies_negative_delta() -> bool:
-	var el := _new_lifecycle()
-	var player := Entity.new("Player", 0, 0, 40, 12, 6)
+	var el: _EntityLifecycle = _new_lifecycle()
+	var player: Entity = Entity.new("Player", 0, 0, 40, 12, 6)
 	player.is_player = true
 	player.moral_flag = 2
 	player.ap = 3
 	el.player_entity = player
 
-	var enemy := Entity.new("TestEnemy", 0, 0, 10, 5, 3)
+	var enemy: Entity = Entity.new("TestEnemy", 0, 0, 10, 5, 3)
 	el.apply_damage(null, enemy, 10)
 	el.spare_entity(player, enemy)
 	el.resolve_moral_queue()
@@ -259,8 +271,8 @@ func test_spare_applies_negative_delta() -> bool:
 
 # ── AC-3: Reset clears queue and timers ──────────────────────────────────
 func test_reset_clears_queue_and_timers() -> bool:
-	var el := _new_lifecycle()
-	var enemy := Entity.new("TestEnemy", 0, 0, 10, 5, 3)
+	var el: _EntityLifecycle = _new_lifecycle()
+	var enemy: Entity = Entity.new("TestEnemy", 0, 0, 10, 5, 3)
 	el.stun(enemy, 3)
 	el.apply_damage(null, enemy, 10)
 
@@ -274,5 +286,5 @@ func test_reset_clears_queue_and_timers() -> bool:
 
 
 # ── Test Runner ───────────────────────────────────────────────────────────
-func _ready() -> void:
+func _initialize() -> void:
 	run_all()

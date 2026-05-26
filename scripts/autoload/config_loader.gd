@@ -1,4 +1,5 @@
 extends Node
+class_name _ConfigLoader
 
 ## Autoload: ConfigLoader
 ## Loads gameplay constants from JSON config with sensible hard-coded defaults.
