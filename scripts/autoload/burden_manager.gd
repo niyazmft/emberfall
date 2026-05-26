@@ -281,6 +281,11 @@ func reset() -> void:
 
 ## Safe helper to access ConfigLoader autoload without static-call parse errors.
 func _config_node() -> Node:
+	var ml: MainLoop = Engine.get_main_loop()
+	if ml is SceneTree:
+		var n: Node = ml.root.get_node_or_null("ConfigLoader")
+		if n:
+			return n
 	return get_node_or_null("/root/ConfigLoader")
 
 
@@ -508,6 +513,11 @@ func _expand_template(
 
 
 func _caption_node() -> Node:
+	var ml: MainLoop = Engine.get_main_loop()
+	if ml is SceneTree:
+		var n: Node = ml.root.get_node_or_null("CaptionManager")
+		if n:
+			return n
 	return get_node_or_null("/root/CaptionManager")
 
 
