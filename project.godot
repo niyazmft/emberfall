@@ -48,6 +48,7 @@ RunManager="*res://scripts/state_machine/run_manager.gd"
 GridSystem="*res://scripts/autoload/grid_system.gd"
 LayerManager="*res://scripts/autoload/layer_manager.gd"
 ToastManager="*res://scripts/autoload/toast_manager.gd"
+InputRouter="*res://scripts/autoload/input_router.gd"
 
 [physics]
 2d/run_on_separate_thread=true

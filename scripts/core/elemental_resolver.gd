@@ -38,14 +38,18 @@ static func _config_int(key: String, fallback: int) -> int:
 
 
 # ── Typed Element Queries ─────────────────────────────────────────────────
-static func _has_element(effects: Array[ElementalTypes.TileEffect], elem: ElementalTypes.Element) -> bool:
+static func _has_element(
+	effects: Array[ElementalTypes.TileEffect], elem: ElementalTypes.Element
+) -> bool:
 	for e: ElementalTypes.TileEffect in effects:
 		if e.element == elem:
 			return true
 	return false
 
 
-static func _remove_element(effects: Array[ElementalTypes.TileEffect], elem: ElementalTypes.Element) -> Array[ElementalTypes.TileEffect]:
+static func _remove_element(
+	effects: Array[ElementalTypes.TileEffect], elem: ElementalTypes.Element
+) -> Array[ElementalTypes.TileEffect]:
 	var out: Array[ElementalTypes.TileEffect] = []
 	for e: ElementalTypes.TileEffect in effects:
 		if e.element != elem:
@@ -54,8 +58,7 @@ static func _remove_element(effects: Array[ElementalTypes.TileEffect], elem: Ele
 
 
 static func _filter_active(
-	effects: Array[ElementalTypes.TileEffect],
-	current_turn: int
+	effects: Array[ElementalTypes.TileEffect], current_turn: int
 ) -> Array[ElementalTypes.TileEffect]:
 	var out: Array[ElementalTypes.TileEffect] = []
 	for e: ElementalTypes.TileEffect in effects:
@@ -77,8 +80,7 @@ static func _filter_active(
 ## If multiple modifiers could apply, the highest-priority interaction wins
 ## because earlier interactions consume elements (extinguish, burn off).
 static func compute_tile_damage_multiplier(
-	effects: Array[ElementalTypes.TileEffect],
-	current_turn: int
+	effects: Array[ElementalTypes.TileEffect], current_turn: int
 ) -> float:
 	var active: Array[ElementalTypes.TileEffect] = _filter_active(effects, current_turn)
 	if active.is_empty():
@@ -109,8 +111,7 @@ static func compute_tile_damage_multiplier(
 ## Returns the speed multiplier for an entity moving through a tile.
 ## Oil slip applies a 0.8× debuff regardless of other elements.
 static func calculate_movement_speed_multiplier(
-	effects: Array[ElementalTypes.TileEffect],
-	current_turn: int
+	effects: Array[ElementalTypes.TileEffect], current_turn: int
 ) -> float:
 	var active: Array[ElementalTypes.TileEffect] = _filter_active(effects, current_turn)
 	if _has_element(active, ElementalTypes.Element.OIL):
@@ -253,18 +254,13 @@ static func process_turn_tick(
 ## @param water_tiles Array[Vector2i] of tiles that block fire spread
 ## @return Array[Vector2i] of valid spread target positions
 static func compute_fire_spread_targets(
-	fire_pos: Vector2i,
-	grid_bounds: Array[Vector2i],
-	water_tiles: Array[Vector2i] = []
+	fire_pos: Vector2i, grid_bounds: Array[Vector2i], water_tiles: Array[Vector2i] = []
 ) -> Array[Vector2i]:
 	if grid_bounds.is_empty():
 		return []
 
 	var targets: Array[Vector2i] = []
-	var dirs: Array[Vector2i] = [
-		Vector2i(1, 0), Vector2i(-1, 0),
-		Vector2i(0, 1), Vector2i(0, -1)
-	]
+	var dirs: Array[Vector2i] = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
 	for d: Vector2i in dirs:
 		var cand: Vector2i = fire_pos + d
 		if _in_bounds(cand, grid_bounds) and cand not in water_tiles:
@@ -275,8 +271,7 @@ static func compute_fire_spread_targets(
 # ── Convenience: Full Modifiers for Entity-on-Tile ───────────────────────
 ## Returns both damage multiplier and speed multiplier for a tile in one call.
 static func compute_tile_modifiers(
-	effects: Array[ElementalTypes.TileEffect],
-	current_turn: int
+	effects: Array[ElementalTypes.TileEffect], current_turn: int
 ) -> Dictionary:
 	return {
 		"damage_multiplier": compute_tile_damage_multiplier(effects, current_turn),
@@ -288,9 +283,7 @@ static func compute_tile_modifiers(
 ## Find the leftmost occurrence of `elem` in `arr`, skipping the element
 ## at `exclude_idx` if provided. Returns -1 if not found.
 static func _find_leftmost_element(
-	arr: Array[ElementalTypes.TileEffect],
-	elem: ElementalTypes.Element,
-	exclude_idx: int = -1
+	arr: Array[ElementalTypes.TileEffect], elem: ElementalTypes.Element, exclude_idx: int = -1
 ) -> int:
 	for idx: int in range(arr.size()):
 		if idx == exclude_idx:
@@ -316,5 +309,4 @@ static func _in_bounds(pos: Vector2i, bounds: Array[Vector2i]) -> bool:
 		return true
 	var min_b: Vector2i = bounds[0]
 	var max_b: Vector2i = bounds[1]
-	return pos.x >= min_b.x and pos.x <= max_b.x \
-		and pos.y >= min_b.y and pos.y <= max_b.y
+	return pos.x >= min_b.x and pos.x <= max_b.x and pos.y >= min_b.y and pos.y <= max_b.y

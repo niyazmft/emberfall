@@ -4,9 +4,10 @@ extends Node
 
 # ── BurdenManager Tests ───────────────────────────────────────────────────
 
+
 func test_burden_manager_record_kill() -> bool:
 	# Arrange
-	var bm := BurdenManager.new()
+	var bm: Node = BurdenManager
 	bm.reset()
 
 	# Act
@@ -14,7 +15,7 @@ func test_burden_manager_record_kill() -> bool:
 	bm.record_sentient_kill("enemy_shade_02", "Shade")
 
 	# Assert
-	var queue := bm.get_kill_queue()
+	var queue: Array[BurdenManager.BurdenKillRecord] = bm.get_kill_queue()
 	if queue.size() != 2:
 		push_error("Expected queue size 2, got %d" % queue.size())
 		return false
@@ -26,8 +27,9 @@ func test_burden_manager_record_kill() -> bool:
 		return false
 	return true
 
+
 func test_burden_manager_cap_at_three() -> bool:
-	var bm := BurdenManager.new()
+	var bm: Node = BurdenManager
 	bm.reset()
 
 	bm.record_sentient_kill("a", "A")
@@ -35,7 +37,7 @@ func test_burden_manager_cap_at_three() -> bool:
 	bm.record_sentient_kill("c", "C")
 	bm.record_sentient_kill("d", "D")
 
-	var ids := bm.get_last_enemy_ids()
+	var ids: PackedStringArray = bm.get_last_enemy_ids()
 	if ids.size() != 3:
 		push_error("Expected capped size 3, got %d" % ids.size())
 		return false
@@ -44,8 +46,9 @@ func test_burden_manager_cap_at_three() -> bool:
 		return false
 	return true
 
+
 func test_burden_manager_moral_weight_toggle() -> bool:
-	var bm := BurdenManager.new()
+	var bm: Node = BurdenManager
 	bm.reset()
 	bm.burden_active = false
 
@@ -65,7 +68,9 @@ func test_burden_manager_moral_weight_toggle() -> bool:
 		return false
 	return true
 
+
 # ── ApparitionRenderer Layout Tests ────────────────────────────────────────
+
 
 func test_renderer_layout_constants() -> bool:
 	if ApparitionRenderer.VERTICAL_OFFSETS.size() != 3:
@@ -85,13 +90,15 @@ func test_renderer_layout_constants() -> bool:
 		return false
 	return true
 
+
 # ── ApparitionStateMachine Tests ───────────────────────────────────────────
 
+
 func test_state_machine_manifest_to_idle() -> bool:
-	var renderer := ApparitionRenderer.new()
+	var renderer: ApparitionRenderer = ApparitionRenderer.new()
 	add_child(renderer)
 
-	var sm := renderer.state_machine
+	var sm: ApparitionStateMachine = renderer.state_machine
 	if sm == null:
 		push_error("ApparitionRenderer did not create state_machine in _ready()")
 		return false
@@ -106,7 +113,7 @@ func test_state_machine_manifest_to_idle() -> bool:
 		return false
 
 	# Fast-forward manifest timer
-	for _i in range(60):
+	for _i: int in range(60):
 		sm.update(0.016)
 
 	if sm.current_state != ApparitionStateMachine.ApparitionState.IDLE:
@@ -116,23 +123,24 @@ func test_state_machine_manifest_to_idle() -> bool:
 	renderer.queue_free()
 	return true
 
+
 func test_state_machine_recoil_z_promotion() -> bool:
-	var keeper := Node2D.new()
+	var keeper: Node2D = Node2D.new()
 	keeper.z_index = 10
 	add_child(keeper)
 
-	var renderer := ApparitionRenderer.new()
+	var renderer: ApparitionRenderer = ApparitionRenderer.new()
 	renderer.owner_z_index_offset = -1
 	renderer.bind_owner(keeper)
 	keeper.add_child(renderer)
 
-	var sm := renderer.state_machine
+	var sm: ApparitionStateMachine = renderer.state_machine
 	if sm == null:
 		push_error("ApparitionRenderer did not create state_machine in _ready()")
 		return false
 
 	sm.cmd_manifest()
-	for _i in range(60):
+	for _i: int in range(60):
 		sm.update(0.016)
 
 	# Simulate recoil
@@ -145,7 +153,7 @@ func test_state_machine_recoil_z_promotion() -> bool:
 		return false
 
 	# Fast-forward recoil
-	for _i in range(10):
+	for _i: int in range(10):
 		sm.update(0.016)
 
 	# After recoil, z_index should restore
@@ -156,11 +164,13 @@ func test_state_machine_recoil_z_promotion() -> bool:
 	keeper.queue_free()
 	return true
 
+
 # ── Keeper Integration Tests ─────────────────────────────────────────────
+
 
 func test_keeper_integration_damage_triggers_recoil() -> bool:
 	BurdenManager.reset()
-	var k := Keeper.new()
+	var k: Keeper = Keeper.new()
 	add_child(k)
 
 	# Force manifestation via BurdenManager so the apparition is visible.
@@ -170,10 +180,10 @@ func test_keeper_integration_damage_triggers_recoil() -> bool:
 	BurdenManager.update_moral_weight(3)
 
 	# Fast-forward manifest
-	for _i in range(60):
+	for _i: int in range(60):
 		k._process(0.016)
 
-	var sm := k._apparition.state_machine
+	var sm: ApparitionStateMachine = k._apparition.state_machine
 	if sm.current_state != ApparitionStateMachine.ApparitionState.IDLE:
 		push_error("Expected IDLE after manifest")
 		return false
@@ -186,16 +196,17 @@ func test_keeper_integration_damage_triggers_recoil() -> bool:
 	k.queue_free()
 	return true
 
+
 func test_keeper_integration_kill_updates_stack() -> bool:
 	BurdenManager.reset()
-	var k := Keeper.new()
+	var k: Keeper = Keeper.new()
 	add_child(k)
 
 	k.record_sentient_kill("wolf_01", "Wolf")
 	k.record_sentient_kill("wolf_02", "Wolf")
 	k.record_sentient_kill("wolf_03", "Wolf")
 
-	var ids := BurdenManager.get_last_enemy_ids()
+	var ids: PackedStringArray = BurdenManager.get_last_enemy_ids()
 	if ids.size() != 3:
 		push_error("Expected 3 kills recorded via Keeper")
 		return false
@@ -206,10 +217,11 @@ func test_keeper_integration_kill_updates_stack() -> bool:
 
 # ── Test Runner ───────────────────────────────────────────────────────────
 
+
 func _ready() -> void:
-	var passed := 0
-	var failed := 0
-	var tests := [
+	var passed: int = 0
+	var failed: int = 0
+	var tests: Array[String] = [
 		"test_burden_manager_record_kill",
 		"test_burden_manager_cap_at_three",
 		"test_burden_manager_moral_weight_toggle",
@@ -220,9 +232,9 @@ func _ready() -> void:
 		"test_keeper_integration_kill_updates_stack",
 	]
 
-	for name in tests:
+	for name: String in tests:
 		print("Running %s ..." % name)
-		var ok := call(name)
+		var ok: Variant = call(name)
 		if ok is bool and ok:
 			passed += 1
 			print("  PASS")
