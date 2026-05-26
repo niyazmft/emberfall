@@ -1,4 +1,5 @@
 class_name Entity
+extends Resource
 ## Stat block for player and enemy entities.
 ## References: system-specification-core.md §4.1
 ##

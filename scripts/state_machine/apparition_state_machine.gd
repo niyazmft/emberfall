@@ -12,8 +12,8 @@ enum ApparitionState {
 	MANIFEST,
 	IDLE,
 	RECOIL,
-	ABSORB,   // note: spec uses "absolve"; internally we call it ABSORB for engine naming
-	ERROR,
+	ABSORB,   # note: spec uses "absolve"; internally we call it ABSORB for engine naming
+	INVALID,
 }
 
 ## Emitted when the apparition fully manifests (first frame of IDLE).

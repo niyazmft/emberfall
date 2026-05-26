@@ -9,7 +9,7 @@ func _ready() -> void:
 	## 1. Straight line on empty grid
 	GridSystem.load_room({"id":"empty","tiles":[]})
 	var astar: AStarGrid = AStarGrid.new()
-	var path: PackedVector2Array = astar.find_path(0, 0, 11, 11)
+	var path: Array[Vector2i] = astar.find_path(Vector2i(0, 0), Vector2i(11, 11))
 	if path.is_empty():
 		print("FAIL: empty grid path not found")
 		ok = false
@@ -25,7 +25,7 @@ func _ready() -> void:
 		wall_tiles.append({"x":x, "y":6, "blocks_movement":true, "blocks_vision":true})
 	GridSystem.load_room({"id":"wall","tiles":wall_tiles})
 	astar = AStarGrid.new()
-	path = astar.find_path(0, 0, 11, 11)
+	path = astar.find_path(Vector2i(0, 0), Vector2i(11, 11))
 	if path.is_empty():
 		print("FAIL: wall detour path not found")
 		ok = false
@@ -45,7 +45,7 @@ func _ready() -> void:
 	]
 	GridSystem.load_room({"id":"elev","tiles":elev_tiles})
 	astar = AStarGrid.new()
-	path = astar.find_path(0, 0, 2, 0)
+	path = astar.find_path(Vector2i(0, 0), Vector2i(2, 0))
 	if path.is_empty():
 		## Goal may be unreachable if fully boxed; on open grid a detour exists.
 		print("PASS: elevation blocking (no path)")
@@ -54,8 +54,8 @@ func _ready() -> void:
 		for i: int in range(path.size() - 1):
 			var a := path[i]
 			var b := path[i + 1]
-			var ta := GridSystem.get_tile(int(a.x), int(a.y))
-			var tb := GridSystem.get_tile(int(b.x), int(b.y))
+			var ta := GridSystem.get_tile(a.x, a.y)
+			var tb := GridSystem.get_tile(b.x, b.y)
 			if ta == null or tb == null:
 				step_ok = false
 				break
@@ -76,14 +76,14 @@ func _ready() -> void:
 	]
 	GridSystem.load_room({"id":"box","tiles":box_tiles})
 	astar = AStarGrid.new()
-	path = astar.find_path(0, 0, 0, 0)
-	if path.size() != 1 or path[0] != Vector2(0, 0):
+	path = astar.find_path(Vector2i(0, 0), Vector2i(0, 0))
+	if path.size() != 1 or path[0] != Vector2i(0, 0):
 		print("FAIL: start==goal should return single-point path")
 		ok = false
 	else:
 		print("PASS: start==goal")
 
-	path = astar.find_path(0, 0, 1, 1)
+	path = astar.find_path(Vector2i(0, 0), Vector2i(1, 1))
 	if not path.is_empty():
 		print("FAIL: boxed goal should be unreachable")
 		ok = false
@@ -97,7 +97,7 @@ func _ready() -> void:
 	]
 	GridSystem.load_room({"id":"corner","tiles":corner_tiles})
 	astar = AStarGrid.new()
-	path = astar.find_path(0, 0, 1, 1)
+	path = astar.find_path(Vector2i(0, 0), Vector2i(1, 1))
 	if not path.is_empty():
 		print("FAIL: diagonal corner-cut should be blocked")
 		ok = false

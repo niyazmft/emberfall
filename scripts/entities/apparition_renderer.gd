@@ -12,13 +12,13 @@ extends Node2D
 const STACK_COUNT: int = 3
 
 ## Default vertical offsets in pixels (composite stack).
-const VERTICAL_OFFSETS: PackedInt32Array = PackedInt32Array([0, 8, 16])
+const VERTICAL_OFFSETS: Array[int] = [0, 8, 16]
 
 ## Opacity tiers (front → back).
-const OPACITY_TIERS: PackedFloat32Array = PackedFloat32Array([0.55, 0.45, 0.35])
+const OPACITY_TIERS: Array[float] = [0.55, 0.45, 0.35]
 
 ## Scale multipliers (front → back).
-const SCALE_TIERS: PackedFloat32Array = PackedFloat32Array([1.00, 0.95, 0.90])
+const SCALE_TIERS: Array[float] = [1.00, 0.95, 0.90]
 
 ## Sentinel when no silhouette is available.
 const PLACEHOLDER_ATLAS_UID := "placeholder:silhouette"

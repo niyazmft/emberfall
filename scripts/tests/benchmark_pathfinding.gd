@@ -19,12 +19,12 @@ func _ready() -> void:
 	GridSystem.load_room({"id":"bench_wall","tiles":wall_tiles})
 
 	var astar: AStarGrid = AStarGrid.new()
-	var path: PackedVector2Array = astar.find_path(0, 0, 11, 11)
+	var path: Array[Vector2i] = astar.find_path(Vector2i(0, 0), Vector2i(11, 11))
 	assert(not path.is_empty(), "No path found in benchmark room!")
 
 	## Warm-up to ensure JIT/cache is hot.
 	for i: int in range(WARMUP):
-		astar.find_path(0, 0, 11, 11)
+		astar.find_path(Vector2i(0, 0), Vector2i(11, 11))
 
 	var total_usec: int = 0
 	var max_usec: int = 0
@@ -33,7 +33,7 @@ func _ready() -> void:
 
 	for i: int in range(SAMPLES):
 		var t0: int = Time.get_ticks_usec()
-		path = astar.find_path(0, 0, 11, 11)
+		path = astar.find_path(Vector2i(0, 0), Vector2i(11, 11))
 		var t1: int = Time.get_ticks_usec()
 		var dt: int = t1 - t0
 		samples.append(dt)
