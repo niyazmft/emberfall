@@ -4,9 +4,11 @@ extends Node
 ## Handles visual/logical effects for Burden Events.
 ## Implementation of DON-223.
 
+
 func _ready() -> void:
 	if BurdenManager:
 		BurdenManager.burden_event_triggered.connect(on_entity_burden_triggered)
+
 
 func on_entity_burden_triggered(_result: RefCounted) -> void:
 	# Wire router reset or other logic here if needed.
@@ -17,6 +19,7 @@ func on_entity_burden_triggered(_result: RefCounted) -> void:
 			router.reset_cooldowns()
 
 	_print_debug("OnEntityBurdenTriggered fired")
+
 
 func _print_debug(msg: String) -> void:
 	if OS.is_debug_build():

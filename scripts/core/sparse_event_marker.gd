@@ -13,6 +13,7 @@ var source_type: String = ""
 var duration_ms: int = 0
 var mwt_binding: int = 0
 
+
 func _init(p_data: Dictionary = {}) -> void:
 	if p_data.is_empty():
 		return
