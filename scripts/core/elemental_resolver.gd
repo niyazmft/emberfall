@@ -1,20 +1,6 @@
 class_name ElementalInteractionResolver
-## Resolves elemental interactions deterministically per system-spec §2.3.
-## Combo chains process in FIFO order (oldest applied effect resolves first).
-##
-## Responsibilities:
-##   • Tile effect duration tracking and expiry
-##   • Damage modifier lookup (fire↔oil, wind→fire, water→fire)
-##   • Fire spread simulation with bounds + water blocking
-##   • Water extinguish logic (bidirectional)
-##   • Oil slip terrain speed debuff
-##   • FIFO combo chain resolution
-##
-## All tunable constants are pulled from ConfigLoader with hard-coded
-## defaults so the game runs even if config is missing.
-##
-## Reference: DON-101 B3
-
+## (DON-101) Ported Elemental Interaction System.
+## Preserves identical deterministic behavior from C# implementation.
 
 # ── Config Helpers ──────────────────────────────────────────────────────
 static func _config_float(key: String, fallback: float) -> float:
@@ -23,7 +9,7 @@ static func _config_float(key: String, fallback: float) -> float:
 		return fallback
 	var loader: Node = ml.root.get_node_or_null("/root/ConfigLoader")
 	if loader != null and loader.has_method("get_float"):
-		return loader.get_float(key, fallback)
+		return (loader.call("get_float", key, fallback) as float)
 	return fallback
 
 
@@ -33,208 +19,196 @@ static func _config_int(key: String, fallback: int) -> int:
 		return fallback
 	var loader: Node = ml.root.get_node_or_null("/root/ConfigLoader")
 	if loader != null and loader.has_method("get_int"):
-		return loader.get_int(key, fallback)
+		return (loader.call("get_int", key, fallback) as int)
 	return fallback
 
+# ── Interaction Rule Lookup ───────────────────────────────────────────
 
-# ── Typed Element Queries ─────────────────────────────────────────────────
-static func _has_element(effects: Array[ElementalTypes.TileEffect], elem: ElementalTypes.Element) -> bool:
-	for e: ElementalTypes.TileEffect in effects:
-		if e.element == elem:
-			return true
-	return false
+static func get_interaction_rule(attacker: ElementalTypes.Element, target: ElementalTypes.Element) -> ElementalInteractionRule:
+	match attacker:
+		ElementalTypes.Element.FIRE:
+			if target == ElementalTypes.Element.OIL:
+				return ElementalInteractionRule.new(attacker, target, _config_float("FIRE_OIL_MODIFIER", 2.0), true, false, ElementalTypes.Element.NONE, 0)
 
+		ElementalTypes.Element.WIND:
+			if target == ElementalTypes.Element.FIRE or target == ElementalTypes.Element.HAZARD_FIRE:
+				return ElementalInteractionRule.new(attacker, target, _config_float("WIND_FIRE_MODIFIER", 1.5), false, true, ElementalTypes.Element.FIRE, _config_int("FIRE_DURATION_TURNS", 2))
+			if target == ElementalTypes.Element.OIL or target == ElementalTypes.Element.HAZARD_OIL:
+				return ElementalInteractionRule.new(attacker, target, 1.0, false, true, ElementalTypes.Element.NONE, 2)
 
-static func _remove_element(effects: Array[ElementalTypes.TileEffect], elem: ElementalTypes.Element) -> Array[ElementalTypes.TileEffect]:
-	var out: Array[ElementalTypes.TileEffect] = []
-	for e: ElementalTypes.TileEffect in effects:
-		if e.element != elem:
-			out.append(e)
+		ElementalTypes.Element.WATER:
+			if target == ElementalTypes.Element.FIRE:
+				return ElementalInteractionRule.new(attacker, target, _config_float("WATER_FIRE_MODIFIER", 0.5), true, false, ElementalTypes.Element.NONE, 0)
+			if target == ElementalTypes.Element.OIL:
+				return ElementalInteractionRule.new(attacker, target, 0.0, false, false, ElementalTypes.Element.NONE, 0)
+			if target == ElementalTypes.Element.HAZARD_FIRE:
+				return ElementalInteractionRule.new(attacker, target, 0.0, true, false, ElementalTypes.Element.NONE, 0)
+
+	return null
+
+# ── Damage and Speed Multipliers ──────────────────────────────────────
+
+## Returns the damage multiplier for an attack based on the target's elemental statuses.
+## Resolves FIFO: uses the rule for the first (oldest) status that has an interaction.
+static func compute_damage_multiplier(attacker_elem: ElementalTypes.Element, target_statuses: Array[ElementalStatus]) -> float:
+	for status: ElementalStatus in target_statuses:
+		var rule: ElementalInteractionRule = get_interaction_rule(attacker_elem, status.element)
+		if rule != null:
+			return rule.damage_multiplier
+	return 1.0
+
+## Returns movement speed multiplier (0.8x for Oil).
+static func calculate_movement_speed_multiplier(entity_statuses: Array[ElementalStatus], tile_effects: Array[ElementalTypes.TileEffect], current_turn: int) -> float:
+	for s: ElementalStatus in entity_statuses:
+		if s.element == ElementalTypes.Element.OIL or s.element == ElementalTypes.Element.HAZARD_OIL:
+			return _config_float("OIL_SLIP_SPEED_MULT", 0.8)
+	for e: ElementalTypes.TileEffect in tile_effects:
+		if not e.is_expired(current_turn):
+			if e.element == ElementalTypes.Element.OIL or e.element == ElementalTypes.Element.HAZARD_OIL:
+				return _config_float("OIL_SLIP_SPEED_MULT", 0.8)
+	return 1.0
+
+# ── Interaction Resolution ────────────────────────────────────────────
+
+## Resolves an interaction and returns side effects (extinguish, spread, new status).
+static func resolve_interaction(attacker_elem: ElementalTypes.Element, target_statuses: Array[ElementalStatus], current_turn: int) -> Dictionary:
+	var result: Dictionary = {
+		"damage_multiplier": 1.0,
+		"extinguished": false,
+		"spread": false,
+		"spread_element": ElementalTypes.Element.NONE,
+		"spread_duration": 0,
+		"new_status": null
+	}
+
+	# FIFO: Find the oldest status that interacts with the attacker.
+	var interact_idx: int = -1
+	var interaction_rule: ElementalInteractionRule = null
+
+	for i: int in range(target_statuses.size()):
+		var rule: ElementalInteractionRule = get_interaction_rule(attacker_elem, target_statuses[i].element)
+		if rule != null:
+			interact_idx = i
+			interaction_rule = rule
+			break
+
+	if interaction_rule != null:
+		result["damage_multiplier"] = interaction_rule.damage_multiplier
+		result["extinguished"] = interaction_rule.extinguish
+		result["spread"] = interaction_rule.spread
+
+		if result["spread"]:
+			# If Wind interacts with Fire/HazardFire, spread Fire.
+			# If Wind interacts with Oil/HazardOil, spread Oil (implied by Wind+Oil spread: Yes).
+			var target_elem: ElementalTypes.Element = target_statuses[interact_idx].element
+			if target_elem == ElementalTypes.Element.FIRE or target_elem == ElementalTypes.Element.HAZARD_FIRE:
+				result["spread_element"] = ElementalTypes.Element.FIRE
+			elif target_elem == ElementalTypes.Element.OIL or target_elem == ElementalTypes.Element.HAZARD_OIL:
+				result["spread_element"] = ElementalTypes.Element.OIL
+			result["spread_duration"] = interaction_rule.result_duration
+
+		if result["extinguished"]:
+			target_statuses.remove_at(interact_idx)
+
+		if interaction_rule.result_status != ElementalTypes.Element.NONE:
+			var ns: ElementalStatus = ElementalStatus.new(interaction_rule.result_status, interaction_rule.result_duration, current_turn)
+			target_statuses.append(ns)
+			result["new_status"] = ns
+
+	return result
+
+# ── Spread Logic ──────────────────────────────────────────────────────
+
+## Returns adjacent cardinal tile positions for spread, blocked by heavy cover or unwalkable tiles.
+static func get_spread_targets(source_pos: Vector2i, grid: Node) -> PackedVector2Array:
+	var targets: PackedVector2Array = PackedVector2Array()
+	var dirs: Array[Vector2i] = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
+
+	for d: Vector2i in dirs:
+		var cand: Vector2i = source_pos + d
+		if grid.has_method("is_in_bounds") and grid.call("is_in_bounds", cand.x, cand.y):
+			var tile: RefCounted = grid.call("get_tile", cand.x, cand.y) as RefCounted
+			if tile:
+				var is_blocked: bool = bool(tile.call("is_blocked")) if tile.has_method("is_blocked") else (bool(tile.get("blocks_movement")) if "blocks_movement" in tile else false)
+				var is_heavy: bool = bool(tile.call("is_heavy_cover")) if tile.has_method("is_heavy_cover") else (int(tile.get("cover")) == 2)
+
+				if not is_blocked and not is_heavy:
+					targets.append(Vector2(cand.x, cand.y))
+
+	return targets
+
+# ── Compatibility Layer (to keep existing tests passing) ──────────────
+
+static func apply_element(effects: Array[ElementalTypes.TileEffect], elem: ElementalTypes.Element, current_turn: int, duration: int = 1, source_pos: Vector2i = Vector2i(-999, -999)) -> Array[ElementalTypes.TileEffect]:
+	var new_effect: ElementalTypes.TileEffect = ElementalTypes.TileEffect.new(elem, duration, current_turn, source_pos)
+	var out: Array[ElementalTypes.TileEffect] = effects.duplicate()
+	out.append(new_effect)
 	return out
 
-
-static func _filter_active(
-	effects: Array[ElementalTypes.TileEffect],
-	current_turn: int
-) -> Array[ElementalTypes.TileEffect]:
+static func _filter_active(effects: Array[ElementalTypes.TileEffect], current_turn: int) -> Array[ElementalTypes.TileEffect]:
 	var out: Array[ElementalTypes.TileEffect] = []
 	for e: ElementalTypes.TileEffect in effects:
 		if not e.is_expired(current_turn):
 			out.append(e)
 	return out
 
-
-# ── Damage Multiplier ───────────────────────────────────────────────────
-## Computes the total damage multiplier for combat occurring on a tile
-## with the given active effects. Handles overlapping interactions
-## deterministically.
-##
-## Resolution order (priority):
-##   1. Water + Fire  → extinguish + 0.5×
-##   2. Wind  + Fire  → fan/spread + 1.5×
-##   3. Fire  + Oil   → burn off   + 2.0×
-##
-## If multiple modifiers could apply, the highest-priority interaction wins
-## because earlier interactions consume elements (extinguish, burn off).
-static func compute_tile_damage_multiplier(
-	effects: Array[ElementalTypes.TileEffect],
-	current_turn: int
-) -> float:
+static func compute_tile_damage_multiplier(effects: Array[ElementalTypes.TileEffect], current_turn: int) -> float:
 	var active: Array[ElementalTypes.TileEffect] = _filter_active(effects, current_turn)
-	if active.is_empty():
-		return 1.0
+	if active.is_empty(): return 1.0
 
-	var has_fire: bool = _has_element(active, ElementalTypes.Element.FIRE)
-	var has_oil: bool = _has_element(active, ElementalTypes.Element.OIL)
-	var has_wind: bool = _has_element(active, ElementalTypes.Element.WIND)
-	var has_water: bool = _has_element(active, ElementalTypes.Element.WATER)
+	var has_fire: bool = false
+	var has_water: bool = false
+	var has_wind: bool = false
+	var has_oil: bool = false
+	for e: ElementalTypes.TileEffect in active:
+		match e.element:
+			ElementalTypes.Element.FIRE: has_fire = true
+			ElementalTypes.Element.WATER: has_water = true
+			ElementalTypes.Element.WIND: has_wind = true
+			ElementalTypes.Element.OIL: has_oil = true
 
-	# Priority 1: Water extinguishes Fire → 0.5× (extinguish overrides amplification)
-	if has_water and has_fire:
-		return _config_float("WATER_FIRE_MODIFIER", 0.5)
-
-	# Priority 2: Wind fans Fire → 1.5×
-	if has_wind and has_fire:
-		return _config_float("WIND_FIRE_MODIFIER", 1.5)
-
-	# Priority 3: Fire burns Oil → 2.0×
-	if has_fire and has_oil:
-		return _config_float("FIRE_OIL_MODIFIER", 2.0)
-
-	# Fallback: no recognised combo
+	if has_water and has_fire: return _config_float("WATER_FIRE_MODIFIER", 0.5)
+	if has_wind and has_fire: return _config_float("WIND_FIRE_MODIFIER", 1.5)
+	if has_fire and has_oil: return _config_float("FIRE_OIL_MODIFIER", 2.0)
 	return 1.0
 
+static func process_turn_tick(effects: Array[ElementalTypes.TileEffect], current_turn: int, tile_pos: Vector2i, grid: Node = null, grid_bounds: Array[Vector2i] = [], water_tiles: Array[Vector2i] = []) -> Dictionary:
+	var working: Array[ElementalTypes.TileEffect] = _filter_active(effects, current_turn)
 
-# ── Movement Speed Multiplier ───────────────────────────────────────────
-## Returns the speed multiplier for an entity moving through a tile.
-## Oil slip applies a 0.8× debuff regardless of other elements.
-static func calculate_movement_speed_multiplier(
-	effects: Array[ElementalTypes.TileEffect],
-	current_turn: int
-) -> float:
-	var active: Array[ElementalTypes.TileEffect] = _filter_active(effects, current_turn)
-	if _has_element(active, ElementalTypes.Element.OIL):
-		return _config_float("OIL_SLIP_SPEED_MULT", 0.8)
-	return 1.0
-
-
-# ── Apply Element ────────────────────────────────────────────────────────
-## Returns a new effect list with the given element appended.
-## Does NOT resolve interactions immediately — resolution is deferred to
-## process_turn_tick() to guarantee deterministic FIFO ordering.
-static func apply_element(
-	effects: Array[ElementalTypes.TileEffect],
-	elem: ElementalTypes.Element,
-	current_turn: int,
-	duration: int = 1,
-	source_pos := Vector2i(-999, -999)
-) -> Array[ElementalTypes.TileEffect]:
-	if elem == ElementalTypes.Element.NONE:
-		return effects.duplicate()
-
-	var new_effect := ElementalTypes.TileEffect.new(elem, duration, current_turn, source_pos)
-	var out: Array[ElementalTypes.TileEffect] = effects.duplicate()
-	out.append(new_effect)
-	return out
-
-
-# ── Process Turn Tick (FIFO Resolution) ───────────────────────────────
-## Walks effects left-to-right (oldest first).  At each effect, the resolver
-## scans the *entire* working set for its complementary reactant, preferring
-## the leftmost match.  This guarantees bidirectional interactions work
-## regardless of application order while still respecting FIFO ordering.
-##
-## Steps per tick:
-##   1. Expire old effects (duration exhausted).
-##   2. Scan FIFO and resolve combos in order:
-##      • Water + Fire  → remove both, emit extinguish result
-##      • Wind  + Fire  → fan fire, spread to adjacent tiles, remove wind
-##      • Fire  + Oil   → burn off oil, refresh fire duration
-##   3. Return updated effect list + any spread results.
-##
-## @param effects      Current tile effects
-## @param current_turn Turn index for expiry checks
-## @param tile_pos     Position of the tile being processed (for spread)
-## @param grid_bounds  Optional inclusive bounds [min, max] as Vector2i for spread clamping
-## @param water_tiles  Optional array of tile positions that block fire spread
-## @return Dictionary with keys:
-##         "effects"          -> Array[TileEffect] (updated active effects)
-##         "spread_positions" -> Array[Vector2i]   (tiles that received new fire)
-##         "extinguished"     -> bool              (true if water put out fire)
-static func process_turn_tick(
-	effects: Array[ElementalTypes.TileEffect],
-	current_turn: int,
-	tile_pos: Vector2i,
-	grid_bounds: Array[Vector2i] = [],
-	water_tiles: Array[Vector2i] = []
-) -> Dictionary:
-	var out_effects: Array[ElementalTypes.TileEffect] = _filter_active(effects, current_turn)
-	var spread_positions: Array[Vector2i] = []
 	var extinguished: bool = false
+	var spread_positions: PackedVector2Array = PackedVector2Array()
 
-	# Clone so mutations don't alias caller's array
-	var working: Array[ElementalTypes.TileEffect] = []
-	for e: ElementalTypes.TileEffect in out_effects:
-		working.append(e.clone())
-
-	# ── Phase 2: FIFO combo resolution ──────────────────────────────────
 	var i: int = 0
 	while i < working.size():
 		var current: ElementalTypes.TileEffect = working[i]
-
 		match current.element:
 			ElementalTypes.Element.WATER:
-				# Water looks for ANY Fire in the working set (leftmost first)
-				var fire_idx := _find_leftmost_element(working, ElementalTypes.Element.FIRE)
-				if fire_idx != -1 and fire_idx != i:
-					# Remove Fire first (higher or lower index doesn't matter
-					# because we recalc i afterwards)
-					var removed_fire: int = fire_idx
-					var removed_water: int = i
-					working.remove_at(removed_fire)
-					if removed_fire < removed_water:
-						removed_water -= 1
-					working.remove_at(removed_water)
-					if removed_water <= i:
-						i = removed_water - 1
-					else:
-						i -= 1
-					if i < 0:
-						i = 0
+				var fire_idx: int = _find_leftmost_element(working, ElementalTypes.Element.FIRE)
+				if fire_idx != -1:
+					working.remove_at(max(i, fire_idx))
+					working.remove_at(min(i, fire_idx))
 					extinguished = true
-
+					i = -1 # Restart FIFO scan
 			ElementalTypes.Element.WIND:
-				# Wind looks for ANY Fire to fan (leftmost first)
-				var fire_idx := _find_leftmost_element(working, ElementalTypes.Element.FIRE)
-				if fire_idx != -1 and fire_idx != i:
-					# Refresh fire duration
-					working[fire_idx].duration = _config_int("FIRE_DURATION_TURNS", 1)
-					working[fire_idx].applied_turn = current_turn
-					# Remove wind
+				var fire_idx: int = _find_leftmost_element(working, ElementalTypes.Element.FIRE)
+				if fire_idx != -1:
+					# Wind fans fire -> Spread
+					if grid != null:
+						spread_positions.append_array(get_spread_targets(tile_pos, grid))
+					else:
+						spread_positions.append_array(compute_fire_spread_targets(tile_pos, grid_bounds, water_tiles))
 					working.remove_at(i)
-					i -= 1
-					if i < 0:
-						i = 0
-					# Spread to adjacent tiles respecting bounds + water block
-					var candidates: Array[Vector2i] = _adjacent_cardinal(tile_pos)
-					for cand: Vector2i in candidates:
-						var actual_water_tiles := water_tiles.duplicate()
-						# Also treat adjacent tiles that have water effects as blocking
-						if _in_bounds(cand, grid_bounds) and cand not in actual_water_tiles:
-							spread_positions.append(cand)
-
+					i = -1
 			ElementalTypes.Element.FIRE:
-				# Fire looks for ANY Oil to burn off (leftmost first)
-				var oil_idx := _find_leftmost_element(working, ElementalTypes.Element.OIL)
-				if oil_idx != -1 and oil_idx != i:
-					# Oil burns off completely
+				var oil_idx: int = _find_leftmost_element(working, ElementalTypes.Element.OIL)
+				if oil_idx != -1:
+					# Fire burns off Oil
 					working.remove_at(oil_idx)
 					if oil_idx < i:
 						i -= 1
 					# Refresh fire duration after consuming oil
-					working[i].duration = _config_int("FIRE_OIL_DURATION_TURNS", 1)
+					working[i].duration = _config_int("FIRE_OIL_DURATION_TURNS", 2)
 					working[i].applied_turn = current_turn
-
 		i += 1
 
 	return {
@@ -243,78 +217,21 @@ static func process_turn_tick(
 		"extinguished": extinguished,
 	}
 
-
-# ── Spread Helper (for external tile-map integration) ──────────────────
-## Given a tile that has fire, compute adjacent positions where fire should
-## spread, respecting grid bounds and water-blocked tiles.
-##
-## @param fire_pos    Position of the source fire tile
-## @param grid_bounds Inclusive bounds [min, max] as Vector2i
-## @param water_tiles Array[Vector2i] of tiles that block fire spread
-## @return Array[Vector2i] of valid spread target positions
-static func compute_fire_spread_targets(
-	fire_pos: Vector2i,
-	grid_bounds: Array[Vector2i],
-	water_tiles: Array[Vector2i] = []
-) -> Array[Vector2i]:
-	if grid_bounds.is_empty():
-		return []
-
-	var targets: Array[Vector2i] = []
-	var dirs: Array[Vector2i] = [
-		Vector2i(1, 0), Vector2i(-1, 0),
-		Vector2i(0, 1), Vector2i(0, -1)
-	]
-	for d: Vector2i in dirs:
-		var cand: Vector2i = fire_pos + d
-		if _in_bounds(cand, grid_bounds) and cand not in water_tiles:
-			targets.append(cand)
-	return targets
-
-
-# ── Convenience: Full Modifiers for Entity-on-Tile ───────────────────────
-## Returns both damage multiplier and speed multiplier for a tile in one call.
-static func compute_tile_modifiers(
-	effects: Array[ElementalTypes.TileEffect],
-	current_turn: int
-) -> Dictionary:
-	return {
-		"damage_multiplier": compute_tile_damage_multiplier(effects, current_turn),
-		"speed_multiplier": calculate_movement_speed_multiplier(effects, current_turn),
-	}
-
-
-# ── Internal Helpers ───────────────────────────────────────────────────
-## Find the leftmost occurrence of `elem` in `arr`, skipping the element
-## at `exclude_idx` if provided. Returns -1 if not found.
-static func _find_leftmost_element(
-	arr: Array[ElementalTypes.TileEffect],
-	elem: ElementalTypes.Element,
-	exclude_idx: int = -1
-) -> int:
-	for idx: int in range(arr.size()):
-		if idx == exclude_idx:
-			continue
-		if arr[idx].element == elem:
-			return idx
+static func _find_leftmost_element(arr: Array[ElementalTypes.TileEffect], elem: ElementalTypes.Element) -> int:
+	for i: int in range(arr.size()):
+		if arr[i].element == elem:
+			return i
 	return -1
 
-
-static func _adjacent_cardinal(pos: Vector2i) -> Array[Vector2i]:
-	return [
-		pos + Vector2i(1, 0),
-		pos + Vector2i(-1, 0),
-		pos + Vector2i(0, 1),
-		pos + Vector2i(0, -1),
-	]
-
-
-static func _in_bounds(pos: Vector2i, bounds: Array[Vector2i]) -> bool:
-	if bounds.is_empty():
-		return true
-	if bounds.size() < 2:
-		return true
-	var min_b: Vector2i = bounds[0]
-	var max_b: Vector2i = bounds[1]
-	return pos.x >= min_b.x and pos.x <= max_b.x \
-		and pos.y >= min_b.y and pos.y <= max_b.y
+static func compute_fire_spread_targets(fire_pos: Vector2i, grid_bounds: Array[Vector2i], water_tiles: Array[Vector2i] = []) -> PackedVector2Array:
+	var targets: PackedVector2Array = PackedVector2Array()
+	var dirs: Array[Vector2i] = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
+	for d: Vector2i in dirs:
+		var cand: Vector2i = fire_pos + d
+		if not grid_bounds.is_empty():
+			var min_b: Vector2i = grid_bounds[0]
+			var max_b: Vector2i = grid_bounds[1]
+			if cand.x >= min_b.x and cand.x <= max_b.x and cand.y >= min_b.y and cand.y <= max_b.y:
+				if not cand in water_tiles:
+					targets.append(Vector2(cand.x, cand.y))
+	return targets
