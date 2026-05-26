@@ -30,6 +30,7 @@ var _climb_width: float = 0.0
 
 # ── Lifecycle ────────────────────────────────────────────────────────────────
 
+
 func _init(p_stem_id: String, p_bus_name: String) -> void:
 	stem_id = p_stem_id
 	bus_name = p_bus_name
@@ -38,8 +39,10 @@ func _init(p_stem_id: String, p_bus_name: String) -> void:
 	audio_player.bus = bus_name
 	add_child(audio_player)
 
+
 func _ready() -> void:
 	_setup_analyzer()
+
 
 func _process(delta: float) -> void:
 	if not audio_player.playing:
@@ -52,16 +55,21 @@ func _process(delta: float) -> void:
 		_last_analysis_time = 0.0
 		_analyze_audio()
 
+
 # ── Public API ─────────────────────────────────────────────────────────────
+
 
 func play_stream(stream: AudioStream) -> void:
 	audio_player.stream = stream
 	audio_player.play()
 
+
 func stop() -> void:
 	audio_player.stop()
 
+
 # ── Internal ────────────────────────────────────────────────────────────────
+
 
 func _setup_analyzer() -> void:
 	_bus_index = AudioServer.get_bus_index(bus_name)
@@ -80,6 +88,7 @@ func _setup_analyzer() -> void:
 	if not _analyzer:
 		push_warning("_StemPlayback: No AudioEffectSpectrumAnalyzer found on bus '%s'." % bus_name)
 
+
 func _analyze_audio() -> void:
 	if not _analyzer:
 		return
@@ -94,6 +103,7 @@ func _analyze_audio() -> void:
 		"BD-CLIMB":
 			_analyze_climb()
 
+
 func _analyze_bass() -> void:
 	# BASS impact detection: look for sudden magnitude jump in low frequencies (e.g. 20-150Hz)
 	var mag: float = _analyzer.get_magnitude_for_frequency_range(20, 150).length()
@@ -104,6 +114,7 @@ func _analyze_bass() -> void:
 		_cooldown_timer = 0.2  # 200ms cooldown
 
 	_prev_magnitude = mag
+
 
 func _analyze_mech() -> void:
 	# MECH irregular clangs: mid-high frequencies (e.g. 1000-4000Hz)
@@ -116,6 +127,7 @@ func _analyze_mech() -> void:
 
 	_prev_magnitude = mag
 
+
 func _analyze_stress() -> void:
 	# STRESS swells: overall magnitude trend
 	var mag: float = _analyzer.get_magnitude_for_frequency_range(20, 20000).length()
@@ -126,6 +138,7 @@ func _analyze_stress() -> void:
 		_cooldown_timer = 0.5
 
 	_prev_magnitude = mag
+
 
 func _analyze_climb() -> void:
 	# CLIMB width expansion: could be mapped to spectral centroid or specific high-freq energy
