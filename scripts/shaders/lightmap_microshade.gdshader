@@ -64,7 +64,7 @@ float crack_pattern(vec2 uv) {
 
 float poro_pattern(vec2 uv) {
 	vec2 g = fract(uv * 20.0);
-	return step(0.8, distance(g, vec2(0.5)));
+	return step(0.4, distance(g, vec2(0.5)));
 }
 
 void fragment() {
@@ -122,15 +122,15 @@ void fragment() {
 	float final_token = mask_val > 0.001 ? mask_val : token;
 	lit = mix(lit, lit * 0.5, final_token);
 
-	// Apply Outline
+	// Apply Outline (Inner)
 	if (u_HAS_OUTLINE) {
-		float size = 1.0 / 128.0; // Assume 128x128 for now
+		vec2 size = TEXTURE_PIXEL_SIZE;
 		float alpha = texture(TEXTURE, UV).a;
-		float alpha_n = texture(TEXTURE, UV + vec2(0, -size)).a;
-		float alpha_s = texture(TEXTURE, UV + vec2(0, size)).a;
-		float alpha_e = texture(TEXTURE, UV + vec2(size, 0)).a;
-		float alpha_w = texture(TEXTURE, UV + vec2(-size, 0)).a;
-		float edge = clamp((alpha_n + alpha_s + alpha_e + alpha_w) * 4.0 - alpha * 16.0, 0.0, 1.0);
+		float alpha_n = texture(TEXTURE, UV + vec2(0, -size.y)).a;
+		float alpha_s = texture(TEXTURE, UV + vec2(0, size.y)).a;
+		float alpha_e = texture(TEXTURE, UV + vec2(size.x, 0)).a;
+		float alpha_w = texture(TEXTURE, UV + vec2(-size.x, 0)).a;
+		float edge = clamp(alpha * 4.0 - (alpha_n + alpha_s + alpha_e + alpha_w), 0.0, 1.0);
 		lit = mix(lit, vec3(1.0), edge);
 	}
 

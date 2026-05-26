@@ -20,17 +20,17 @@ void fragment() {
 		vec3 rgb = pow(col.rgb, vec3(2.2));
 
 		// Deuteranopia simulation matrix (Machado, Oliveira, and Fernandes 2009)
-		// This matrix transforms RGB into the Deuteranopic color space.
+		// Note: mat3 constructor in GLSL/GDShader is COLUMN-MAJOR.
 		mat3 deut_mat = mat3(
-			vec3(0.367, 0.633, 0.0),
-			vec3(0.280, 0.720, 0.0),
-			vec3(-0.012, 0.027, 0.985)
+			vec3(0.367, 0.280, -0.012), // Column 1
+			vec3(0.633, 0.720, 0.027),  // Column 2
+			vec3(0.000, 0.000, 0.985)   // Column 3
 		);
 
 		vec3 sim = deut_mat * rgb;
 
 		// Convert back to gamma space
-		col.rgb = pow(sim, vec3(1.0 / 2.2));
+		col.rgb = pow(clamp(sim, 0.0, 1.0), vec3(1.0 / 2.2));
 	}
 	COLOR = col;
 }
