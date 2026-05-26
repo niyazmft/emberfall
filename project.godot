@@ -36,9 +36,13 @@ gdscript/warnings/unsafe_call_argument=1
 limits/message_queue/max_size=4096
 
 [autoload]
+SafeZoneManager="*res://scripts/autoload/safe_zone_manager.gd"
 ConfigLoader="*res://scripts/autoload/config_loader.gd"
 BurdenManager="*res://scripts/autoload/burden_manager.gd"
 CaptionManager="*res://scripts/autoload/caption_manager.gd"
+AudioMiddleware="*res://scripts/autoload/audio_middleware.gd"
+BurdenCaptionDriver="*res://scripts/autoload/burden_caption_driver.gd"
+BurdenEventCoordinator="*res://scripts/autoload/burden_event_coordinator.gd"
 EntityLifecycle="*res://scripts/entities/entity_lifecycle.gd"
 RunManager="*res://scripts/state_machine/run_manager.gd"
 GridSystem="*res://scripts/autoload/grid_system.gd"
