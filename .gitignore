@@ -23,3 +23,8 @@ data_*/
 # Build artifacts
 *.tmp
 *.import
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
