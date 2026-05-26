@@ -5,6 +5,7 @@ extends Node
 var _passed: int = 0
 var _failed: int = 0
 
+
 func _ready() -> void:
 	print("=== UI Reflow Test Suite (DON-196) ===")
 
@@ -20,12 +21,14 @@ func _ready() -> void:
 	else:
 		get_tree().quit(0)
 
+
 func _assert(condition: bool, msg: String) -> void:
 	if condition:
 		_passed += 1
 	else:
 		_failed += 1
 		push_error("ASSERT FAILED: %s" % msg)
+
 
 func _test_aspect_ratio_breakpoints() -> void:
 	print("\n[Test] Aspect ratio breakpoints")
@@ -41,6 +44,7 @@ func _test_aspect_ratio_breakpoints() -> void:
 	# This is hard to do without modifying SafeZoneManager to accept a size for testing.
 	print("  breakpoints checked")
 
+
 func _test_safe_margins() -> void:
 	print("\n[Test] Safe margins")
 	var margins := SafeZoneManager.get_safe_margins()
@@ -50,11 +54,13 @@ func _test_safe_margins() -> void:
 	_assert(margins.has("bottom"), "Margins has bottom")
 	print("  margins checked")
 
+
 func _test_notch_offset() -> void:
 	print("\n[Test] Notch offset")
 	var offset := SafeZoneManager.get_notch_offset()
 	_assert(offset is Vector2, "Notch offset is Vector2")
 	print("  notch offset checked")
+
 
 func _test_portrait_detection() -> void:
 	print("\n[Test] Portrait detection")
