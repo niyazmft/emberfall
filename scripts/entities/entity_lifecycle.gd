@@ -63,32 +63,32 @@ var player_entity: Entity = null:
 
 # ── Safe autoload helpers (avoid class_name / autoload ambiguity) ────────
 func _config_node() -> Node:
-	var ml := Engine.get_main_loop()
+	var ml: MainLoop = Engine.get_main_loop()
 	if ml is SceneTree:
 		var loader: Node = ml.root.get_node_or_null("ConfigLoader")
 		if loader: return loader
 	return get_node_or_null("/root/ConfigLoader")
 
 func _burden_node() -> Node:
-	var ml := Engine.get_main_loop()
+	var ml: MainLoop = Engine.get_main_loop()
 	if ml is SceneTree:
 		var burden: Node = ml.root.get_node_or_null("BurdenManager")
 		if burden: return burden
 	return get_node_or_null("/root/BurdenManager")
 
 func _config_int(key: String, fallback: int) -> int:
-	var n := _config_node()
+	var n: Node = _config_node()
 	if n and n.has_method("get_int"):
 		return n.get_int(key, fallback)
 	return fallback
 
 func _update_burden_weight(flag: int) -> void:
-	var n := _burden_node()
+	var n: Node = _burden_node()
 	if n and n.has_method("update_moral_weight"):
 		n.update_moral_weight(flag)
 
 func _record_kill(enemy_id: String, enemy_name: String) -> void:
-	var n := _burden_node()
+	var n: Node = _burden_node()
 	if n and n.has_method("record_sentient_kill"):
 		n.record_sentient_kill(enemy_id, enemy_name)
 
@@ -148,7 +148,7 @@ func process_kill(
 		apply_damage(attacker, defender, defender.hp)
 
 	var delta: int = _config_int("MORAL_DELTA_KILL", 1) if sentient else _config_int("MORAL_DELTA_ENV", 0)
-	var record := MoralDeltaRecord.new(delta, enemy_id, enemy_name, sentient, "kill")
+	var record: MoralDeltaRecord = MoralDeltaRecord.new(delta, enemy_id, enemy_name, sentient, "kill")
 	_moral_queue.append(record)
 
 	if sentient and attacker != null and attacker.is_player:
@@ -170,7 +170,7 @@ func spare_entity(player: Entity, target: Entity) -> bool:
 	player.ap = DeterministicMath.clampi(player.ap - 1, 0, player.ap)
 
 	var delta: int = _config_int("MORAL_DELTA_SPARE", -1)
-	var record := MoralDeltaRecord.new(
+	var record: MoralDeltaRecord = MoralDeltaRecord.new(
 		delta,
 		target.entity_name,
 		target.entity_name,
@@ -262,9 +262,9 @@ func _resolve_dying_timers() -> void:
 			to_remove.append(id)
 
 	for id: int in to_remove:
-		var obj := instance_from_id(id)
+		var obj: Object = instance_from_id(id)
 		if obj is Entity:
-			var ent := obj as Entity
+			var ent: Entity = obj as Entity
 			if ent.alive() and ent.state == Entity.State.DYING:
 				## Expired without player choice → DEAD
 				_change_state(ent, Entity.State.DEAD)
@@ -278,9 +278,9 @@ func _resolve_stunned_timers() -> void:
 			to_remove.append(id)
 
 	for id: int in to_remove:
-		var obj := instance_from_id(id)
+		var obj: Object = instance_from_id(id)
 		if obj is Entity:
-			var ent := obj as Entity
+			var ent: Entity = obj as Entity
 			if ent.state == Entity.State.STUNNED:
 				_change_state(ent, Entity.State.IDLE)
 		_stunned_turns.erase(id)

@@ -126,14 +126,14 @@ func cmd_reset() -> void:
 # ---------------------------------------------------------------------------
 
 func _enter_inactive(_ctx: Dictionary) -> void:
-	var r := _renderer.get_ref() as Node2D
+	var r: Node2D = _renderer.get_ref() as Node2D
 	if r:
 		r.visible = false
 	_recoil_promotion_active = false
 
 func _enter_manifest(_ctx: Dictionary) -> void:
 	_manifest_timer = 0.0
-	var r := _renderer.get_ref() as Node2D
+	var r: Node2D = _renderer.get_ref() as Node2D
 	if r:
 		r.visible = true
 		# Start from zero opacity
@@ -141,7 +141,7 @@ func _enter_manifest(_ctx: Dictionary) -> void:
 
 func _update_manifest(delta: float, _elapsed: float) -> void:
 	_manifest_timer += delta
-	var t := clampf(_manifest_timer / _manifest_duration, 0.0, 1.0)
+	var t: float = clampf(_manifest_timer / _manifest_duration, 0.0, 1.0)
 	_set_renderer_opacity(t)
 	if _manifest_timer >= _manifest_duration:
 		cmd_transition_if_guarded(ApparitionState.IDLE)
@@ -150,11 +150,11 @@ func _enter_idle(_ctx: Dictionary) -> void:
 	_set_renderer_opacity(1.0)
 	manifested.emit()
 
-func _update_idle(delta: float, elapsed: float) -> void:
+func _update_idle(_delta: float, elapsed: float) -> void:
 	# Breathing pulse: slow sine 0.92 – 1.08 over ~2.3 s
-	var pulse := 1.0 + sin(elapsed * 2.734) * 0.08
+	var pulse: float = 1.0 + sin(elapsed * 2.734) * 0.08
 	idle_pulse.emit(pulse)
-	var r := _renderer.get_ref() as Node2D
+	var r: Node2D = _renderer.get_ref() as Node2D
 	if r:
 		# Apply subtle vertical float non-destructively via shader uniform
 		# or child offsets. We avoid mutating position directly to prevent
@@ -164,23 +164,23 @@ func _update_idle(delta: float, elapsed: float) -> void:
 func _enter_recoil(_ctx: Dictionary) -> void:
 	_recoil_timer = 0.0
 	_recoil_promotion_active = true
-	var r := _renderer.get_ref() as Node2D
+	var r: Node2D = _renderer.get_ref() as Node2D
 	if r and r.has_method("promote_z_index"):
 		r.call("promote_z_index")
 	recoiled.emit()
 
 func _exit_recoil(_ctx: Dictionary) -> void:
 	_recoil_promotion_active = false
-	var r := _renderer.get_ref() as Node2D
+	var r: Node2D = _renderer.get_ref() as Node2D
 	if r and r.has_method("restore_z_index"):
 		r.call("restore_z_index")
 
 func _update_recoil(delta: float, _elapsed: float) -> void:
 	_recoil_timer += delta
-	var r := _renderer.get_ref() as Node2D
+	var r: Node2D = _renderer.get_ref() as Node2D
 	if r:
 		# Slight horizontal jitter during recoil
-		var jitter := (randf() - 0.5) * 3.0
+		var jitter: float = (randf() - 0.5) * 3.0
 		r.position.x += jitter * delta * 60.0
 	if _recoil_timer >= _recoil_duration:
 		cmd_transition_if_guarded(ApparitionState.IDLE)
@@ -190,7 +190,7 @@ func _enter_absorb(_ctx: Dictionary) -> void:
 
 func _update_absorb(delta: float, _elapsed: float) -> void:
 	_absorb_timer += delta
-	var t := clampf(_absorb_timer / _absorb_duration, 0.0, 1.0)
+	var t: float = clampf(_absorb_timer / _absorb_duration, 0.0, 1.0)
 	_set_renderer_opacity(1.0 - t)
 	if _absorb_timer >= _absorb_duration:
 		cmd_transition_if_guarded(ApparitionState.INACTIVE)
@@ -225,7 +225,7 @@ func _guard_absorb_done(_ctx: Dictionary) -> bool:
 # ---------------------------------------------------------------------------
 
 func _set_renderer_opacity(alpha: float) -> void:
-	var r := _renderer.get_ref() as Node2D
+	var r: Node2D = _renderer.get_ref() as Node2D
 	if r and r.has_method("set_stack_opacity"):
 		r.call("set_stack_opacity", clampf(alpha, 0.0, 1.0))
 

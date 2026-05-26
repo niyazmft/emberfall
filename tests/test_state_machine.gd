@@ -395,7 +395,7 @@ func test_run_manager_final_encounter_won() -> bool:
 	return true
 
 func test_run_manager_config_loaded() -> bool:
-	var rm := _new_run_manager()
+	var rm: RunManager = _new_run_manager()
 	# If game_config.json is present, values should be loaded from it.
 	# If missing, hard-coded defaults per ConfigLoader DEFAULTS apply.
 	if rm.biome_count == 0:
@@ -412,12 +412,12 @@ func test_run_manager_config_loaded() -> bool:
 # ===========================================================================
 
 func _new_empty_state_machine() -> BaseStateMachine:
-	var sm := BaseStateMachine.new()
+	var sm: BaseStateMachine = BaseStateMachine.new()
 	get_tree().root.add_child(sm)
 	return sm
 
 func _new_run_manager() -> RunManager:
-	var rm := RunManager.new()
+	var rm: RunManager = RunManager.new()
 	get_tree().root.add_child(rm)
 	# Godot calls _ready() automatically when added to tree.
 	return rm
