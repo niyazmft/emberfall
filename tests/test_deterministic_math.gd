@@ -12,7 +12,6 @@ extends SceneTree
 ##
 ## Prints PASS/FAIL to stdout. Returns exit code 0 only if all pass.
 
-
 signal suite_finished(passed: int, failed: int)
 
 var _passed: int = 0

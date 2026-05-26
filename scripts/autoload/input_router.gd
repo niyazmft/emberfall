@@ -12,6 +12,7 @@ enum DeviceType { KEYBOARD_MOUSE, GAMEPAD }
 
 var current_device: DeviceType = DeviceType.KEYBOARD_MOUSE
 
+
 func _input(event: InputEvent) -> void:
 	var new_device: DeviceType = current_device
 
@@ -22,5 +23,7 @@ func _input(event: InputEvent) -> void:
 
 	if new_device != current_device:
 		current_device = new_device
-		var type_str: String = "keyboard_mouse" if current_device == DeviceType.KEYBOARD_MOUSE else "gamepad"
+		var type_str: String = (
+			"keyboard_mouse" if current_device == DeviceType.KEYBOARD_MOUSE else "gamepad"
+		)
 		device_changed.emit(type_str)

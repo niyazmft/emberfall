@@ -7,13 +7,16 @@ extends Control
 
 var _current_result: BurdenManager.BurdenEventResult
 
+
 func _ready() -> void:
 	if BurdenManager:
 		BurdenManager.burden_event_triggered.connect(_on_burden_event_triggered)
 
+
 func _on_burden_event_triggered(result: BurdenManager.BurdenEventResult) -> void:
 	_current_result = result
 	_play_sequence()
+
 
 func _play_sequence() -> void:
 	## Phase A starts immediately.
