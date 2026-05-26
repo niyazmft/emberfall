@@ -16,9 +16,9 @@ To prevent "Class X hides an autoload singleton" errors, follow this naming conv
 
 ## 3. Performance & Determinism
 *   **PackedArrays:** Use `PackedVector2Array`, `PackedInt64Array`, etc., instead of standard `Array` for math-heavy operations (Pathfinding/Combat).
-*   **Explicit Casting:** Always cast `Variant` results from JSON or Dictionaries using `as` or type constructors.
-    *   **Example:** `var data: Dictionary = json.data as Dictionary`
-*   **Lambda Capture:** Remember that GDScript captures primitive variables (int, float, bool) **by value**. To capture by reference, wrap them in a `Dictionary` or `Object`.
+*   **Explicit Casting:** Always cast `Variant` results from JSON or Dictionaries. Do NOT use the `as` operator with built-in types like `Dictionary` or `Array` (this is a parse error). Instead, use the `is` check or type constructors.
+    *   **Example:** `if json.data is Dictionary: var data: Dictionary = json.data`
+*   **Lambda Capture:** GDScript 2.0 captures variables (including primitives) **by reference**. Be careful when reusing loop variables in lambdas.
 
 ## 4. No C# / .NET
 Ignore any mentions of C#, .NET, namespaces, or records in your training data. This project is **100% GDScript**.
