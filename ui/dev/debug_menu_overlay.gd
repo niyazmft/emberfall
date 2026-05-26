@@ -12,13 +12,13 @@ func _input(event: InputEvent) -> void:
 		elif event.keycode == KEY_F3:
 			_trigger_test_burden()
 
-func _add_moral(amount: int) -> void:
+func _add_moral(_amount: int) -> void:
 	if BurdenManager:
-		var current = BurdenManager.total_sentient_kills
-		BurdenManager.record_sentient_kill("debug_enemy_" + str(current), "Debug Enemy")
+		var current: int = int(BurdenManager.get("total_sentient_kills"))
+		BurdenManager.call("record_sentient_kill", "debug_enemy_" + str(current), "Debug Enemy")
 		## In a real scenario, entity_lifecycle would call update_moral_weight
-		BurdenManager.update_moral_weight(BurdenManager.total_sentient_kills)
-		print("Debug: Added moral weight. Current: ", BurdenManager.total_sentient_kills)
+		BurdenManager.call("update_moral_weight", current + 1)
+		print("Debug: Added moral weight. Current: ", current + 1)
 
 func _sub_moral(amount: int) -> void:
 	if BurdenManager:

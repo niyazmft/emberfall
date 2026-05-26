@@ -13,7 +13,7 @@ func _ready() -> void:
 	if path.is_empty():
 		print("FAIL: empty grid path not found")
 		ok = false
-	elif path[0] != Vector2(0, 0) or path[path.size()-1] != Vector2(11, 11):
+	elif path[0] != Vector2i(0, 0) or path[path.size()-1] != Vector2i(11, 11):
 		print("FAIL: wrong endpoints on empty grid")
 		ok = false
 	else:

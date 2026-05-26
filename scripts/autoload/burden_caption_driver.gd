@@ -21,7 +21,7 @@ func _ready() -> void:
 	_print_debug("BurdenCaptionDriver ready")
 
 func _process(delta: float) -> void:
-	for key in _cooldowns.keys():
+	for key: String in _cooldowns.keys():
 		_cooldowns[key] -= delta
 		if _cooldowns[key] <= 0.0:
 			_cooldowns.erase(key)

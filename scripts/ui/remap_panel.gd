@@ -15,15 +15,16 @@ var remapping_button: Button = null
 func _ready() -> void:
 	load_bindings()
 	create_action_list()
-	if InputRouter:
-		InputRouter.device_changed.connect(_on_device_changed)
+	var router: Node = get_node_or_null("/root/InputRouter")
+	if router and router.has_signal("device_changed"):
+		router.connect("device_changed", _on_device_changed)
 
 func create_action_list() -> void:
-	for child in action_list.get_children():
+	for child: Node in action_list.get_children():
 		child.queue_free()
 
 	var actions: Array[StringName] = InputMap.get_actions()
-	for action in actions:
+	for action: StringName in actions:
 		if action.begins_with("ui_"):
 			continue
 
@@ -47,10 +48,11 @@ func get_action_text(action: StringName) -> String:
 		return "None"
 
 	var current_device: int = 0
-	if InputRouter:
-		current_device = InputRouter.current_device
+	var router: Node = get_node_or_null("/root/InputRouter")
+	if router:
+		current_device = int(router.get("current_device"))
 
-	for event in events:
+	for event: InputEvent in events:
 		if current_device == 0: # KEYBOARD_MOUSE
 			if event is InputEventKey or event is InputEventMouseButton:
 				return event.as_text()
@@ -66,10 +68,11 @@ func get_action_icon(action: StringName) -> Texture2D:
 		return null
 
 	var current_device: int = 0
-	if InputRouter:
-		current_device = InputRouter.current_device
+	var router: Node = get_node_or_null("/root/InputRouter")
+	if router:
+		current_device = int(router.get("current_device"))
 
-	for event in events:
+	for event: InputEvent in events:
 		if current_device == 0: # KEYBOARD_MOUSE
 			if event is InputEventKey or event is InputEventMouseButton:
 				return _find_icon_for_event(event)
@@ -169,13 +172,13 @@ func _on_device_changed(_device_type: String) -> void:
 
 func save_bindings() -> void:
 	var save_data: Dictionary = {}
-	for action in InputMap.get_actions():
+	for action: StringName in InputMap.get_actions():
 		if action.begins_with("ui_"):
 			continue
 		var events: Array[InputEvent] = InputMap.action_get_events(action)
 		var serialized_events: Array = []
-		for event in events:
-			serialized_events.append(inst2dict(event))
+		for event: InputEvent in events:
+			serialized_events.append(inst_to_dict(event))
 		save_data[action] = serialized_events
 
 	var file: FileAccess = FileAccess.open(REMAP_SAVE_PATH, FileAccess.WRITE)
@@ -193,11 +196,13 @@ func load_bindings() -> void:
 		file.close()
 
 		if save_data is Dictionary:
-			for action in save_data:
+			var sd: Dictionary = save_data as Dictionary
+			for action: StringName in sd.keys():
 				if InputMap.has_action(action):
 					InputMap.action_erase_events(action)
-					for event_dict in save_data[action]:
-						var event: InputEvent = dict2inst(event_dict) as InputEvent
+					var event_list: Array = sd[action] as Array
+					for event_dict: Dictionary in event_list:
+						var event: InputEvent = dict_to_inst(event_dict) as InputEvent
 						InputMap.action_add_event(action, event)
 
 func _on_reset_pressed() -> void:

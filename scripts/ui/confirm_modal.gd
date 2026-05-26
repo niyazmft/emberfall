@@ -1,8 +1,8 @@
-extends "res://scripts/ui/modal.gd"
+extends _Modal
 
 signal confirmed
 
-@onready var confirm_button = %ConfirmButton
+@onready var confirm_button: Button = %ConfirmButton as Button
 
 func _ready() -> void:
 	super._ready()

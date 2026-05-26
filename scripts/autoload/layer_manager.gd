@@ -1,3 +1,4 @@
+class_name _LayerManager
 extends CanvasLayer
 
 ## LayerManager
@@ -21,8 +22,8 @@ func _ready() -> void:
 
 func add_modal(modal: Node) -> void:
 	if not _modal_stack.is_empty():
-		var prev = _modal_stack.back()
-		var tween = create_tween()
+		var prev: Node = _modal_stack.back()
+		var tween: Tween = create_tween()
 		tween.tween_property(prev, "modulate:a", 0.0, 0.1) # 100ms fade per requirement
 		tween.finished.connect(prev.queue_free)
 		_modal_stack.pop_back()
@@ -45,14 +46,14 @@ func _update_dim(show_dim: bool) -> void:
 		_dim_tween.kill()
 
 	_dim_tween = create_tween()
-	var target_alpha = 0.5 if show_dim else 0.0
+	var target_alpha: float = 0.5 if show_dim else 0.0
 
 	if show_dim:
 		_dim_rect.visible = true
 		_dim_tween.tween_property(_dim_rect, "color:a", target_alpha, 0.2)
 	else:
 		_dim_tween.tween_property(_dim_rect, "color:a", target_alpha, 0.2)
-		_dim_tween.finished.connect(func(): _dim_rect.visible = false)
+		_dim_tween.finished.connect(func() -> void: _dim_rect.visible = false)
 
 func is_modal_active() -> bool:
 	return not _modal_stack.is_empty()

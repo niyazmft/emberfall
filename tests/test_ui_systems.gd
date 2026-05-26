@@ -12,7 +12,8 @@ func test_toast_system() -> void:
 
 func test_modal_system() -> void:
 	print("Testing Modal System...")
-	var modal_scene = load("res://scenes/ui/modal.tscn")
-	var modal = modal_scene.instantiate()
+	var modal_scene: PackedScene = load("res://scenes/ui/modal.tscn") as PackedScene
+	var modal: Node = modal_scene.instantiate()
 	LayerManager.add_modal(modal)
-	modal.setup("TEST_MODAL", "THIS_IS_A_TEST")
+	if modal.has_method("setup"):
+		modal.call("setup", "TEST_MODAL", "THIS_IS_A_TEST")

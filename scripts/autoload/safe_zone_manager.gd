@@ -1,4 +1,5 @@
 extends Node
+class_name _SafeZoneManager
 ## SafeZoneManager (DON-196)
 ## Manages safe area margins and responsive aspect-ratio breakpoints.
 
@@ -26,23 +27,23 @@ func _on_size_changed() -> void:
 	_update_metrics()
 
 func _update_metrics() -> void:
-	var viewport_size := Vector2(get_viewport().get_visible_rect().size)
+	var viewport_size: Vector2 = Vector2(get_viewport().get_visible_rect().size)
 	if viewport_size.y == 0: return
 
-	var aspect := viewport_size.x / viewport_size.y
+	var aspect: float = viewport_size.x / viewport_size.y
 
-	var new_mode := AspectMode.DEFAULT
+	var new_mode: AspectMode = AspectMode.DEFAULT
 	if aspect < BREAKPOINT_SHRINK:
 		new_mode = AspectMode.SHRINK
 	elif aspect > BREAKPOINT_EXPAND:
 		new_mode = AspectMode.EXPAND
 
-	var aspect_changed := (new_mode != current_aspect_mode)
+	var aspect_changed: bool = (new_mode != current_aspect_mode)
 	if aspect_changed:
 		current_aspect_mode = new_mode
 
-	var new_safe_area := DisplayServer.get_display_safe_area()
-	var safe_changed := (new_safe_area != current_safe_area)
+	var new_safe_area: Rect2 = Rect2(DisplayServer.get_display_safe_area())
+	var safe_changed: bool = (new_safe_area != current_safe_area)
 
 	if safe_changed:
 		current_safe_area = new_safe_area

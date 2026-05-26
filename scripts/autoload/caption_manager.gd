@@ -1,4 +1,5 @@
 extends Node
+class_name _CaptionManager
 
 ## CaptionManager
 ## Autoload that manages closed-caption / subtitle events across channels.

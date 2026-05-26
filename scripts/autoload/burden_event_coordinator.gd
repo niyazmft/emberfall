@@ -36,7 +36,7 @@ func _on_burden_event_triggered(result: Variant) -> void:
 		"BD-CLIMB": "res://audio/stems/bd_climb.ogg"
 	}
 
-	for stem_id in stems:
+	for stem_id: String in stems.keys():
 		var path: String = stems[stem_id]
 		if ResourceLoader.exists(path):
 			var stream: AudioStream = load(path) as AudioStream

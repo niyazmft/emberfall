@@ -1,18 +1,19 @@
+class_name _ToastManager
 extends Node
 
 ## ToastManager
 ## Queues and displays toast notifications.
 
 enum ToastType {
-	T_01, ## INFO
-	T_02, ## SUCCESS
-	T_03, ## WARNING
-	T_04, ## ERROR
-	T_05  ## SYSTEM
+	T_01 = 1, ## INFO
+	T_02 = 2, ## SUCCESS
+	T_03 = 3, ## WARNING
+	T_04 = 4, ## ERROR
+	T_05 = 5  ## SYSTEM
 }
 
-const TOAST_SCENE = preload("res://scenes/ui/toast.tscn")
-const DISMISS_TIME = 3.0
+const TOAST_SCENE: PackedScene = preload("res://scenes/ui/toast.tscn")
+const DISMISS_TIME: float = 3.0
 
 var _queue: Array[Dictionary] = []
 var _is_displaying: bool = false
@@ -30,11 +31,14 @@ func _process_queue() -> void:
 		return
 
 	_is_displaying = true
-	var data = _queue.pop_front()
-	var toast = TOAST_SCENE.instantiate()
+	var data: Dictionary = _queue.pop_front() as Dictionary
+	var toast: Node = TOAST_SCENE.instantiate()
 	LayerManager.add_child(toast)
-	toast.display(data.key, data.type, DISMISS_TIME)
-	toast.finished.connect(_on_toast_finished)
+	if toast.has_method("display"):
+		toast.call("display", str(data.get("key", "")), int(data.get("type", 1)), DISMISS_TIME)
+	
+	if toast.has_signal("finished"):
+		toast.connect("finished", _on_toast_finished)
 
 func _on_toast_finished() -> void:
 	_is_displaying = false

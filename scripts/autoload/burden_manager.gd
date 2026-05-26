@@ -403,29 +403,29 @@ func _caption_node() -> Node:
 	return get_node_or_null("/root/CaptionManager")
 
 func _schedule_mwt_transition_caption(from_level: int, to_level: int, is_emergency: bool = false) -> void:
-	var cm := _caption_node()
+	var cm: Node = _caption_node()
 	if cm == null or _mwt_matrix == null:
 		return
 
-	var data: MWTCaptionEntry = _mwt_matrix.get_transition_caption(from_level, to_level, is_emergency)
+	var data: Resource = _mwt_matrix.get_transition_caption(from_level, to_level, is_emergency)
 	if data == null:
 		return
 
-	if cm.has_method("schedule") and not data.text.is_empty():
-		cm.call("schedule", data.text, 1, data.offset_sec, data.duration_sec, data.curve, data.localization_key)
+	if cm.has_method("schedule") and not str(data.get("text")).is_empty():
+		cm.call("schedule", data.get("text"), 1, data.get("offset_sec"), data.get("duration_sec"), data.get("curve"), data.get("localization_key"))
 		_print_debug("scheduled MWT transition caption %d->%d (emergency=%s)" % [from_level, to_level, str(is_emergency)])
 
 func _schedule_mwt_state_caption(level: int) -> void:
-	var cm := _caption_node()
+	var cm: Node = _caption_node()
 	if cm == null or _mwt_matrix == null:
 		return
 
-	var data: MWTCaptionEntry = _mwt_matrix.get_state_caption(level)
+	var data: Resource = _mwt_matrix.get_state_caption(level)
 	if data == null:
 		return
 
 	if cm.has_method("schedule"):
-		cm.call("schedule", data.text, 1, 0.0, data.duration_sec, data.curve, data.localization_key)
+		cm.call("schedule", data.get("text"), 1, 0.0, data.get("duration_sec"), data.get("curve"), data.get("localization_key"))
 		_print_debug("scheduled MWT state caption for level %d" % level)
 
 ## Public API: explicitly schedule a named transition caption (for emergency 3→0 override).
