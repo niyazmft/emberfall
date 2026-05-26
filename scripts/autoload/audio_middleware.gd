@@ -12,6 +12,8 @@ signal stem_event_detected(stem_id: String, event_type: String, intensity: float
 # ── Properties ────────────────────────────────────────────────────────────
 var _stems: Dictionary = {}
 var _stem_router: Node
+var _climb_expanded: bool = false
+var _climb_converged: bool = false
 
 # ── Lifecycle ────────────────────────────────────────────────────────────────
 
@@ -52,15 +54,8 @@ func _setup_router() -> void:
 		_stem_router = router_script.new()
 		_stem_router.name = "BurdenStemCaptionRouter"
 		add_child(_stem_router)
-
-		# Find SubtitleManager in the scene tree to set as presenter
-		var subtitle_manager = get_tree().root.find_child("SubtitleManager", true, false)
-		if subtitle_manager:
-			_stem_router.set_presenter(subtitle_manager)
-		else:
-			# Fallback: if not found now, it might be added later.
-			# In a real app, we might use a signal or a more robust discovery.
-			pass
+		# Note: SubtitleManager is not yet in the scene tree during autoload _ready().
+		# The router will lazily resolve the presenter at runtime.
 
 func _setup_stems() -> void:
 	var stem_ids: Array[String] = ["BD-BASS", "BD-MECH", "BD-STRESS", "BD-CLIMB"]
@@ -95,9 +90,18 @@ func _on_stem_feature_updated(feature: String, value: float, stem_id: String) ->
 		stem_event_detected.emit(stem_id, "width_change", value)
 		if _stem_router:
 			if value > 0.7:
-				_stem_router.dispatch_event(stem_id, "expand")
+				if not _climb_expanded:
+					_climb_expanded = true
+					_climb_converged = false
+					_stem_router.dispatch_event(stem_id, "expand")
 			elif value < 0.3:
-				_stem_router.dispatch_event(stem_id, "converge")
+				if not _climb_converged:
+					_climb_converged = true
+					_climb_expanded = false
+					_stem_router.dispatch_event(stem_id, "converge")
+			else:
+				_climb_expanded = false
+				_climb_converged = false
 	elif stem_id == "BD-STRESS" and feature == "swell":
 		if value > 0.8:
 			stem_event_detected.emit(stem_id, "high_stress", value)

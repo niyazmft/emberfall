@@ -35,7 +35,7 @@ func _trigger_test_burden() -> void:
 
 func simulate_burden_event(stem_id: String, event_id: String) -> void:
 	if AudioMiddleware and AudioMiddleware.has_method("get_stem_router"):
-		var router = AudioMiddleware.call("get_stem_router")
+		var router = AudioMiddleware.get_stem_router()
 		if router:
 			router.dispatch_event(stem_id, event_id)
 			print("Debug: Simulated burden event %s/%s" % [stem_id, event_id])

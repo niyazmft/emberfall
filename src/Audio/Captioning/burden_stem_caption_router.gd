@@ -18,9 +18,8 @@ func _ready() -> void:
 	_load_config("res://data/captioning/burden_stems.json")
 
 func _process(delta: float) -> void:
-	var delta_ms = int(delta * 1000.0)
 	for stem_id in _cooldowns:
-		_cooldowns[stem_id] = maxi(0, _cooldowns[stem_id] - delta_ms)
+		_cooldowns[stem_id] = maxf(0.0, _cooldowns[stem_id] - delta)
 
 # ── Public API ─────────────────────────────────────────────────────────────
 
@@ -36,7 +35,7 @@ func would_dispatch(stem_id: String, event_id: String) -> bool:
 		return false
 
 	# Check cooldown
-	if _cooldowns.get(stem_id, 0) > 0:
+	if _cooldowns.get(stem_id, 0.0) > 0.0:
 		return false
 
 	# Check MWT binding (logic: fire if current MWT >= marker.mwt_binding)
@@ -53,12 +52,17 @@ func dispatch_event(stem_id: String, event_id: String) -> void:
 	var config: StemCaptionConfig = _configs[stem_id]
 	var marker: SparseEventMarker = config.markers[event_id]
 
-	# Apply cooldown
-	_cooldowns[stem_id] = config.cooldown_ms
+	# Apply cooldown (converted to seconds)
+	_cooldowns[stem_id] = config.cooldown_ms / 1000.0
 
-	# Dispatch to presenter
-	if _presenter and _presenter.has_method("present_caption"):
-		_presenter.present_caption(marker)
+	# Dispatch to presenter (lazily resolved if null or invalid)
+	var presenter = _presenter
+	if not presenter or not is_instance_valid(presenter):
+		presenter = get_tree().root.find_child("SubtitleManager", true, false)
+		_presenter = presenter
+
+	if presenter and presenter.has_method("present_caption"):
+		presenter.present_caption(marker)
 
 	_print_debug("Dispatched event: %s/%s" % [stem_id, event_id])
 

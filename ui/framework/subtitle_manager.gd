@@ -55,13 +55,11 @@ func present_caption(marker: RefCounted) -> void:
 		return
 
 	# Map SparseEventMarker to CaptionManager.schedule call
-	# Channel.BURDEN = 1
-	# CaptionCurve.LINEAR = 1
 	CaptionManager.schedule(
 		marker.default_text,
-		1, # Channel.BURDEN
+		CaptionManager.Channel.BURDEN,
 		0.0,
 		marker.duration_ms / 1000.0,
-		1, # CaptionCurve.LINEAR
+		CaptionManager.CaptionCurve.LINEAR,
 		"BE_CAP_" + marker.event_id.to_upper()
 	)

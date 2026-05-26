@@ -95,10 +95,11 @@ func test_dispatch_event_applies_cooldown() -> bool:
 	if BurdenManager: BurdenManager.current_mwt_level = 3
 
 	router.dispatch_event("BD-BASS", "impact")
-	var cooldown = router._cooldowns.get("BD-BASS", 0)
+	var cooldown = router._cooldowns.get("BD-BASS", 0.0)
 
+	var result = is_equal_approx(cooldown, 4.0)
 	router.queue_free()
-	return cooldown == 4000
+	return result
 
 func test_reset_cooldowns() -> bool:
 	var router = Router.new()
@@ -107,10 +108,10 @@ func test_reset_cooldowns() -> bool:
 
 	router.dispatch_event("BD-BASS", "impact")
 	router.reset_cooldowns()
-	var cooldown = router._cooldowns.get("BD-BASS", 0)
+	var cooldown = router._cooldowns.get("BD-BASS", 0.0)
 
 	router.queue_free()
-	return cooldown == 0
+	return is_equal_approx(cooldown, 0.0)
 
 func test_logical_event_volume_agnostic() -> bool:
 	# Logical events should dispatch even if volume is 0.
