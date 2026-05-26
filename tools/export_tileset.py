@@ -65,10 +65,9 @@ def build_manifest(source_dir: Path) -> dict[str, Any]:
                 "id": tile_id,
                 "file": file.name,
                 "collision_byte": collision,
-                "collision_name": {v: k for k, v in COLLISION_TAG_MAP.items()}.get(
+                "collision_name": REV_COLLISION_TAG_MAP.get(
                     collision, "default_solid"
                 ).lstrip("_"),
-            }
         )
 
     manifest["tiles"] = tiles
