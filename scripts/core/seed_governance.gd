@@ -8,6 +8,7 @@ class_name SeedGovernance
 # ── Internal ────────────────────────────────────────────────────────
 const _BLACKLISTED_SEEDS: Array[int] = []
 
+
 # ── Core Hash ───────────────────────────────────────────────────────
 static func hash_seed(input: String) -> int:
 	## SHA-256 of UTF-8 input, truncated to the first 64 bits,

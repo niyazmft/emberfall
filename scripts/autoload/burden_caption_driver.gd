@@ -16,21 +16,26 @@ var _cooldowns: Dictionary = {}
 
 # ── Lifecycle ────────────────────────────────────────────────────────────────
 
+
 func _ready() -> void:
 	_connect_middleware()
 	_print_debug("BurdenCaptionDriver ready")
 
+
 func _process(delta: float) -> void:
-	for key in _cooldowns.keys():
+	for key: String in _cooldowns.keys():
 		_cooldowns[key] -= delta
 		if _cooldowns[key] <= 0.0:
 			_cooldowns.erase(key)
 
+
 # ── Internal ────────────────────────────────────────────────────────────────
+
 
 func _connect_middleware() -> void:
 	if AudioMiddleware and AudioMiddleware.has_signal("stem_event_detected"):
 		AudioMiddleware.stem_event_detected.connect(_on_stem_event)
+
 
 func _on_stem_event(stem_id: String, event_type: String, intensity: float) -> void:
 	if intensity < MIN_INTENSITY:
@@ -47,6 +52,7 @@ func _on_stem_event(stem_id: String, event_type: String, intensity: float) -> vo
 	if event_type == "clang":
 		cooldown = COOLDOWN_CLANG
 	_cooldowns[cooldown_key] = cooldown
+
 
 func _map_and_trigger_caption(stem_id: String, event_type: String, intensity: float) -> void:
 	var caption_text: String = ""
@@ -89,6 +95,7 @@ func _map_and_trigger_caption(stem_id: String, event_type: String, intensity: fl
 		# Also report to CaptionManager for screen readers/internal tracking
 		if CaptionManager and CaptionManager.has_method("report_stem_transient"):
 			CaptionManager.call("report_stem_transient", stem_id, event_type, intensity)
+
 
 func _print_debug(msg: String) -> void:
 	if OS.is_debug_build():
