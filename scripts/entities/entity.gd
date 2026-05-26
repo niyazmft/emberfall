@@ -38,7 +38,7 @@ class_name Entity
 # ── Moral Weight ────────────────────────────────────────────────────
 @export var moral_flag: int = 0:
 	set(value):
-		moral_flag = DeterministicMath.clampi(value, 0, GameConstants.MWT)
+		moral_flag = DeterministicMath.clampi(value, 0, 999)
 
 # ── AP (per-phase transient; not persisted across runs) ─────────────
 var ap: int = GameConstants.AP_MAX

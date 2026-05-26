@@ -26,12 +26,8 @@ var _astar: AStar3D
 ## Cache to avoid rebuilding graph when the room topology is unchanged.
 var _cached_room_id: String = ""
 
-## Re-used output buffer to avoid per-query allocation.
-var _path_buffer: Array[Vector2i] = []
-
 func _init() -> void:
 	_astar = AStar3D.new()
-	_path_buffer = []
 
 	## Register every grid cell once. Positions are scaled by COST_STRAIGHT
 	## so that Euclidean distance yields the desired cost model:
@@ -74,18 +70,18 @@ func find_path(start: Vector2i, goal: Vector2i) -> Array[Vector2i]:
 	if ids.is_empty():
 		return []
 
-	_path_buffer.clear()
+	var path: Array[Vector2i] = []
+	path.resize(ids.size())
 	for idx: int in range(ids.size()):
 		var id: int = ids[idx]
-		_path_buffer.append(Vector2i(id % GRID_SIZE, id / GRID_SIZE))
-	return _path_buffer.duplicate()
+		path[idx] = Vector2i(id % GRID_SIZE, id / GRID_SIZE)
+	return path
 
 ## ------------------------------------------------------------------
 ## Graph rebuild (room change only)
 ## ------------------------------------------------------------------
 func _rebuild_graph() -> void:
-	## Remove and re-add all points. This implicitly clears every
-	## connection without calling get_point_connections() which allocates.
+	## Clear every connection without calling get_point_connections() which allocates.
 	_astar.clear()
 	for i: int in range(TOTAL_TILES):
 		var fx: float = float(i % GRID_SIZE) * float(COST_STRAIGHT)
@@ -121,7 +117,11 @@ func _rebuild_graph() -> void:
 					if reverse_ok:
 						if not GridSystem.can_move(nx, ny, x + d.x, y) or not GridSystem.can_move(nx, ny, x, y + d.y):
 							reverse_ok = false
-				if forward_ok:
+				
+				if forward_ok and reverse_ok:
+					_astar.connect_points(i, ni, true)
+				elif forward_ok:
 					_astar.connect_points(i, ni, false)
-				if reverse_ok:
+				elif reverse_ok:
 					_astar.connect_points(ni, i, false)
+

@@ -97,8 +97,8 @@ func initialize() -> void:
 ## Returns true if the transition was accepted.
 func transition_to(target_id: int, context: Dictionary = {}) -> bool:
 	var from_id := current_state
-	var from_name := state_names.get(from_id, &"UNINITIALIZED")
-	var to_name := state_names.get(target_id, &"UNKNOWN")
+	var from_name: StringName = state_names.get(from_id, &"UNINITIALIZED") as StringName
+	var to_name: StringName = state_names.get(target_id, &"UNKNOWN") as StringName
 
 	if from_id == -1:
 		push_error("StateMachine: transition requested before initialization.")
@@ -119,9 +119,11 @@ func update(delta: float) -> void:
 	if not _initialized:
 		return
 	state_time += delta
-	var st = _states.get(current_state)
-	if st and st["update"].is_valid():
-		st["update"].call(delta, state_time)
+	var st_variant: Variant = _states.get(current_state)
+	if st_variant and st_variant is Dictionary:
+		var st: Dictionary = st_variant as Dictionary
+		if st["update"].is_valid():
+			st["update"].call(delta, state_time)
 
 ## Force a state change without guard checks. Use for emergency/error recovery only.
 func force_state(id: int, context: Dictionary = {}) -> void:
@@ -145,30 +147,36 @@ func get_current_state_name() -> StringName:
 func _is_valid_transition(from_id: int, to_id: int, context: Dictionary) -> bool:
 	if not _transitions.has(from_id):
 		return false
-	for t in _transitions[from_id]:
-		if t["to_id"] == to_id:
-			if t["guard"].is_valid():
-				var ok: Variant = t["guard"].call(context)
-				if ok is bool and ok:
-					return true
+	var trans_list: Array = _transitions[from_id] as Array
+	for t: Variant in trans_list:
+		if t is Dictionary:
+			var dict: Dictionary = t as Dictionary
+			if dict["to_id"] == to_id:
+				if dict["guard"].is_valid():
+					var ok: Variant = dict["guard"].call(context)
+					if ok is bool and ok:
+						return true
+					else:
+						return false
 				else:
-					return false
-			else:
-				return true
+					return true
 	return false
 
 func _run_transition_actions(from_id: int, to_id: int, context: Dictionary) -> void:
 	if not _transitions.has(from_id):
 		return
-	for t in _transitions[from_id]:
-		if t["to_id"] == to_id and t["action"].is_valid():
-			t["action"].call(context)
-			return
+	var trans_list: Array = _transitions[from_id] as Array
+	for t: Variant in trans_list:
+		if t is Dictionary:
+			var dict: Dictionary = t as Dictionary
+			if dict["to_id"] == to_id and dict["action"].is_valid():
+				dict["action"].call(context)
+				return
 
 func _change_state(to_id: int, context: Dictionary) -> void:
 	var old_id := current_state
 	if old_id != -1 and _states.has(old_id):
-		var old = _states[old_id]
+		var old: Dictionary = _states[old_id] as Dictionary
 		if old["exit"].is_valid():
 			old["exit"].call(context)
 		state_exited.emit(old["name"], context)
@@ -178,7 +186,7 @@ func _change_state(to_id: int, context: Dictionary) -> void:
 	state_time = 0.0
 
 	if _states.has(to_id):
-		var st = _states[to_id]
+		var st: Dictionary = _states[to_id] as Dictionary
 		if st["entry"].is_valid():
 			st["entry"].call(context)
 		state_entered.emit(st["name"], context)
@@ -190,6 +198,7 @@ func _change_state(to_id: int, context: Dictionary) -> void:
 ## Move to error state with a message. Can be called by subclass when unexpected condition occurs.
 func _error(message: String) -> void:
 	push_error("StateMachine: %s" % message)
-	state_machine_error.emit(state_names.get(current_state, &"UNKNOWN"), message)
+	state_machine_error.emit(state_names.get(current_state, &"UNKNOWN") as StringName, message)
 	if _error_state_id != -1 and current_state != _error_state_id:
 		_change_state(_error_state_id, {"error_message": message, "from": current_state})
+
