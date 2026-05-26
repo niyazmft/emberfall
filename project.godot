@@ -36,6 +36,7 @@ gdscript/warnings/unsafe_call_argument=1
 limits/message_queue/max_size=4096
 
 [autoload]
+InputRouter="*res://scripts/autoload/input_router.gd"
 ConfigLoader="*res://scripts/autoload/config_loader.gd"
 BurdenManager="*res://scripts/autoload/burden_manager.gd"
 CaptionManager="*res://scripts/autoload/caption_manager.gd"
