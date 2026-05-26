@@ -10,11 +10,11 @@ func _ready() -> void:
 	## 1. Straight line on empty grid
 	GridSystem.load_room({"id": "empty", "tiles": []})
 	var astar: AStarGrid = AStarGrid.new()
-	var path: Array[Vector2i] = astar.find_path(Vector2i(0, 0), Vector2i(11, 11))
+	var path: PackedVector2Array = astar.find_path(Vector2i(0, 0), Vector2i(11, 11))
 	if path.is_empty():
 		print("FAIL: empty grid path not found")
 		ok = false
-	elif path[0] != Vector2i(0, 0) or path[path.size() - 1] != Vector2i(11, 11):
+	elif path[0] != Vector2(0, 0) or path[path.size() - 1] != Vector2(11, 11):
 		print("FAIL: wrong endpoints on empty grid")
 		ok = false
 	else:
@@ -55,8 +55,8 @@ func _ready() -> void:
 		for i: int in range(path.size() - 1):
 			var a := path[i]
 			var b := path[i + 1]
-			var ta := GridSystem.get_tile(a.x, a.y)
-			var tb := GridSystem.get_tile(b.x, b.y)
+			var ta := GridSystem.get_tile(int(a.x), int(a.y))
+			var tb := GridSystem.get_tile(int(b.x), int(b.y))
 			if ta == null or tb == null:
 				step_ok = false
 				break
@@ -78,7 +78,7 @@ func _ready() -> void:
 	GridSystem.load_room({"id": "box", "tiles": box_tiles})
 	astar = AStarGrid.new()
 	path = astar.find_path(Vector2i(0, 0), Vector2i(0, 0))
-	if path.size() != 1 or path[0] != Vector2i(0, 0):
+	if path.size() != 1 or path[0] != Vector2(0, 0):
 		print("FAIL: start==goal should return single-point path")
 		ok = false
 	else:

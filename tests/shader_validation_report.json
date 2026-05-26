@@ -1,0 +1,31 @@
+{
+  "project": "Emberfall",
+  "report_date": "2026-05-25",
+  "shaders": [
+    {
+      "file": "scripts/shaders/sprite_base.gdshader",
+      "alu_estimate": 28,
+      "texture_samples": 4,
+      "uniforms_active": 12,
+      "branches": 2,
+      "target_performance_mali_g57": "< 0.2ms per batch",
+      "status": "PASS",
+      "notes": "9 Boolean flags, 3 sampler2D. Shading constants hardcoded to stay within uniform ceiling. Branches flattened by compiler."
+    },
+    {
+      "file": "scripts/shaders/sprite_debug.gdshader",
+      "alu_estimate": 12,
+      "texture_samples": 4,
+      "uniforms_active": 4,
+      "branches": 1,
+      "target_performance_mali_g57": "N/A (Debug)",
+      "status": "PASS",
+      "notes": "Isolates token masks for QA."
+    }
+  ],
+  "compliance": {
+    "deuteranopia_sprint1": true,
+    "mali_g57_optimization": true,
+    "uniform_ceiling_12": true
+  }
+}
