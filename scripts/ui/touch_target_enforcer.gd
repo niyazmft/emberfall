@@ -6,6 +6,7 @@ extends Node
 
 const MIN_TARGET_SIZE := Vector2(44, 44)
 
+
 ## Enforces minimum size on the given control.
 static func enforce(control: Control) -> void:
 	if not is_instance_valid(control):

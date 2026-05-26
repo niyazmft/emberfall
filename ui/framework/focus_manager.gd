@@ -6,12 +6,10 @@ extends Node
 
 static var _focus_stack: Array[Dictionary] = []
 
+
 ## Disables focus on all controls outside the given modal and sets up internal wrap-around.
 static func push_modal_focus(modal: Control) -> void:
-	var state := {
-		"modal": modal,
-		"disabled_nodes": {}
-	}
+	var state := {"modal": modal, "disabled_nodes": {}}
 
 	# Find all focusable nodes outside the modal
 	_disable_focus_outside(modal.get_tree().root, modal, state.disabled_nodes)
@@ -28,7 +26,7 @@ static func pop_modal_focus() -> void:
 		return
 
 	var state: Dictionary = _focus_stack.pop_back()
-	for node_path in state.disabled_nodes:
+	for node_path: String in state.disabled_nodes:
 		var node_info: Dictionary = state.disabled_nodes[node_path]
 		var node: Control = node_info["node"]
 		if is_instance_valid(node):
@@ -41,10 +39,7 @@ static func _disable_focus_outside(node: Node, modal: Control, disabled_nodes: D
 
 	if node is Control:
 		if node.focus_mode != Control.FOCUS_NONE:
-			disabled_nodes[node.get_path()] = {
-				"node": node,
-				"original_mode": node.focus_mode
-			}
+			disabled_nodes[node.get_path()] = {"node": node, "original_mode": node.focus_mode}
 			node.focus_mode = Control.FOCUS_NONE
 
 	for child in node.get_children():
@@ -75,7 +70,13 @@ static func _find_focusable_in(node: Node) -> Array[Control]:
 			# Only add if it's not a container that just passes focus
 			if not (node is Container and node.focus_mode == Control.FOCUS_CLICK):
 				# This is a bit simplified, but usually we want Buttons, Sliders, etc.
-				if node is Button or node is Slider or node is LineEdit or node is ItemList or node is OptionButton:
+				if (
+					node is Button
+					or node is Slider
+					or node is LineEdit
+					or node is ItemList
+					or node is OptionButton
+				):
 					found.append(node)
 
 	for child in node.get_children():
