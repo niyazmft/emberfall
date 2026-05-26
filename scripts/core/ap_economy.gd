@@ -37,10 +37,7 @@ static func end_phase(ap_end: int, ap_spent_total: int) -> int:
 
 
 # ── Full Turn Sequence ──────────────────────────────────────────────
-static func simulate_turn(
-	ap_start_of_turn: int,
-	action_costs: Array[int]
-) -> Dictionary:
+static func simulate_turn(ap_start_of_turn: int, action_costs: Array[int]) -> Dictionary:
 	## Deterministic turn simulator for test / AI planning.
 	## Returns Dictionary with keys:
 	##   "ap_spent": int, "ap_remaining": int, "ap_next_turn": int,

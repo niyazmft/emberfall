@@ -2,6 +2,7 @@ extends _Modal
 
 const BLOCK_TIME: float = 2.0
 
+
 func _ready() -> void:
 	super._ready()
 
@@ -11,6 +12,7 @@ func _ready() -> void:
 
 	var timer: SceneTreeTimer = get_tree().create_timer(BLOCK_TIME)
 	timer.timeout.connect(_on_block_timer_timeout)
+
 
 func _on_block_timer_timeout() -> void:
 	close_button.disabled = false

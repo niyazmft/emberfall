@@ -1,8 +1,10 @@
 extends SceneTree
 
+
 func _initialize() -> void:
 	test_remap_logic()
 	quit()
+
 
 func test_remap_logic() -> void:
 	print("Running Remap Logic Tests...")

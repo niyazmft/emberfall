@@ -4,6 +4,7 @@ extends Node
 
 # ── BurdenManager Tests ───────────────────────────────────────────────────
 
+
 func test_burden_manager_record_kill() -> bool:
 	# Arrange
 	var bm: Node = BurdenManager
@@ -26,6 +27,7 @@ func test_burden_manager_record_kill() -> bool:
 		return false
 	return true
 
+
 func test_burden_manager_cap_at_three() -> bool:
 	var bm: Node = BurdenManager
 	bm.reset()
@@ -43,6 +45,7 @@ func test_burden_manager_cap_at_three() -> bool:
 		push_error("Expected FIFO eviction: got %s" % ids)
 		return false
 	return true
+
 
 func test_burden_manager_moral_weight_toggle() -> bool:
 	var bm: Node = BurdenManager
@@ -65,7 +68,9 @@ func test_burden_manager_moral_weight_toggle() -> bool:
 		return false
 	return true
 
+
 # ── ApparitionRenderer Layout Tests ────────────────────────────────────────
+
 
 func test_renderer_layout_constants() -> bool:
 	if ApparitionRenderer.VERTICAL_OFFSETS.size() != 3:
@@ -85,7 +90,9 @@ func test_renderer_layout_constants() -> bool:
 		return false
 	return true
 
+
 # ── ApparitionStateMachine Tests ───────────────────────────────────────────
+
 
 func test_state_machine_manifest_to_idle() -> bool:
 	var renderer: ApparitionRenderer = ApparitionRenderer.new()
@@ -115,6 +122,7 @@ func test_state_machine_manifest_to_idle() -> bool:
 
 	renderer.queue_free()
 	return true
+
 
 func test_state_machine_recoil_z_promotion() -> bool:
 	var keeper: Node2D = Node2D.new()
@@ -156,7 +164,9 @@ func test_state_machine_recoil_z_promotion() -> bool:
 	keeper.queue_free()
 	return true
 
+
 # ── Keeper Integration Tests ─────────────────────────────────────────────
+
 
 func test_keeper_integration_damage_triggers_recoil() -> bool:
 	BurdenManager.reset()
@@ -186,6 +196,7 @@ func test_keeper_integration_damage_triggers_recoil() -> bool:
 	k.queue_free()
 	return true
 
+
 func test_keeper_integration_kill_updates_stack() -> bool:
 	BurdenManager.reset()
 	var k: Keeper = Keeper.new()
@@ -205,6 +216,7 @@ func test_keeper_integration_kill_updates_stack() -> bool:
 
 
 # ── Test Runner ───────────────────────────────────────────────────────────
+
 
 func _ready() -> void:
 	var passed: int = 0

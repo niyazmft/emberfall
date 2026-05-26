@@ -13,6 +13,7 @@ extends Node
 ##   AC-8: RunManager biome boundary detection
 ##   AC-9: RunManager config-driven defaults (fallback if game_config.json missing)
 
+
 func run_all() -> void:
 	var passed: int = 0
 	var failed: int = 0
@@ -57,6 +58,7 @@ func run_all() -> void:
 # BaseStateMachine Tests
 # ===========================================================================
 
+
 func test_base_registration_and_default() -> bool:
 	var sm: BaseStateMachine = _new_empty_state_machine()
 	sm.register_state(0, &"A")
@@ -71,6 +73,7 @@ func test_base_registration_and_default() -> bool:
 		push_error("Expected state name A")
 		return false
 	return true
+
 
 func test_base_valid_transition() -> bool:
 	var sm: BaseStateMachine = _new_empty_state_machine()
@@ -89,6 +92,7 @@ func test_base_valid_transition() -> bool:
 		return false
 	return true
 
+
 func test_base_guard_blocks_invalid() -> bool:
 	var sm: BaseStateMachine = _new_empty_state_machine()
 	sm.register_state(0, &"A")
@@ -105,6 +109,7 @@ func test_base_guard_blocks_invalid() -> bool:
 		push_error("Expected state to remain A after blocked transition")
 		return false
 	return true
+
 
 func test_base_guard_allows_valid() -> bool:
 	var sm: BaseStateMachine = _new_empty_state_machine()
@@ -123,12 +128,23 @@ func test_base_guard_allows_valid() -> bool:
 		return false
 	return true
 
+
 func test_base_entry_exit_order() -> bool:
 	var sm: BaseStateMachine = _new_empty_state_machine()
 	var log_list: Array[String] = []
 
-	sm.register_state(0, &"A", Callable(self, "_make_logger").bind(log_list, "enter_A"), Callable(self, "_make_logger").bind(log_list, "exit_A"))
-	sm.register_state(1, &"B", Callable(self, "_make_logger").bind(log_list, "enter_B"), Callable(self, "_make_logger").bind(log_list, "exit_B"))
+	sm.register_state(
+		0,
+		&"A",
+		Callable(self, "_make_logger").bind(log_list, "enter_A"),
+		Callable(self, "_make_logger").bind(log_list, "exit_A")
+	)
+	sm.register_state(
+		1,
+		&"B",
+		Callable(self, "_make_logger").bind(log_list, "enter_B"),
+		Callable(self, "_make_logger").bind(log_list, "exit_B")
+	)
 	sm.register_transition(0, 1)
 	sm.set_default_state(0)
 	sm.initialize()
@@ -146,13 +162,26 @@ func test_base_entry_exit_order() -> bool:
 		return false
 	return true
 
+
 func test_base_transition_action_between_exit_entry() -> bool:
 	var sm: BaseStateMachine = _new_empty_state_machine()
 	var log_list: Array[String] = []
 
-	sm.register_state(0, &"A", Callable(self, "_make_logger").bind(log_list, "enter_A"), Callable(self, "_make_logger").bind(log_list, "exit_A"))
-	sm.register_state(1, &"B", Callable(self, "_make_logger").bind(log_list, "enter_B"), Callable(self, "_make_logger").bind(log_list, "exit_B"))
-	sm.register_transition(0, 1, Callable(), Callable(self, "_make_logger").bind(log_list, "action_0_1"))
+	sm.register_state(
+		0,
+		&"A",
+		Callable(self, "_make_logger").bind(log_list, "enter_A"),
+		Callable(self, "_make_logger").bind(log_list, "exit_A")
+	)
+	sm.register_state(
+		1,
+		&"B",
+		Callable(self, "_make_logger").bind(log_list, "enter_B"),
+		Callable(self, "_make_logger").bind(log_list, "exit_B")
+	)
+	sm.register_transition(
+		0, 1, Callable(), Callable(self, "_make_logger").bind(log_list, "action_0_1")
+	)
 	sm.set_default_state(0)
 	sm.initialize()
 
@@ -172,6 +201,7 @@ func test_base_transition_action_between_exit_entry() -> bool:
 		return false
 	return true
 
+
 func test_base_error_fallback() -> bool:
 	var sm: BaseStateMachine = _new_empty_state_machine()
 	sm.register_state(0, &"A")
@@ -187,6 +217,7 @@ func test_base_error_fallback() -> bool:
 		push_error("Expected fallback to ERROR state 99, got %d" % sm.current_state)
 		return false
 	return true
+
 
 func test_base_update_delta_accumulation() -> bool:
 	var sm: BaseStateMachine = _new_empty_state_machine()
@@ -214,6 +245,7 @@ func test_base_update_delta_accumulation() -> bool:
 # RunManager Lifecycle Tests
 # ===========================================================================
 
+
 func test_run_manager_starts_in_sanctum() -> bool:
 	var rm: RunManager = _new_run_manager()
 	if rm.current_state != RunManager.RunState.SANCTUM:
@@ -223,6 +255,7 @@ func test_run_manager_starts_in_sanctum() -> bool:
 		push_error("Expected state name SANCTUM")
 		return false
 	return true
+
 
 func test_run_manager_requires_memory_loaded() -> bool:
 	var rm: RunManager = _new_run_manager()
@@ -236,6 +269,7 @@ func test_run_manager_requires_memory_loaded() -> bool:
 		return false
 	return true
 
+
 func test_run_manager_full_lifecycle() -> bool:
 	# Use a tiny room count to keep the test fast
 	var rm: RunManager = _new_run_manager()
@@ -247,7 +281,9 @@ func test_run_manager_full_lifecycle() -> bool:
 	rm.memory_state_loaded = true
 	rm.cmd_start_run()
 	if rm.current_state != RunManager.RunState.BIOME_GENERATION:
-		push_error("Expected BIOME_GENERATION after start_run, got %s" % rm.get_current_state_name())
+		push_error(
+			"Expected BIOME_GENERATION after start_run, got %s" % rm.get_current_state_name()
+		)
 		return false
 
 	# Fast-forward biome generation timer
@@ -299,6 +335,7 @@ func test_run_manager_full_lifecycle() -> bool:
 
 	return true
 
+
 func test_run_manager_biome_boundary() -> bool:
 	var rm: RunManager = _new_run_manager()
 	rm.biome_count = 2
@@ -317,7 +354,9 @@ func test_run_manager_biome_boundary() -> bool:
 
 	rm.cmd_next_room()
 	if rm.current_state != RunManager.RunState.BIOME_THRESHOLD:
-		push_error("Expected BIOME_THRESHOLD at biome boundary, got %s" % rm.get_current_state_name())
+		push_error(
+			"Expected BIOME_THRESHOLD at biome boundary, got %s" % rm.get_current_state_name()
+		)
 		return false
 
 	# Fast-forward echo timer
@@ -332,6 +371,7 @@ func test_run_manager_biome_boundary() -> bool:
 
 	return true
 
+
 func test_run_manager_player_defeat() -> bool:
 	var rm: RunManager = _new_run_manager()
 	rm.biome_count = 1
@@ -340,10 +380,11 @@ func test_run_manager_player_defeat() -> bool:
 
 	rm.memory_state_loaded = true
 
-	var results := { "received": false, "value": &"" }
-	rm.run_ended.connect(func(res: StringName, _ctx: Dictionary) -> void:
-		results.received = true
-		results.value = res
+	var results := {"received": false, "value": &""}
+	rm.run_ended.connect(
+		func(res: StringName, _ctx: Dictionary) -> void:
+			results.received = true
+			results.value = res
 	)
 
 	rm.cmd_start_run()
@@ -363,6 +404,7 @@ func test_run_manager_player_defeat() -> bool:
 		return false
 	return true
 
+
 func test_run_manager_final_encounter_won() -> bool:
 	var rm: RunManager = _new_run_manager()
 	rm.biome_count = 1
@@ -371,10 +413,11 @@ func test_run_manager_final_encounter_won() -> bool:
 
 	rm.memory_state_loaded = true
 
-	var results := { "received": false, "value": &"" }
-	rm.run_ended.connect(func(res: StringName, _ctx: Dictionary) -> void:
-		results.received = true
-		results.value = res
+	var results := {"received": false, "value": &""}
+	rm.run_ended.connect(
+		func(res: StringName, _ctx: Dictionary) -> void:
+			results.received = true
+			results.value = res
 	)
 
 	rm.cmd_start_run()
@@ -394,6 +437,7 @@ func test_run_manager_final_encounter_won() -> bool:
 		return false
 	return true
 
+
 func test_run_manager_config_loaded() -> bool:
 	var rm: RunManager = _new_run_manager()
 	# If game_config.json is present, values should be loaded from it.
@@ -411,10 +455,12 @@ func test_run_manager_config_loaded() -> bool:
 # Helpers
 # ===========================================================================
 
+
 func _new_empty_state_machine() -> BaseStateMachine:
 	var sm: BaseStateMachine = BaseStateMachine.new()
 	get_tree().root.add_child(sm)
 	return sm
+
 
 func _new_run_manager() -> RunManager:
 	var rm: RunManager = RunManager.new()
@@ -422,14 +468,18 @@ func _new_run_manager() -> RunManager:
 	# Godot calls _ready() automatically when added to tree.
 	return rm
 
+
 func _always_true_guard(_ctx: Dictionary) -> bool:
 	return true
+
 
 func _always_false_guard(_ctx: Dictionary) -> bool:
 	return false
 
+
 func _make_logger(log: Array[String], msg: String, _ctx: Dictionary = {}) -> void:
 	log.append(msg)
+
 
 func _ready() -> void:
 	run_all()

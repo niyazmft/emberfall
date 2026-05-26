@@ -20,11 +20,12 @@ Project Emberfall is a **Godot 4 (4.2+) Deterministic Tactics Engine** focused o
 
 ## 🧪 Testing & Validation
 
-### Mandatory Test Run
-Before finishing any task, run the full validation suite:
+### Mandatory Local Check (Before Pushing)
+Before pushing any changes to GitHub, you MUST run the local validation script. This matches our "Green Local" policy used in other studio projects:
 ```bash
-bash tests/run_all_tests.sh
+bash tools/pre_push_check.sh
 ```
+This script runs math validation, headless editor parsing, and the full test suite. If this script fails, DO NOT PUSH.
 
 ### Manual Execution
 - **Python Math Cross-Validator**:

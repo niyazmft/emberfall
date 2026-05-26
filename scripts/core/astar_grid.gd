@@ -13,10 +13,10 @@ const COST_STRAIGHT: int = 10
 ## Four positive-direction quadrants. connect_points(bidirectional=true)
 ## mirrors the edge so the graph is undirected without duplicate calls.
 const DIRS: Array[Vector2i] = [
-	Vector2i( 1,  0),
-	Vector2i( 0,  1),
-	Vector2i( 1,  1),
-	Vector2i( 1, -1),
+	Vector2i(1, 0),
+	Vector2i(0, 1),
+	Vector2i(1, 1),
+	Vector2i(1, -1),
 ]
 
 ## Native A* graph. Points are pre-registered in _init(); connections are
@@ -25,6 +25,7 @@ var _astar: AStar3D
 
 ## Cache to avoid rebuilding graph when the room topology is unchanged.
 var _cached_room_id: String = ""
+
 
 func _init() -> void:
 	_astar = AStar3D.new()
@@ -37,10 +38,12 @@ func _init() -> void:
 		var fy: float = float(i / GRID_SIZE) * float(COST_STRAIGHT)
 		_astar.add_point(i, Vector3(fx, fy, 0.0), 1.0)
 
+
 ## Backward-compatibility stub. The old interpreted A* needed an explicit
 ## buffer reset; the native backend manages its own state.
 func _reset_search() -> void:
 	pass
+
 
 ## ------------------------------------------------------------------
 ## Public API
@@ -77,6 +80,7 @@ func find_path(start: Vector2i, goal: Vector2i) -> Array[Vector2i]:
 		path[idx] = Vector2i(id % GRID_SIZE, id / GRID_SIZE)
 	return path
 
+
 ## ------------------------------------------------------------------
 ## Graph rebuild (room change only)
 ## ------------------------------------------------------------------
@@ -112,16 +116,21 @@ func _rebuild_graph() -> void:
 				var reverse_ok: bool = GridSystem.can_move(nx, ny, x, y)
 				if d.x != 0 and d.y != 0:
 					if forward_ok:
-						if not GridSystem.can_move(x, y, x + d.x, y) or not GridSystem.can_move(x, y, x, y + d.y):
+						if (
+							not GridSystem.can_move(x, y, x + d.x, y)
+							or not GridSystem.can_move(x, y, x, y + d.y)
+						):
 							forward_ok = false
 					if reverse_ok:
-						if not GridSystem.can_move(nx, ny, x + d.x, y) or not GridSystem.can_move(nx, ny, x, y + d.y):
+						if (
+							not GridSystem.can_move(nx, ny, x + d.x, y)
+							or not GridSystem.can_move(nx, ny, x, y + d.y)
+						):
 							reverse_ok = false
-				
+
 				if forward_ok and reverse_ok:
 					_astar.connect_points(i, ni, true)
 				elif forward_ok:
 					_astar.connect_points(i, ni, false)
 				elif reverse_ok:
 					_astar.connect_points(ni, i, false)
-

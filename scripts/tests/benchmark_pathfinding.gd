@@ -6,6 +6,7 @@ const AStarGrid := preload("res://scripts/core/astar_grid.gd")
 const WARMUP: int = 1000
 const SAMPLES: int = 2000
 
+
 func _ready() -> void:
 	print("=== Pathfinding Benchmark ===")
 	print("Engine: Godot ", Engine.get_version_info().string)
@@ -15,8 +16,8 @@ func _ready() -> void:
 	## Setup worst-case room: partial wall forcing detour.
 	var wall_tiles: Array[Dictionary] = []
 	for x: int in range(2, 10):
-		wall_tiles.append({"x":x, "y":6, "blocks_movement":true, "blocks_vision":true})
-	GridSystem.load_room({"id":"bench_wall","tiles":wall_tiles})
+		wall_tiles.append({"x": x, "y": 6, "blocks_movement": true, "blocks_vision": true})
+	GridSystem.load_room({"id": "bench_wall", "tiles": wall_tiles})
 
 	var astar: AStarGrid = AStarGrid.new()
 	var path: Array[Vector2i] = astar.find_path(Vector2i(0, 0), Vector2i(11, 11))
@@ -71,9 +72,13 @@ func _ready() -> void:
 	if p95_ms > budget_ms:
 		passed = false
 	if passed:
-		print("RESULT: PASS — avg ", avg_ms, " ms / p95 ", p95_ms, " ms ≤ ", budget_ms, " ms budget")
+		print(
+			"RESULT: PASS — avg ", avg_ms, " ms / p95 ", p95_ms, " ms ≤ ", budget_ms, " ms budget"
+		)
 	else:
-		print("RESULT: FAIL — avg ", avg_ms, " ms / p95 ", p95_ms, " ms > ", budget_ms, " ms budget")
+		print(
+			"RESULT: FAIL — avg ", avg_ms, " ms / p95 ", p95_ms, " ms > ", budget_ms, " ms budget"
+		)
 		get_tree().quit(1)
 		return
 	get_tree().quit(0)

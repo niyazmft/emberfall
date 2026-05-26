@@ -9,6 +9,7 @@ extends Node
 ##   AC-4: Noun rotation is deterministic per seed and persists across runs
 ##   AC-5: Localization keys are unique in the master table
 
+
 func run_all() -> void:
 	var passed: int = 0
 	var failed: int = 0
@@ -72,17 +73,25 @@ func test_save_roundtrip() -> bool:
 	bm.reset()
 
 	## Simulate a previous run that persisted noun_index = 3 and lifetime_triggers = 7
-	bm.load_memory_state({
-		"echo_flags": {
-			"burden_noun_index": 3,
-			"burden_trigger_history": 7,
-		}
-	})
+	(
+		bm
+		. load_memory_state(
+			{
+				"echo_flags":
+				{
+					"burden_noun_index": 3,
+					"burden_trigger_history": 7,
+				}
+			}
+		)
+	)
 	if bm._burden_noun_index != 3:
 		push_error("Expected noun_index 3 after load, got %d" % bm._burden_noun_index)
 		return false
 	if bm._lifetime_trigger_count != 7:
-		push_error("Expected lifetime_trigger_count 7 after load, got %d" % bm._lifetime_trigger_count)
+		push_error(
+			"Expected lifetime_trigger_count 7 after load, got %d" % bm._lifetime_trigger_count
+		)
 		return false
 
 	## Run a new run, trigger once, then save
@@ -93,7 +102,12 @@ func test_save_roundtrip() -> bool:
 		push_error("Save noun_index mismatch")
 		return false
 	if saved["burden_trigger_history"] != 8:
-		push_error("Expected lifetime_triggers 8 after one trigger, got %d" % saved["burden_trigger_history"])
+		push_error(
+			(
+				"Expected lifetime_triggers 8 after one trigger, got %d"
+				% saved["burden_trigger_history"]
+			)
+		)
 		return false
 
 	## Reset and reload must preserve cross-run values
@@ -120,7 +134,9 @@ func test_numbness_cap_exactly_five() -> bool:
 	var room_index: int = 0
 
 	for i: int in range(1, 7):
-		var result: _BurdenManager.BurdenEventResult = bm.trigger_burden_event(run_seed, topo_seed, room_index, i, i == 1)
+		var result: _BurdenManager.BurdenEventResult = bm.trigger_burden_event(
+			run_seed, topo_seed, room_index, i, i == 1
+		)
 		if i < 5:
 			if result.numbness_cap_reached:
 				push_error("Trigger #%d should NOT be numb" % i)

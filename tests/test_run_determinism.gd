@@ -2,6 +2,7 @@ extends SceneTree
 ## Unit tests for RunManager deterministic seeding and persistence.
 ## Run via `godot --headless --path . -s tests/test_run_determinism.gd`.
 
+
 func run_all() -> void:
 	var passed: int = 0
 	var failed: int = 0
@@ -28,6 +29,7 @@ func run_all() -> void:
 	else:
 		quit(0)
 
+
 func test_replay_code_roundtrip() -> bool:
 	var seeds: Array[int] = [12345, 0, -1, 0x7FFFFFFFFFFFFFFF, 0x123456789ABCDEF0]
 	for s: int in seeds:
@@ -42,9 +44,12 @@ func test_replay_code_roundtrip() -> bool:
 			# In Godot, -1 is 0xFFFFFFFFFFFFFFFF.
 			if s == -1 and decoded == -1:
 				continue
-			push_error("Replay code roundtrip failed: expected %d, got %d (code: %s)" % [s, decoded, code])
+			push_error(
+				"Replay code roundtrip failed: expected %d, got %d (code: %s)" % [s, decoded, code]
+			)
 			return false
 	return true
+
 
 func test_deterministic_room_queue() -> bool:
 	var seed_val: int = 987654321
@@ -78,11 +83,26 @@ func test_deterministic_room_queue() -> bool:
 	for i: int in range(queue1.size()):
 		var r1: Dictionary = queue1[i] as Dictionary
 		var r2: Dictionary = queue2[i] as Dictionary
-		if r1["topology_seed"] != r2["topology_seed"] or r1["encounter_seed"] != r2["encounter_seed"]:
-			push_error("Room %d seeds differ: T1=%d, T2=%d, E1=%d, E2=%d" % [i, r1["topology_seed"], r2["topology_seed"], r1["encounter_seed"], r2["encounter_seed"]])
+		if (
+			r1["topology_seed"] != r2["topology_seed"]
+			or r1["encounter_seed"] != r2["encounter_seed"]
+		):
+			push_error(
+				(
+					"Room %d seeds differ: T1=%d, T2=%d, E1=%d, E2=%d"
+					% [
+						i,
+						r1["topology_seed"],
+						r2["topology_seed"],
+						r1["encounter_seed"],
+						r2["encounter_seed"]
+					]
+				)
+			)
 			return false
 
 	return true
+
 
 func test_save_load_persistence() -> bool:
 	var rm: RunManager = RunManager.new()
@@ -125,6 +145,7 @@ func test_save_load_persistence() -> bool:
 	rm.queue_free()
 	rm2.queue_free()
 	return true
+
 
 func _initialize() -> void:
 	run_all()

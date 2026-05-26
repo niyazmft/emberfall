@@ -52,6 +52,7 @@ enum State { IDLE, STUNNED, DYING, DEAD, GHOST }
 @export var entity_name: String = "Unnamed"
 @export var is_player: bool = false
 
+
 # ── Constructors ──────────────────────────────────────────────────
 func _init(
 	p_name: String = "Unnamed",

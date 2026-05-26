@@ -37,11 +37,13 @@ const _ELEM_OIL: int = 4
 const SLIP_SPEED_FACTOR: float = 0.8
 const SLIP_MOVEMENT_BASE_COST: int = 1
 
+
 ## ------------------------------------------------------------------
 ## Lifecycle
 ## ------------------------------------------------------------------
 func _ready() -> void:
 	_reset_grid()
+
 
 func _reset_grid() -> void:
 	_tiles.resize(TOTAL_TILES)
@@ -54,10 +56,12 @@ func _reset_grid() -> void:
 	_elemental_overlay.clear()
 	_invalidate_cache()
 
+
 func _invalidate_cache() -> void:
 	_cache_valid = false
 	_cover_cache.resize(TOTAL_TILES * TOTAL_TILES)
 	_cover_cache.fill(false)
+
 
 ## ------------------------------------------------------------------
 ## Public API — Coordinate helpers
@@ -65,21 +69,26 @@ func _invalidate_cache() -> void:
 func is_in_bounds(x: int, y: int) -> bool:
 	return x >= 0 and x < GRID_SIZE and y >= 0 and y < GRID_SIZE
 
+
 func index(x: int, y: int) -> int:
 	return y * GRID_SIZE + x
+
 
 func get_tile(x: int, y: int) -> Resource:
 	if not is_in_bounds(x, y):
 		return null
 	return _tiles[index(x, y)]
 
+
 func get_tile_by_index(i: int) -> Resource:
 	if i < 0 or i >= TOTAL_TILES:
 		return null
 	return _tiles[i]
 
+
 func all_tiles() -> Array[Resource]:
 	return _tiles.duplicate()
+
 
 ## ------------------------------------------------------------------
 ## Public API — Room loading
@@ -139,6 +148,7 @@ func load_room_from_file(path: String) -> Error:
 		return ERR_INVALID_DATA
 	return load_room(json.data)
 
+
 ## ------------------------------------------------------------------
 ## Public API — Movement
 ## ------------------------------------------------------------------
@@ -155,6 +165,7 @@ func can_move(from_x: int, from_y: int, to_x: int, to_y: int) -> bool:
 		return false
 	var delta: int = abs(int(from_tile.get("elevation")) - int(to_tile.get("elevation")))
 	return delta <= MAX_ELEVATION_DELTA
+
 
 ## ------------------------------------------------------------------
 ## Public API — Oil helpers (backward-compatible API)
@@ -174,6 +185,7 @@ func set_oil_tile(x: int, y: int, has_oil: bool) -> void:
 	if has_oil:
 		_elemental_overlay[idx] = [{"element": _ELEM_OIL, "duration": 999, "applied_turn": -1}]
 
+
 func has_oil_tile(x: int, y: int) -> bool:
 	if not is_in_bounds(x, y):
 		return false
@@ -186,8 +198,10 @@ func has_oil_tile(x: int, y: int) -> bool:
 			return true
 	return false
 
+
 func is_slippery(x: int, y: int) -> bool:
 	return has_oil_tile(x, y)
+
 
 ## ------------------------------------------------------------------
 ## Public API — Elemental tile overlay (duration-tracked)
@@ -208,6 +222,7 @@ func apply_tile_element(x: int, y: int, element: int, duration: int, applied_tur
 	var arr: Array = _elemental_overlay[idx]
 	arr.append({"element": element, "duration": duration, "applied_turn": applied_turn})
 
+
 ## Returns an Array of effect dictionaries (copies) for the tile.
 func get_tile_effects(x: int, y: int) -> Array:
 	if not is_in_bounds(x, y):
@@ -219,6 +234,7 @@ func get_tile_effects(x: int, y: int) -> Array:
 	for i: int in range(raw.size()):
 		out[i] = raw[i].duplicate()
 	return out
+
 
 ## Returns the set of active element types on a tile.
 ## Uses a small PackedInt32Array to avoid heap churn.
@@ -232,6 +248,7 @@ func get_active_tile_elements(x: int, y: int) -> PackedInt32Array:
 		if not out.has(e):
 			out.append(e)
 	return out
+
 
 ## Remove a specific element type from a tile (e.g. Water extinguishes Fire).
 func remove_tile_element(x: int, y: int, element: int) -> void:
@@ -247,6 +264,7 @@ func remove_tile_element(x: int, y: int, element: int) -> void:
 	## Clean up empty arrays.
 	if arr.is_empty():
 		_elemental_overlay.erase(idx)
+
 
 ## Engine tick: decrement all durations and purge expired effects.
 ## Returns the number of expired effects removed.
@@ -266,6 +284,7 @@ func tick_tile_effects() -> int:
 		_elemental_overlay.erase(k)
 	return expired
 
+
 ## Returns the movement cost to enter (to_x, to_y) from an adjacent tile.
 ## Base cost is 1; oil tiles cost ceil(1 / SLIP_SPEED_FACTOR) = 2.
 func get_movement_cost(to_x: int, to_y: int) -> int:
@@ -276,9 +295,11 @@ func get_movement_cost(to_x: int, to_y: int) -> int:
 		cost = ceili(float(SLIP_MOVEMENT_BASE_COST) / SLIP_SPEED_FACTOR)
 	return cost
 
+
 ## Clear all dynamic elemental overlays (call on room unload / run reset).
 func clear_elemental_overlay() -> void:
 	_elemental_overlay.clear()
+
 
 ## ------------------------------------------------------------------
 ## Public API — Cover
@@ -299,7 +320,11 @@ func has_los(observer_x: int, observer_y: int, target_x: int, target_y: int) -> 
 		if x == target_x and y == target_y:
 			return true
 		var tile: Resource = get_tile(x, y)
-		if tile != null and bool(tile.get("blocks_vision")) and not (x == observer_x and y == observer_y):
+		if (
+			tile != null
+			and bool(tile.get("blocks_vision"))
+			and not (x == observer_x and y == observer_y)
+		):
 			return false
 		var e2: int = 2 * err
 		if e2 > -dy:
@@ -310,15 +335,19 @@ func has_los(observer_x: int, observer_y: int, target_x: int, target_y: int) -> 
 			y += sy
 	return false
 
+
 ## Returns true if 'target' has cover against 'observer'.
 ## Heavy cover blocks all attacks; light cover provides partial.
 ## Uses the pre-computed cache when valid.
-func target_has_cover_against(observer_x: int, observer_y: int, target_x: int, target_y: int) -> bool:
+func target_has_cover_against(
+	observer_x: int, observer_y: int, target_x: int, target_y: int
+) -> bool:
 	if not _cache_valid:
 		_recompute_cover_cache()
 	var oi: int = index(observer_x, observer_y)
 	var ti: int = index(target_x, target_y)
 	return _cover_cache[oi * TOTAL_TILES + ti]
+
 
 ## ------------------------------------------------------------------
 ## Internal — Cover cache
@@ -334,9 +363,10 @@ func _recompute_cover_cache() -> void:
 					_cover_cache[oi * TOTAL_TILES + ti] = _compute_cover_for_pair(ox, oy, tx, ty)
 	_cache_valid = true
 
+
 func _compute_cover_for_pair(ox: int, oy: int, tx: int, ty: int) -> bool:
 	var target: Resource = get_tile(tx, ty)
-	if target == null or int(target.get("cover")) == 0: # CoverType.NONE
+	if target == null or int(target.get("cover")) == 0:  # CoverType.NONE
 		return false
 	## Cover only applies if adjacent to the target (cardinal + diagonal)
 	var dx: int = abs(ox - tx)
@@ -358,4 +388,4 @@ func _compute_cover_for_pair(ox: int, oy: int, tx: int, ty: int) -> bool:
 	## Cardinal adjacency: cover applies only if the line of sight crosses a cover boundary.
 	## For adjacent tiles, the observer is directly adjacent, so the target is considered exposed.
 	## We therefore return true only if the target tile is heavy cover (full protection from adjacent).
-	return int(target.get("cover")) == 2 # CoverType.HEAVY
+	return int(target.get("cover")) == 2  # CoverType.HEAVY

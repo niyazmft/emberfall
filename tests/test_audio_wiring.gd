@@ -2,6 +2,7 @@ extends Node
 
 ## Integration tests for Audio Stem Event Wiring (DON-218).
 
+
 func run_all() -> void:
 	var passed: int = 0
 	var failed: int = 0
@@ -30,14 +31,16 @@ func run_all() -> void:
 	else:
 		get_tree().quit(0)
 
+
 func test_stem_playback_signals() -> bool:
 	var playback: _StemPlayback = _StemPlayback.new("BD-BASS", "Master")
 	add_child(playback)
 
-	var results := { "signal_emitted": false, "emitted_intensity": 0.0 }
-	playback.transient_detected.connect(func(type: String, intensity: float) -> void:
-		results.signal_emitted = true
-		results.emitted_intensity = intensity
+	var results := {"signal_emitted": false, "emitted_intensity": 0.0}
+	playback.transient_detected.connect(
+		func(type: String, intensity: float) -> void:
+			results.signal_emitted = true
+			results.emitted_intensity = intensity
 	)
 
 	# Manually trigger internal analysis result (mocking spectrum analyzer impact)
@@ -53,16 +56,18 @@ func test_stem_playback_signals() -> bool:
 	playback.queue_free()
 	return true
 
+
 func test_audio_middleware_forwarding() -> bool:
 	var am: _AudioMiddleware = _AudioMiddleware.new()
 	add_child(am)
 	# Need to call _ready manually if not in tree at start
 	am._ready()
 
-	var results := { "signal_emitted": false }
-	am.stem_event_detected.connect(func(stem_id: String, type: String, _intensity: float) -> void:
-		if stem_id == "BD-MECH" and type == "clang":
-			results.signal_emitted = true
+	var results := {"signal_emitted": false}
+	am.stem_event_detected.connect(
+		func(stem_id: String, type: String, _intensity: float) -> void:
+			if stem_id == "BD-MECH" and type == "clang":
+				results.signal_emitted = true
 	)
 
 	# Simulate a signal from one of the internal stems
@@ -76,22 +81,25 @@ func test_audio_middleware_forwarding() -> bool:
 	am.queue_free()
 	return true
 
+
 func test_caption_driver_mapping() -> bool:
 	# Mock CaptionManager
 	var cm: Node = Node.new()
 	cm.name = "CaptionManager"
 	get_tree().root.add_child(cm)
 
-	var results := { "caption_received": false, "received_text": "" }
+	var results := {"caption_received": false, "received_text": ""}
 
 	# Add dummy schedule method
 	var script: GDScript = GDScript.new()
 	script.source_code = "extends Node\nsignal scheduled(text: String)\nfunc schedule(text: String, _channel: int, _offset: float, _duration: float, _curve: int, _loc_key: String) -> void:\n\tscheduled.emit(text)"
 	script.reload()
 	cm.set_script(script)
-	cm.connect("scheduled", func(text: String) -> void:
-		results.caption_received = true
-		results.received_text = text
+	cm.connect(
+		"scheduled",
+		func(text: String) -> void:
+			results.caption_received = true
+			results.received_text = text
 	)
 
 	var driver: _BurdenCaptionDriver = _BurdenCaptionDriver.new()
@@ -114,6 +122,7 @@ func test_caption_driver_mapping() -> bool:
 	cm.queue_free()
 	return true
 
+
 func test_caption_driver_cooldown() -> bool:
 	var cm: Node = Node.new()
 	cm.name = "CaptionManager"
@@ -123,7 +132,7 @@ func test_caption_driver_cooldown() -> bool:
 	script.reload()
 	cm.set_script(script)
 
-	var results := { "call_count": 0 }
+	var results := {"call_count": 0}
 	cm.connect("scheduled", func() -> void: results.call_count += 1)
 
 	var driver: _BurdenCaptionDriver = _BurdenCaptionDriver.new()
@@ -141,6 +150,7 @@ func test_caption_driver_cooldown() -> bool:
 	driver.queue_free()
 	cm.queue_free()
 	return true
+
 
 func _ready() -> void:
 	# Small delay to ensure all nodes are ready
