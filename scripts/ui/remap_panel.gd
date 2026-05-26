@@ -22,6 +22,7 @@ func _ready() -> void:
 	call_deferred("_focus_first_item")
 
 func _focus_first_item() -> void:
+	if not action_list: return
 	if action_list.get_child_count() > 0:
 		var first_hbox = action_list.get_child(0)
 		if first_hbox.get_child_count() > 1 and first_hbox.get_child(1) is Button:
@@ -153,6 +154,7 @@ func remap_action_to(action: StringName, event: InputEvent) -> void:
 	call_deferred("_focus_action_button", action)
 
 func _focus_action_button(action: StringName) -> void:
+	if not action_list: return
 	for child in action_list.get_children():
 		if child is HBoxContainer and child.get_child_count() > 1:
 			var label = child.get_child(0) as Label
