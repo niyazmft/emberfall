@@ -53,7 +53,7 @@ def build_atlas(source_dir: Path) -> dict[str, Any]:
         for idx, frame in enumerate(frames):
             # Split on underscore or dash; first token is state name
             raw = frame.stem.split("_")[0].split("-")[0]
-            state_name = raw.lower() if raw else "default"
+            state_name = raw.lower() if raw and not raw.isdigit() else "default"
             state_map.setdefault(state_name, []).append(idx)
 
         for state_name, indices in sorted(state_map.items()):
