@@ -33,7 +33,7 @@ jobs:
           mkdir -p /tmp/godot-install
           cd /tmp/godot-install
 
-          # Download Godot binary (with fallback to GitHub release mirror)
+          # Download Godot binary
           GODOT_ZIP="Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
           echo "Downloading Godot ${GODOT_VERSION}..."
           wget --tries=5 --waitretry=5 \
@@ -47,7 +47,6 @@ jobs:
           echo "Godot installed: $(godot --version)"
 
           # Install export templates
-          mkdir -p "${HOME}/.local/share/godot/export_templates/${GODOT_VERSION}.stable"
           TPZ="Godot_v${GODOT_VERSION}-stable_export_templates.tpz"
           echo "Downloading export templates..."
           wget --tries=5 --waitretry=5 \
@@ -55,8 +54,34 @@ jobs:
             || wget --tries=5 --waitretry=5 \
               "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/${TPZ}"
 
-          unzip -q "${TPZ}" -d "${HOME}/.local/share/godot/export_templates/${GODOT_VERSION}.stable/"
-          echo "Export templates installed."
+          # Extract to a temp staging area so we can inspect the layout
+          mkdir -p /tmp/godot-templates
+          unzip -oq "${TPZ}" -d /tmp/godot-templates/
+          
+          echo "Templates extracted. Top-level contents:"
+          find /tmp/godot-templates -maxdepth 2 -type d
+          
+          # Move the extracted folder to the exact path Godot expects
+          EXPECTED="${HOME}/.local/share/godot/export_templates/${GODOT_VERSION}.stable"
+          mkdir -p "${HOME}/.local/share/godot/export_templates"
+          
+          if [ -d "/tmp/godot-templates/${GODOT_VERSION}.stable" ]; then
+            # .tpz had a top-level version folder (ideal)
+            mv "/tmp/godot-templates/${GODOT_VERSION}.stable" "${EXPECTED}"
+          else
+            # Find whatever single directory was extracted
+            SRC_DIR=$(find /tmp/godot-templates -maxdepth 1 -mindepth 1 -type d | head -1)
+            if [ -n "$SRC_DIR" ]; then
+              mv "$SRC_DIR" "${EXPECTED}"
+            else
+              # Flat extraction (no folder at all)
+              mkdir -p "${EXPECTED}"
+              mv /tmp/godot-templates/* "${EXPECTED}/" || true
+            fi
+          fi
+          
+          echo "Export templates installed at: ${EXPECTED}"
+          ls -la "${EXPECTED}"
 
       - name: Run validation tests
         run: |
