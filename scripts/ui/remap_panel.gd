@@ -60,9 +60,41 @@ func get_action_text(action: StringName) -> String:
 
 	return events[0].as_text()
 
-func get_action_icon(_action: StringName) -> Texture2D:
-	# Placeholder: Deliverable requires icons, but no assets found in repo.
-	# In a real project, we would load icons based on event type.
+func get_action_icon(action: StringName) -> Texture2D:
+	var events: Array[InputEvent] = InputMap.action_get_events(action)
+	if events.is_empty():
+		return null
+
+	var current_device: int = 0
+	if InputRouter:
+		current_device = InputRouter.current_device
+
+	for event in events:
+		if current_device == 0: # KEYBOARD_MOUSE
+			if event is InputEventKey or event is InputEventMouseButton:
+				return _find_icon_for_event(event)
+		else: # GAMEPAD
+			if event is InputEventJoypadButton or event is InputEventJoypadMotion:
+				return _find_icon_for_event(event)
+
+	return _find_icon_for_event(events[0])
+
+func _find_icon_for_event(event: InputEvent) -> Texture2D:
+	# Icons would be loaded from res://assets/ui/icons/
+	# Since assets are missing in this environment, we return null.
+	# The system is icon-ready once assets are added.
+	var path: String = "res://assets/ui/icons/"
+	if event is InputEventKey:
+		path += "keys/" + String(event.as_text()).to_lower() + ".png"
+	elif event is InputEventMouseButton:
+		path += "mouse/btn_" + str(event.button_index) + ".png"
+	elif event is InputEventJoypadButton:
+		path += "gamepad/btn_" + str(event.button_index) + ".png"
+	elif event is InputEventJoypadMotion:
+		path += "gamepad/axis_" + str(event.axis) + ".png"
+
+	if ResourceLoader.exists(path):
+		return load(path) as Texture2D
 	return null
 
 func _on_remap_button_pressed(action: StringName, button: Button) -> void:
@@ -76,7 +108,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		set_process_unhandled_input(false)
 		return
 
-	# Support keys, mouse buttons, joy buttons, and joy motion (triggers)
+	# Support keys, mouse buttons, joy buttons, and joy motion (triggers/sticks)
 	var is_valid_input: bool = (
 		event is InputEventKey or
 		event is InputEventMouseButton or

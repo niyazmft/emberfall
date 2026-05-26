@@ -6,13 +6,11 @@ class_name ElementalTypes
 
 # ── Element Enumeration ───────────────────────────────────────────────
 enum Element {
-	NONE,        ## No active element
-	FIRE,        ## Fire: spreads, extinguished by water, amplified by oil
-	WATER,       ## Water: extinguishes fire, blocks fire spread
-	WIND,        ## Wind: fans fire (1.5×), spreads it to adjacent tiles
-	OIL,         ## Oil: amplifies fire to 2.0×, causes slip terrain (0.8× speed)
-	HAZARD_FIRE, ## Static environmental fire
-	HAZARD_OIL   ## Static environmental oil
+	NONE,   ## No active element
+	FIRE,   ## Fire: spreads, extinguished by water, amplified by oil
+	WATER,  ## Water: extinguishes fire, blocks fire spread
+	WIND,   ## Wind: fans fire (1.5×), spreads it to adjacent tiles
+	OIL     ## Oil: amplifies fire to 2.0×, causes slip terrain (0.8× speed)
 }
 
 
@@ -28,7 +26,7 @@ class TileEffect extends RefCounted:
 		p_element: Element,
 		p_duration: int,
 		p_applied_turn: int,
-		p_source_pos: Vector2i = Vector2i(-999, -999)
+		p_source_pos := Vector2i(-999, -999)
 	) -> void:
 		element = p_element
 		duration = p_duration
@@ -37,9 +35,6 @@ class TileEffect extends RefCounted:
 
 	## Returns true if current_turn has exceeded the effect's lifetime.
 	func is_expired(current_turn: int) -> bool:
-		# Hazards never expire via duration (infinite duration or handled externally)
-		if element == Element.HAZARD_FIRE or element == Element.HAZARD_OIL:
-			return false
 		return current_turn > applied_turn + duration
 
 	## Deep copy for safe mutation during resolution.
