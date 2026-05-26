@@ -9,15 +9,40 @@ signal modal_closed
 var _modal_stack: Array[Node] = []
 var _dim_rect: ColorRect
 var _dim_tween: Tween
+var _pp_rect: ColorRect
 
 func _ready() -> void:
 	layer = 100 # Ensure UI is on top
+	_setup_pp_rect()
 	_dim_rect = ColorRect.new()
 	_dim_rect.color = Color(0, 0, 0, 0)
 	_dim_rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_dim_rect.mouse_filter = Control.MOUSE_FILTER_STOP
 	_dim_rect.visible = false
 	add_child(_dim_rect)
+
+func _setup_pp_rect() -> void:
+	_pp_rect = ColorRect.new()
+	_pp_rect.name = "BurdenPostProcess"
+	_pp_rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_pp_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_pp_rect.visible = false
+
+	var shader := load("res://scripts/shaders/pp_burden_master.gdshader") as Shader
+	if shader:
+		var mat := ShaderMaterial.new()
+		mat.shader = shader
+		_pp_rect.material = mat
+		_print_debug("Initialized master post-process shader")
+
+	add_child(_pp_rect)
+
+	if BurdenShaderManager:
+		BurdenShaderManager.register_pp_rect(_pp_rect)
+
+func _print_debug(msg: String) -> void:
+	if OS.is_debug_build():
+		print("LayerManager: %s" % msg)
 
 func add_modal(modal: Node) -> void:
 	if not _modal_stack.is_empty():
