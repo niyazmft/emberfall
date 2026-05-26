@@ -15,7 +15,7 @@ global uniform bool u_burden_active;
 global uniform sampler2D u_burden_scratch_buffer;
 
 // Godot 4 Screen Texture
-uniform sampler2D screen_texture : hint_screen_texture, filter_linear_mipmap;
+uniform sampler2D SCREEN_TEXTURE : hint_screen_texture, filter_linear_mipmap;
 
 // --- Vignette Uniforms ---
 group_uniforms "Vignette Shape";
@@ -65,12 +65,13 @@ vec3 lut_sample(sampler3D lut_tex, vec3 colour) {
 void fragment() {
 	// Skip-gate check (redundant with node visibility but safe)
 	if (!u_burden_active) {
-		COLOR = texture(screen_texture, SCREEN_UV);
+		COLOR = texture(SCREEN_TEXTURE, SCREEN_UV);
 		return;
 	}
 
 	vec2 uv = SCREEN_UV;
-	vec2 aspect = vec2(1.0, SCREEN_PIXEL_SIZE.x / SCREEN_PIXEL_SIZE.y);
+	// Use VIEWPORT_SIZE instead of deprecated SCREEN_PIXEL_SIZE in Godot 4
+	vec2 aspect = vec2(1.0, VIEWPORT_SIZE.y / VIEWPORT_SIZE.x);
 
 	// 1. Chromatic Aberration (Resolve pass 1, 2, 3 - merged into coordinated texture fetches)
 	vec2 centre = mix(vec2(0.5), u_keeper_screen_pos, float(ca_direction_mode));
@@ -80,8 +81,9 @@ void fragment() {
 	float wave = ca_wave > 0.0 ? ca_wave * sin(TIME * ca_wave_freq_hz * 6.28318530718) : 0.0;
 	float ca_falloff = 1.0;
 	if (ca_edge_falloff > 0.0) {
-		ca_falloff = pow(cos(clamp(dist * 1.57079632679, 0.0, 1.57079632679)), ca_edge_power);
-		ca_falloff = mix(1.0, ca_falloff, ca_edge_falloff);
+		// Inverted falloff logic: keep center sharp, distort edges.
+		float cos_val = pow(cos(clamp(dist * 1.57079632679, 0.0, 1.57079632679)), ca_edge_power);
+		ca_falloff = mix(1.0, 1.0 - cos_val, ca_edge_falloff);
 	}
 
 	float r_offset = (ca_strength_r + wave) * ca_falloff;
@@ -90,9 +92,9 @@ void fragment() {
 	vec2 r_uv = uv + offset_dir * r_offset / aspect;
 	vec2 b_uv = uv + offset_dir * b_offset / aspect;
 
-	float r = texture(screen_texture, r_uv).r;
-	float g = texture(screen_texture, uv).g;
-	float b = texture(screen_texture, b_uv).b;
+	float r = texture(SCREEN_TEXTURE, r_uv).r;
+	float g = texture(SCREEN_TEXTURE, uv).g;
+	float b = texture(SCREEN_TEXTURE, b_uv).b;
 	vec3 raw_col = vec3(r, g, b);
 
 	// 2. Colour Grading
@@ -103,8 +105,9 @@ void fragment() {
 
 	// 3. Vignette
 	float t = TIME;
-	float opacity_final = vig_opacity + vig_opacity_amp * sin(t * 6.28318530718 / vig_opacity_cycle_s);
-	float radius_final = vig_radius + vig_radius_amp * sin(t * 6.28318530718 / vig_radius_cycle_s);
+	// Guard against division by zero in cycle uniforms
+	float opacity_final = vig_opacity + vig_opacity_amp * sin(t * 6.28318530718 / max(vig_opacity_cycle_s, 0.0001));
+	float radius_final = vig_radius + vig_radius_amp * sin(t * 6.28318530718 / max(vig_radius_cycle_s, 0.0001));
 
 	float vignette = smoothstep(radius_final, radius_final - vig_softness, dist);
 	vignette = clamp(vignette, 0.0, 1.0);

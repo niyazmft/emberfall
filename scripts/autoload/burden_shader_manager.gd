@@ -39,8 +39,12 @@ func _setup_global_parameters() -> void:
 
 	if not has_active:
 		RenderingServer.global_shader_parameter_add("u_burden_active", RenderingServer.GLOBAL_VAR_TYPE_BOOL, false)
+
 	if not has_scratch:
 		RenderingServer.global_shader_parameter_add("u_burden_scratch_buffer", RenderingServer.GLOBAL_VAR_TYPE_SAMPLER2D, _scratch_texture)
+	else:
+		# PR Feedback: Ensure u_burden_scratch_buffer is always set even if already registered.
+		RenderingServer.global_shader_parameter_set("u_burden_scratch_buffer", _scratch_texture)
 
 func _on_burden_active_changed(active: bool) -> void:
 	# Skip-gate logic: update global uniform
