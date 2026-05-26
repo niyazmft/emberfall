@@ -37,6 +37,10 @@ uniform bool u_HAS_RIPPLE = false;
 uniform bool u_HAS_EMIT = false;
 uniform bool u_HAS_PORO = false;
 uniform bool u_HAS_STRI = false;
+uniform bool u_HAS_OUTLINE = false;
+
+group_uniforms "EPT Mask (Optional)";
+uniform sampler2D u_differential_mask : source_color, hint_default_black;
 
 // Procedural helpers for EPT tokens
 float ept_hash(vec2 p) {
@@ -111,8 +115,24 @@ void fragment() {
 	if (u_HAS_CRACK) token = max(token, crack_pattern(UV) * 0.4);
 	if (u_HAS_PORO) token = max(token, poro_pattern(UV) * 0.2);
 
-	// Apply token as darkening
-	lit = mix(lit, lit * 0.5, token);
+	// Apply token as darkening (prefer baked mask if available)
+	vec4 mask_tex = texture(u_differential_mask, UV);
+	float mask_val = mask_tex.r; // Red channel for mask
+
+	float final_token = mask_val > 0.001 ? mask_val : token;
+	lit = mix(lit, lit * 0.5, final_token);
+
+	// Apply Outline
+	if (u_HAS_OUTLINE) {
+		float size = 1.0 / 128.0; // Assume 128x128 for now
+		float alpha = texture(TEXTURE, UV).a;
+		float alpha_n = texture(TEXTURE, UV + vec2(0, -size)).a;
+		float alpha_s = texture(TEXTURE, UV + vec2(0, size)).a;
+		float alpha_e = texture(TEXTURE, UV + vec2(size, 0)).a;
+		float alpha_w = texture(TEXTURE, UV + vec2(-size, 0)).a;
+		float edge = clamp((alpha_n + alpha_s + alpha_e + alpha_w) * 4.0 - alpha * 16.0, 0.0, 1.0);
+		lit = mix(lit, vec3(1.0), edge);
+	}
 
 	// CREEP: noise-like overlay
 	if (u_HAS_CREEP) {
