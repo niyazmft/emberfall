@@ -19,7 +19,7 @@ from typing import Any
 
 DEFAULT_PIVOT = {"x": 0.5, "y": 0.5}
 DEFAULT_FPS = 12
-VALID_EXTENSIONS = {".png", "jpg", "jpeg"}
+VALID_EXTENSIONS = {".png", ".jpg", ".jpeg"}
 
 
 def build_atlas(source_dir: Path) -> dict[str, Any]:
