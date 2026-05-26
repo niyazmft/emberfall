@@ -36,7 +36,7 @@ var _echo_triggered: bool = false
 var _flags_updated: bool = false
 var _topology_ready: bool = false
 var _run_count: int = 0
-var _requested_seed: int = 0
+var _requested_seed: Variant = null
 
 # Timers (frame-rate independent)
 var _biome_gen_timer: float = 0.0
@@ -136,8 +136,8 @@ func _register_transitions() -> void:
 # ---------------------------------------------------------------------------
 
 ## Call from gameplay when the player chooses "Start Run" in the Sanctum.
-## Passing a value < 0 (e.g. -1) will generate a new session-deterministic seed.
-func cmd_start_run(p_seed: int = -1) -> void:
+## Passing null (default) will generate a new session-deterministic seed.
+func cmd_start_run(p_seed: Variant = null) -> void:
 	_requested_seed = p_seed
 	transition_to(RunState.BIOME_GENERATION)
 
@@ -327,13 +327,13 @@ func _guard_run_end(_ctx: Dictionary) -> bool:
 
 func _action_start_run(_ctx: Dictionary) -> void:
 	_run_count += 1
-	if _requested_seed >= 0:
-		run_seed = _requested_seed
+	if _requested_seed != null:
+		run_seed = int(_requested_seed)
 	else:
 		var entropy := OS.get_unique_id() + str(Time.get_unix_time_from_system()) + str(_run_count)
 		run_seed = SeedGovernance.hash_seed(entropy)
 
-	_requested_seed = -1
+	_requested_seed = null
 	room_queue.clear()
 	room_index = -1
 	run_started.emit(run_seed)
@@ -419,6 +419,11 @@ func load_run_state(p_data: Dictionary) -> void:
 		room_index = int(p_data["room_index"])
 	if p_data.has("room_queue") and p_data["room_queue"] is Array:
 		room_queue = p_data["room_queue"].duplicate(true)
+
+	# biome_index is stored but biome tracking is currently derived from room_queue.
+	# We ensure the room_index is valid for the loaded queue.
+	if room_queue.size() > 0:
+		room_index = clampi(room_index, 0, room_queue.size() - 1)
 
 	memory_state_loaded = true
 	_topology_ready = true
