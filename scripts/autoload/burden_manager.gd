@@ -229,18 +229,19 @@ func update_moral_weight(moral_flag: int) -> void:
 	var threshold: int = _config_int("MWT", GameConstants.MWT)
 
 	var old_level := current_mwt_level
-	## Map moral_flag to MWT level (0-3).
-	var new_level := clampi(moral_flag, 0, 3)
+	## Map moral_flag to MWT level (0-3) as a ratio of threshold.
+	var new_level := clampi(floori(float(moral_flag) / float(threshold) * 3.0), 0, 3)
 
 	if new_level != old_level:
+		var is_emergency := (old_level == 3 and new_level <= 1)
 		current_mwt_level = new_level
-		_schedule_mwt_transition_caption(old_level, new_level)
+		_schedule_mwt_transition_caption(old_level, new_level, is_emergency)
 		_schedule_mwt_state_caption(new_level)
 
-		var should_be_active := moral_flag >= threshold
-		if should_be_active != burden_active:
-			burden_active = should_be_active
-			_print_debug("burden_active toggled → %s (flag=%d, threshold=%d)" % [str(burden_active), moral_flag, threshold])
+	var should_be_active := moral_flag >= threshold
+	if should_be_active != burden_active:
+		burden_active = should_be_active
+		_print_debug("burden_active toggled → %s (flag=%d, threshold=%d)" % [str(burden_active), moral_flag, threshold])
 
 # ---------------------------------------------------------------------------
 # Gate 2-2 — Deterministic Selection & Numbness Cap
@@ -400,36 +401,30 @@ func _expand_template(template_str: String, count: String, noun: String, variant
 func _caption_node() -> Node:
 	return get_node_or_null("/root/CaptionManager")
 
-func _schedule_mwt_transition_caption(from_level: int, to_level: int) -> void:
+func _schedule_mwt_transition_caption(from_level: int, to_level: int, is_emergency: bool = false) -> void:
 	var cm := _caption_node()
 	if cm == null or _mwt_matrix == null:
 		return
 
-	var data: Dictionary = _mwt_matrix.get_transition_caption(from_level, to_level)
-	if data.is_empty():
+	var data: MWTCaptionEntry = _mwt_matrix.get_transition_caption(from_level, to_level, is_emergency)
+	if data == null:
 		return
 
-	var text: String = str(data.get("text", ""))
-	var offset_sec: float = float(data.get("offset", 0.0))
-	var duration_sec: float = float(data.get("dur", 2.0))
-	var curve: int = int(data.get("curve", 1))
-	var loc_key: String = str(data.get("loc", ""))
-
-	if cm.has_method("schedule") and not text.is_empty():
-		cm.call("schedule", text, 1, offset_sec, duration_sec, curve, loc_key)
-		_print_debug("scheduled MWT transition caption %d->%d" % [from_level, to_level])
+	if cm.has_method("schedule") and not data.text.is_empty():
+		cm.call("schedule", data.text, 1, data.offset_sec, data.duration_sec, data.curve, data.localization_key)
+		_print_debug("scheduled MWT transition caption %d->%d (emergency=%s)" % [from_level, to_level, str(is_emergency)])
 
 func _schedule_mwt_state_caption(level: int) -> void:
 	var cm := _caption_node()
 	if cm == null or _mwt_matrix == null:
 		return
 
-	var data: Dictionary = _mwt_matrix.get_state_caption(level)
-	if data.is_empty():
+	var data: MWTCaptionEntry = _mwt_matrix.get_state_caption(level)
+	if data == null:
 		return
 
 	if cm.has_method("schedule"):
-		cm.call("schedule", data.get("text", ""), 1, 0.0, 3.0, 1, data.get("loc", ""))
+		cm.call("schedule", data.text, 1, 0.0, data.duration_sec, data.curve, data.localization_key)
 		_print_debug("scheduled MWT state caption for level %d" % level)
 
 ## Public API: explicitly schedule a named transition caption (for emergency 3→0 override).
