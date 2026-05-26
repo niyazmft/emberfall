@@ -17,6 +17,7 @@ func _ready() -> void:
 	if close_button:
 		close_button.grab_focus()
 
+
 func setup(title_key: String, body_key: String) -> void:
 	title_label.text = tr(title_key)
 	body_label.text = tr(body_key)
