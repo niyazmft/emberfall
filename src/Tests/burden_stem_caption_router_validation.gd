@@ -71,21 +71,23 @@ func test_would_dispatch_mwt_binding() -> bool:
 	router.queue_free()
 	return result == false
 
+class MockPresenter extends "res://src/Audio/Captioning/caption_presenter.gd":
+	var received := false
+	func present_caption(_marker: RefCounted) -> void:
+		received = true
+
 func test_dispatch_event_triggers_presenter() -> bool:
 	var router = Router.new()
 	add_child(router)
 	if BurdenManager: BurdenManager.current_mwt_level = 3
 
-	var presenter = Node.new()
-	presenter.set_script(load("res://src/Audio/Captioning/caption_presenter.gd"))
-	var received = false
-	presenter.present_caption = func(m): received = true
-
+	var presenter = MockPresenter.new()
 	router.set_presenter(presenter)
 	router.dispatch_event("BD-BASS", "impact")
 
+	var result = presenter.received
 	router.queue_free()
-	return received
+	return result
 
 func test_dispatch_event_applies_cooldown() -> bool:
 	var router = Router.new()
@@ -117,16 +119,14 @@ func test_logical_event_volume_agnostic() -> bool:
 	add_child(router)
 	if BurdenManager: BurdenManager.current_mwt_level = 3
 
-	var presenter = Node.new()
-	presenter.set_script(load("res://src/Audio/Captioning/caption_presenter.gd"))
-	var received = false
-	presenter.present_caption = func(m): received = true
+	var presenter = MockPresenter.new()
 	router.set_presenter(presenter)
 
 	router.dispatch_event("BD-BASS", "impact")
 
+	var result = presenter.received
 	router.queue_free()
-	return received
+	return result
 
 func test_climb_feature_mapping() -> bool:
 	var router = Router.new()

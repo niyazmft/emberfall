@@ -18,16 +18,6 @@ func _ready() -> void:
 	if InputRouter:
 		InputRouter.device_changed.connect(_on_device_changed)
 
-	# Focus the first item for keyboard/gamepad accessibility when the list is populated
-	call_deferred("_focus_first_item")
-
-func _focus_first_item() -> void:
-	if not action_list: return
-	if action_list.get_child_count() > 0:
-		var first_hbox = action_list.get_child(0)
-		if first_hbox.get_child_count() > 1 and first_hbox.get_child(1) is Button:
-			first_hbox.get_child(1).grab_focus()
-
 func create_action_list() -> void:
 	for child in action_list.get_children():
 		child.queue_free()
@@ -150,20 +140,6 @@ func remap_action_to(action: StringName, event: InputEvent) -> void:
 	save_bindings()
 	create_action_list()
 
-	# Refocus the button that was just remapped
-	call_deferred("_focus_action_button", action)
-
-func _focus_action_button(action: StringName) -> void:
-	if not action_list: return
-	for child in action_list.get_children():
-		if child is HBoxContainer and child.get_child_count() > 1:
-			var label = child.get_child(0) as Label
-			if label and label.text == String(action).capitalize():
-				var btn = child.get_child(1) as Button
-				if btn:
-					btn.grab_focus()
-				break
-
 func is_same_device_type(e1: InputEvent, e2: InputEvent) -> bool:
 	var is_kbm1: bool = e1 is InputEventKey or e1 is InputEventMouseButton
 	var is_kbm2: bool = e2 is InputEventKey or e2 is InputEventMouseButton
@@ -190,7 +166,6 @@ func show_conflict_warning(other_action: StringName) -> void:
 
 func _on_device_changed(_device_type: String) -> void:
 	create_action_list()
-	call_deferred("_focus_first_item")
 
 func save_bindings() -> void:
 	var save_data: Dictionary = {}
@@ -229,4 +204,3 @@ func _on_reset_pressed() -> void:
 	InputMap.load_from_project_settings()
 	save_bindings()
 	create_action_list()
-	call_deferred("_focus_first_item")

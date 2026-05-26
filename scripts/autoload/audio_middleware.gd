@@ -101,6 +101,8 @@ func _on_stem_feature_updated(feature: String, value: float, stem_id: String) ->
 	elif stem_id == "BD-STRESS" and feature == "swell":
 		if value > 0.8:
 			stem_event_detected.emit(stem_id, "high_stress", value)
+			if _stem_router:
+				_stem_router.dispatch_event(stem_id, "swell_start")
 
 func _print_debug(msg: String) -> void:
 	if OS.is_debug_build():

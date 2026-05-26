@@ -19,7 +19,7 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	var delta_ms = int(delta * 1000.0)
-	for stem_id in _cooldowns.keys():
+	for stem_id in _cooldowns:
 		_cooldowns[stem_id] = maxi(0, _cooldowns[stem_id] - delta_ms)
 
 # ── Public API ─────────────────────────────────────────────────────────────
