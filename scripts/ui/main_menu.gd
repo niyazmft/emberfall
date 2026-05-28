@@ -25,7 +25,10 @@ func _ready() -> void:
 	SafeZoneManager.safe_area_changed.connect(_on_safe_area_changed)
 	_apply_safe_area()
 
-	# Initial focus
+	# Initial focus with defensive null check (DON-298)
+	if is_instance_valid(_new_run_button):
+		_new_run_button.grab_focus.call_deferred()
+
 	FocusManager.push_modal_focus(self)
 
 
