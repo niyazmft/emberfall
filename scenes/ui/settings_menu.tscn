@@ -1,0 +1,71 @@
+[gd_scene load_steps=2 format=3 uid="uid://e2q4r6l9o3n5w"]
+
+[ext_resource type="Script" path="res://scripts/ui/settings_menu.gd" id="1_script"]
+
+[node name="SettingsMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.15, 0.15, 0.15, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Title" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+text = "SETTINGS"
+horizontal_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="SettingsList" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 15
+
+[node name="AudioLabel" type="Label" parent="MarginContainer/VBoxContainer/ScrollContainer/SettingsList"]
+layout_mode = 2
+text = "Audio"
+
+[node name="MasterVol" type="HSlider" parent="MarginContainer/VBoxContainer/ScrollContainer/SettingsList"]
+layout_mode = 2
+
+[node name="GraphicsLabel" type="Label" parent="MarginContainer/VBoxContainer/ScrollContainer/SettingsList"]
+layout_mode = 2
+text = "Graphics"
+
+[node name="Resolution" type="OptionButton" parent="MarginContainer/VBoxContainer/ScrollContainer/SettingsList"]
+layout_mode = 2
+item_count = 1
+popup/item_0/text = "1920x1080"
+popup/item_0/id = 0
+
+[node name="BackButton" type="Button" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "BACK"

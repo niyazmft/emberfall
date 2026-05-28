@@ -26,6 +26,63 @@ jobs:
         with:
           python-version: '3.10'
 
+      - name: Install Godot + export templates
+        run: |
+          set -euo pipefail
+          GODOT_VERSION="4.2.2"
+          mkdir -p /tmp/godot-install
+          cd /tmp/godot-install
+
+          # Download Godot binary
+          GODOT_ZIP="Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          echo "Downloading Godot ${GODOT_VERSION}..."
+          wget --tries=5 --waitretry=5 \
+            "https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/${GODOT_ZIP}" \
+            || wget --tries=5 --waitretry=5 \
+              "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/${GODOT_ZIP}"
+
+          unzip -q "${GODOT_ZIP}"
+          sudo mv "Godot_v${GODOT_VERSION}-stable_linux.x86_64" /usr/local/bin/godot
+          sudo chmod +x /usr/local/bin/godot
+          echo "Godot installed: $(godot --version)"
+
+          # Install export templates
+          TPZ="Godot_v${GODOT_VERSION}-stable_export_templates.tpz"
+          echo "Downloading export templates..."
+          wget --tries=5 --waitretry=5 \
+            "https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/${TPZ}" \
+            || wget --tries=5 --waitretry=5 \
+              "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/${TPZ}"
+
+          # Extract to a temp staging area so we can inspect the layout
+          mkdir -p /tmp/godot-templates
+          unzip -oq "${TPZ}" -d /tmp/godot-templates/
+          
+          echo "Templates extracted. Top-level contents:"
+          find /tmp/godot-templates -maxdepth 2 -type d
+          
+          # Move the extracted folder to the exact path Godot expects
+          EXPECTED="${HOME}/.local/share/godot/export_templates/${GODOT_VERSION}.stable"
+          mkdir -p "${HOME}/.local/share/godot/export_templates"
+          
+          if [ -d "/tmp/godot-templates/${GODOT_VERSION}.stable" ]; then
+            # .tpz had a top-level version folder (ideal)
+            mv "/tmp/godot-templates/${GODOT_VERSION}.stable" "${EXPECTED}"
+          else
+            # Find whatever single directory was extracted
+            SRC_DIR=$(find /tmp/godot-templates -maxdepth 1 -mindepth 1 -type d | head -1)
+            if [ -n "$SRC_DIR" ]; then
+              mv "$SRC_DIR" "${EXPECTED}"
+            else
+              # Flat extraction (no folder at all)
+              mkdir -p "${EXPECTED}"
+              mv /tmp/godot-templates/* "${EXPECTED}/" || true
+            fi
+          fi
+          
+          echo "Export templates installed at: ${EXPECTED}"
+          ls -la "${EXPECTED}"
+
       - name: Run validation tests
         run: |
           python3 tests/validate_math.py
@@ -37,27 +94,6 @@ jobs:
         run: |
           chmod +x tests/run_all_tests.sh
           tests/run_all_tests.sh
-
-      - name: Install Godot 4.2.2
-        run: |
-          GODOT_VERSION=4.2.2
-          GODOT_ZIP="Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
-          wget -q "https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/${GODOT_ZIP}"
-          unzip -q "${GODOT_ZIP}"
-          mv "Godot_v${GODOT_VERSION}-stable_linux.x86_64" godot
-          chmod +x godot
-          sudo mv godot /usr/local/bin/godot
-          rm "${GODOT_ZIP}"
-
-      - name: Install Godot export templates
-        run: |
-          GODOT_VERSION=4.2.2
-          TPZ="Godot_v${GODOT_VERSION}-stable_export_templates.tpz"
-          TEMPLATE_DIR="${HOME}/.local/share/godot/export_templates/${GODOT_VERSION}.stable"
-          mkdir -p "${TEMPLATE_DIR}"
-          wget -q "https://downloads.tuxfamily.org/godotengine/${GODOT_VERSION}/${TPZ}"
-          unzip -q "${TPZ}" -d "${TEMPLATE_DIR}"
-          rm "${TPZ}"
 
       - name: Export Windows build
         run: |

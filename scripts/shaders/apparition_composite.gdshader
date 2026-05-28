@@ -3,12 +3,6 @@ shader_type canvas_item;
 ## Apparition Composite Tint Shader
 ## Burden Event Asset Spec §2.2
 ## Single-pass composite tinting for apparition silhouettes.
-##
-## Blend stages (applied in order):
-##   1. Desaturation ×0.20
-##   2. Spectral cool tint #2A6F6F (Screen 40 %)
-##   3. Inner edge bleed #9A8C98 (Add 15 %)
-##   4. After-image trail #C9ADA7 (Multiply inverse 20 %)
 
 uniform float u_desaturation_amount : hint_range(0.0, 1.0) = 0.2;
 uniform float u_spectral_tint_opacity : hint_range(0.0, 1.0) = 0.4;
@@ -19,6 +13,13 @@ uniform float u_after_trail_opacity : hint_range(0.0, 1.0) = 0.2;
 uniform vec4 u_after_trail_color : source_color = vec4(0.7882, 0.6784, 0.6549, 1.0); // #C9ADA7
 uniform float u_intensity : hint_range(0.0, 2.0) = 1.0;
 
+// Dissolve uniforms
+uniform float u_dissolve_threshold : hint_range(0.0, 1.0) = 0.0;
+uniform sampler2D u_dissolve_noise : repeat_enable;
+
+// Shear uniforms
+uniform float u_shear_intensity : hint_range(-2.0, 2.0) = 0.0;
+
 vec3 grayscale_weights() {
 	return vec3(0.299, 0.587, 0.114);
 }
@@ -27,8 +28,22 @@ vec3 screen_blend(vec3 base, vec3 blend) {
 	return 1.0 - (1.0 - base) * (1.0 - blend);
 }
 
+void vertex() {
+	// Recoil shear
+	VERTEX.x += VERTEX.y * u_shear_intensity;
+}
+
 void fragment() {
 	vec4 tex = texture(TEXTURE, UV);
+
+	// Dissolve logic
+	if (u_dissolve_threshold > 0.0) {
+		float noise = texture(u_dissolve_noise, UV).r;
+		if (noise < u_dissolve_threshold) {
+			discard;
+		}
+	}
+
 	vec3 col = tex.rgb * COLOR.rgb;
 	float alpha = tex.a * COLOR.a;
 

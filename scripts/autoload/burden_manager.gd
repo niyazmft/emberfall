@@ -1,4 +1,5 @@
 extends Node
+class_name _BurdenManager
 
 ## BurdenManager
 ## Autoload that tracks sentient enemy kills and exposes the composite
@@ -22,15 +23,16 @@ var burden_active: bool = false:
 var _kill_queue: Array[BurdenKillRecord] = []
 var _atlas_cache: Dictionary = {}
 var total_sentient_kills: int = 0
+var current_mwt_level: int = 0
 
 ## ── Gate 2-2 State ──────────────────────────────────────────────
 var _config: Dictionary = {}
 var _config_loaded: bool = false
 
 ## Burden Event counters
-var _burden_trigger_count: int = 0      ## Per-run trigger count (resets on new run)
-var _lifetime_trigger_count: int = 0    ## Cross-run cumulative counter (persisted)
-var _burden_noun_index: int = 0         ## Persisted across runs (memory_state.echo_flags)
+var _burden_trigger_count: int = 0  ## Per-run trigger count (resets on new run)
+var _lifetime_trigger_count: int = 0  ## Cross-run cumulative counter (persisted)
+var _burden_noun_index: int = 0  ## Persisted across runs (memory_state.echo_flags)
 var _noun_pool_size: int = 8
 var _numbness_cap: int = 5
 
@@ -52,13 +54,20 @@ var _caption_channel_isolation: bool = true
 var _caption_tolerance_sec: float = 0.2
 var _bd_climb_config: Dictionary = {}
 
+## MWT Matrix (DON-222)
+var _mwt_matrix_script := preload("res://ui/framework/mwt_caption_matrix.gd")
+var _mwt_matrix: Node = null
+
 
 func _ready() -> void:
 	_load_burden_config()
+	_mwt_matrix = _mwt_matrix_script.new()
+
 
 # ---------------------------------------------------------------------------
 # Config Loading
 # ---------------------------------------------------------------------------
+
 
 func _load_burden_config() -> void:
 	if FileAccess.file_exists(BURDEN_CONFIG_PATH):
@@ -75,8 +84,14 @@ func _load_burden_config() -> void:
 				push_warning("BurdenManager: config file was not a valid JSON object.")
 			file.close()
 	else:
-		push_warning("BurdenManager: config file not found at %s; using hard-coded defaults." % BURDEN_CONFIG_PATH)
+		push_warning(
+			(
+				"BurdenManager: config file not found at %s; using hard-coded defaults."
+				% BURDEN_CONFIG_PATH
+			)
+		)
 		_apply_defaults()
+
 
 func _apply_config() -> void:
 	_phase_timing = _config.get("phase_timing_ms", {})
@@ -96,8 +111,16 @@ func _apply_config() -> void:
 	var phase_b: Dictionary = phases.get("B", {})
 	_variants_first = phase_b.get("variants_first", [])
 	_variants_repeat = phase_b.get("variants_repeat", [])
-	_template_first = phase_b.get("template_first", "{count} {collective_noun} of their own small truths. You hold them now. That is the burden.")
-	_template_repeat = phase_b.get("template_repeat", "{count} {collective_noun}. The burden holds.")
+	_template_first = (
+		phase_b
+		. get(
+			"template_first",
+			"{count} {collective_noun} of their own small truths. You hold them now. That is the burden."
+		)
+	)
+	_template_repeat = phase_b.get(
+		"template_repeat", "{count} {collective_noun}. The burden holds."
+	)
 	_count_first = phase_b.get("count_first", "Three")
 	_count_repeat = phase_b.get("count_repeat", "More")
 
@@ -108,11 +131,14 @@ func _apply_config() -> void:
 	_caption_tolerance_sec = caption_cfg.get("timing_tolerance_sec", 0.2)
 	_bd_climb_config = _config.get("bd_climb", {})
 
+
 func _apply_defaults() -> void:
 	## Hard-coded defaults mirroring burden-event-keyed.json v1.0.0
 	_noun_pool_size = 8
 	_numbness_cap = 5
-	_collective_nouns = ["keepers", "bearers", "remnants", "echoes", "carriers", "vessels", "witnesses", "threads"]
+	_collective_nouns = [
+		"keepers", "bearers", "remnants", "echoes", "carriers", "vessels", "witnesses", "threads"
+	]
 	_fallback_variant_id = "BE_B_FIRST_A"
 	_template_first = "{count} {collective_noun} of their own small truths. You hold them now. That is the burden."
 	_template_repeat = "{count} {collective_noun}. The burden holds."
@@ -120,18 +146,43 @@ func _apply_defaults() -> void:
 	_count_repeat = "More"
 	_numbness_localization_key = "BE_NUMBNESS_CAP"
 	_variants_first = [
-		{"id": "BE_B_FIRST_A", "text": "Three keepers of their own small truths. You hold them now. That is the burden.", "localization_key": "BE_B_FIRST_A"},
-		{"id": "BE_B_FIRST_B", "text": "Three echoes, and the world is quieter for their leaving. You carry what remains.", "localization_key": "BE_B_FIRST_B"},
-		{"id": "BE_B_FIRST_C", "text": "Three bearers, each walking their own uncertain path. That path ends with you.", "localization_key": "BE_B_FIRST_C"},
+		{
+			"id": "BE_B_FIRST_A",
+			"text":
+			"Three keepers of their own small truths. You hold them now. That is the burden.",
+			"localization_key": "BE_B_FIRST_A"
+		},
+		{
+			"id": "BE_B_FIRST_B",
+			"text":
+			"Three echoes, and the world is quieter for their leaving. You carry what remains.",
+			"localization_key": "BE_B_FIRST_B"
+		},
+		{
+			"id": "BE_B_FIRST_C",
+			"text":
+			"Three bearers, each walking their own uncertain path. That path ends with you.",
+			"localization_key": "BE_B_FIRST_C"
+		},
 	]
 	_variants_repeat = [
-		{"id": "BE_B_REPEAT_R1", "text": "More remnants. The burden holds.", "localization_key": "BE_B_REPEAT_R1"},
-		{"id": "BE_B_REPEAT_R2", "text": "More echoes. The world does not forget.", "localization_key": "BE_B_REPEAT_R2"},
+		{
+			"id": "BE_B_REPEAT_R1",
+			"text": "More remnants. The burden holds.",
+			"localization_key": "BE_B_REPEAT_R1"
+		},
+		{
+			"id": "BE_B_REPEAT_R2",
+			"text": "More echoes. The world does not forget.",
+			"localization_key": "BE_B_REPEAT_R2"
+		},
 	]
+
 
 # ---------------------------------------------------------------------------
 # Persistence API (Save / Load)
 # ---------------------------------------------------------------------------
+
 
 ## Load cross-run memory state from save file.
 ## Expected state shape: { "echo_flags": { "burden_noun_index": int, ... } }
@@ -139,10 +190,18 @@ func load_memory_state(state: Dictionary) -> void:
 	if state.has("echo_flags") and state["echo_flags"] is Dictionary:
 		var flags: Dictionary = state["echo_flags"]
 		if flags.has("burden_noun_index") and flags["burden_noun_index"] is int:
-			_burden_noun_index = DeterministicMath.clampi(int(flags["burden_noun_index"]), 0, _noun_pool_size - 1)
+			_burden_noun_index = DeterministicMath.clampi(
+				int(flags["burden_noun_index"]), 0, _noun_pool_size - 1
+			)
 		if flags.has("burden_trigger_history") and flags["burden_trigger_history"] is int:
 			_lifetime_trigger_count = maxi(0, int(flags["burden_trigger_history"]))
-	_print_debug("loaded memory_state: noun_index=%d, lifetime_triggers=%d" % [_burden_noun_index, _lifetime_trigger_count])
+	_print_debug(
+		(
+			"loaded memory_state: noun_index=%d, lifetime_triggers=%d"
+			% [_burden_noun_index, _lifetime_trigger_count]
+		)
+	)
+
 
 ## Returns a Dictionary compatible with save_schema.json §memory_state.echo_flags
 func save_memory_state() -> Dictionary:
@@ -151,9 +210,11 @@ func save_memory_state() -> Dictionary:
 		"burden_trigger_history": _lifetime_trigger_count,
 	}
 
+
 # ---------------------------------------------------------------------------
 # Public API — Kill History (backward compatible)
 # ---------------------------------------------------------------------------
+
 
 func record_sentient_kill(p_enemy_id: String, p_display_name: String = "") -> void:
 	var record := BurdenKillRecord.new(p_enemy_id, p_display_name, Time.get_ticks_msec())
@@ -164,8 +225,10 @@ func record_sentient_kill(p_enemy_id: String, p_display_name: String = "") -> vo
 	kill_history_changed.emit(_kill_queue.duplicate())
 	_print_debug("recorded sentient kill: %s (queue size=%d)" % [p_enemy_id, _kill_queue.size()])
 
+
 func get_kill_queue() -> Array[BurdenKillRecord]:
 	return _kill_queue.duplicate()
+
 
 func get_last_kills(count: int) -> Array[BurdenKillRecord]:
 	var out: Array[BurdenKillRecord] = []
@@ -174,6 +237,7 @@ func get_last_kills(count: int) -> Array[BurdenKillRecord]:
 		out.append(_kill_queue[i])
 	return out
 
+
 func get_last_enemy_ids(count: int = KILL_HISTORY_CAP) -> PackedStringArray:
 	var out := PackedStringArray()
 	var records := get_last_kills(count)
@@ -181,14 +245,18 @@ func get_last_enemy_ids(count: int = KILL_HISTORY_CAP) -> PackedStringArray:
 		out.append(r.enemy_id)
 	return out
 
+
 func get_silhouette_texture(enemy_id: String) -> Texture2D:
 	return _atlas_cache.get(enemy_id, null)
+
 
 func register_silhouette(enemy_id: String, texture: Texture2D) -> void:
 	_atlas_cache[enemy_id] = texture
 
+
 func unregister_silhouette(enemy_id: String) -> void:
 	_atlas_cache.erase(enemy_id)
+
 
 ## Wipe history and atlas (called on run start / sanctum return).
 ## NOTE: Does NOT wipe persisted memory_state (burden_noun_index, lifetime_trigger_count).
@@ -197,6 +265,7 @@ func reset() -> void:
 	_atlas_cache.clear()
 	total_sentient_kills = 0
 	burden_active = false
+	current_mwt_level = 0
 	_burden_trigger_count = 0
 	## Flush any pending Burden captions on reset
 	var cm := _caption_node()
@@ -204,13 +273,21 @@ func reset() -> void:
 		cm.call("cancel_channel", 1)  ## CaptionManager.Channel.BURDEN
 	_print_debug("reset run-local state (persisted noun_index=%d)" % _burden_noun_index)
 
+
 # ---------------------------------------------------------------------------
 # Global parameter binding (backward compatible)
 # ---------------------------------------------------------------------------
 
+
 ## Safe helper to access ConfigLoader autoload without static-call parse errors.
 func _config_node() -> Node:
+	var ml: MainLoop = Engine.get_main_loop()
+	if ml is SceneTree:
+		var n: Node = ml.root.get_node_or_null("ConfigLoader")
+		if n:
+			return n
 	return get_node_or_null("/root/ConfigLoader")
+
 
 func _config_int(key: String, fallback: int) -> int:
 	var n := _config_node()
@@ -218,27 +295,45 @@ func _config_int(key: String, fallback: int) -> int:
 		return n.get_int(key, fallback)
 	return fallback
 
+
 func update_moral_weight(moral_flag: int) -> void:
 	var threshold: int = _config_int("MWT", GameConstants.MWT)
-	var old_active: bool = burden_active
+
+	var old_level := current_mwt_level
+	## Map moral_flag to MWT level (0-3) as a ratio of threshold.
+	var new_level := clampi(floori(float(moral_flag) / float(threshold) * 3.0), 0, 3)
+
+	if new_level != old_level:
+		var is_emergency := old_level == 3 and new_level <= 1
+		current_mwt_level = new_level
+		_schedule_mwt_transition_caption(old_level, new_level, is_emergency)
+		_schedule_mwt_state_caption(new_level)
+
 	var should_be_active := moral_flag >= threshold
 	if should_be_active != burden_active:
 		burden_active = should_be_active
-		## Schedule transition captions on threshold crossing (DON-225)
-		_schedule_transition_caption(old_active, burden_active)
-		_print_debug("burden_active toggled → %s (flag=%d, threshold=%d)" % [str(burden_active), moral_flag, threshold])
+		_print_debug(
+			(
+				"burden_active toggled → %s (flag=%d, threshold=%d)"
+				% [str(burden_active), moral_flag, threshold]
+			)
+		)
+
 
 # ---------------------------------------------------------------------------
 # Gate 2-2 — Deterministic Selection & Numbness Cap
 # ---------------------------------------------------------------------------
 
+
 ## Returns true if the numbness cap has been reached this run.
 func is_numb() -> bool:
 	return _burden_trigger_count >= _numbness_cap
 
+
 ## Returns the localization key for the numbness-cap rule (for UI / captions).
 func get_numbness_localization_key() -> String:
 	return _numbness_localization_key
+
 
 ## Phase B timing window validation helper.
 ## Returns true if the given duration (ms) falls inside the configured window [min, max].
@@ -247,15 +342,19 @@ func is_within_phase_b_window(duration_ms: int) -> bool:
 	var max_ms: int = _phase_timing.get("B_window_max", 40000)
 	return duration_ms >= min_ms and duration_ms <= max_ms
 
+
 ## Select the collective noun deterministically based on room topology seed.
 ## Formula: SeedGovernance.modulo_from_seed(topology_seed, "NOUN", noun_pool_size)
 ## The selected noun is persisted across runs via burden_noun_index.
 func select_collective_noun(topology_seed: int, room_index: int) -> String:
-	var idx: int = SeedGovernance.modulo_from_seed(topology_seed, "NOUN" + str(room_index), _noun_pool_size)
+	var idx: int = SeedGovernance.modulo_from_seed(
+		topology_seed, "NOUN" + str(room_index), _noun_pool_size
+	)
 	_burden_noun_index = idx
 	if _collective_nouns.is_empty():
 		return "keepers"  # fallback
 	return str(_collective_nouns[idx])
+
 
 ## Select a variant from the first-event pool.
 ## Formula: hash(run_seed + room_index + variant_state) mod pool_size
@@ -264,7 +363,9 @@ func select_variant_first(run_seed: int, room_index: int, variant_state: int) ->
 	var pool_size: int = _variants_first.size()
 	if pool_size == 0:
 		return {}
-	var idx: int = SeedGovernance.modulo_from_seed(run_seed, str(room_index) + "VAR" + str(variant_state), pool_size)
+	var idx: int = SeedGovernance.modulo_from_seed(
+		run_seed, str(room_index) + "VAR" + str(variant_state), pool_size
+	)
 	var result: Dictionary = _variants_first[idx]
 	if not result.is_empty():
 		return result.duplicate()
@@ -274,16 +375,20 @@ func select_variant_first(run_seed: int, room_index: int, variant_state: int) ->
 			return v.duplicate()
 	return _variants_first[0].duplicate()
 
+
 ## Select a variant from the repeat-event pool.
 func select_variant_repeat(run_seed: int, room_index: int, variant_state: int) -> Dictionary:
 	var pool_size: int = _variants_repeat.size()
 	if pool_size == 0:
 		return {}
-	var idx: int = SeedGovernance.modulo_from_seed(run_seed, str(room_index) + "VAR" + str(variant_state), pool_size)
+	var idx: int = SeedGovernance.modulo_from_seed(
+		run_seed, str(room_index) + "VAR" + str(variant_state), pool_size
+	)
 	var result: Dictionary = _variants_repeat[idx]
 	if not result.is_empty():
 		return result.duplicate()
 	return _variants_repeat[0].duplicate()
+
 
 ## Core Burden Event trigger.
 ## Call from RunManager / encounter system when the Burden Event fires.
@@ -296,7 +401,9 @@ func select_variant_repeat(run_seed: int, room_index: int, variant_state: int) -
 ##   is_first          — true if this is the first Burden Event in the run
 ##
 ## Returns: BurdenEventResult with all phase data, localization keys, and silent flag.
-func trigger_burden_event(run_seed: int, topology_seed: int, room_index: int, variant_state: int, is_first: bool) -> BurdenEventResult:
+func trigger_burden_event(
+	run_seed: int, topology_seed: int, room_index: int, variant_state: int, is_first: bool
+) -> BurdenEventResult:
 	_burden_trigger_count += 1
 	_lifetime_trigger_count += 1
 
@@ -304,7 +411,9 @@ func trigger_burden_event(run_seed: int, topology_seed: int, room_index: int, va
 	result.trigger_count = _burden_trigger_count
 	result.is_first = is_first
 	result.numbness_cap_reached = is_numb()
-	result.localization_key_suffix = _numbness_localization_key if result.numbness_cap_reached else ""
+	result.localization_key_suffix = (
+		_numbness_localization_key if result.numbness_cap_reached else ""
+	)
 
 	## --- Phase A (Stillness) ---
 	result.phase_a_duration_ms = int(_phase_timing.get("A", 10000))
@@ -356,24 +465,43 @@ func trigger_burden_event(run_seed: int, topology_seed: int, room_index: int, va
 
 	## AC-1: Validate Phase B timing window
 	if not result.numbness_cap_reached and not is_within_phase_b_window(result.phase_b_duration_ms):
-		push_warning("BurdenManager: Phase B duration %d ms is outside the configured 10–40 s window." % result.phase_b_duration_ms)
+		push_warning(
+			(
+				"BurdenManager: Phase B duration %d ms is outside the configured 10–40 s window."
+				% result.phase_b_duration_ms
+			)
+		)
 
 	## --- Caption scheduling (DON-225) ---
 	_schedule_burden_event_captions(result)
 
 	burden_event_triggered.emit(result)
-	_print_debug("burden event #%d triggered (first=%s, noun=%s, variant=%s)" % [_burden_trigger_count, str(is_first), noun if not result.numbness_cap_reached else "SILENT", result.phase_b_variant_id])
+	_print_debug(
+		(
+			"burden_event #%d triggered (first=%s, noun=%s, variant=%s)"
+			% [
+				_burden_trigger_count,
+				str(is_first),
+				noun if not result.numbness_cap_reached else "SILENT",
+				result.phase_b_variant_id
+			]
+		)
+	)
 	return result
+
 
 ## Expand a template string with count, collective_noun, and variant text.
 ## If a specific variant text is provided, return that directly (production text).
 ## Otherwise perform basic string substitution.
-func _expand_template(template_str: String, count: String, noun: String, variant: Dictionary) -> String:
+func _expand_template(
+	template_str: String, count: String, noun: String, variant: Dictionary
+) -> String:
 	if variant.has("text") and variant["text"] is String and not variant["text"].is_empty():
 		return variant["text"]
 	var out: String = template_str.replace("{count}", count)
 	out = out.replace("{collective_noun}", noun)
 	return out
+
 
 # ---------------------------------------------------------------------------
 # Debug
@@ -383,39 +511,66 @@ func _expand_template(template_str: String, count: String, noun: String, variant
 # Caption Integration (DON-225)
 # ---------------------------------------------------------------------------
 
+
 func _caption_node() -> Node:
+	var ml: MainLoop = Engine.get_main_loop()
+	if ml is SceneTree:
+		var n: Node = ml.root.get_node_or_null("CaptionManager")
+		if n:
+			return n
 	return get_node_or_null("/root/CaptionManager")
 
-## Schedule a transition caption based on old→new burden_active state.
-func _schedule_transition_caption(old_active: bool, new_active: bool) -> void:
-	var cm := _caption_node()
-	if cm == null:
+
+func _schedule_mwt_transition_caption(
+	from_level: int, to_level: int, is_emergency: bool = false
+) -> void:
+	var cm: Node = _caption_node()
+	if cm == null or _mwt_matrix == null:
 		return
-	var key: String = ""
-	if not old_active and new_active:
-		key = "0_to_1"
-	elif old_active and not new_active:
-		## Determine normal vs emergency 3→0 based on current moral context.
-		## Emergency: if player_moral_flag <= 1 (rapid drop).
-		## For now, default to normal; caller can override via schedule_transition_caption_explicit.
-		key = "3_to_0_normal"
-	else:
+
+	var data: Resource = _mwt_matrix.get_transition_caption(from_level, to_level, is_emergency)
+	if data == null:
 		return
-	var data: Dictionary = _caption_transitions.get(key, {})
-	if data.is_empty():
+
+	if cm.has_method("schedule") and not str(data.get("text")).is_empty():
+		cm.call(
+			"schedule",
+			data.get("text"),
+			1,
+			data.get("offset_sec"),
+			data.get("duration_sec"),
+			data.get("curve"),
+			data.get("localization_key")
+		)
+		_print_debug(
+			(
+				"scheduled MWT transition caption %d->%d (emergency=%s)"
+				% [from_level, to_level, str(is_emergency)]
+			)
+		)
+
+
+func _schedule_mwt_state_caption(level: int) -> void:
+	var cm: Node = _caption_node()
+	if cm == null or _mwt_matrix == null:
 		return
-	var text: String = str(data.get("text", ""))
-	if text.is_empty():
+
+	var data: Resource = _mwt_matrix.get_state_caption(level)
+	if data == null:
 		return
-	var offset_sec: float = float(data.get("offset_sec", 0.0))
-	var duration_sec: float = float(data.get("duration_sec", 2.0))
-	var curve_str: String = str(data.get("curve", "LINEAR"))
-	var loc_key: String = str(data.get("localization_key", ""))
-	var curve: int = _curve_from_string(curve_str)
-	## Call CaptionManager.schedule if the method exists
+
 	if cm.has_method("schedule"):
-		cm.call("schedule", text, 1, offset_sec, duration_sec, curve, loc_key)  ## Channel.BURDEN = 1
-		_print_debug("scheduled transition caption %s (offset=%.2f, dur=%.2f, curve=%s)" % [key, offset_sec, duration_sec, curve_str])
+		cm.call(
+			"schedule",
+			data.get("text"),
+			1,
+			0.0,
+			data.get("duration_sec"),
+			data.get("curve"),
+			data.get("localization_key")
+		)
+		_print_debug("scheduled MWT state caption for level %d" % level)
+
 
 ## Public API: explicitly schedule a named transition caption (for emergency 3→0 override).
 func schedule_transition_caption_explicit(transition_key: String) -> void:
@@ -438,37 +593,83 @@ func schedule_transition_caption_explicit(transition_key: String) -> void:
 		cm.call("schedule", text, 1, offset_sec, duration_sec, curve, loc_key)
 		_print_debug("scheduled explicit transition caption %s" % transition_key)
 
+
 ## Schedule captions tied to a BurdenEventResult phases.
 func _schedule_burden_event_captions(result: BurdenEventResult) -> void:
 	var cm := _caption_node()
 	if cm == null:
 		return
-	## Phase A: stillness caption (ambient, not BURDEN channel)
+	## Phase A: stillness caption (BURDEN channel, per DON-222 requirement)
 	if not result.phase_a_localization_key.is_empty() and cm.has_method("schedule"):
-		cm.call("schedule", "[The world stills]", 2, 0.0, result.phase_a_duration_ms / 1000.0, 0, result.phase_a_localization_key + "_CAP")  ## Channel.AMBIENT = 2
+		## Per DON-222: Phase A caption fires at the exact moment control is seized.
+		cm.call(
+			"schedule",
+			"[The world stills]",
+			1,
+			0.0,
+			result.phase_a_duration_ms / 1000.0,
+			0,
+			result.phase_a_localization_key + "_CAP"
+		)  ## Channel.BURDEN = 1
+
+	## Numbness cap caption
+	if result.numbness_cap_reached and cm.has_method("schedule"):
+		cm.call("schedule", "[The burden is silent]", 1, 0.0, 4.0, 1, "BE_CAP_NUMBNESS")
 
 	## Phase B: the witness text (BURDEN channel)
 	if not result.phase_b_text.is_empty() and cm.has_method("schedule"):
 		var b_curve: int = 2 if result.is_first else 2  ## EXPONENTIAL for first, same for repeat
-		cm.call("schedule", result.phase_b_text, 1, 0.0, result.phase_b_duration_ms / 1000.0, b_curve, result.phase_b_localization_key)
+		cm.call(
+			"schedule",
+			result.phase_b_text,
+			1,
+			0.0,
+			result.phase_b_duration_ms / 1000.0,
+			b_curve,
+			result.phase_b_localization_key
+		)
 
 	## Phase C: choiceless choice (BURDEN channel)
 	if not result.phase_c_text.is_empty() and cm.has_method("schedule"):
-		cm.call("schedule", result.phase_c_text, 1, 0.0, result.phase_c_duration_ms / 1000.0, 1, result.phase_c_localization_key)  ## LINEAR
+		cm.call(
+			"schedule",
+			result.phase_c_text,
+			1,
+			0.0,
+			result.phase_c_duration_ms / 1000.0,
+			1,
+			result.phase_c_localization_key
+		)  ## LINEAR
 
 	## Phase D: return (BURDEN channel, short fade)
 	if not result.phase_d_text.is_empty() and cm.has_method("schedule"):
-		cm.call("schedule", result.phase_d_text, 1, 0.0, result.phase_d_duration_ms / 1000.0, 1, result.phase_d_localization_key)
+		cm.call(
+			"schedule",
+			result.phase_d_text,
+			1,
+			0.0,
+			result.phase_d_duration_ms / 1000.0,
+			1,
+			result.phase_d_localization_key
+		)
+
 
 ## Map curve string name to CaptionManager.CaptionCurve enum.
 func _curve_from_string(curve_str: String) -> int:
 	match curve_str.to_upper():
-		"INSTANT": return 0
-		"LINEAR": return 1
-		"EXPONENTIAL": return 2
-		"LOGARITHMIC": return 3
-		"STEEP_EXPONENTIAL": return 4
-		_: return 1  ## default LINEAR
+		"INSTANT":
+			return 0
+		"LINEAR":
+			return 1
+		"EXPONENTIAL":
+			return 2
+		"LOGARITHMIC":
+			return 3
+		"STEEP_EXPONENTIAL":
+			return 4
+		_:
+			return 1  ## default LINEAR
+
 
 ## Public API: report BD-CLIMB width from audio middleware so per-stem captions align.
 func report_bd_climb_width(width_norm: float) -> void:
@@ -477,11 +678,13 @@ func report_bd_climb_width(width_norm: float) -> void:
 		cm.call("report_bd_climb_width", width_norm)
 		_print_debug("reported BD-CLIMB width=%.3f" % width_norm)
 
+
 ## Public API: report explicit BD-CLIMB loop phase.
 func report_bd_climb_phase(phase_norm: float) -> void:
 	var cm := _caption_node()
 	if cm and cm.has_method("report_bd_climb_phase"):
 		cm.call("report_bd_climb_phase", phase_norm)
+
 
 ## Public API: enable/disable BD-CLIMB loop tracking.
 func set_bd_climb_enabled(enabled: bool) -> void:
@@ -489,22 +692,31 @@ func set_bd_climb_enabled(enabled: bool) -> void:
 	if cm and cm.has_method("set_bd_climb_enabled"):
 		cm.call("set_bd_climb_enabled", enabled)
 
+
 ## Returns the current BD-CLIMB width caption strings from config.
 func get_bd_climb_width_captions() -> Dictionary:
-	return _bd_climb_config.get("width_captions", {
-		"expanding": {"text": "[The walls widen]", "localization_key": "BE_CAP_CLIMB_EXPAND"},
-		"converging": {"text": "[Everything converges]", "localization_key": "BE_CAP_CLIMB_CONVERGE"}
-	})
+	return _bd_climb_config.get(
+		"width_captions",
+		{
+			"expanding": {"text": "[The walls widen]", "localization_key": "BE_CAP_CLIMB_EXPAND"},
+			"converging":
+			{"text": "[Everything converges]", "localization_key": "BE_CAP_CLIMB_CONVERGE"}
+		}
+	)
+
 
 func _print_debug(msg: String) -> void:
 	if OS.is_debug_build():
 		print("BurdenManager: %s" % msg)
 
+
 # ---------------------------------------------------------------------------
 # Data Records
 # ---------------------------------------------------------------------------
 
-class BurdenKillRecord extends RefCounted:
+
+class BurdenKillRecord:
+	extends RefCounted
 	var enemy_id: String
 	var display_name: String
 	var timestamp_ms: int
@@ -516,7 +728,8 @@ class BurdenKillRecord extends RefCounted:
 
 
 ## Structured result emitted when a Burden Event triggers.
-class BurdenEventResult extends RefCounted:
+class BurdenEventResult:
+	extends RefCounted
 	## Metadata
 	var trigger_count: int = 0
 	var is_first: bool = false
