@@ -12,7 +12,7 @@ graph TD
         A(You / Hermes <br><i>'The Board'</i>) -- "Set High-Level Goals" --> B{PaperclipAI};
     end
 
-    subgraph "Termux Environment"
+    subgraph "Cloud"
         B -- "Executes tasks locally" --> B;
         B -- "Offloads coding tasks" --> C{Google Jules};
     end
