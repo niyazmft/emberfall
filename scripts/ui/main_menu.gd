@@ -5,10 +5,12 @@ extends Control
 @onready var margin_container: MarginContainer = $MarginContainer
 @onready var start_button: Button = $MarginContainer/VBoxContainer/StartButton
 
+
 func _ready() -> void:
 	SafeZoneManager.safe_area_changed.connect(_on_safe_area_changed)
 	_apply_safe_area()
 	start_button.grab_focus.call_deferred()
+
 
 func _on_safe_area_changed(_rect: Rect2) -> void:
 	_apply_safe_area()
