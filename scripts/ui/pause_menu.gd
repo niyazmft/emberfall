@@ -57,6 +57,10 @@ func toggle_pause() -> void:
 	visible = new_pause_state
 
 	if visible:
+		# Initial focus with defensive null check (DON-298)
+		if is_instance_valid(_resume_button):
+			_resume_button.grab_focus.call_deferred()
+
 		FocusManager.push_modal_focus(self)
 
 
