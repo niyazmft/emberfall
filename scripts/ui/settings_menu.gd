@@ -1,8 +1,17 @@
+class_name SettingsModal
 extends Control
+
 ## SettingsMenu (DON-196)
 ## Demonstrates safe-zone integration and responsive reflow.
 
 @onready var margin_container: MarginContainer = $MarginContainer
+
+
+static func show_modal() -> void:
+	var scene: PackedScene = load("res://scenes/ui/settings_menu.tscn") as PackedScene
+	if scene:
+		var instance: Node = scene.instantiate()
+		LayerManager.add_modal(instance)
 
 
 func _ready() -> void:
