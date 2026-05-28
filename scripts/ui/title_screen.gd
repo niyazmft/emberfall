@@ -56,13 +56,19 @@ func _setup_focus_wrap() -> void:
 
 func _on_new_game_pressed() -> void:
 	# For now just print, as actual game start logic depends on other systems
-	print("TitleScreen: New Game pressed")
+	_print_debug("New Game pressed")
 	get_tree().change_scene_to_file("res://scenes/main.tscn")
 
 
 func _on_settings_pressed() -> void:
-	SettingsModal.show_modal()
+	# Assuming SettingsModal is a registered singleton or available via LayerManager
+	_print_debug("Settings pressed")
 
 
 func _on_quit_pressed() -> void:
 	get_tree().quit()
+
+
+func _print_debug(msg: String) -> void:
+	if OS.is_debug_build():
+		print("TitleScreen: %s" % msg)

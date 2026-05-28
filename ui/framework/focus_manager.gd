@@ -9,7 +9,7 @@ var _focus_stack: Array[Dictionary] = []
 
 ## Disables focus on all controls outside the given modal and sets up internal wrap-around.
 func push_modal_focus(modal: Control) -> void:
-	var state := {"modal": modal, "disabled_nodes": {}}
+	var state: Dictionary = {"modal": modal, "disabled_nodes": {}}
 
 	# Find all focusable nodes outside the modal
 	_disable_focus_outside(modal.get_tree().root, modal, state.disabled_nodes)
@@ -26,11 +26,10 @@ func pop_modal_focus() -> void:
 		return
 
 	var state: Dictionary = _focus_stack.pop_back()
-	for node_path: String in state.disabled_nodes:
-		var node_info: Dictionary = state.disabled_nodes[node_path]
-		var node: Control = node_info["node"]
-		if is_instance_valid(node):
-			node.focus_mode = node_info["original_mode"]
+	for node: Variant in state.disabled_nodes.keys():
+		var control: Control = node as Control
+		if is_instance_valid(control):
+			control.focus_mode = state.disabled_nodes[control] as Control.FocusMode
 
 
 func _disable_focus_outside(node: Node, modal: Control, disabled_nodes: Dictionary) -> void:
@@ -40,7 +39,7 @@ func _disable_focus_outside(node: Node, modal: Control, disabled_nodes: Dictiona
 	if node is Control:
 		var c: Control = node as Control
 		if c.focus_mode != Control.FOCUS_NONE:
-			disabled_nodes[c.get_path()] = {"node": c, "original_mode": c.focus_mode}
+			disabled_nodes[c] = c.focus_mode
 			c.focus_mode = Control.FOCUS_NONE
 
 	for child: Node in node.get_children():
@@ -48,7 +47,7 @@ func _disable_focus_outside(node: Node, modal: Control, disabled_nodes: Dictiona
 
 
 func _setup_modal_wrap(modal: Control) -> void:
-	var focusable := _find_focusable_in(modal)
+	var focusable: Array[Control] = _find_focusable_in(modal)
 	if focusable.size() < 2:
 		return
 
@@ -70,8 +69,8 @@ func _find_focusable_in(node: Node) -> Array[Control]:
 		var c: Control = node as Control
 		# Check if the control itself is focusable and visible
 		if c.visible and c.focus_mode != Control.FOCUS_NONE:
-			# Exclude generic containers that have FOCUS_CLICK but no real focus logic
-			if not (c is Container and c.focus_mode == Control.FOCUS_CLICK):
+			# Only include controls that can actually receive focus (not just click)
+			if c.focus_mode == Control.FOCUS_ALL:
 				found.append(c)
 
 	for child: Node in node.get_children():
