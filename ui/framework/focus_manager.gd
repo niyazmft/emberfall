@@ -1,14 +1,14 @@
-class_name FocusManager
+class_name _FocusManager
 extends Node
 
 ## FocusManager (DON-298)
 ## Handles keyboard/gamepad focus trapping for modals.
 
-static var _focus_stack: Array[Dictionary] = []
+var _focus_stack: Array[Dictionary] = []
 
 
 ## Disables focus on all controls outside the given modal and sets up internal wrap-around.
-static func push_modal_focus(modal: Control) -> void:
+func push_modal_focus(modal: Control) -> void:
 	var state := {"modal": modal, "disabled_nodes": {}}
 
 	# Find all focusable nodes outside the modal
@@ -21,7 +21,7 @@ static func push_modal_focus(modal: Control) -> void:
 
 
 ## Restores focus modes of controls that were disabled by the last push_modal_focus.
-static func pop_modal_focus() -> void:
+func pop_modal_focus() -> void:
 	if _focus_stack.is_empty():
 		return
 
@@ -33,20 +33,21 @@ static func pop_modal_focus() -> void:
 			node.focus_mode = node_info["original_mode"]
 
 
-static func _disable_focus_outside(node: Node, modal: Control, disabled_nodes: Dictionary) -> void:
+func _disable_focus_outside(node: Node, modal: Control, disabled_nodes: Dictionary) -> void:
 	if node == modal:
 		return
 
 	if node is Control:
-		if node.focus_mode != Control.FOCUS_NONE:
-			disabled_nodes[node.get_path()] = {"node": node, "original_mode": node.focus_mode}
-			node.focus_mode = Control.FOCUS_NONE
+		var c: Control = node as Control
+		if c.focus_mode != Control.FOCUS_NONE:
+			disabled_nodes[c.get_path()] = {"node": c, "original_mode": c.focus_mode}
+			c.focus_mode = Control.FOCUS_NONE
 
-	for child in node.get_children():
+	for child: Node in node.get_children():
 		_disable_focus_outside(child, modal, disabled_nodes)
 
 
-static func _setup_modal_wrap(modal: Control) -> void:
+func _setup_modal_wrap(modal: Control) -> void:
 	var focusable := _find_focusable_in(modal)
 	if focusable.size() < 2:
 		return
@@ -62,24 +63,18 @@ static func _setup_modal_wrap(modal: Control) -> void:
 	first.focus_neighbor_top = last.get_path()
 
 
-static func _find_focusable_in(node: Node) -> Array[Control]:
+func _find_focusable_in(node: Node) -> Array[Control]:
 	var found: Array[Control] = []
 
 	if node is Control:
-		if node.visible and node.focus_mode != Control.FOCUS_NONE:
-			# Only add if it's not a container that just passes focus
-			if not (node is Container and node.focus_mode == Control.FOCUS_CLICK):
-				# This is a bit simplified, but usually we want Buttons, Sliders, etc.
-				if (
-					node is Button
-					or node is Slider
-					or node is LineEdit
-					or node is ItemList
-					or node is OptionButton
-				):
-					found.append(node)
+		var c: Control = node as Control
+		# Check if the control itself is focusable and visible
+		if c.visible and c.focus_mode != Control.FOCUS_NONE:
+			# Exclude generic containers that have FOCUS_CLICK but no real focus logic
+			if not (c is Container and c.focus_mode == Control.FOCUS_CLICK):
+				found.append(c)
 
-	for child in node.get_children():
+	for child: Node in node.get_children():
 		found.append_array(_find_focusable_in(child))
 
 	return found
