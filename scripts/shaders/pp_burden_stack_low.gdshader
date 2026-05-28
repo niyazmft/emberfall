@@ -35,18 +35,22 @@ void fragment() {
 
 	// 1. Colour Grading (No Chromatic Aberration in Low Tier)
 	// Jules: CA skipped for Low tier to maintain performance budget
-	vec3 grade_base = lut_sample(u_lut_base, central_sample.rgb);
-	vec3 grade_burden = lut_sample(u_lut_burden, central_sample.rgb);
-	float w_total = max(lut_weight_base + lut_weight_burden, 0.001);
-	vec3 graded = (grade_base * lut_weight_base + grade_burden * lut_weight_burden) / w_total;
+	vec3 graded;
+	float w_total = lut_weight_base + lut_weight_burden;
+	if (w_total > 0.001) {
+		vec3 grade_base = lut_sample(u_lut_base, central_sample.rgb);
+		vec3 grade_burden = lut_sample(u_lut_burden, central_sample.rgb);
+		graded = (grade_base * lut_weight_base + grade_burden * lut_weight_burden) / w_total;
+	} else {
+		graded = central_sample.rgb;
+	}
 
 	// 2. Vignette
 	vec2 aspect = vec2(1.0, SCREEN_PIXEL_SIZE.x / SCREEN_PIXEL_SIZE.y);
 	float dist = length((uv - vec2(0.5)) * aspect);
-	// Jules: Fixed vignette mixing to use mix() with #0B0C10 instead of multiplication
-	float v = smoothstep(u_vignetteRadius, u_vignetteRadius - u_vignetteSoftness, dist);
+	float v = smoothstep(u_vignetteRadius - u_vignetteSoftness, u_vignetteRadius, dist);
 
-	vec3 vigged = mix(VIG_COLOR, graded, v);
+	vec3 vigged = mix(graded, VIG_COLOR, v);
 	vec3 final_color = mix(graded, vigged, u_vignetteOpacity);
 
 	COLOR = vec4(final_color, central_sample.a);
