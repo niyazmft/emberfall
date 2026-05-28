@@ -13,9 +13,11 @@ signal back_pressed
 @onready var _input_hints_option: OptionButton = %InputHintsOption
 @onready var _back_button: Button = %BackButton
 
+
 func _ready() -> void:
 	_load_ui_from_settings()
 	_connect_signals()
+
 
 func _load_ui_from_settings() -> void:
 	var s: Dictionary = SettingsManager.settings
@@ -31,6 +33,7 @@ func _load_ui_from_settings() -> void:
 	_input_hints_option.add_item(tr("OPTION_GP"), 2)
 	_input_hints_option.selected = s.controls.input_hints
 
+
 func _connect_signals() -> void:
 	_master_slider.value_changed.connect(_on_audio_changed.bind("master_volume"))
 	_music_slider.value_changed.connect(_on_audio_changed.bind("music_volume"))
@@ -40,21 +43,26 @@ func _connect_signals() -> void:
 	_input_hints_option.item_selected.connect(_on_controls_changed.bind("input_hints"))
 	_back_button.pressed.connect(_on_back_pressed)
 
+
 func _on_audio_changed(value: float, key: String) -> void:
 	SettingsManager.settings.audio[key] = value
 	SettingsManager.apply_settings()
+
 
 func _on_video_changed(value: bool, key: String) -> void:
 	SettingsManager.settings.video[key] = value
 	SettingsManager.apply_settings()
 
+
 func _on_accessibility_changed(value: float, key: String) -> void:
 	SettingsManager.settings.accessibility[key] = value
 	SettingsManager.apply_settings()
 
+
 func _on_controls_changed(index: int, key: String) -> void:
 	SettingsManager.settings.controls[key] = index
 	SettingsManager.apply_settings()
+
 
 func _on_back_pressed() -> void:
 	SettingsManager.save_settings()
