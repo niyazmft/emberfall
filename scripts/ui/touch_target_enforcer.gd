@@ -15,6 +15,3 @@ static func enforce(control: Control) -> void:
 	# Ensure custom_minimum_size is at least MIN_TARGET_SIZE
 	control.custom_minimum_size.x = max(control.custom_minimum_size.x, MIN_TARGET_SIZE.x)
 	control.custom_minimum_size.y = max(control.custom_minimum_size.y, MIN_TARGET_SIZE.y)
-
-	# If it's a button with small content, we might want to ensure the actual size is large enough
-	# but custom_minimum_size is the standard way in Godot to enforce this in layouts.

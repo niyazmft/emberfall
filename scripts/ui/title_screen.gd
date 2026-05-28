@@ -29,13 +29,29 @@ func _ready() -> void:
 	for btn: Button in [continue_btn, new_game_btn, settings_btn, quit_btn]:
 		TouchTargetEnforcer.enforce(btn)
 
-	# Setup vertical wrap-around focus
-	# Continue is disabled, so New Game is the first focusable
-	new_game_btn.focus_neighbor_top = quit_btn.get_path()
-	quit_btn.focus_neighbor_bottom = new_game_btn.get_path()
+	# Setup dynamic vertical wrap-around focus
+	_setup_focus_wrap()
 
 	# Initial focus
 	new_game_btn.grab_focus.call_deferred()
+
+
+func _setup_focus_wrap() -> void:
+	var focusable: Array[Button] = []
+	for child: Node in button_container.get_children():
+		if child is Button:
+			var btn: Button = child as Button
+			if not btn.disabled and btn.visible:
+				focusable.append(btn)
+
+	if focusable.size() < 2:
+		return
+
+	var first: Button = focusable[0]
+	var last: Button = focusable[-1]
+
+	first.focus_neighbor_top = last.get_path()
+	last.focus_neighbor_bottom = first.get_path()
 
 
 func _on_new_game_pressed() -> void:
@@ -45,10 +61,7 @@ func _on_new_game_pressed() -> void:
 
 
 func _on_settings_pressed() -> void:
-	var settings_scene: PackedScene = load("res://scenes/ui/settings_menu.tscn")
-	if settings_scene:
-		var settings_instance := settings_scene.instantiate()
-		LayerManager.add_modal(settings_instance)
+	SettingsModal.show_modal()
 
 
 func _on_quit_pressed() -> void:
