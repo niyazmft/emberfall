@@ -1,15 +1,18 @@
+class_name MainMenu
 extends Control
 
 ## MainMenu
-## Handles top-level navigation and game start.
+## Handles top-level navigation and game start with safe-zone integration.
 
 signal settings_requested
 
+@onready var margin_container: MarginContainer = $MarginContainer
 @onready var _new_run_button: Button = %NewRunButton
 @onready var _continue_button: Button = %ContinueButton
 @onready var _settings_button: Button = %SettingsButton
 @onready var _quit_button: Button = %QuitButton
 @onready var _hint_label: Label = %HintLabel
+
 
 func _ready() -> void:
 	_new_run_button.pressed.connect(_on_new_run_pressed)
@@ -19,11 +22,28 @@ func _ready() -> void:
 	InputRouter.device_changed.connect(_on_device_changed)
 	_update_hints(InputRouter.current_device)
 
+	SafeZoneManager.safe_area_changed.connect(_on_safe_area_changed)
+	_apply_safe_area()
+
 	# Initial focus
-	FocusManager.set_initial_focus(self)
+	FocusManager.push_modal_focus(self)
+
+
+func _on_safe_area_changed(_rect: Rect2) -> void:
+	_apply_safe_area()
+
+
+func _apply_safe_area() -> void:
+	var margins: Dictionary = SafeZoneManager.get_safe_margins() as Dictionary
+	margin_container.add_theme_constant_override("margin_left", int(margins.get("left", 0)))
+	margin_container.add_theme_constant_override("margin_top", int(margins.get("top", 0)))
+	margin_container.add_theme_constant_override("margin_right", int(margins.get("right", 0)))
+	margin_container.add_theme_constant_override("margin_bottom", int(margins.get("bottom", 0)))
+
 
 func _on_device_changed(device: _InputRouter.InputDevice) -> void:
 	_update_hints(device)
+
 
 func _update_hints(device: _InputRouter.InputDevice) -> void:
 	if device == _InputRouter.InputDevice.GAMEPAD:
@@ -31,13 +51,16 @@ func _update_hints(device: _InputRouter.InputDevice) -> void:
 	else:
 		_hint_label.text = tr("HINT_SELECT_KBM")
 
+
 func _on_new_run_pressed() -> void:
-	RunManager.cmd_start_run()
-	# Typically we'd hide the menu here or transition to a loading state
+	if RunManager.has_method("cmd_start_run"):
+		RunManager.call("cmd_start_run")
 	hide()
+
 
 func _on_settings_pressed() -> void:
 	settings_requested.emit()
+
 
 func _on_quit_pressed() -> void:
 	get_tree().quit()

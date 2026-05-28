@@ -1,0 +1,19 @@
+keys,en,de,es,fr
+BE_MWT_0,[A low rumble spreads beneath you],[Ein tiefes Grollen breitet sich unter dir aus],[Un rugido profundo se extiende bajo tus pies],[Un grondement sourd se propage sous vos pieds]
+BE_MWT_1,[Machinery churns in the walls],[Maschinen arbeiten in den Wänden],[La maquinaria se agita en las paredes],[Les machines s'activent dans les murs]
+BE_MWT_2,[Pressure builds],[Druck baut sich auf],[La presión aumenta],[La pression monte]
+BE_MWT_3,[The breaking point nears],[Der Belastungspunkt nähert sich],[El punto de ruptura se acerca],[Le point de rupture approche]
+BE_CAP_0_TO_1,[The world stills],[Die Welt steht still],[El mundo se detiene],[Le monde se fige]
+BE_CAP_1_TO_2,[Machinery grinds],[Maschinen knirschen],[La maquinaria cruje],[Les machines grincent]
+BE_CAP_2_TO_3,[The weight gathers],[Die Last sammelt sich],[La carga se acumula],[Le poids s'accumule]
+BE_CAP_3_TO_2,[The pressure recedes],[Der Druck weicht zurück],[La presión retrocede],[La pression diminue]
+BE_CAP_2_TO_1,[The memory loosens],[Die Erinnerung lockert sich],[El recuerdo se afloja],[Le souvenir se relâche]
+BE_CAP_1_TO_0,[The embers cool],[Die Glut kühlt ab],[Las brasas se enfrían],[Les braises refroidissent]
+BE_CAP_3_TO_0_NORMAL,[The burden fades slowly],[Die Last schwindet langsam],[La carga se desvanece lentamente],[Le fardeau s'efface lentement]
+BE_CAP_3_TO_0_EMERGENCY,[The burden drops],[Die Last fällt ab],[La carga cae],[Le fardeau tombe]
+BE_PHASE_A_CAP,[The world stills],[Die Welt steht still],[El mundo se detiene],[Le monde se fige]
+BE_CAP_NUMBNESS,[The burden is silent],[Die Last ist still],[La carga está en silencio],[Le fardeau est silencieux]
+menu.title.continue,Continue,Fortsetzen,Continuar,Continuer
+menu.title.new_game,New Game,Neues Spiel,Nuevo Juego,Nouveau Jeu
+menu.title.settings,Settings,Einstellungen,Ajustes,Paramètres
+menu.title.quit,Quit,Beenden,Salir,Quitter
