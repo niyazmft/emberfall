@@ -12,8 +12,8 @@ graph TD
         A(You / Hermes <br><i>'The Board'</i>) -- "Set High-Level Goals" --> B{PaperclipAI};
     end
 
-    subgraph "Cloud"
-        B -- "Executes tasks locally" --> B;
+    subgraph "Google Cloud"
+        B -- "Executes tasks in cloud VM" --> B;
         B -- "Offloads coding tasks" --> C{Google Jules};
     end
 
