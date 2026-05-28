@@ -36,6 +36,7 @@ gdscript/warnings/unsafe_call_argument=1
 limits/message_queue/max_size=4096
 
 [autoload]
+
 SafeZoneManager="*res://scripts/autoload/safe_zone_manager.gd"
 ConfigLoader="*res://scripts/autoload/config_loader.gd"
 BurdenManager="*res://scripts/autoload/burden_manager.gd"
@@ -49,6 +50,8 @@ GridSystem="*res://scripts/autoload/grid_system.gd"
 LayerManager="*res://scripts/autoload/layer_manager.gd"
 ToastManager="*res://scripts/autoload/toast_manager.gd"
 FocusManager="*res://ui/framework/focus_manager.gd"
+SettingsManager="*res://scripts/autoload/settings_manager.gd"
+InputRouter="*res://scripts/autoload/input_router.gd"
 
 [physics]
 2d/run_on_separate_thread=true
