@@ -18,7 +18,10 @@ static func show_modal() -> void:
 func _ready() -> void:
 	SafeZoneManager.safe_area_changed.connect(_on_safe_area_changed)
 	_apply_safe_area()
-	back_button.grab_focus.call_deferred()
+
+	# Initial focus with defensive null check (DON-298)
+	if is_instance_valid(back_button):
+		back_button.grab_focus.call_deferred()
 
 
 func _on_safe_area_changed(_rect: Rect2) -> void:
