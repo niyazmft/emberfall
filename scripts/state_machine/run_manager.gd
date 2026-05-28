@@ -24,7 +24,7 @@ var biome_count: int = 3
 var rooms_per_biome_min: int = 8
 var rooms_per_biome_max: int = 12
 var total_rooms: int = 0
-var room_queue: Array = []
+var room_queue: Array[Dictionary] = []
 var room_index: int = -1
 var memory_state_loaded: bool = false
 
@@ -57,7 +57,7 @@ func _ready() -> void:
 	if has_node("/root/EntityLifecycle"):
 		_entity_lifecycle = get_node("/root/EntityLifecycle")
 		if _entity_lifecycle and _entity_lifecycle.has_signal("mwt_reached"):
-			_entity_lifecycle.mwt_reached.connect(_on_mwt_reached)
+			_entity_lifecycle.connect("mwt_reached", _on_mwt_reached)
 
 
 func _on_mwt_reached(_moral_flag: int, _remaining: int) -> void:
@@ -127,7 +127,7 @@ func _register_states() -> void:
 
 
 func _register_transitions() -> void:
-	# SANCTUM → BIOME_GENERATION (guard: memory loaded)
+	# SANCTUM → BIOME_GENERATION (guard: always allowed for new runs)
 	register_transition(
 		RunState.SANCTUM,
 		RunState.BIOME_GENERATION,
@@ -278,7 +278,7 @@ func _enter_sanctum(_ctx: Dictionary) -> void:
 	run_seed = 0
 	# Reset burden tracking for new sanctum session.
 	if get_node_or_null("/root/BurdenManager"):
-		get_node("/root/BurdenManager").reset()
+		get_node("/root/BurdenManager").call("reset")
 
 
 func _enter_biome_generation(_ctx: Dictionary) -> void:
@@ -342,7 +342,7 @@ func _update_biome_threshold(delta: float, _elapsed: float) -> void:
 
 
 func _enter_run_resolution(_ctx: Dictionary) -> void:
-	var result := &"DEFEAT"
+	var result: StringName = &"DEFEAT"
 	if _final_encounter_won:
 		result = &"TRIUMPH"
 	(
@@ -369,7 +369,8 @@ func _enter_error(_ctx: Dictionary) -> void:
 
 
 func _guard_memory_loaded(_ctx: Dictionary) -> bool:
-	return memory_state_loaded
+	# A new run can start even if no memory was loaded (it will generate a new seed)
+	return true
 
 
 func _guard_topology_ready(_ctx: Dictionary) -> bool:
@@ -393,7 +394,7 @@ func _guard_next_room_normal(_ctx: Dictionary) -> bool:
 		return false
 	if _player_hp_zero or _final_encounter_won:
 		return false
-	var next_idx := room_index + 1
+	var next_idx: int = room_index + 1
 	if next_idx >= room_queue.size():
 		return false
 	return not _is_biome_boundary(next_idx)
@@ -404,7 +405,7 @@ func _guard_next_room_boundary(_ctx: Dictionary) -> bool:
 		return false
 	if _player_hp_zero or _final_encounter_won:
 		return false
-	var next_idx := room_index + 1
+	var next_idx: int = room_index + 1
 	if next_idx >= room_queue.size():
 		return false
 	return _is_biome_boundary(next_idx)
@@ -426,7 +427,9 @@ func _action_start_run(_ctx: Dictionary) -> void:
 	if _requested_seed != null:
 		run_seed = int(_requested_seed)
 	else:
-		var entropy := OS.get_unique_id() + str(Time.get_unix_time_from_system()) + str(_run_count)
+		var entropy: String = (
+			OS.get_unique_id() + str(Time.get_unix_time_from_system()) + str(_run_count)
+		)
 		run_seed = SeedGovernance.hash_seed(entropy)
 
 	_requested_seed = null
@@ -436,12 +439,12 @@ func _action_start_run(_ctx: Dictionary) -> void:
 
 
 func _action_generate_rooms(_ctx: Dictionary) -> void:
-	var rng := RandomNumberGenerator.new()
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.seed = run_seed
-	for b in range(biome_count):
-		var count := rng.randi_range(rooms_per_biome_min, rooms_per_biome_max)
-		for r in range(count):
-			var current_room_idx := room_queue.size()
+	for b: int in range(biome_count):
+		var count: int = rng.randi_range(rooms_per_biome_min, rooms_per_biome_max)
+		for r: int in range(count):
+			var current_room_idx: int = room_queue.size()
 			(
 				room_queue
 				. append(
@@ -476,7 +479,7 @@ func _action_reset_run(_ctx: Dictionary) -> void:
 		_entity_lifecycle.call("reset_moral_queue")
 		_entity_lifecycle.call("clear_timers")
 	if get_node_or_null("/root/BurdenManager"):
-		get_node("/root/BurdenManager").reset()
+		get_node("/root/BurdenManager").call("reset")
 
 
 func _compute_moral_deltas() -> Array:
@@ -532,7 +535,10 @@ func load_run_state(p_data: Dictionary) -> void:
 	if p_data.has("room_index"):
 		room_index = int(p_data["room_index"])
 	if p_data.has("room_queue") and p_data["room_queue"] is Array:
-		room_queue = p_data["room_queue"].duplicate(true)
+		room_queue.clear()
+		for item: Variant in p_data["room_queue"]:
+			if item is Dictionary:
+				room_queue.append(item as Dictionary)
 
 	# biome_index is stored but biome tracking is currently derived from room_queue.
 	# We ensure the room_index is valid for the loaded queue.

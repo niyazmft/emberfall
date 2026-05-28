@@ -8,6 +8,7 @@ extends CanvasLayer
 @onready var _pause_menu: Control = %PauseMenu
 @onready var _settings_panel: Control = %SettingsPanel
 
+
 func _ready() -> void:
 	_apply_safe_area()
 	get_viewport().size_changed.connect(_apply_safe_area)
@@ -20,6 +21,7 @@ func _ready() -> void:
 	_main_menu.show()
 	_pause_menu.hide()
 	_settings_panel.hide()
+
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
@@ -34,6 +36,7 @@ func _input(event: InputEvent) -> void:
 			_pause_menu.toggle_pause()
 			get_viewport().set_input_as_handled()
 
+
 func _apply_safe_area() -> void:
 	var safe_area := DisplayServer.get_display_safe_area()
 	var window_size := DisplayServer.window_get_size()
@@ -44,12 +47,18 @@ func _apply_safe_area() -> void:
 	# Convert safe area to margins
 	_safe_zone_container.add_theme_constant_override("margin_left", safe_area.position.x)
 	_safe_zone_container.add_theme_constant_override("margin_top", safe_area.position.y)
-	_safe_zone_container.add_theme_constant_override("margin_right", window_size.x - safe_area.end.x)
-	_safe_zone_container.add_theme_constant_override("margin_bottom", window_size.y - safe_area.end.y)
+	_safe_zone_container.add_theme_constant_override(
+		"margin_right", window_size.x - safe_area.end.x
+	)
+	_safe_zone_container.add_theme_constant_override(
+		"margin_bottom", window_size.y - safe_area.end.y
+	)
+
 
 func _show_settings() -> void:
 	_settings_panel.show()
 	FocusManager.set_initial_focus(_settings_panel)
+
 
 func _on_settings_back() -> void:
 	if _pause_menu.visible:

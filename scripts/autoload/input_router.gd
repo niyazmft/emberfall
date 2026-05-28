@@ -31,8 +31,10 @@ func _input(event: InputEvent) -> void:
 		current_device = new_device
 		device_changed.emit(current_device)
 		_print_debug(
-			"Input device changed to: %s"
-			% ("gamepad" if current_device == InputDevice.GAMEPAD else "keyboard_mouse")
+			(
+				"Input device changed to: %s"
+				% ("gamepad" if current_device == InputDevice.GAMEPAD else "keyboard_mouse")
+			)
 		)
 
 
