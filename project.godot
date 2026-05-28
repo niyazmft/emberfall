@@ -6,7 +6,7 @@
 config/name="Emberfall"
 config/version="0.1.0-sprint1"
 config/description="Tactical grid combat with deterministic AP economy"
-run/main_scene="res://scenes/main.tscn"
+run/main_scene="res://scenes/ui/ui_root.tscn"
 config/features=PackedStringArray("4.2", "Mobile")
 boot_splash/show_image=false
 
@@ -42,6 +42,9 @@ CaptionManager="*res://scripts/autoload/caption_manager.gd"
 EntityLifecycle="*res://scripts/entities/entity_lifecycle.gd"
 RunManager="*res://scripts/state_machine/run_manager.gd"
 GridSystem="*res://scripts/autoload/grid_system.gd"
+SettingsManager="*res://scripts/autoload/settings_manager.gd"
+InputRouter="*res://scripts/autoload/input_router.gd"
+FocusManager="*res://scripts/autoload/focus_manager.gd"
 
 [physics]
 2d/run_on_separate_thread=true
