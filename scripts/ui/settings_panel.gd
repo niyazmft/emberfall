@@ -24,6 +24,11 @@ func _load_ui_from_settings() -> void:
 	_sfx_slider.value = s.audio.sfx_volume
 	_fullscreen_check.button_pressed = s.video.fullscreen
 	_shake_slider.value = s.accessibility.screen_shake
+
+	_input_hints_option.clear()
+	_input_hints_option.add_item(tr("OPTION_AUTO"), 0)
+	_input_hints_option.add_item(tr("OPTION_KBM"), 1)
+	_input_hints_option.add_item(tr("OPTION_GP"), 2)
 	_input_hints_option.selected = s.controls.input_hints
 
 func _connect_signals() -> void:

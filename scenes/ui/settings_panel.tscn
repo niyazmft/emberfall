@@ -45,18 +45,18 @@ horizontal_alignment = 1
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="Audio" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
+[node name="SETTINGS_AUDIO" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
 layout_mode = 2
 
-[node name="MasterVol" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Audio"]
+[node name="MasterVol" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Audio/MasterVol"]
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO/MasterVol"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "SETTINGS_MASTER_VOL"
 
-[node name="MasterSlider" type="HSlider" parent="MarginContainer/VBoxContainer/TabContainer/Audio/MasterVol"]
+[node name="MasterSlider" type="HSlider" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO/MasterVol"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
@@ -64,15 +64,15 @@ max_value = 1.0
 step = 0.05
 value = 1.0
 
-[node name="MusicVol" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Audio"]
+[node name="MusicVol" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Audio/MusicVol"]
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO/MusicVol"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "SETTINGS_MUSIC_VOL"
 
-[node name="MusicSlider" type="HSlider" parent="MarginContainer/VBoxContainer/TabContainer/Audio/MusicVol"]
+[node name="MusicSlider" type="HSlider" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO/MusicVol"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
@@ -80,15 +80,15 @@ max_value = 1.0
 step = 0.05
 value = 0.8
 
-[node name="SFXVol" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Audio"]
+[node name="SFXVol" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Audio/SFXVol"]
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO/SFXVol"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "SETTINGS_SFX_VOL"
 
-[node name="SFXSlider" type="HSlider" parent="MarginContainer/VBoxContainer/TabContainer/Audio/SFXVol"]
+[node name="SFXSlider" type="HSlider" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO/SFXVol"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
@@ -96,35 +96,35 @@ max_value = 1.0
 step = 0.05
 value = 0.8
 
-[node name="Video" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
+[node name="SETTINGS_VIDEO" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
 visible = false
 layout_mode = 2
 
-[node name="Fullscreen" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Video"]
+[node name="Fullscreen" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_VIDEO"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Video/Fullscreen"]
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_VIDEO/Fullscreen"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "SETTINGS_FULLSCREEN"
 
-[node name="FullscreenCheck" type="CheckBox" parent="MarginContainer/VBoxContainer/TabContainer/Video/Fullscreen"]
+[node name="FullscreenCheck" type="CheckBox" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_VIDEO/Fullscreen"]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="Accessibility" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
+[node name="SETTINGS_ACCESSIBILITY" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
 visible = false
 layout_mode = 2
 
-[node name="ScreenShake" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Accessibility"]
+[node name="ScreenShake" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_ACCESSIBILITY"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Accessibility/ScreenShake"]
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_ACCESSIBILITY/ScreenShake"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "SETTINGS_SCREEN_SHAKE"
 
-[node name="ShakeSlider" type="HSlider" parent="MarginContainer/VBoxContainer/TabContainer/Accessibility/ScreenShake"]
+[node name="ShakeSlider" type="HSlider" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_ACCESSIBILITY/ScreenShake"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
@@ -132,19 +132,19 @@ max_value = 2.0
 step = 0.1
 value = 1.0
 
-[node name="Controls" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
+[node name="SETTINGS_CONTROLS" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
 visible = false
 layout_mode = 2
 
-[node name="InputHints" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/Controls"]
+[node name="InputHints" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_CONTROLS"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/Controls/InputHints"]
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_CONTROLS/InputHints"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "SETTINGS_INPUT_HINTS"
 
-[node name="InputHintsOption" type="OptionButton" parent="MarginContainer/VBoxContainer/TabContainer/Controls/InputHints"]
+[node name="InputHintsOption" type="OptionButton" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_CONTROLS/InputHints"]
 unique_name_in_owner = true
 layout_mode = 2
 item_count = 3

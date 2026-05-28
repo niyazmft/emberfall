@@ -57,7 +57,9 @@ func _merge_dict(base: Dictionary, override: Dictionary) -> void:
 
 func apply_settings() -> void:
 	# Audio
-	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Master"), linear_to_db(settings.audio.master_volume))
+	var master_bus := AudioServer.get_bus_index("Master")
+	if master_bus != -1:
+		AudioServer.set_bus_volume_db(master_bus, linear_to_db(settings.audio.master_volume))
 	# Note: Expecting Music and SFX buses to exist in actual project audio bus layout
 	var music_bus := AudioServer.get_bus_index("Music")
 	if music_bus != -1:

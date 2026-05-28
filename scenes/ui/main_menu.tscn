@@ -26,7 +26,7 @@ theme_override_constants/separation = 20
 [node name="Title" type="Label" parent="CenterContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 72
-text = "EMBERFALL"
+text = "MENU_TITLE"
 horizontal_alignment = 1
 
 [node name="NewRunButton" type="Button" parent="CenterContainer/VBoxContainer"]
