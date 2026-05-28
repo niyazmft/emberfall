@@ -1,5 +1,6 @@
 extends Node
 class_name _SafeZoneManager
+
 ## SafeZoneManager (DON-196)
 ## Manages safe area margins and responsive aspect-ratio breakpoints.
 
@@ -42,11 +43,12 @@ func _update_metrics() -> void:
 	if aspect_changed:
 		current_aspect_mode = new_mode
 
-	var new_safe_area: Rect2i = DisplayServer.get_display_safe_area()
-	var safe_changed: bool = new_safe_area != Rect2i(current_safe_area)
+	var new_safe_area_i: Rect2i = DisplayServer.get_display_safe_area()
+	var new_safe_area: Rect2 = Rect2(new_safe_area_i)
+	var safe_changed: bool = new_safe_area != current_safe_area
 
 	if safe_changed:
-		current_safe_area = Rect2(new_safe_area)
+		current_safe_area = new_safe_area
 
 	if aspect_changed:
 		aspect_ratio_changed.emit(current_aspect_mode)
@@ -56,13 +58,13 @@ func _update_metrics() -> void:
 
 ## Returns the safe margins in design pixels.
 func get_safe_margins() -> Dictionary:
-	var safe_rect := DisplayServer.get_display_safe_area()
-	var screen_size := DisplayServer.screen_get_size()
+	var safe_rect: Rect2i = DisplayServer.get_display_safe_area()
+	var screen_size: Vector2i = DisplayServer.screen_get_size()
 
 	# Coordinate conversion: screen to design pixels
-	var viewport_size := Vector2(get_viewport().get_visible_rect().size)
-	var window_size := Vector2(DisplayServer.window_get_size())
-	var scale := Vector2.ONE
+	var viewport_size: Vector2 = Vector2(get_viewport().get_visible_rect().size)
+	var window_size: Vector2 = Vector2(DisplayServer.window_get_size())
+	var scale: Vector2 = Vector2.ONE
 	if window_size.x > 0 and window_size.y > 0:
 		scale = viewport_size / window_size
 
@@ -70,18 +72,18 @@ func get_safe_margins() -> Dictionary:
 		return {"left": 0, "top": 0, "right": 0, "bottom": 0}
 
 	return {
-		"left": int(safe_rect.position.x * scale.x),
-		"top": int(safe_rect.position.y * scale.y),
-		"right": int((screen_size.x - safe_rect.end.x) * scale.x),
-		"bottom": int((screen_size.y - safe_rect.end.y) * scale.y)
+		"left": int(float(safe_rect.position.x) * scale.x),
+		"top": int(float(safe_rect.position.y) * scale.y),
+		"right": int(float(screen_size.x - safe_rect.end.x) * scale.x),
+		"bottom": int(float(screen_size.y - safe_rect.end.y) * scale.y)
 	}
 
 
 ## AC: Notch corner shift for top-left anchored portraits
 ## Returns a Vector2 offset in design pixels.
 func get_notch_offset() -> Vector2:
-	var margins := get_safe_margins()
-	return Vector2(margins.left, margins.top)
+	var margins: Dictionary = get_safe_margins()
+	return Vector2(float(margins.get("left", 0)), float(margins.get("top", 0)))
 
 
 func get_design_width() -> float:
@@ -89,5 +91,5 @@ func get_design_width() -> float:
 
 
 func is_portrait() -> bool:
-	var size := get_viewport().get_visible_rect().size
+	var size: Vector2 = get_viewport().get_visible_rect().size
 	return size.y > size.x
