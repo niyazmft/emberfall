@@ -17,10 +17,9 @@ void fragment() {
 
 	vec2 aspect = vec2(1.0, SCREEN_PIXEL_SIZE.x / SCREEN_PIXEL_SIZE.y);
 	float dist = length((uv - vec2(0.5)) * aspect);
-	// Jules: Fixed vignette mixing to use mix() with #0B0C10 instead of multiplication
-	float v = smoothstep(u_vignetteRadius, u_vignetteRadius - u_vignetteSoftness, dist);
+	float v = smoothstep(u_vignetteRadius - u_vignetteSoftness, u_vignetteRadius, dist);
 
-	vec3 vigged_col = mix(u_vigColor, screen_col.rgb, v);
+	vec3 vigged_col = mix(screen_col.rgb, u_vigColor, v);
 	vec3 final_col = mix(screen_col.rgb, vigged_col, u_vignetteOpacity);
 
 	COLOR = vec4(final_col, screen_col.a);
