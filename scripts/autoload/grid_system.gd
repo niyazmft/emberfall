@@ -356,36 +356,33 @@ func _recompute_cover_cache() -> void:
 	_invalidate_cache()
 	for oy: int in range(GRID_SIZE):
 		for ox: int in range(GRID_SIZE):
-			var oi: int = index(ox, oy)
-			for ty: int in range(GRID_SIZE):
-				for tx: int in range(GRID_SIZE):
-					var ti: int = index(tx, ty)
-					_cover_cache[oi * TOTAL_TILES + ti] = _compute_cover_for_pair(ox, oy, tx, ty)
+			var oi: int = oy * GRID_SIZE + ox
+			var base_idx: int = oi * TOTAL_TILES
+
+			var min_ty: int = max(0, oy - 1)
+			var max_ty: int = min(GRID_SIZE - 1, oy + 1)
+			var min_tx: int = max(0, ox - 1)
+			var max_tx: int = min(GRID_SIZE - 1, ox + 1)
+
+			for ty: int in range(min_ty, max_ty + 1):
+				for tx: int in range(min_tx, max_tx + 1):
+					if ox == tx and oy == ty:
+						continue
+
+					var ti: int = ty * GRID_SIZE + tx
+					var target: Resource = _tiles[ti]
+					if target != null and target.has_cover():
+						if has_los(ox, oy, tx, ty):
+							var dx: int = abs(ox - tx)
+							var dy: int = abs(oy - ty)
+							if dx == 1 and dy == 1:
+								var side1: Resource = _tiles[oy * GRID_SIZE + tx]
+								var side2: Resource = _tiles[ty * GRID_SIZE + ox]
+								if (
+									(side1 != null and side1.blocks_vision)
+									or (side2 != null and side2.blocks_vision)
+								):
+									_cover_cache[base_idx + ti] = true
+							elif target.is_heavy_cover():
+								_cover_cache[base_idx + ti] = true
 	_cache_valid = true
-
-
-func _compute_cover_for_pair(ox: int, oy: int, tx: int, ty: int) -> bool:
-	var target: Resource = get_tile(tx, ty)
-	if target == null or int(target.get("cover")) == 0:  # CoverType.NONE
-		return false
-	## Cover only applies if adjacent to the target (cardinal + diagonal)
-	var dx: int = abs(ox - tx)
-	var dy: int = abs(oy - ty)
-	if dx > 1 or dy > 1:
-		return false
-	if dx == 0 and dy == 0:
-		return false
-	## Check line of sight: if the observer can't see the target, cover is irrelevant.
-	if not has_los(ox, oy, tx, ty):
-		return false
-	## Simple rule: target has cover if the target tile itself provides cover and
-	## there is a blocking tile between observer and target (cardinal or diagonal).
-	## Since dx,dy ≤1, the only "between" case is diagonal adjacency.
-	if dx == 1 and dy == 1:
-		var side1: Resource = get_tile(tx, oy)
-		var side2: Resource = get_tile(ox, ty)
-		return (side1 != null and side1.blocks_vision) or (side2 != null and side2.blocks_vision)
-	## Cardinal adjacency: cover applies only if the line of sight crosses a cover boundary.
-	## For adjacent tiles, the observer is directly adjacent, so the target is considered exposed.
-	## We therefore return true only if the target tile is heavy cover (full protection from adjacent).
-	return int(target.get("cover")) == 2  # CoverType.HEAVY
