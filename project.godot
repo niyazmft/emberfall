@@ -46,5 +46,8 @@ SettingsManager="*res://scripts/autoload/settings_manager.gd"
 InputRouter="*res://scripts/autoload/input_router.gd"
 FocusManager="*res://scripts/autoload/focus_manager.gd"
 
+[internationalization]
+locale/translations=PackedStringArray("res://assets/locales/ui_strings.csv")
+
 [physics]
 2d/run_on_separate_thread=true
