@@ -5,11 +5,13 @@ extends Control
 ## Demonstrates safe-zone integration and responsive reflow.
 
 @onready var margin_container: MarginContainer = $MarginContainer
+@onready var resume_button: Button = $MarginContainer/CenterContainer/VBoxContainer/ResumeButton
 
 
 func _ready() -> void:
 	SafeZoneManager.safe_area_changed.connect(_on_safe_area_changed)
 	_apply_safe_area()
+	resume_button.grab_focus.call_deferred()
 
 
 func _on_safe_area_changed(_rect: Rect2) -> void:
