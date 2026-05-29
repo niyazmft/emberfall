@@ -11,7 +11,7 @@ func _ready() -> void:
 
 	# Override default focus to the primary action
 	if confirm_button:
-		confirm_button.grab_focus()
+		confirm_button.grab_focus.call_deferred()
 
 
 func _on_confirm_pressed() -> void:

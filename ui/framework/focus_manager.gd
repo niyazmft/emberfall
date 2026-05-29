@@ -34,7 +34,7 @@ func push_modal_focus(modal: Control) -> void:
 	# Set initial focus in the modal
 	var first_focusable: Control = _find_first_focusable(modal)
 	if first_focusable:
-		first_focusable.grab_focus()
+		first_focusable.grab_focus.call_deferred()
 
 
 ## Restores focus modes of controls that were disabled by the last push_modal_focus.
