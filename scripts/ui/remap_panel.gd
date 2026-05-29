@@ -37,9 +37,9 @@ func _focus_first_item() -> void:
 
 
 func create_action_list() -> void:
-	for child: Node in action_list.get_children():
+	for child: Node in action_list.get_children().duplicate():
 		action_list.remove_child(child)
-		child.queue_free()
+		child.free()
 
 	var actions: Array[StringName] = InputMap.get_actions()
 	for action: StringName in actions:
