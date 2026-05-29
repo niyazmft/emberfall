@@ -175,7 +175,7 @@ func _focus_action_button(action: StringName) -> void:
 	if not action_list:
 		return
 	for child: Node in action_list.get_children():
-		if child is HBoxContainer and child.get_child_count() > 1:
+		if not child.is_queued_for_deletion() and child is HBoxContainer and child.get_child_count() > 1:
 			var label: Label = child.get_child(0) as Label
 			if label and label.text == String(action).capitalize():
 				var btn: Button = child.get_child(1) as Button
