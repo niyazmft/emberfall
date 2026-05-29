@@ -157,14 +157,26 @@ func load_room_from_file(path: String) -> Error:
 func can_move(from_x: int, from_y: int, to_x: int, to_y: int) -> bool:
 	if not is_in_bounds(to_x, to_y):
 		return false
-	var from_tile: Resource = get_tile(from_x, from_y)
-	var to_tile: Resource = get_tile(to_x, to_y)
+	if not is_in_bounds(from_x, from_y):
+		return false
+	var from_tile: TacTileData = _tiles[from_y * GRID_SIZE + from_x] as TacTileData
+	var to_tile: TacTileData = _tiles[to_y * GRID_SIZE + to_x] as TacTileData
 	if from_tile == null or to_tile == null:
 		return false
-	if bool(to_tile.call("is_blocked")):
+	if (to_tile.cover_flags & 32) != 0:  # FLAG_BLOCKED_MOVE
 		return false
-	var delta: int = abs(int(from_tile.get("elevation")) - int(to_tile.get("elevation")))
-	return delta <= MAX_ELEVATION_DELTA
+	# Elevation flags: FLAG_ELEVATION_0 (4), FLAG_ELEVATION_1 (8), FLAG_ELEVATION_2 (16)
+	var from_elev: int = 0
+	if (from_tile.cover_flags & 8) != 0:
+		from_elev = 1
+	elif (from_tile.cover_flags & 16) != 0:
+		from_elev = 2
+	var to_elev: int = 0
+	if (to_tile.cover_flags & 8) != 0:
+		to_elev = 1
+	elif (to_tile.cover_flags & 16) != 0:
+		to_elev = 2
+	return abs(from_elev - to_elev) <= MAX_ELEVATION_DELTA
 
 
 ## ------------------------------------------------------------------
@@ -319,13 +331,10 @@ func has_los(observer_x: int, observer_y: int, target_x: int, target_y: int) -> 
 	while true:
 		if x == target_x and y == target_y:
 			return true
-		var tile: Resource = get_tile(x, y)
-		if (
-			tile != null
-			and bool(tile.get("blocks_vision"))
-			and not (x == observer_x and y == observer_y)
-		):
-			return false
+		if x != observer_x or y != observer_y:
+			var tile: TacTileData = _tiles[y * GRID_SIZE + x] as TacTileData
+			if tile != null and (tile.cover_flags & 64) != 0:
+				return false
 		var e2: int = 2 * err
 		if e2 > -dy:
 			err -= dy
@@ -365,8 +374,8 @@ func _recompute_cover_cache() -> void:
 
 
 func _compute_cover_for_pair(ox: int, oy: int, tx: int, ty: int) -> bool:
-	var target: Resource = get_tile(tx, ty)
-	if target == null or int(target.get("cover")) == 0:  # CoverType.NONE
+	var target: TacTileData = _tiles[ty * GRID_SIZE + tx] as TacTileData
+	if target == null or (target.cover_flags & 3) == 0:  # CoverType.NONE
 		return false
 	## Cover only applies if adjacent to the target (cardinal + diagonal)
 	var dx: int = abs(ox - tx)
@@ -382,10 +391,13 @@ func _compute_cover_for_pair(ox: int, oy: int, tx: int, ty: int) -> bool:
 	## there is a blocking tile between observer and target (cardinal or diagonal).
 	## Since dx,dy ≤1, the only "between" case is diagonal adjacency.
 	if dx == 1 and dy == 1:
-		var side1: Resource = get_tile(tx, oy)
-		var side2: Resource = get_tile(ox, ty)
-		return (side1 != null and side1.blocks_vision) or (side2 != null and side2.blocks_vision)
+		var side1: TacTileData = _tiles[oy * GRID_SIZE + tx] as TacTileData
+		var side2: TacTileData = _tiles[ty * GRID_SIZE + ox] as TacTileData
+		return (
+			(side1 != null and (side1.cover_flags & 64) != 0)
+			or (side2 != null and (side2.cover_flags & 64) != 0)
+		)
 	## Cardinal adjacency: cover applies only if the line of sight crosses a cover boundary.
 	## For adjacent tiles, the observer is directly adjacent, so the target is considered exposed.
 	## We therefore return true only if the target tile is heavy cover (full protection from adjacent).
-	return int(target.get("cover")) == 2  # CoverType.HEAVY
+	return (target.cover_flags & 2) != 0  # FLAG_COVER_HEAVY
