@@ -30,7 +30,7 @@ func _focus_first_item() -> void:
 	if action_list.get_child_count() > 0:
 		var first_hbox: Node = action_list.get_child(0)
 		if first_hbox.get_child_count() > 1 and first_hbox.get_child(1) is Button:
-			(first_hbox.get_child(1) as Button).grab_focus()
+			(first_hbox.get_child(1) as Button).grab_focus.call_deferred()
 
 
 func create_action_list() -> void:
@@ -176,7 +176,7 @@ func _focus_action_button(action: StringName) -> void:
 			if label and label.text == String(action).capitalize():
 				var btn: Button = child.get_child(1) as Button
 				if btn:
-					btn.grab_focus()
+					btn.grab_focus.call_deferred()
 				break
 
 

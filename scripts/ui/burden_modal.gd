@@ -18,3 +18,4 @@ func _on_block_timer_timeout() -> void:
 	close_button.disabled = false
 	var tween: Tween = create_tween()
 	tween.tween_property(close_button, "modulate:a", 1.0, 0.5)
+	close_button.grab_focus.call_deferred()
