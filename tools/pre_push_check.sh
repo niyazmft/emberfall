@@ -41,7 +41,7 @@ if grep -iE "SCRIPT ERROR|Parse Error|Compile Error|hides an autoload singleton|
 fi
 
 # Also check for general ERROR: but exclude common exit-leak false positives
-if grep "ERROR:" tools/godot_lint.log tools/math_validation.log | grep -vE "resources still in use|ObjectDB instances leaked"; then
+if grep "ERROR:" tools/godot_lint.log tools/math_validation.log | grep -vE "Resources still in use|ObjectDB instances leaked"; then
     echo "------------------------------------------------"
     echo "❌ CRITICAL ERRORS DETECTED! Check tools/*.log"
     echo "------------------------------------------------"
