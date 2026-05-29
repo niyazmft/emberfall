@@ -23,3 +23,32 @@ data_*/
 # Build artifacts
 *.tmp
 *.import
+# Python-specific ignores
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.env
+.venv
+*.egg-info/
+dist/
+build/
+wheels/
+parts/
+var/
+sdist/
+*.egg
+/docs/_build/
+*.so
+*.coverage
+.tox/
+.nox/
+.hypothesis/
+.pytest_cache/
+.mypy_cache/
+*.py[cod]
+*$py.class
+
