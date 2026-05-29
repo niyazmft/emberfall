@@ -27,14 +27,18 @@ func _ready() -> void:
 func _focus_first_item() -> void:
 	if not action_list:
 		return
-	if action_list.get_child_count() > 0:
-		var first_hbox: Node = action_list.get_child(0)
-		if first_hbox.get_child_count() > 1 and first_hbox.get_child(1) is Button:
-			(first_hbox.get_child(1) as Button).grab_focus()
+	var active_btn: Button = null
+	for child: Node in action_list.get_children():
+		if not child.is_queued_for_deletion() and child.get_child_count() > 1:
+			active_btn = child.get_child(1) as Button
+			break
+	if active_btn:
+		active_btn.grab_focus.call_deferred()
 
 
 func create_action_list() -> void:
 	for child: Node in action_list.get_children():
+		action_list.remove_child(child)
 		child.queue_free()
 
 	var actions: Array[StringName] = InputMap.get_actions()
@@ -171,12 +175,16 @@ func _focus_action_button(action: StringName) -> void:
 	if not action_list:
 		return
 	for child: Node in action_list.get_children():
-		if child is HBoxContainer and child.get_child_count() > 1:
+		if (
+			not child.is_queued_for_deletion()
+			and child is HBoxContainer
+			and child.get_child_count() > 1
+		):
 			var label: Label = child.get_child(0) as Label
 			if label and label.text == String(action).capitalize():
 				var btn: Button = child.get_child(1) as Button
 				if btn:
-					btn.grab_focus()
+					btn.grab_focus.call_deferred()
 				break
 
 
