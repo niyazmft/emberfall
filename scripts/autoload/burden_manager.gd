@@ -287,13 +287,7 @@ func trigger_burden_event(
 	_lifetime_trigger_count += 1
 
 	var result: BurdenEventResult = _event_engine.trigger_burden_event(
-		run_seed,
-		topology_seed,
-		room_index,
-		variant_state,
-		is_first,
-		_burden_trigger_count,
-		_config
+		run_seed, topology_seed, room_index, variant_state, is_first, _burden_trigger_count, _config
 	)
 
 	## AC-4: Persist updated noun index immediately after selection
@@ -306,12 +300,7 @@ func trigger_burden_event(
 	_print_debug(
 		(
 			"burden_event #%d triggered (first=%s, noun_index=%d, variant=%s)"
-			% [
-				_burden_trigger_count,
-				str(is_first),
-				_burden_noun_index,
-				result.phase_b_variant_id
-			]
+			% [_burden_trigger_count, str(is_first), _burden_noun_index, result.phase_b_variant_id]
 		)
 	)
 	return result

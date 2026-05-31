@@ -131,9 +131,7 @@ func select_collective_noun(topology_seed: int, room_index: int) -> String:
 
 ## Internal helper to get the noun index for persistence
 func get_noun_index(topology_seed: int, room_index: int) -> int:
-	return SeedGovernance.modulo_from_seed(
-		topology_seed, "NOUN" + str(room_index), _noun_pool_size
-	)
+	return SeedGovernance.modulo_from_seed(topology_seed, "NOUN" + str(room_index), _noun_pool_size)
 
 
 ## Select a variant from the first-event pool.
