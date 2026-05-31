@@ -36,10 +36,7 @@ echo ""
 echo "🧪 Step 4: Running Full Test Suite..."
 if [ -f tests/run_all_tests.sh ]; then
     chmod +x tests/run_all_tests.sh
-    tests/run_all_tests.sh 2>&1 | tee tools/test_suite.log
-    TEST_EXIT_CODE=$?
-
-    if [ $TEST_EXIT_CODE -ne 0 ]; then
+    if ! tests/run_all_tests.sh 2>&1 | tee tools/test_suite.log; then
         echo "------------------------------------------------"
         echo "❌ TEST SUITE FAILED! Check tools/test_suite.log"
         echo "------------------------------------------------"
