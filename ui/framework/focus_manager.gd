@@ -125,7 +125,7 @@ func _setup_modal_wrap(modal: Control) -> void:
 
 	# Gamepad vertical wrap
 	last.focus_neighbor_bottom = first.get_path()
-	first.focus_neighbor_top = last.get_path()
+	last.focus_neighbor_top = last.get_path()
 
 
 func _find_focusable_in(node: Node) -> Array[Control]:
