@@ -31,9 +31,6 @@ var _elemental_overlay: Dictionary = {}
 
 ## Engine constant: oil reduces movement speed by 0.8×.
 ## Discrete grid cost: ceil(1 / 0.8) = 2 AP per tile.
-const _ELEM_NONE: int = 0
-const _ELEM_OIL: int = 4
-
 const SLIP_SPEED_FACTOR: float = 0.8
 const SLIP_MOVEMENT_BASE_COST: int = 1
 
@@ -188,12 +185,14 @@ func set_oil_tile(x: int, y: int, has_oil: bool) -> void:
 	if _elemental_overlay.has(idx):
 		var arr: Array = _elemental_overlay[idx]
 		for i: int in range(arr.size() - 1, -1, -1):
-			if arr[i]["element"] == _ELEM_OIL:
+			if arr[i]["element"] == ElementalTypes.ElementType.OIL:
 				arr.remove_at(i)
 		if arr.is_empty():
 			_elemental_overlay.erase(idx)
 	if has_oil:
-		_elemental_overlay[idx] = [{"element": _ELEM_OIL, "duration": 999, "applied_turn": -1}]
+		_elemental_overlay[idx] = [
+			{"element": ElementalTypes.ElementType.OIL, "duration": 999, "applied_turn": -1}
+		]
 
 
 func has_oil_tile(x: int, y: int) -> bool:
@@ -204,7 +203,10 @@ func has_oil_tile(x: int, y: int) -> bool:
 		return false
 	var effects: Array = _elemental_overlay[idx]
 	for eff: Variant in effects:
-		if eff.get("element", _ELEM_NONE) == _ELEM_OIL:
+		if (
+			eff.get("element", ElementalTypes.ElementType.NONE)
+			== ElementalTypes.ElementType.OIL
+		):
 			return true
 	return false
 
@@ -219,12 +221,14 @@ func is_slippery(x: int, y: int) -> bool:
 ## Apply an elemental effect to a tile with a turn duration.
 ## Duration >= 1 means it persists for that many `tick_tile_effects` calls.
 ## Effects are stored in FIFO order (per turn applied).
-func apply_tile_element(x: int, y: int, element: int, duration: int, applied_turn: int) -> void:
+func apply_tile_element(
+	x: int, y: int, element: ElementalTypes.ElementType, duration: int, applied_turn: int
+) -> void:
 	if not is_in_bounds(x, y):
 		return
 	if duration < 1:
 		return
-	if not (element >= _ELEM_NONE and element <= _ELEM_OIL):
+	if not element in ElementalTypes.ElementType.values():
 		return
 	var idx: int = index(x, y)
 	if not _elemental_overlay.has(idx):
@@ -254,14 +258,14 @@ func get_active_tile_elements(x: int, y: int) -> PackedInt32Array:
 	var out := PackedInt32Array()
 	var effects: Array = get_tile_effects(x, y)
 	for eff: Variant in effects:
-		var e: int = eff["element"]
+		var e: ElementalTypes.ElementType = eff["element"]
 		if not out.has(e):
 			out.append(e)
 	return out
 
 
 ## Remove a specific element type from a tile (e.g. Water extinguishes Fire).
-func remove_tile_element(x: int, y: int, element: int) -> void:
+func remove_tile_element(x: int, y: int, element: ElementalTypes.ElementType) -> void:
 	if not is_in_bounds(x, y):
 		return
 	var idx: int = index(x, y)

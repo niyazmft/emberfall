@@ -39,7 +39,7 @@ static func _config_int(key: String, fallback: int) -> int:
 
 # ── Typed Element Queries ─────────────────────────────────────────────────
 static func _has_element(
-	effects: Array[ElementalTypes.TileEffect], elem: ElementalTypes.Element
+	effects: Array[ElementalTypes.TileEffect], elem: ElementalTypes.ElementType
 ) -> bool:
 	for e: ElementalTypes.TileEffect in effects:
 		if e.element == elem:
@@ -48,7 +48,7 @@ static func _has_element(
 
 
 static func _remove_element(
-	effects: Array[ElementalTypes.TileEffect], elem: ElementalTypes.Element
+	effects: Array[ElementalTypes.TileEffect], elem: ElementalTypes.ElementType
 ) -> Array[ElementalTypes.TileEffect]:
 	var out: Array[ElementalTypes.TileEffect] = []
 	for e: ElementalTypes.TileEffect in effects:
@@ -86,10 +86,10 @@ static func compute_tile_damage_multiplier(
 	if active.is_empty():
 		return 1.0
 
-	var has_fire: bool = _has_element(active, ElementalTypes.Element.FIRE)
-	var has_oil: bool = _has_element(active, ElementalTypes.Element.OIL)
-	var has_wind: bool = _has_element(active, ElementalTypes.Element.WIND)
-	var has_water: bool = _has_element(active, ElementalTypes.Element.WATER)
+	var has_fire: bool = _has_element(active, ElementalTypes.ElementType.FIRE)
+	var has_oil: bool = _has_element(active, ElementalTypes.ElementType.OIL)
+	var has_wind: bool = _has_element(active, ElementalTypes.ElementType.WIND)
+	var has_water: bool = _has_element(active, ElementalTypes.ElementType.WATER)
 
 	# Priority 1: Water extinguishes Fire → 0.5× (extinguish overrides amplification)
 	if has_water and has_fire:
@@ -114,7 +114,7 @@ static func calculate_movement_speed_multiplier(
 	effects: Array[ElementalTypes.TileEffect], current_turn: int
 ) -> float:
 	var active: Array[ElementalTypes.TileEffect] = _filter_active(effects, current_turn)
-	if _has_element(active, ElementalTypes.Element.OIL):
+	if _has_element(active, ElementalTypes.ElementType.OIL):
 		return _config_float("OIL_SLIP_SPEED_MULT", 0.8)
 	return 1.0
 
@@ -125,12 +125,12 @@ static func calculate_movement_speed_multiplier(
 ## process_turn_tick() to guarantee deterministic FIFO ordering.
 static func apply_element(
 	effects: Array[ElementalTypes.TileEffect],
-	elem: ElementalTypes.Element,
+	elem: ElementalTypes.ElementType,
 	current_turn: int,
 	duration: int = 1,
 	source_pos := Vector2i(-999, -999)
 ) -> Array[ElementalTypes.TileEffect]:
-	if elem == ElementalTypes.Element.NONE:
+	if elem == ElementalTypes.ElementType.NONE:
 		return effects.duplicate()
 
 	var new_effect := ElementalTypes.TileEffect.new(elem, duration, current_turn, source_pos)
@@ -184,9 +184,9 @@ static func process_turn_tick(
 		var current: ElementalTypes.TileEffect = working[i]
 
 		match current.element:
-			ElementalTypes.Element.WATER:
+			ElementalTypes.ElementType.WATER:
 				# Water looks for ANY Fire in the working set (leftmost first)
-				var fire_idx := _find_leftmost_element(working, ElementalTypes.Element.FIRE)
+				var fire_idx := _find_leftmost_element(working, ElementalTypes.ElementType.FIRE)
 				if fire_idx != -1 and fire_idx != i:
 					# Remove Fire first (higher or lower index doesn't matter
 					# because we recalc i afterwards)
@@ -204,9 +204,9 @@ static func process_turn_tick(
 						i = 0
 					extinguished = true
 
-			ElementalTypes.Element.WIND:
+			ElementalTypes.ElementType.WIND:
 				# Wind looks for ANY Fire to fan (leftmost first)
-				var fire_idx := _find_leftmost_element(working, ElementalTypes.Element.FIRE)
+				var fire_idx := _find_leftmost_element(working, ElementalTypes.ElementType.FIRE)
 				if fire_idx != -1 and fire_idx != i:
 					# Refresh fire duration
 					working[fire_idx].duration = _config_int("FIRE_DURATION_TURNS", 1)
@@ -224,9 +224,9 @@ static func process_turn_tick(
 						if _in_bounds(cand, grid_bounds) and cand not in actual_water_tiles:
 							spread_positions.append(cand)
 
-			ElementalTypes.Element.FIRE:
+			ElementalTypes.ElementType.FIRE:
 				# Fire looks for ANY Oil to burn off (leftmost first)
-				var oil_idx := _find_leftmost_element(working, ElementalTypes.Element.OIL)
+				var oil_idx := _find_leftmost_element(working, ElementalTypes.ElementType.OIL)
 				if oil_idx != -1 and oil_idx != i:
 					# Oil burns off completely
 					working.remove_at(oil_idx)
@@ -283,7 +283,7 @@ static func compute_tile_modifiers(
 ## Find the leftmost occurrence of `elem` in `arr`, skipping the element
 ## at `exclude_idx` if provided. Returns -1 if not found.
 static func _find_leftmost_element(
-	arr: Array[ElementalTypes.TileEffect], elem: ElementalTypes.Element, exclude_idx: int = -1
+	arr: Array[ElementalTypes.TileEffect], elem: ElementalTypes.ElementType, exclude_idx: int = -1
 ) -> int:
 	for idx: int in range(arr.size()):
 		if idx == exclude_idx:
