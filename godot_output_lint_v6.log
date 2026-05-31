@@ -1,0 +1,158 @@
+Godot Engine v4.2.2.stable.official.15073afe3 - https://godotengine.org
+
+WARNING: Custom cursor shape not supported by this display server.
+     at: cursor_set_custom_image (servers/display_server.cpp:505)
+SCRIPT ERROR: Parse Error: Identifier "DeterministicMath" not declared in the current scope.
+          at: GDScript::reload (res://scripts/autoload/burden_manager.gd:115)
+SCRIPT ERROR: Parse Error: Identifier "GameConstants" not declared in the current scope.
+          at: GDScript::reload (res://scripts/autoload/burden_manager.gd:222)
+ERROR: Failed to load script "res://scripts/autoload/burden_manager.gd" with error "Parse error".
+   at: load (modules/gdscript/gdscript.cpp:2726)
+ERROR: Failed to create an autoload, script 'res://scripts/autoload/burden_manager.gd' does not inherit from 'Node'.
+   at: _create_autoload (editor/editor_autoload_settings.cpp:423)
+SCRIPT ERROR: Parse Error: Identifier "DeterministicMath" not declared in the current scope.
+          at: GDScript::reload (res://scripts/autoload/burden_manager.gd:115)
+SCRIPT ERROR: Parse Error: Identifier "GameConstants" not declared in the current scope.
+          at: GDScript::reload (res://scripts/autoload/burden_manager.gd:222)
+SCRIPT ERROR: Compile Error:
+          at: GDScript::reload (res://scripts/autoload/burden_event_coordinator.gd:-1)
+ERROR: Failed to load script "res://scripts/autoload/burden_event_coordinator.gd" with error "Parse error".
+   at: load (modules/gdscript/gdscript.cpp:2726)
+SCRIPT ERROR: Parse Error: Could not find type "Entity" in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:19)
+SCRIPT ERROR: Parse Error: Could not find type "Entity" in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:19)
+SCRIPT ERROR: Parse Error: Could not find type "Entity" in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:19)
+SCRIPT ERROR: Parse Error: Could not find type "Entity" in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:20)
+SCRIPT ERROR: Parse Error: Could not find type "Entity" in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:27)
+SCRIPT ERROR: Parse Error: Could not find type "Entity" in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:59)
+SCRIPT ERROR: Parse Error: Could not find type "Entity" in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:107)
+SCRIPT ERROR: Parse Error: Could not find type "Entity" in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:107)
+SCRIPT ERROR: Parse Error: Could not find type "Entity" in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:125)
+SCRIPT ERROR: Parse Error: Could not find type "Entity" in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:135)
+SCRIPT ERROR: Parse Error: Could not find type "Entity" in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:155)
+SCRIPT ERROR: Parse Error: Could not find type "Entity" in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:156)
+SCRIPT ERROR: Parse Error: Could not find type "Entity" in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:185)
+SCRIPT ERROR: Parse Error: Could not find type "Entity" in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:185)
+SCRIPT ERROR: Parse Error: Could not find type "Entity" in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:210)
+SCRIPT ERROR: Parse Error: Could not find type "Entity" in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:318)
+SCRIPT ERROR: Parse Error: Could not find type "Entity" in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:318)
+SCRIPT ERROR: Parse Error: Identifier "DeterministicMath" not declared in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:109)
+SCRIPT ERROR: Parse Error: Identifier "Entity" not declared in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:114)
+SCRIPT ERROR: Parse Error: Identifier "Entity" not declared in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:115)
+SCRIPT ERROR: Parse Error: Identifier "Entity" not declared in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:116)
+SCRIPT ERROR: Parse Error: Identifier "Entity" not declared in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:118)
+SCRIPT ERROR: Parse Error: Identifier "Entity" not declared in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:126)
+SCRIPT ERROR: Parse Error: Identifier "Entity" not declared in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:128)
+SCRIPT ERROR: Parse Error: Identifier "Entity" not declared in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:129)
+SCRIPT ERROR: Parse Error: Identifier "Entity" not declared in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:138)
+SCRIPT ERROR: Parse Error: Identifier "Entity" not declared in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:190)
+SCRIPT ERROR: Parse Error: Identifier "DeterministicMath" not declared in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:194)
+SCRIPT ERROR: Parse Error: Identifier "Entity" not declared in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:202)
+SCRIPT ERROR: Parse Error: Identifier "Entity" not declared in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:211)
+SCRIPT ERROR: Parse Error: Identifier "Entity" not declared in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:214)
+SCRIPT ERROR: Parse Error: Identifier "DeterministicMath" not declared in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:238)
+SCRIPT ERROR: Parse Error: Identifier "GameConstants" not declared in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:245)
+SCRIPT ERROR: Parse Error: Identifier "GameConstants" not declared in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:245)
+SCRIPT ERROR: Parse Error: Could not find type "Entity" in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:291)
+SCRIPT ERROR: Parse Error: Could not find type "Entity" in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:292)
+SCRIPT ERROR: Parse Error: Could not find type "Entity" in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:292)
+SCRIPT ERROR: Parse Error: Identifier "Entity" not declared in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:293)
+SCRIPT ERROR: Parse Error: Identifier "Entity" not declared in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:295)
+SCRIPT ERROR: Parse Error: Could not find type "Entity" in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:308)
+SCRIPT ERROR: Parse Error: Could not find type "Entity" in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:309)
+SCRIPT ERROR: Parse Error: Could not find type "Entity" in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:309)
+SCRIPT ERROR: Parse Error: Identifier "Entity" not declared in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:310)
+SCRIPT ERROR: Parse Error: Identifier "Entity" not declared in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:311)
+SCRIPT ERROR: Parse Error: Could not find type "Entity" in the current scope.
+          at: GDScript::reload (res://scripts/entities/entity_lifecycle.gd:319)
+ERROR: Failed to load script "res://scripts/entities/entity_lifecycle.gd" with error "Parse error".
+   at: load (modules/gdscript/gdscript.cpp:2726)
+ERROR: Failed to create an autoload, script 'res://scripts/entities/entity_lifecycle.gd' does not inherit from 'Node'.
+   at: _create_autoload (editor/editor_autoload_settings.cpp:423)
+SCRIPT ERROR: Parse Error: Could not find base class "BaseStateMachine".
+          at: GDScript::reload (res://scripts/state_machine/run_manager.gd:1)
+ERROR: Failed to load script "res://scripts/state_machine/run_manager.gd" with error "Parse error".
+   at: load (modules/gdscript/gdscript.cpp:2726)
+ERROR: Failed to create an autoload, script 'res://scripts/state_machine/run_manager.gd' does not inherit from 'Node'.
+   at: _create_autoload (editor/editor_autoload_settings.cpp:423)
+SCRIPT ERROR: Parse Error: Could not find type "TacTileData" in the current scope.
+          at: GDScript::reload (res://scripts/autoload/grid_system.gd:17)
+SCRIPT ERROR: Parse Error: Could not find type "TacTileData" in the current scope.
+          at: GDScript::reload (res://scripts/autoload/grid_system.gd:77)
+SCRIPT ERROR: Parse Error: Could not find type "TacTileData" in the current scope.
+          at: GDScript::reload (res://scripts/autoload/grid_system.gd:83)
+SCRIPT ERROR: Parse Error: Could not find type "TacTileData" in the current scope.
+          at: GDScript::reload (res://scripts/autoload/grid_system.gd:89)
+SCRIPT ERROR: Parse Error: Could not find type "TacTileData" in the current scope.
+          at: GDScript::reload (res://scripts/autoload/grid_system.gd:52)
+SCRIPT ERROR: Parse Error: Could not find type "TacTileData" in the current scope.
+          at: GDScript::reload (res://scripts/autoload/grid_system.gd:52)
+SCRIPT ERROR: Parse Error: Could not find type "TacTileData" in the current scope.
+          at: GDScript::reload (res://scripts/autoload/grid_system.gd:120)
+SCRIPT ERROR: Parse Error: Could not find type "TacTileData" in the current scope.
+          at: GDScript::reload (res://scripts/autoload/grid_system.gd:121)
+SCRIPT ERROR: Parse Error: Could not find type "TacTileData" in the current scope.
+          at: GDScript::reload (res://scripts/autoload/grid_system.gd:122)
+SCRIPT ERROR: Parse Error: Could not find type "TacTileData" in the current scope.
+          at: GDScript::reload (res://scripts/autoload/grid_system.gd:160)
+SCRIPT ERROR: Parse Error: Could not find type "TacTileData" in the current scope.
+          at: GDScript::reload (res://scripts/autoload/grid_system.gd:160)
+SCRIPT ERROR: Parse Error: Could not find type "TacTileData" in the current scope.
+          at: GDScript::reload (res://scripts/autoload/grid_system.gd:161)
+SCRIPT ERROR: Parse Error: Could not find type "TacTileData" in the current scope.
+          at: GDScript::reload (res://scripts/autoload/grid_system.gd:161)
+SCRIPT ERROR: Parse Error: Could not find type "TacTileData" in the current scope.
+          at: GDScript::reload (res://scripts/autoload/grid_system.gd:333)
+SCRIPT ERROR: Parse Error: Could not find type "TacTileData" in the current scope.
+          at: GDScript::reload (res://scripts/autoload/grid_system.gd:333)
+ERROR: Failed to load script "res://scripts/autoload/grid_system.gd" with error "Parse error".
+   at: load (modules/gdscript/gdscript.cpp:2726)
+ERROR: Failed to create an autoload, script 'res://scripts/autoload/grid_system.gd' does not inherit from 'Node'.
+   at: _create_autoload (editor/editor_autoload_settings.cpp:423)
+WARNING: Blend file import is enabled in the project settings, but no Blender path is configured in the editor settings. Blend files will not be imported.
+     at: _editor_init (modules/gltf/register_types.cpp:63)
+WARNING: Scan thread aborted...
+     at: _notification (editor/editor_file_system.cpp:1225)
