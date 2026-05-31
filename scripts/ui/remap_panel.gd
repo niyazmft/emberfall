@@ -259,6 +259,7 @@ func load_bindings() -> void:
 
 func _serialize_event(event: InputEvent) -> Dictionary:
 	var d: Dictionary = {}
+	d["device"] = event.device
 	if event is InputEventKey:
 		d["type"] = "InputEventKey"
 		d["keycode"] = event.keycode
@@ -308,6 +309,7 @@ func _deserialize_event(d: Dictionary) -> InputEvent:
 		e.shift_pressed = bool(d.get("shift_pressed", false))
 		e.alt_pressed = bool(d.get("alt_pressed", false))
 		e.ctrl_pressed = bool(d.get("ctrl_pressed", false))
+		e.device = int(d.get("device", 0))
 		e.meta_pressed = bool(d.get("meta_pressed", false))
 		return e
 	elif type == "InputEventMouseButton":
@@ -319,17 +321,20 @@ func _deserialize_event(d: Dictionary) -> InputEvent:
 		e.shift_pressed = bool(d.get("shift_pressed", false))
 		e.alt_pressed = bool(d.get("alt_pressed", false))
 		e.ctrl_pressed = bool(d.get("ctrl_pressed", false))
+		e.device = int(d.get("device", 0))
 		e.meta_pressed = bool(d.get("meta_pressed", false))
 		return e
 	elif type == "InputEventJoypadButton":
 		var e: InputEventJoypadButton = InputEventJoypadButton.new()
 		e.button_index = int(d.get("button_index", 0))
 		e.pressed = bool(d.get("pressed", false))
+		e.device = int(d.get("device", 0))
 		e.pressure = float(d.get("pressure", 0.0))
 		return e
 	elif type == "InputEventJoypadMotion":
 		var e: InputEventJoypadMotion = InputEventJoypadMotion.new()
 		e.axis = int(d.get("axis", 0))
+		e.device = int(d.get("device", 0))
 		e.axis_value = float(d.get("axis_value", 0.0))
 		return e
 	return null

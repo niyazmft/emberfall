@@ -65,7 +65,6 @@ popup/item_0/text = "1920x1080"
 popup/item_0/id = 0
 
 [node name="BackButton" type="Button" parent="MarginContainer/VBoxContainer"]
-mouse_default_cursor_shape = 2
 custom_minimum_size = Vector2(200, 50)
 layout_mode = 2
 size_flags_horizontal = 4
