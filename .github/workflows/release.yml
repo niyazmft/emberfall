@@ -90,6 +90,8 @@ jobs:
             python3 tests/validate_palettes.py
           fi
 
+      - name: Regenerate asset cache
+        run: godot --headless --import --path .
       - name: Run Godot test suites
         run: |
           chmod +x tests/run_all_tests.sh
