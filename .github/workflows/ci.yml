@@ -29,7 +29,7 @@ jobs:
   # JOB 2: GDScript Format Check
   # ─────────────────────────────────────────────
   gdscript-format:
-    name: GDScript Format
+    name: gdscript-format
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -46,7 +46,7 @@ jobs:
   # JOB 3: Deterministic Math Validation (Python)
   # ─────────────────────────────────────────────
   validate-math:
-    name: Math Validation (Python)
+    name: validate-math
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -61,7 +61,7 @@ jobs:
   # JOB 4: GDScript Lint + Engine Scan (Godot)
   # ─────────────────────────────────────────────
   gdscript-lint:
-    name: GDScript Lint (Engine Scan)
+    name: gdscript-lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
