@@ -12,7 +12,7 @@ extends Node2D
 
 const STACK_COUNT: int = 3
 const TRAIL_COUNT: int = 6
-const RIG_CONFIG_PATH: String = "res://char_apparition_rig.json"
+const RIG_CONFIG_PATH: String = "res://data/char_apparition_rig.json"
 
 ## Default layout constants (exposed for tests and fallback)
 const VERTICAL_OFFSETS: Array[int] = [0, 8, 16]
