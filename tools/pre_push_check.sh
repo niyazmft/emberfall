@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ## Project Emberfall: Pre-Push Validation Script
 ## This script runs all CI checks locally to ensure zero parse errors and math stability.
 
