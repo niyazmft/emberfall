@@ -228,9 +228,7 @@ func apply_tile_element(
 		return
 	if duration < 1:
 		return
-	if not (
-		element >= ElementalTypes.ElementType.NONE and element <= ElementalTypes.ElementType.OIL
-	):
+	if not element in ElementalTypes.ElementType.values():
 		return
 	var idx: int = index(x, y)
 	if not _elemental_overlay.has(idx):
