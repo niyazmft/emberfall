@@ -257,6 +257,14 @@ func load_bindings() -> void:
 
 
 func _on_reset_pressed() -> void:
-	InputMap.load_from_project_settings()
-	save_bindings()
-	create_action_list()
+	var confirm_scene := load("res://scenes/ui/confirm_modal.tscn") as PackedScene
+	if confirm_scene:
+		var modal := confirm_scene.instantiate()
+		modal.setup("RESET_CONTROLS_TITLE", "RESET_CONTROLS_BODY")
+		modal.confirmed.connect(
+			func() -> void:
+				InputMap.load_from_project_settings()
+				save_bindings()
+				create_action_list()
+		)
+		LayerManager.add_modal(modal)

@@ -5,3 +5,7 @@
 ## 2026-05-31 - Add hand cursor to UI buttons
 **Learning:** Godot Button nodes do not show a pointing hand cursor on hover by default, which is a standard UX expectation for clickable elements on PC.
 **Action:** Set `mouse_default_cursor_shape = 2` (Pointing Hand) on all Button nodes to improve interaction feedback.
+
+## $(date +%Y-%m-%d) - Add confirmation modals to destructive actions
+**Learning:** Destructive UI actions (like quitting the game, returning to the sanctum, or resetting control bindings) were happening instantly upon button press, which can lead to accidental data loss or unexpected game exits, resulting in poor UX.
+**Action:** Added a generic `ConfirmModal` popup that requires the user to explicitly confirm these actions before the logic executes, improving safety and matching standard UX patterns.
