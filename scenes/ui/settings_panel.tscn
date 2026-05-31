@@ -42,6 +42,7 @@ text = "SETTINGS_SETTINGS"
 horizontal_alignment = 1
 
 [node name="TabContainer" type="TabContainer" parent="MarginContainer/VBoxContainer"]
+mouse_default_cursor_shape = 2
 layout_mode = 2
 size_flags_vertical = 3
 
@@ -57,6 +58,7 @@ size_flags_horizontal = 3
 text = "SETTINGS_MASTER_VOL"
 
 [node name="MasterSlider" type="HSlider" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO/MasterVol"]
+mouse_default_cursor_shape = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
@@ -73,6 +75,7 @@ size_flags_horizontal = 3
 text = "SETTINGS_MUSIC_VOL"
 
 [node name="MusicSlider" type="HSlider" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO/MusicVol"]
+mouse_default_cursor_shape = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
@@ -89,6 +92,7 @@ size_flags_horizontal = 3
 text = "SETTINGS_SFX_VOL"
 
 [node name="SFXSlider" type="HSlider" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO/SFXVol"]
+mouse_default_cursor_shape = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
@@ -109,6 +113,7 @@ size_flags_horizontal = 3
 text = "SETTINGS_FULLSCREEN"
 
 [node name="FullscreenCheck" type="CheckBox" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_VIDEO/Fullscreen"]
+mouse_default_cursor_shape = 2
 unique_name_in_owner = true
 layout_mode = 2
 
@@ -125,6 +130,7 @@ size_flags_horizontal = 3
 text = "SETTINGS_SCREEN_SHAKE"
 
 [node name="ShakeSlider" type="HSlider" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_ACCESSIBILITY/ScreenShake"]
+mouse_default_cursor_shape = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
@@ -145,6 +151,7 @@ size_flags_horizontal = 3
 text = "SETTINGS_INPUT_HINTS"
 
 [node name="InputHintsOption" type="OptionButton" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_CONTROLS/InputHints"]
+mouse_default_cursor_shape = 2
 unique_name_in_owner = true
 layout_mode = 2
 item_count = 3

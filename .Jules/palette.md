@@ -5,3 +5,7 @@
 ## 2026-05-31 - Add hand cursor to UI buttons
 **Learning:** Godot Button nodes do not show a pointing hand cursor on hover by default, which is a standard UX expectation for clickable elements on PC.
 **Action:** Set `mouse_default_cursor_shape = 2` (Pointing Hand) on all Button nodes to improve interaction feedback.
+
+## $(date +%Y-%m-%d) - Add hand cursor to interactive UI nodes
+**Learning:** Godot interactive UI nodes such as `CheckBox`, `OptionButton`, `HSlider`, and `TabContainer` do not show a pointing hand cursor on hover by default, leading to inconsistent UX where buttons have hand cursors but sliders/checkboxes do not.
+**Action:** Set `mouse_default_cursor_shape = 2` (Pointing Hand) on all `HSlider`, `CheckBox`, `OptionButton`, and `TabContainer` nodes to improve interaction feedback consistently across the settings menu and UI.
