@@ -288,13 +288,11 @@ If a check fails after a change:
 
 GitHub Actions (`.github/workflows/ci.yml`) runs **exactly the same checks** as the pre-push hook:
 
-| CI Job | Local Equivalent |
+| CI Job (GitHub Actions) | Local Equivalent (pre-push hook) |
 |---|---|
-| `markdown-lint` | `markdownlint '**/*.md'` |
-| `gdscript-format` | `gdformat --check scripts/ tests/ ui/` |
+| `gdscript-format` | `gdformat`, `markdownlint`, and `json.tool` |
 | `validate-math` | `python3 tests/validate_math.py` |
-| `gdscript-lint` | Godot headless editor scan |
-| `json-validate` | `python3 -m json.tool` on `config/` + `schemas/` |
+| `gdscript-lint` | Godot headless editor scan + `tests/run_all_tests.sh` |
 
 > **CI uses `--check` only (no auto-fix).** Auto-fixing happens locally via hooks.
 > If CI fails on formatting, it means the pre-push hook was bypassed — run `bash tools/setup_hooks.sh` to re-install hooks.
