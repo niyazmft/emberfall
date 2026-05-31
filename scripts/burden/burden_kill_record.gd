@@ -1,3 +1,4 @@
+class_name BurdenKillRecord
 extends RefCounted
 
 ## BurdenKillRecord

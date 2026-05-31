@@ -36,7 +36,7 @@ func schedule_mwt_transition_caption(
 	if cm == null or _mwt_matrix == null:
 		return
 
-	var data: RefCounted = _mwt_matrix.get_transition_caption(from_level, to_level, is_emergency)
+	var data: MWTCaptionEntry = _mwt_matrix.get_transition_caption(from_level, to_level, is_emergency)
 	if data == null:
 		return
 
@@ -63,7 +63,7 @@ func schedule_mwt_state_caption(level: int) -> void:
 	if cm == null or _mwt_matrix == null:
 		return
 
-	var data: RefCounted = _mwt_matrix.get_state_caption(level)
+	var data: MWTCaptionEntry = _mwt_matrix.get_state_caption(level)
 	if data == null:
 		return
 

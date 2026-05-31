@@ -1,3 +1,4 @@
+class_name BurdenEventResult
 extends RefCounted
 
 ## BurdenEventResult
