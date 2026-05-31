@@ -41,6 +41,8 @@ jobs:
         with:
           version: 4.2.2
           use-dotnet: false
+      - name: Regenerate asset cache
+        run: godot --headless --import --path .
       - name: Run Godot Lint (Editor Scan)
         run: |
           # The editor scan imports assets and parses all scripts.
