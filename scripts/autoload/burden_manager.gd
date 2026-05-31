@@ -43,12 +43,12 @@ var _lifetime_trigger_count: int = 0  ## Cross-run cumulative counter (persisted
 var _burden_noun_index: int = 0  ## Persisted across runs (memory_state.echo_flags)
 
 ## Internal Classes
-var _event_engine = null
-var _caption_bridge = null
+var _event_engine: BurdenEventEngine
+var _caption_bridge: BurdenCaptionBridge
 
 ## MWT Matrix (DON-222)
 var _mwt_matrix_script := preload("res://ui/framework/mwt_caption_matrix.gd")
-var _mwt_matrix = null
+var _mwt_matrix: _MWTCaptionMatrix
 
 
 func _init() -> void:
