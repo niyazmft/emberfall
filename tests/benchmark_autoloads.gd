@@ -20,9 +20,11 @@ const AUTOLOADS: Array[String] = [
 	"InputRouter",
 ]
 
+
 func _init() -> void:
 	print("=== Autoload Initialization Benchmark ===")
 	call_deferred("_run_benchmark")
+
 
 func _run_benchmark() -> void:
 	var results := {}
@@ -55,15 +57,12 @@ func _run_benchmark() -> void:
 	_export_json(results, total_time, avg_time)
 	quit()
 
+
 func _export_json(results: Dictionary, total: int, average: float) -> void:
 	var report := {
 		"timestamp": Time.get_datetime_string_from_system(),
 		"results": results,
-		"summary": {
-			"total_ms": total,
-			"average_ms": average,
-			"count": results.size()
-		}
+		"summary": {"total_ms": total, "average_ms": average, "count": results.size()}
 	}
 
 	var file := FileAccess.open(REPORT_PATH, FileAccess.WRITE)

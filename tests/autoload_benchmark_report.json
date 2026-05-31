@@ -1,0 +1,25 @@
+{
+  "results": {
+    "AudioMiddleware": 15,
+    "BurdenCaptionDriver": 0,
+    "BurdenEventCoordinator": 0,
+    "BurdenManager": 0,
+    "CaptionManager": 0,
+    "ConfigLoader": 1,
+    "EntityLifecycle": 0,
+    "FocusManager": 0,
+    "GridSystem": 1,
+    "InputRouter": 0,
+    "LayerManager": 3,
+    "RunManager": 1,
+    "SafeZoneManager": 0,
+    "SettingsManager": 0,
+    "ToastManager": 0
+  },
+  "summary": {
+    "average_ms": 1.4,
+    "count": 15,
+    "total_ms": 21
+  },
+  "timestamp": "2026-05-31T22:35:58"
+}

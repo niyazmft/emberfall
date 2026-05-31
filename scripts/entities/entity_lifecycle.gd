@@ -60,7 +60,6 @@ var player_entity: Entity = null:
 	set(value):
 		player_entity = value
 
-
 # ── Safe autoload helpers (avoid class_name / autoload ambiguity) ────────
 var init_time_ms: int = 0
 
