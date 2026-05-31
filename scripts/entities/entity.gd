@@ -6,14 +6,44 @@ extends Resource
 ## State transitions are owned by EntityLifecycle; this class only
 ## holds data and exposes typed mutators.
 
+# ── Signals ─────────────────────────────────────────────────────────
+signal position_changed(x: int, y: int)
+signal elevation_changed(elevation: int)
+signal facing_changed(fx: int, fy: int)
+signal state_changed(state: State)
+signal hp_changed(new_hp: int, old_hp: int)
+
 # ── Grid Position ───────────────────────────────────────────────────
-@export var x: int = 0
-@export var y: int = 0
-@export var elevation: int = 0
+@export var x: int = 0:
+	set(value):
+		if x != value:
+			x = value
+			position_changed.emit(x, y)
+
+@export var y: int = 0:
+	set(value):
+		if y != value:
+			y = value
+			position_changed.emit(x, y)
+
+@export var elevation: int = 0:
+	set(value):
+		if elevation != value:
+			elevation = value
+			elevation_changed.emit(elevation)
 
 ## Facing vector as integer components. Normalized to cardinal directions.
-@export var facing_x: int = 0
-@export var facing_y: int = 1
+@export var facing_x: int = 0:
+	set(value):
+		if facing_x != value:
+			facing_x = value
+			facing_changed.emit(facing_x, facing_y)
+
+@export var facing_y: int = 1:
+	set(value):
+		if facing_y != value:
+			facing_y = value
+			facing_changed.emit(facing_x, facing_y)
 
 # ── Core Stats ──────────────────────────────────────────────────────
 @export var hp_max: int = 1:
@@ -22,7 +52,10 @@ extends Resource
 
 @export var hp: int = 1:
 	set(value):
+		var old_hp: int = hp
 		hp = DeterministicMath.clampi(value, 0, hp_max)
+		if hp != old_hp:
+			hp_changed.emit(hp, old_hp)
 
 @export var off: int = 0:
 	set(value):
@@ -46,7 +79,11 @@ var ap: int = GameConstants.AP_MAX
 
 # ── State ───────────────────────────────────────────────────────────
 enum State { IDLE, STUNNED, DYING, DEAD, GHOST }
-@export var state: State = State.IDLE
+@export var state: State = State.IDLE:
+	set(value):
+		if state != value:
+			state = value
+			state_changed.emit(state)
 
 # ── Identity ────────────────────────────────────────────────────────
 @export var entity_name: String = "Unnamed"

@@ -116,14 +116,18 @@ func _grid_to_world(x: int, y: int, elevation: int) -> Vector2:
 
 
 ## Public API: Convert grid coordinates to world position at the tile's current elevation.
-func grid_to_world(x: int, y: int) -> Vector2:
+## If elevation is -1, it uses the tile's elevation from the GridSystem.
+func grid_to_world(x: int, y: int, elevation: int = -1) -> Vector2:
 	if not _grid_system:
 		return Vector2.ZERO
 
-	var tile: TacTileData = _grid_system.get_tile(x, y)
-	var elev: int = 0
-	if tile:
-		elev = int(tile.elevation)
+	var elev: int = elevation
+	if elev == -1:
+		var tile: TacTileData = _grid_system.get_tile(x, y)
+		if tile:
+			elev = int(tile.elevation)
+		else:
+			elev = 0
 
 	return _grid_to_world(x, y, elev)
 

@@ -166,6 +166,11 @@ func trigger_recoil() -> void:
 		state_machine.cmd_recoil()
 
 
+## Alias for trigger_recoil() to match damage effect naming.
+func trigger_damage_effect() -> void:
+	trigger_recoil()
+
+
 ## Call every frame to sync position to owner.
 func sync_to_owner(owner_position: Vector2) -> void:
 	global_position = owner_position
