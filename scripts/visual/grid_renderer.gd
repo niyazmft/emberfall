@@ -15,11 +15,11 @@ var _tile_sprites: Array[Sprite2D] = []
 var _diamond_tex: Texture2D
 
 # Greybox colors based on specification
-const COLOR_FLOOR: Color = Color(0.5, 0.5, 0.5)      # Grey
+const COLOR_FLOOR: Color = Color(0.5, 0.5, 0.5)  # Grey
 const COLOR_ELEV_1: Color = Color(0.75, 0.75, 0.75)  # Light Grey
-const COLOR_ELEV_2: Color = Color(1.0, 1.0, 1.0)       # White
-const COLOR_COVER: Color = Color(0.55, 0.27, 0.07)    # Brown
-const COLOR_OIL: Color = Color(0.0, 0.0, 0.55)        # Dark Blue
+const COLOR_ELEV_2: Color = Color(1.0, 1.0, 1.0)  # White
+const COLOR_COVER: Color = Color(0.55, 0.27, 0.07)  # Brown
+const COLOR_OIL: Color = Color(0.0, 0.0, 0.55)  # Dark Blue
 
 
 func _ready() -> void:
@@ -83,7 +83,7 @@ func _render_tile(x: int, y: int, tile: TacTileData) -> void:
 
 		# Position on top of the highest terrace
 		var pos := _grid_to_world(x, y, elev_val)
-		pos.y -= 4.0 # Floating slightly above
+		pos.y -= 4.0  # Floating slightly above
 		cover_sprite.position = pos
 		add_child(cover_sprite)
 		_tile_sprites.append(cover_sprite)

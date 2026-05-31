@@ -59,12 +59,8 @@ func run_all() -> void:
 # ── AC-1: Fire↔Oil = 2.0× ──────────────────────────────────────────────
 func test_fire_oil_modifier() -> void:
 	var effects: Array[ElementalTypes.TileEffect] = []
-	effects = ElementalInteractionResolver.apply_element(
-		effects, ElementalTypes.ElementType.FIRE, 0, 2
-	)
-	effects = ElementalInteractionResolver.apply_element(
-		effects, ElementalTypes.ElementType.OIL, 0, 2
-	)
+	effects = ElementalInteractionResolver.apply_element(effects, ElementalTypes.ElementType.FIRE, 0, 2)
+	effects = ElementalInteractionResolver.apply_element(effects, ElementalTypes.ElementType.OIL, 0, 2)
 
 	var mult: float = ElementalInteractionResolver.compute_tile_damage_multiplier(effects, 0)
 	_assert_eqf("fire_oil_damage_mult", mult, 2.0)
@@ -73,12 +69,8 @@ func test_fire_oil_modifier() -> void:
 # ── AC-2: Wind→Fire = 1.5× ─────────────────────────────────────────────
 func test_wind_fire_modifier() -> void:
 	var effects: Array[ElementalTypes.TileEffect] = []
-	effects = ElementalInteractionResolver.apply_element(
-		effects, ElementalTypes.ElementType.FIRE, 0, 2
-	)
-	effects = ElementalInteractionResolver.apply_element(
-		effects, ElementalTypes.ElementType.WIND, 0, 2
-	)
+	effects = ElementalInteractionResolver.apply_element(effects, ElementalTypes.ElementType.FIRE, 0, 2)
+	effects = ElementalInteractionResolver.apply_element(effects, ElementalTypes.ElementType.WIND, 0, 2)
 
 	var mult: float = ElementalInteractionResolver.compute_tile_damage_multiplier(effects, 0)
 	_assert_eqf("wind_fire_damage_mult", mult, 1.5)
@@ -87,9 +79,7 @@ func test_wind_fire_modifier() -> void:
 # ── AC-3: Water→Fire = 0.5× and extinguish ───────────────────────────
 func test_water_fire_modifier() -> void:
 	var effects: Array[ElementalTypes.TileEffect] = []
-	effects = ElementalInteractionResolver.apply_element(
-		effects, ElementalTypes.ElementType.FIRE, 0, 2
-	)
+	effects = ElementalInteractionResolver.apply_element(effects, ElementalTypes.ElementType.FIRE, 0, 2)
 	effects = ElementalInteractionResolver.apply_element(
 		effects, ElementalTypes.ElementType.WATER, 0, 2
 	)
@@ -101,9 +91,7 @@ func test_water_fire_modifier() -> void:
 # ── AC-4: Oil slip = 0.8× speed ────────────────────────────────────────
 func test_oil_slip_speed() -> void:
 	var effects: Array[ElementalTypes.TileEffect] = []
-	effects = ElementalInteractionResolver.apply_element(
-		effects, ElementalTypes.ElementType.OIL, 0, 2
-	)
+	effects = ElementalInteractionResolver.apply_element(effects, ElementalTypes.ElementType.OIL, 0, 2)
 
 	var speed: float = ElementalInteractionResolver.calculate_movement_speed_multiplier(effects, 0)
 	_assert_eqf("oil_slip_speed", speed, 0.8)
@@ -121,9 +109,7 @@ func test_no_elements_default() -> void:
 # ── AC-5: Duration tracking and expiry ────────────────────────────────
 func test_duration_tracking_expiry() -> void:
 	var effects: Array[ElementalTypes.TileEffect] = []
-	effects = ElementalInteractionResolver.apply_element(
-		effects, ElementalTypes.ElementType.FIRE, 0, 1
-	)
+	effects = ElementalInteractionResolver.apply_element(effects, ElementalTypes.ElementType.FIRE, 0, 1)
 
 	# Turn 0: still active (applied_turn 0 + duration 1 = 1; current_turn 0 ≤ 1)
 	var active_turn0: Array[ElementalTypes.TileEffect] = (
@@ -145,9 +131,7 @@ func test_fifo_water_before_fire() -> void:
 	effects = ElementalInteractionResolver.apply_element(
 		effects, ElementalTypes.ElementType.WATER, 0, 2
 	)
-	effects = ElementalInteractionResolver.apply_element(
-		effects, ElementalTypes.ElementType.FIRE, 0, 2
-	)
+	effects = ElementalInteractionResolver.apply_element(effects, ElementalTypes.ElementType.FIRE, 0, 2)
 
 	var result: Dictionary = ElementalInteractionResolver.process_turn_tick(
 		effects, 0, Vector2i(0, 0), []
@@ -171,15 +155,9 @@ func test_fifo_water_before_fire() -> void:
 # ── AC-6: FIFO chain — Fire → Oil → Wind ─────────────────────────────
 func test_fifo_fire_then_oil_then_wind() -> void:
 	var effects: Array[ElementalTypes.TileEffect] = []
-	effects = ElementalInteractionResolver.apply_element(
-		effects, ElementalTypes.ElementType.FIRE, 0, 2
-	)
-	effects = ElementalInteractionResolver.apply_element(
-		effects, ElementalTypes.ElementType.OIL, 0, 2
-	)
-	effects = ElementalInteractionResolver.apply_element(
-		effects, ElementalTypes.ElementType.WIND, 0, 2
-	)
+	effects = ElementalInteractionResolver.apply_element(effects, ElementalTypes.ElementType.FIRE, 0, 2)
+	effects = ElementalInteractionResolver.apply_element(effects, ElementalTypes.ElementType.OIL, 0, 2)
+	effects = ElementalInteractionResolver.apply_element(effects, ElementalTypes.ElementType.WIND, 0, 2)
 
 	var result: Dictionary = ElementalInteractionResolver.process_turn_tick(
 		effects, 0, Vector2i(1, 1), []
@@ -188,9 +166,7 @@ func test_fifo_fire_then_oil_then_wind() -> void:
 
 	# Fire first, then Oil: Fire consumes Oil in FIFO; then Wind fans Fire
 	# and is consumed by the interaction (wind does not persist after fanning).
-	_assert_eq(
-		"fifo_chain_oil_burned", _count_element(out_effects, ElementalTypes.ElementType.OIL), 0
-	)
+	_assert_eq("fifo_chain_oil_burned", _count_element(out_effects, ElementalTypes.ElementType.OIL), 0)
 	# Fire should remain after burning oil and being fanned
 	_assert_eq(
 		"fifo_chain_fire_remains", _count_element(out_effects, ElementalTypes.ElementType.FIRE), 1
@@ -204,12 +180,8 @@ func test_fifo_fire_then_oil_then_wind() -> void:
 # ── AC-2: Fire spread basic ────────────────────────────────────────────
 func test_fire_spread_basic() -> void:
 	var effects: Array[ElementalTypes.TileEffect] = []
-	effects = ElementalInteractionResolver.apply_element(
-		effects, ElementalTypes.ElementType.FIRE, 0, 2
-	)
-	effects = ElementalInteractionResolver.apply_element(
-		effects, ElementalTypes.ElementType.WIND, 0, 2
-	)
+	effects = ElementalInteractionResolver.apply_element(effects, ElementalTypes.ElementType.FIRE, 0, 2)
+	effects = ElementalInteractionResolver.apply_element(effects, ElementalTypes.ElementType.WIND, 0, 2)
 
 	var bounds: Array[Vector2i] = [Vector2i(0, 0), Vector2i(2, 2)]
 	var result: Dictionary = ElementalInteractionResolver.process_turn_tick(
@@ -245,12 +217,8 @@ func test_spread_blocked_by_water() -> void:
 # ── AC-7: Out-of-bounds spread rejected ────────────────────────────────
 func test_out_of_bounds_spread_rejected() -> void:
 	var effects: Array[ElementalTypes.TileEffect] = []
-	effects = ElementalInteractionResolver.apply_element(
-		effects, ElementalTypes.ElementType.FIRE, 0, 2
-	)
-	effects = ElementalInteractionResolver.apply_element(
-		effects, ElementalTypes.ElementType.WIND, 0, 2
-	)
+	effects = ElementalInteractionResolver.apply_element(effects, ElementalTypes.ElementType.FIRE, 0, 2)
+	effects = ElementalInteractionResolver.apply_element(effects, ElementalTypes.ElementType.WIND, 0, 2)
 
 	# Tile at (0,0) with bounds [0,0] to [0,0] — no room to spread
 	var bounds: Array[Vector2i] = [Vector2i(0, 0), Vector2i(0, 0)]
@@ -265,12 +233,8 @@ func test_out_of_bounds_spread_rejected() -> void:
 # ── AC-7: Multiple overlapping elements ───────────────────────────────
 func test_multiple_overlapping_elements() -> void:
 	var effects: Array[ElementalTypes.TileEffect] = []
-	effects = ElementalInteractionResolver.apply_element(
-		effects, ElementalTypes.ElementType.FIRE, 0, 2
-	)
-	effects = ElementalInteractionResolver.apply_element(
-		effects, ElementalTypes.ElementType.OIL, 0, 2
-	)
+	effects = ElementalInteractionResolver.apply_element(effects, ElementalTypes.ElementType.FIRE, 0, 2)
+	effects = ElementalInteractionResolver.apply_element(effects, ElementalTypes.ElementType.OIL, 0, 2)
 	effects = ElementalInteractionResolver.apply_element(
 		effects, ElementalTypes.ElementType.WATER, 0, 2
 	)
@@ -285,27 +249,19 @@ func test_multiple_overlapping_elements() -> void:
 		effects, 0, Vector2i(0, 0), []
 	)
 	var out: Array[ElementalTypes.TileEffect] = result["effects"]
-	_assert_eq(
-		"multiple_after_tick_fire_gone", _count_element(out, ElementalTypes.ElementType.FIRE), 0
-	)
+	_assert_eq("multiple_after_tick_fire_gone", _count_element(out, ElementalTypes.ElementType.FIRE), 0)
 	_assert_eq(
 		"multiple_after_tick_water_gone", _count_element(out, ElementalTypes.ElementType.WATER), 0
 	)
-	_assert_eq(
-		"multiple_after_tick_oil_gone", _count_element(out, ElementalTypes.ElementType.OIL), 0
-	)
+	_assert_eq("multiple_after_tick_oil_gone", _count_element(out, ElementalTypes.ElementType.OIL), 0)
 	_assert_true("multiple_after_tick_all_consumed", out.is_empty())
 
 
 # ── AC-7: Oil burns off completely ────────────────────────────────────
 func test_oil_burns_off_completely() -> void:
 	var effects: Array[ElementalTypes.TileEffect] = []
-	effects = ElementalInteractionResolver.apply_element(
-		effects, ElementalTypes.ElementType.OIL, 0, 3
-	)
-	effects = ElementalInteractionResolver.apply_element(
-		effects, ElementalTypes.ElementType.FIRE, 0, 3
-	)
+	effects = ElementalInteractionResolver.apply_element(effects, ElementalTypes.ElementType.OIL, 0, 3)
+	effects = ElementalInteractionResolver.apply_element(effects, ElementalTypes.ElementType.FIRE, 0, 3)
 
 	var result: Dictionary = ElementalInteractionResolver.process_turn_tick(
 		effects, 0, Vector2i(0, 0), []
@@ -361,15 +317,9 @@ func test_extinguish_bidirectional() -> void:
 # ── AC-5: Stacked elements tick independently ───────────────────────────
 func test_stacked_elements_tick_independently() -> void:
 	var effects: Array[ElementalTypes.TileEffect] = []
-	effects = ElementalInteractionResolver.apply_element(
-		effects, ElementalTypes.ElementType.FIRE, 0, 1
-	)
-	effects = ElementalInteractionResolver.apply_element(
-		effects, ElementalTypes.ElementType.FIRE, 1, 1
-	)
-	effects = ElementalInteractionResolver.apply_element(
-		effects, ElementalTypes.ElementType.OIL, 0, 3
-	)
+	effects = ElementalInteractionResolver.apply_element(effects, ElementalTypes.ElementType.FIRE, 0, 1)
+	effects = ElementalInteractionResolver.apply_element(effects, ElementalTypes.ElementType.FIRE, 1, 1)
+	effects = ElementalInteractionResolver.apply_element(effects, ElementalTypes.ElementType.OIL, 0, 3)
 
 	# Turn 1: first Fire expires (applied 0 + duration 1 = 1; current_turn 1 > 1? No, 1 > 1 is false)
 	# Wait: is_expired returns current_turn > applied_turn + duration
@@ -412,12 +362,8 @@ func test_empty_effects_safe() -> void:
 # ── AC-5: Turn tick idempotent ─────────────────────────────────────────
 func test_turn_tick_idempotent() -> void:
 	var effects: Array[ElementalTypes.TileEffect] = []
-	effects = ElementalInteractionResolver.apply_element(
-		effects, ElementalTypes.ElementType.FIRE, 0, 2
-	)
-	effects = ElementalInteractionResolver.apply_element(
-		effects, ElementalTypes.ElementType.OIL, 0, 2
-	)
+	effects = ElementalInteractionResolver.apply_element(effects, ElementalTypes.ElementType.FIRE, 0, 2)
+	effects = ElementalInteractionResolver.apply_element(effects, ElementalTypes.ElementType.OIL, 0, 2)
 
 	var result1: Dictionary = ElementalInteractionResolver.process_turn_tick(
 		effects, 0, Vector2i(0, 0), []
