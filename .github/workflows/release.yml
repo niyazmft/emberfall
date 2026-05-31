@@ -109,6 +109,12 @@ jobs:
           cd build/linux
           zip -r ../../emberfall-linux.zip Emberfall.x86_64 Emberfall.pck
 
+      - name: Export macOS build
+        run: |
+          mkdir -p build/macos
+          godot --headless --export-release "macOS" build/macos/Emberfall.zip
+          cp build/macos/Emberfall.zip emberfall-macos.zip
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
@@ -118,3 +124,4 @@ jobs:
           files: |
             emberfall-windows.zip
             emberfall-linux.zip
+            emberfall-macos.zip
