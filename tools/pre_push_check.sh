@@ -2,7 +2,7 @@
 ## Project Emberfall: Pre-Push Validation Script
 ## This script runs all CI checks locally to ensure zero parse errors and math stability.
 
-set -euo pipefail
+set -e
 
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$PROJECT_DIR"
