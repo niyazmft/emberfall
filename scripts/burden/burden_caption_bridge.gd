@@ -8,10 +8,10 @@ var _caption_transitions: Dictionary = {}
 var _caption_channel_isolation: bool = true
 var _caption_tolerance_sec: float = 0.2
 var _bd_climb_config: Dictionary = {}
-var _mwt_matrix: Node = null
+var _mwt_matrix: _MWTCaptionMatrix = null
 
 
-func initialize(config: Dictionary, mwt_matrix: Node) -> void:
+func initialize(config: Dictionary, mwt_matrix: _MWTCaptionMatrix) -> void:
 	var caption_cfg: Dictionary = config.get("caption_triggers", {})
 	_caption_transitions = caption_cfg.get("transitions", {})
 	_caption_channel_isolation = caption_cfg.get("channel_isolation", true)
@@ -36,7 +36,7 @@ func schedule_mwt_transition_caption(
 	if cm == null or _mwt_matrix == null:
 		return
 
-	var data: Resource = _mwt_matrix.get_transition_caption(from_level, to_level, is_emergency)
+	var data: RefCounted = _mwt_matrix.get_transition_caption(from_level, to_level, is_emergency)
 	if data == null:
 		return
 
@@ -63,7 +63,7 @@ func schedule_mwt_state_caption(level: int) -> void:
 	if cm == null or _mwt_matrix == null:
 		return
 
-	var data: Resource = _mwt_matrix.get_state_caption(level)
+	var data: RefCounted = _mwt_matrix.get_state_caption(level)
 	if data == null:
 		return
 
