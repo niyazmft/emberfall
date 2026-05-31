@@ -3,6 +3,7 @@ extends RefCounted
 ## Coordinates between BurdenManager and CaptionManager for MWT and event captions.
 
 const BurdenEventResult = preload("res://scripts/burden/burden_event_result.gd")
+const MWTCaptionEntry = preload("res://ui/framework/mwt_caption_entry.gd")
 
 var _caption_transitions: Dictionary = {}
 var _caption_channel_isolation: bool = true
