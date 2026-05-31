@@ -5,20 +5,20 @@ class_name ElementalTypes
 ## All values are config-driven with sensible defaults.
 
 # ── Element Enumeration ───────────────────────────────────────────────
-enum Element { NONE, FIRE, WATER, WIND, OIL }  ## No active element  ## Fire: spreads, extinguished by water, amplified by oil  ## Water: extinguishes fire, blocks fire spread  ## Wind: fans fire (1.5×), spreads it to adjacent tiles  ## Oil: amplifies fire to 2.0×, causes slip terrain (0.8× speed)
+enum ElementType { NONE, FIRE, WATER, WIND, OIL }  ## No active element  ## Fire: spreads, extinguished by water, amplified by oil  ## Water: extinguishes fire, blocks fire spread  ## Wind: fans fire (1.5×), spreads it to adjacent tiles  ## Oil: amplifies fire to 2.0×, causes slip terrain (0.8× speed)
 
 
 # ── Tile Effect Record ────────────────────────────────────────────────
 class TileEffect:
 	extends RefCounted
 	## A single elemental effect active on a grid tile.
-	var element: Element
+	var element: ElementType
 	var duration: int  ## Remaining turns before expiry
 	var applied_turn: int  ## Turn number when this effect was placed
 	var source_pos: Vector2i  ## Origin tile for spread tracking
 
 	func _init(
-		p_element: Element,
+		p_element: ElementType,
 		p_duration: int,
 		p_applied_turn: int,
 		p_source_pos := Vector2i(-999, -999)
@@ -44,7 +44,7 @@ class ComboResult:
 	var damage_multiplier: float
 	var movement_speed_multiplier: float
 	var new_effects: Array[TileEffect]  ## Effects to add (e.g. spread fire)
-	var removed_elements: Array[Element]  ## Elements consumed/removed
+	var removed_elements: Array[ElementType]  ## Elements consumed/removed
 	var description: String
 
 	func _init(
