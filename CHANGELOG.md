@@ -19,5 +19,4 @@ All notable releases for the prototype are documented here.
 - Export presets configured for Windows Desktop and Linux/X11.
 
 ### Known Issues
-- macOS depot not yet configured (see Steam pipeline notes).
 - No web/HTML5 export preset yet.
