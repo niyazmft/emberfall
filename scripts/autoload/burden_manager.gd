@@ -48,7 +48,7 @@ var _caption_bridge: BurdenCaptionBridge
 
 ## MWT Matrix (DON-222)
 var _mwt_matrix_script := preload("res://ui/framework/mwt_caption_matrix.gd")
-var _mwt_matrix: _MWTCaptionMatrix
+var _mwt_matrix: Node
 
 
 func _init() -> void:

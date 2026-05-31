@@ -37,7 +37,9 @@ func schedule_mwt_transition_caption(
 	if cm == null or _mwt_matrix == null:
 		return
 
-	var data: MWTCaptionEntry = _mwt_matrix.get_transition_caption(from_level, to_level, is_emergency)
+	var data: MWTCaptionEntry = _mwt_matrix.get_transition_caption(
+		from_level, to_level, is_emergency
+	)
 	if data == null:
 		return
 
@@ -191,8 +193,10 @@ func get_bd_climb_width_captions() -> Dictionary:
 		"width_captions",
 		{
 			"expanding": {"text": "[The walls widen]", "localization_key": "BE_CAP_CLIMB_EXPAND"},
-			"converging":
-			{"text": "[Everything converges]", "localization_key": "BE_CAP_CLIMB_CONVERGE"}
+			"converging": {
+				"text": "[Everything converges]",
+				"localization_key": "BE_CAP_CLIMB_CONVERGE"
+			}
 		}
 	)
 
