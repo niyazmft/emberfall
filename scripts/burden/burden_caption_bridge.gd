@@ -129,7 +129,7 @@ func schedule_burden_event_captions(result: BurdenEventResult) -> void:
 
 	## Phase B: the witness text (BURDEN channel)
 	if not result.phase_b_text.is_empty() and cm.has_method("schedule"):
-		var b_curve: int = 2 if result.is_first else 2  ## EXPONENTIAL for first, same for repeat
+		var b_curve: int = 2  ## EXPONENTIAL for first and repeat
 		cm.call(
 			"schedule",
 			result.phase_b_text,
