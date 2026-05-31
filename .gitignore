@@ -5,6 +5,9 @@ build/
 # Auto-generated translation files
 *.translation
 
+# Local Godot export configuration (may contain credentials)
+export.cfg
+
 # System/tool-specific
 .DS_Store
 *~
