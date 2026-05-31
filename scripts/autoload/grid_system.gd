@@ -203,7 +203,10 @@ func has_oil_tile(x: int, y: int) -> bool:
 		return false
 	var effects: Array = _elemental_overlay[idx]
 	for eff: Variant in effects:
-		if eff.get("element", ElementalTypes.ElementType.NONE) == ElementalTypes.ElementType.OIL:
+		if (
+			eff.get("element", ElementalTypes.ElementType.NONE)
+			== ElementalTypes.ElementType.OIL
+		):
 			return true
 	return false
 

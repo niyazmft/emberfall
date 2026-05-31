@@ -18,6 +18,5 @@
 6. **Shear**: `u_shear_intensity` mutates the vertex positions for recoil.
 
 ## Tier Variants
-
 - **Standard (Mobile ≤720p)**: Default mix, 9 sprites max.
 - **EXACT_TINT (Desktop >720p)**: High-fidelity color matching.

@@ -193,8 +193,10 @@ func get_bd_climb_width_captions() -> Dictionary:
 		"width_captions",
 		{
 			"expanding": {"text": "[The walls widen]", "localization_key": "BE_CAP_CLIMB_EXPAND"},
-			"converging":
-			{"text": "[Everything converges]", "localization_key": "BE_CAP_CLIMB_CONVERGE"}
+			"converging": {
+				"text": "[Everything converges]",
+				"localization_key": "BE_CAP_CLIMB_CONVERGE"
+			}
 		}
 	)
 
