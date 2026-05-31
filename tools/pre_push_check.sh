@@ -45,6 +45,7 @@ if [ -f tests/run_all_tests.sh ]; then
 else
     echo "⚠️ Test suite script not found at tests/run_all_tests.sh"
     echo "Skipping test suite..."
+    touch tools/test_suite.log
 fi
 
 # Fail if critical errors are found in any log
