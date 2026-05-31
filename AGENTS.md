@@ -41,7 +41,8 @@ emberfall/
 │   │   ├── base_state_machine.gd
 │   │   └── run_manager.gd
 │   ├── ui/                    # UI components
-│   └── visual/                # 2.5D rendering system
+│   ├── shaders/               # Shader logic
+│   └── burden/                # Moral weight events
 ├── scenes/                    # TSCN files
 ├── tests/                     # Unit tests
 ├── config/                    # JSON configurations
