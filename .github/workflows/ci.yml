@@ -2,24 +2,34 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
-  validate-math:
+  # ─────────────────────────────────────────────
+  # JOB 1: Markdown Lint
+  # ─────────────────────────────────────────────
+  markdown-lint:
+    name: Markdown Lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          python-version: '3.10'
-      - name: Run math validation
-        run: python3 tests/validate_math.py
+          node-version: '20'
+      - name: Install markdownlint-cli
+        run: npm install -g markdownlint-cli
+      - name: Lint Markdown (check only — auto-fix runs locally via hooks)
+        run: markdownlint '**/*.md' --ignore node_modules --ignore .git
 
+  # ─────────────────────────────────────────────
+  # JOB 2: GDScript Format Check
+  # ─────────────────────────────────────────────
   gdscript-format:
+    name: GDScript Format
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,17 +39,29 @@ jobs:
           python-version: '3.10'
       - name: Install gdtoolkit
         run: pip install gdtoolkit
-      - name: Format code
-        run: gdformat scripts/ tests/ ui/
-      - name: Commit files
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git commit -m "style(format): Apply gdformat" -a || true
-      - name: Check Formatting
+      - name: Check GDScript formatting (no changes allowed)
         run: gdformat --check scripts/ tests/ ui/
 
+  # ─────────────────────────────────────────────
+  # JOB 3: Deterministic Math Validation (Python)
+  # ─────────────────────────────────────────────
+  validate-math:
+    name: Math Validation (Python)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Run deterministic math cross-validator
+        run: python3 tests/validate_math.py
+
+  # ─────────────────────────────────────────────
+  # JOB 4: GDScript Lint + Engine Scan (Godot)
+  # ─────────────────────────────────────────────
   gdscript-lint:
+    name: GDScript Lint (Engine Scan)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -48,20 +70,31 @@ jobs:
         with:
           version: 4.2.2
           use-dotnet: false
-      - name: Regenerate asset cache
+      - name: Import assets (build class cache)
         run: godot --headless --import --path .
-      - name: Run Godot Lint (Editor Scan)
+      - name: Run Godot editor scan
         run: |
-          # The editor scan imports assets and parses all scripts.
-          # It catches "hides an autoload singleton" and strict typing errors.
           godot --headless --editor --quit --path . 2>&1 | tee godot_output.log
-          
-          # Fail if critical errors are found in the output
           if grep -iE "SCRIPT ERROR|Parse Error|Compile Error|hides an autoload singleton" godot_output.log; then
-            echo "------------------------------------------------"
-            echo "❌ GDScript linting failed! Check for shadowing or typing errors."
-            echo "------------------------------------------------"
+            echo "❌ GDScript linting failed."
             exit 1
           fi
-          echo "✅ GDScript linting passed (no parse errors found)."
-# Force refresh 3
+          echo "✅ GDScript lint passed."
+
+  # ─────────────────────────────────────────────
+  # JOB 5: JSON Config Validation
+  # ─────────────────────────────────────────────
+  json-validate:
+    name: JSON Config Validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Validate all JSON config files
+        run: |
+          find config/ schemas/ -name '*.json' | while read f; do
+            python3 -m json.tool "$f" > /dev/null && echo "  ✅ $f" || { echo "  ❌ $f"; exit 1; }
+          done

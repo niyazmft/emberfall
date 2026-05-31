@@ -2,12 +2,13 @@
 
 ## Project Overview
 
-**Engine:** Godot 4.2.2  
-**Language:** GDScript  
-**Genre:** Tactical grid combat game  
+**Engine:** Godot 4.2.2
+**Language:** GDScript
+**Genre:** Tactical grid combat game
 **Architecture:** Deterministic math, component-based entities, state machines
 
 ### Key Design Principles
+
 1. **Determinism First** - All gameplay math is 100% deterministic across platforms
 2. **Separation of Concerns** - Data (Entity), Logic (Lifecycle), Visuals (Proxy) are separated
 3. **Configuration-Driven** - Tunable values in JSON, not code
@@ -17,7 +18,7 @@
 
 ## Project Structure
 
-```
+```text
 emberfall/
 ├── project.godot              # Main project file
 ├── scripts/
@@ -76,6 +77,7 @@ extends Node2D
 ### 2. Deterministic Math
 
 **ALWAYS** use wrapper functions:
+
 ```gdscript
 # ✅ CORRECT
 var damage: int = DeterministicMath.damage_floor(raw)
@@ -89,12 +91,14 @@ var clamped: int = clamp(value, 0, 100)  # Use clampi instead
 ### 3. Grid System Performance
 
 Learned from `.Jules/bolt.md`:
+
 - Use direct array access: `_tiles[ti]` not `get_tile()`
 - Cast to typed: `var tile: TacTileData = _tiles[i]`
 - Use bitwise flags in hot loops
 - Avoid `.get("property")` or `.call("method")` in loops
 
 **Hot Path Example:**
+
 ```gdscript
 # ✅ Fast - direct access with types
 for ti: int in range(TOTAL_TILES):
@@ -112,6 +116,7 @@ for i in range(TOTAL_TILES):
 ### 4. Strict Typing for CI
 
 **ALL** variables must be typed:
+
 ```gdscript
 # ✅ CORRECT
 var health: int = 100
@@ -139,6 +144,7 @@ Key systems Jules interacts with:
 | `CaptionManager` | Subtitle system | `schedule()`, `cancel_channel()` |
 
 **Access Pattern:**
+
 ```gdscript
 # Direct reference (idiomatic and faster)
 if GridSystem:  # Autoloads are globally accessible by name
@@ -153,7 +159,8 @@ var grid: _GridSystem = get_node("/root/GridSystem")
 ## 2.5D Rendering System
 
 ### Visual Architecture
-```
+
+```text
 CombatRoom (Node2D)
 ├── GridRenderer              # Isometric floor
 │   └── Renders 12x12 with elevation
@@ -166,11 +173,13 @@ CombatRoom (Node2D)
 ```
 
 ### Key Classes
+
 - **GridRenderer** - Isometric projection, seamless textures
 - **EntityVisualProxy** - Position interpolation, elevation stacking
 - **ApparitionRenderer** - Damage/death effects
 
 ### Art Style
+
 - Vector / Smooth 2D
 - Isometric (64x32 tile size)
 - Implied grid (no visible lines)
@@ -199,14 +208,109 @@ bash tools/pre_push_check.sh
 
 ---
 
+## Code Quality & Git Hooks
+
+This project uses **version-controlled git hooks** (`.githooks/`) and a **pre-commit framework** (`.pre-commit-config.yaml`) to catch and auto-fix issues **before they reach GitHub CI**.
+
+### First-Time Setup (run once after cloning)
+
+```bash
+bash tools/setup_hooks.sh
+```
+
+This installs the hooks and verifies all required tools are present.
+
+### What Runs and When
+
+| Trigger | Hook | What It Does |
+|---|---|---|
+| `git commit` | `.githooks/pre-commit` | Runs `pre-commit` on staged files only (fast) |
+| `git push` | `.githooks/pre-push` | Full validation suite (slower, mirrors CI) |
+| GitHub CI | `.github/workflows/ci.yml` | Identical checks — fails the PR if hooks were skipped |
+
+### Pre-Commit Checks (on staged files)
+
+| Check | Tool | Auto-fix? |
+|---|---|---|
+| GDScript formatting | `gdformat` | ✅ Yes — reformats and re-stages |
+| GDScript lint | `gdlint` | ❌ Manual fix required |
+| Markdown lint | `markdownlint` | ✅ Yes — fixes most rules automatically |
+| JSON syntax | `python3 -m json.tool` | ❌ Manual fix required |
+| Python syntax | `python3 -m py_compile` | ❌ Manual fix required |
+| Trailing whitespace / EOF | `pre-commit-hooks` | ✅ Yes |
+
+### Pre-Push Checks (full suite)
+
+The pre-push hook runs these steps in order — it will **abort the push** if any step fails:
+
+1. **GDScript Format** — `gdformat scripts/ tests/ ui/` (auto-fix, re-staged)
+2. **GDScript Lint** — `gdlint scripts/ tests/ ui/` (errors abort; warnings pass)
+3. **Markdown Lint** — `markdownlint **/*.md --fix` (auto-fix, then verify)
+4. **Math Validation** — `python3 tests/validate_math.py`
+5. **Godot Editor Scan** — headless editor import to catch parse/type errors
+
+> The pre-push hook **does NOT run the full test suite** by default (that takes minutes).
+> Use `bash tools/pre_push_check.sh` to run everything including tests before a PR.
+
+### Markdownlint Rules (`.markdownlint.json`)
+
+All markdown files are linted against these rules:
+
+- `MD013` (line length) — **disabled** (game design docs are naturally long)
+- `MD033` (inline HTML) — **disabled**
+- `MD041` (first heading) — **disabled**
+- `MD060` (table column spacing) — **disabled** (compact table style used throughout)
+- All other default rules are **active**
+
+### Autoload / Class Name Conflict Resolution
+
+To prevent "Class X hides an autoload singleton" errors caught by the editor scan:
+
+```gdscript
+# If a script is registered as an Autoload (e.g. ConfigLoader),
+# prefix its internal class_name with an underscore:
+class_name _ConfigLoader  # ✅ Allows global 'ConfigLoader' to work without collision
+
+# WRONG — will trigger CI failure:
+class_name ConfigLoader   # ❌ Shadows the autoload singleton
+```
+
+### Failure Protocol
+
+If a check fails after a change:
+
+1. Read the error output — auto-fixable issues are resolved automatically
+2. Fix manually and re-commit
+3. Run `bash tools/pre_push_check.sh` to confirm clean locally
+4. If a check fails **3 times** on the same issue → revert your changes and report
+
+### CI Alignment
+
+GitHub Actions (`.github/workflows/ci.yml`) runs **exactly the same checks** as the pre-push hook:
+
+| CI Job | Local Equivalent |
+|---|---|
+| `markdown-lint` | `markdownlint '**/*.md'` |
+| `gdscript-format` | `gdformat --check scripts/ tests/ ui/` |
+| `validate-math` | `python3 tests/validate_math.py` |
+| `gdscript-lint` | Godot headless editor scan |
+| `json-validate` | `python3 -m json.tool` on `config/` + `schemas/` |
+
+> **CI uses `--check` only (no auto-fix).** Auto-fixing happens locally via hooks.
+> If CI fails on formatting, it means the pre-push hook was bypassed — run `bash tools/setup_hooks.sh` to re-install hooks.
+
+---
+
 ## Learnings from .Jules/
 
 ### Performance (bolt.md)
+
 - **GridSystem optimization:** Reduced O(N²) inner loops by inlining and direct array access
 - **Type casting:** Cast `_tiles` to `TacTileData` in hot loops for 10x speedup
 - **CI compliance:** All new scripts require strict typing
 
 ### UI Accessibility (palette.md)
+
 - **Focus management:** Use `grab_focus.call_deferred()` on primary buttons
 - Applies to: `main_menu.gd`, `pause_menu.gd`, `settings_menu.gd`
 
@@ -215,18 +319,21 @@ bash tools/pre_push_check.sh
 ## Common Operations
 
 ### Adding a New Enemy Type
+
 1. Extend `BaseEnemy` class
 2. Create scene in `scenes/enemies/`
 3. Add to `EntityVisualProxy` system
 4. Write test in `tests/`
 
 ### Adding a Test
+
 1. Create `tests/test_feature.gd`
 2. Use strict typing throughout
 3. Include in `tests/run_all_tests.sh`
 4. Run `bash tests/run_all_tests.sh` to verify
 
 ### Debugging Tips
+
 - Use `push_warning()` for non-fatal issues
 - Use `push_error()` for critical errors
 - Check `.godot/` folder exists (created on import)
@@ -236,22 +343,34 @@ bash tools/pre_push_check.sh
 
 ## Environment
 
-**Setup Script:** Configured in Jules dashboard
-- Godot 4.2.2 at `/usr/local/bin/godot`
-- gdtoolkit installed for formatting
-- All test scripts executable
-- Python validation working
+**One-time setup:** Run `bash tools/setup_hooks.sh` after cloning.
 
-**Environment Variables:** (Optional)
+- Godot 4.2.2 at `/usr/local/bin/godot`
+- gdtoolkit 4.5.0 (`gdformat`, `gdlint`) at `/Users/niyaz/Library/Python/3.9/bin/`
+- `markdownlint-cli` installed globally via npm
+- `pre-commit` framework at `/Users/niyaz/Library/Python/3.9/bin/pre-commit`
+- All test and tool scripts are executable
+
+**Environment Variables:** (Optional overrides)
+
 - `GODOT_BIN=/usr/local/bin/godot`
-- Working directory: `/app`
+- `GDFORMAT_BIN=/Users/niyaz/Library/Python/3.9/bin/gdformat`
+- `GDLINT_BIN=/Users/niyaz/Library/Python/3.9/bin/gdlint`
+- `PRE_COMMIT_BIN=/Users/niyaz/Library/Python/3.9/bin/pre-commit`
+- Working directory: `/Volumes/external-hd/workspace/emberfall`
 
 ---
 
 ## References
 
-- **System Spec:** See `README.md`
+- **System Spec:** `README.md`
 - **CI/CD:** `.github/workflows/ci.yml`
+- **Git Hooks:** `.githooks/pre-commit`, `.githooks/pre-push`
+- **Hook Config:** `.pre-commit-config.yaml`, `.markdownlint.json`
+- **Setup Script:** `tools/setup_hooks.sh`
+- **Full Validation:** `tools/pre_push_check.sh`
 - **Tests:** `tests/` directory
+- **Jules Protocol:** `docs/JULES_PROTOCOL.md`
+- **Jules QA Checklist:** `docs/JULES_QA_CHECKLIST.md`
 - **Learnings:** `.Jules/bolt.md`, `.Jules/palette.md`
 - **Config:** `config/game_config.json`

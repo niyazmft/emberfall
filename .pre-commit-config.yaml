@@ -1,0 +1,74 @@
+repos:
+  # ─────────────────────────────────────────────
+  # GDScript: format (auto-fix) + lint
+  # ─────────────────────────────────────────────
+  - repo: local
+    hooks:
+      - id: gdformat
+        name: GDScript Format (auto-fix)
+        language: system
+        entry: /Users/niyaz/Library/Python/3.9/bin/gdformat
+        args: []
+        files: \.gd$
+        pass_filenames: true
+
+      - id: gdlint
+        name: GDScript Lint
+        language: system
+        entry: /Users/niyaz/Library/Python/3.9/bin/gdlint
+        files: \.gd$
+        pass_filenames: true
+
+  # ─────────────────────────────────────────────
+  # Markdown: lint (auto-fix where possible)
+  # ─────────────────────────────────────────────
+  - repo: local
+    hooks:
+      - id: markdownlint
+        name: Markdownlint (auto-fix)
+        language: node
+        entry: markdownlint
+        args: ["--fix", "--ignore", "node_modules", "--ignore", ".git"]
+        files: \.md$
+        pass_filenames: true
+
+  # ─────────────────────────────────────────────
+  # JSON: validate syntax
+  # ─────────────────────────────────────────────
+  - repo: local
+    hooks:
+      - id: json-validate
+        name: JSON Syntax Check
+        language: system
+        entry: python3
+        args: ["-c", "import sys,json; [json.load(open(f)) for f in sys.argv[1:]]"]
+        files: \.json$
+        exclude: ^\.godot/
+        pass_filenames: true
+
+  # ─────────────────────────────────────────────
+  # Python: basic syntax check (validate_math.py etc.)
+  # ─────────────────────────────────────────────
+  - repo: local
+    hooks:
+      - id: python-check
+        name: Python Syntax Check
+        language: system
+        entry: python3
+        args: ["-m", "py_compile"]
+        files: \.py$
+        pass_filenames: true
+
+  # ─────────────────────────────────────────────
+  # General: trailing whitespace + end-of-file
+  # ─────────────────────────────────────────────
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: \.gd$  # gdformat handles GDScript whitespace
+      - id: end-of-file-fixer
+        exclude: \.gd$
+      - id: mixed-line-ending
+        args: ["--fix=lf"]
+        exclude: \.gd$
