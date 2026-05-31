@@ -4,5 +4,3 @@ WARNING: Custom cursor shape not supported by this display server.
      at: cursor_set_custom_image (servers/display_server.cpp:505)
 WARNING: Blend file import is enabled in the project settings, but no Blender path is configured in the editor settings. Blend files will not be imported.
      at: _editor_init (modules/gltf/register_types.cpp:63)
-WARNING: Scan thread aborted...
-     at: _notification (editor/editor_file_system.cpp:1225)
