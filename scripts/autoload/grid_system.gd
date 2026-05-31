@@ -14,7 +14,7 @@ const TOTAL_TILES: int = GRID_SIZE * GRID_SIZE
 const MAX_ELEVATION_DELTA: int = 1
 
 ## Flat tile buffer — index = y * GRID_SIZE + x
-var _tiles: Array[Resource] = []
+var _tiles: Array[TacTileData] = []
 
 ## Pre-computed cover raycast cache.
 ## cover_cache[from_index][to_index] = true if 'to' provides cover against 'from'.
@@ -47,11 +47,11 @@ func _ready() -> void:
 
 func _reset_grid() -> void:
 	_tiles.resize(TOTAL_TILES)
+	var tile_script: GDScript = load("res://scripts/core/tile_data.gd") as GDScript
 	for i: int in range(TOTAL_TILES):
-		var t: Resource = (load("res://scripts/core/tile_data.gd") as GDScript).new()
-		t.set("coords", Vector2i(i % GRID_SIZE, i / GRID_SIZE))
-		if t.has_method("recompute_flags"):
-			t.call("recompute_flags")
+		var t: TacTileData = tile_script.new() as TacTileData
+		t.coords = Vector2i(i % GRID_SIZE, i / GRID_SIZE)
+		t.recompute_flags()
 		_tiles[i] = t
 	_elemental_overlay.clear()
 	_invalidate_cache()
@@ -74,19 +74,19 @@ func index(x: int, y: int) -> int:
 	return y * GRID_SIZE + x
 
 
-func get_tile(x: int, y: int) -> Resource:
+func get_tile(x: int, y: int) -> TacTileData:
 	if not is_in_bounds(x, y):
 		return null
 	return _tiles[index(x, y)]
 
 
-func get_tile_by_index(i: int) -> Resource:
+func get_tile_by_index(i: int) -> TacTileData:
 	if i < 0 or i >= TOTAL_TILES:
 		return null
 	return _tiles[i]
 
 
-func all_tiles() -> Array[Resource]:
+func all_tiles() -> Array[TacTileData]:
 	return _tiles.duplicate()
 
 
@@ -117,18 +117,16 @@ func load_room(data: Dictionary) -> Error:
 		var y: int = int(d.get("y", -1))
 		if not is_in_bounds(x, y):
 			continue
-		var t: Resource = get_tile(x, y)
-		t.set("elevation", int(d.get("elevation", 0)))
-		t.set("cover", int(d.get("cover", 0)))
-		t.set("blocks_movement", bool(d.get("blocks_movement", false)))
-		t.set("blocks_vision", bool(d.get("blocks_vision", false)))
+		var t: TacTileData = get_tile(x, y)
+		t.elevation = int(d.get("elevation", 0)) as TacTileData.Elevation
+		t.cover = int(d.get("cover", 0)) as TacTileData.CoverType
+		t.blocks_movement = bool(d.get("blocks_movement", false))
+		t.blocks_vision = bool(d.get("blocks_vision", false))
 		if d.has("tags") and d["tags"] is Array:
 			var tag_list: Array = d["tags"] as Array
 			for tag: Variant in tag_list:
-				var tag_array: Array = t.get("tags") as Array
-				tag_array.append(str(tag))
-		if t.has_method("recompute_flags"):
-			t.call("recompute_flags")
+				t.tags.append(str(tag))
+		t.recompute_flags()
 	_recompute_cover_cache()
 	return OK
 
@@ -157,14 +155,26 @@ func load_room_from_file(path: String) -> Error:
 func can_move(from_x: int, from_y: int, to_x: int, to_y: int) -> bool:
 	if not is_in_bounds(to_x, to_y):
 		return false
-	var from_tile: Resource = get_tile(from_x, from_y)
-	var to_tile: Resource = get_tile(to_x, to_y)
+	if not is_in_bounds(from_x, from_y):
+		return false
+	var from_tile: TacTileData = _tiles[from_y * GRID_SIZE + from_x] as TacTileData
+	var to_tile: TacTileData = _tiles[to_y * GRID_SIZE + to_x] as TacTileData
 	if from_tile == null or to_tile == null:
 		return false
-	if bool(to_tile.call("is_blocked")):
+	if (to_tile.cover_flags & 32) != 0:  # FLAG_BLOCKED_MOVE
 		return false
-	var delta: int = abs(int(from_tile.get("elevation")) - int(to_tile.get("elevation")))
-	return delta <= MAX_ELEVATION_DELTA
+	# Elevation flags: FLAG_ELEVATION_0 (4), FLAG_ELEVATION_1 (8), FLAG_ELEVATION_2 (16)
+	var from_elev: int = 0
+	if (from_tile.cover_flags & 8) != 0:
+		from_elev = 1
+	elif (from_tile.cover_flags & 16) != 0:
+		from_elev = 2
+	var to_elev: int = 0
+	if (to_tile.cover_flags & 8) != 0:
+		to_elev = 1
+	elif (to_tile.cover_flags & 16) != 0:
+		to_elev = 2
+	return abs(from_elev - to_elev) <= MAX_ELEVATION_DELTA
 
 
 ## ------------------------------------------------------------------
@@ -319,13 +329,10 @@ func has_los(observer_x: int, observer_y: int, target_x: int, target_y: int) -> 
 	while true:
 		if x == target_x and y == target_y:
 			return true
-		var tile: Resource = get_tile(x, y)
-		if (
-			tile != null
-			and bool(tile.get("blocks_vision"))
-			and not (x == observer_x and y == observer_y)
-		):
-			return false
+		if x != observer_x or y != observer_y:
+			var tile: TacTileData = _tiles[y * GRID_SIZE + x] as TacTileData
+			if tile != null and (tile.cover_flags & 64) != 0:
+				return false
 		var e2: int = 2 * err
 		if e2 > -dy:
 			err -= dy

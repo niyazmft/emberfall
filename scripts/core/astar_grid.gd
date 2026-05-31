@@ -59,8 +59,8 @@ func find_path(start: Vector2i, goal: Vector2i) -> Array[Vector2i]:
 		return [start]
 
 	var goal_i: int = GridSystem.index(goal.x, goal.y)
-	var goal_tile: Resource = GridSystem.get_tile_by_index(goal_i)
-	if goal_tile == null or bool(goal_tile.call("is_blocked")):
+	var goal_tile: TacTileData = GridSystem.get_tile_by_index(goal_i)
+	if goal_tile == null or goal_tile.blocks_movement:
 		return []
 
 	## Sync graph topology with GridSystem when the room has changed.
@@ -98,8 +98,8 @@ func _rebuild_graph() -> void:
 	for x: int in range(GRID_SIZE):
 		for y: int in range(GRID_SIZE):
 			var i: int = GridSystem.index(x, y)
-			var tile: Resource = GridSystem.get_tile_by_index(i)
-			if tile == null or bool(tile.call("is_blocked")):
+			var tile: TacTileData = GridSystem.get_tile_by_index(i)
+			if tile == null or tile.blocks_movement:
 				continue
 			for d: Vector2i in DIRS:
 				var nx: int = x + d.x
@@ -107,8 +107,8 @@ func _rebuild_graph() -> void:
 				if not GridSystem.is_in_bounds(nx, ny):
 					continue
 				var ni: int = GridSystem.index(nx, ny)
-				var ntile: Resource = GridSystem.get_tile_by_index(ni)
-				if ntile == null or bool(ntile.call("is_blocked")):
+				var ntile: TacTileData = GridSystem.get_tile_by_index(ni)
+				if ntile == null or ntile.blocks_movement:
 					continue
 				## Prevent corner-cutting: diagonals require both adjacent
 				## cardinal cells to be passable from the start tile.
