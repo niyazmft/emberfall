@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 ## Project Emberfall: Pre-Push Validation Script
 ## This script runs all CI checks locally to ensure zero parse errors and math stability.
 
@@ -7,6 +7,9 @@ set -euo pipefail
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$PROJECT_DIR"
 
+GODOT_BIN="${GODOT_BIN:-godot}"
+GDFORMAT_BIN="${GDFORMAT_BIN:-gdformat}"
+
 echo "------------------------------------------------"
 echo "🔍 Running Project Emberfall Pre-Push Check"
 echo "------------------------------------------------"
@@ -14,7 +17,7 @@ echo "------------------------------------------------"
 # 0. Formatting
 echo ""
 echo "🎨 Step 0: Formatting GDScript..."
-gdformat scripts/ tests/ ui/
+"$GDFORMAT_BIN" scripts/ tests/ ui/
 
 # 1. Math Validation (Python)
 echo ""
@@ -24,19 +27,24 @@ python3 tests/validate_math.py
 # 2. GDScript Linting (Editor Scan)
 echo ""
 echo "🧹 Step 2: Running GDScript Lint (Editor Scan)..."
-godot --headless --editor --quit --path . 2>&1 | tee tools/godot_lint.log
+"$GODOT_BIN" --headless --editor --quit --path . 2>&1 | tee tools/godot_lint.log
 
 # 3. In-Engine Math Validation
 echo ""
 echo "🎮 Step 3: Validating Deterministic Math (Godot)..."
-godot --headless --path . -s tests/test_deterministic_math.gd 2>&1 | tee tools/math_validation.log
+"$GODOT_BIN" --headless --path . -s tests/test_deterministic_math.gd 2>&1 | tee tools/math_validation.log
 
 # 4. Full Test Suite (NEW)
 echo ""
 echo "🧪 Step 4: Running Full Test Suite..."
 if [ -f tests/run_all_tests.sh ]; then
     chmod +x tests/run_all_tests.sh
-    if ! tests/run_all_tests.sh 2>&1 | tee tools/test_suite.log; then
+    export GODOT_BIN
+    # Use || true to capture exit code without set -e killing script immediately
+    tests/run_all_tests.sh 2>&1 | tee tools/test_suite.log || TEST_EXIT_CODE=$?
+    TEST_EXIT_CODE=${TEST_EXIT_CODE:-0}
+
+    if [ $TEST_EXIT_CODE -ne 0 ]; then
         echo "------------------------------------------------"
         echo "❌ TEST SUITE FAILED! Check tools/test_suite.log"
         echo "------------------------------------------------"
@@ -45,11 +53,11 @@ if [ -f tests/run_all_tests.sh ]; then
 else
     echo "⚠️ Test suite script not found at tests/run_all_tests.sh"
     echo "Skipping test suite..."
-    touch tools/test_suite.log
 fi
 
 # Fail if critical errors are found in any log
-if grep -iE "SCRIPT ERROR|Parse Error|Compile Error|hides an autoload singleton|SHADER ERROR" tools/godot_lint.log tools/math_validation.log tools/test_suite.log; then
+# Pattern check for "Failed: [1-9]" to catch test failures without catching "Failed: 0"
+if grep -iE "SCRIPT ERROR|Parse Error|Compile Error|hides an autoload singleton|SHADER ERROR" tools/godot_lint.log tools/math_validation.log tools/test_suite.log || grep -iE "Failed: [1-9]" tools/math_validation.log tools/test_suite.log; then
     echo "------------------------------------------------"
     echo "❌ VALIDATION FAILED! Check tools/*.log"
     echo "------------------------------------------------"
