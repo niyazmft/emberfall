@@ -345,19 +345,18 @@ GitHub Actions (`.github/workflows/ci.yml`) runs **exactly the same checks** as 
 
 **One-time setup:** Run `bash tools/setup_hooks.sh` after cloning.
 
-- Godot 4.2.2 at `/usr/local/bin/godot`
-- gdtoolkit 4.5.0 (`gdformat`, `gdlint`) at `/Users/niyaz/Library/Python/3.9/bin/`
-- `markdownlint-cli` installed globally via npm
-- `pre-commit` framework at `/Users/niyaz/Library/Python/3.9/bin/pre-commit`
+- Godot 4.2.2 — must be on `PATH` (or set `GODOT_BIN`)
+- gdtoolkit (`gdformat`, `gdlint`) — install via `pip3 install gdtoolkit`
+- `markdownlint-cli` — install via `npm install -g markdownlint-cli`
+- `pre-commit` — install via `pip3 install pre-commit`
 - All test and tool scripts are executable
 
-**Environment Variables:** (Optional overrides)
+**Environment Variables:** (Optional overrides — all tools default to PATH)
 
-- `GODOT_BIN=/usr/local/bin/godot`
-- `GDFORMAT_BIN=/Users/niyaz/Library/Python/3.9/bin/gdformat`
-- `GDLINT_BIN=/Users/niyaz/Library/Python/3.9/bin/gdlint`
-- `PRE_COMMIT_BIN=/Users/niyaz/Library/Python/3.9/bin/pre-commit`
-- Working directory: `/Volumes/external-hd/workspace/emberfall`
+- `GODOT_BIN=godot`
+- `GDFORMAT_BIN=gdformat`
+- `GDLINT_BIN=gdlint`
+- `PRE_COMMIT_BIN=pre-commit`
 
 ---
 
