@@ -14,7 +14,7 @@ const TOTAL_TILES: int = GRID_SIZE * GRID_SIZE
 const MAX_ELEVATION_DELTA: int = 1
 
 ## Flat tile buffer — index = y * GRID_SIZE + x
-var _tiles: Array[Resource] = []
+var _tiles: Array[TacTileData] = []
 
 ## Pre-computed cover raycast cache.
 ## cover_cache[from_index][to_index] = true if 'to' provides cover against 'from'.
@@ -47,11 +47,11 @@ func _ready() -> void:
 
 func _reset_grid() -> void:
 	_tiles.resize(TOTAL_TILES)
+	var tile_script: GDScript = load("res://scripts/core/tile_data.gd") as GDScript
 	for i: int in range(TOTAL_TILES):
-		var t: Resource = (load("res://scripts/core/tile_data.gd") as GDScript).new()
-		t.set("coords", Vector2i(i % GRID_SIZE, i / GRID_SIZE))
-		if t.has_method("recompute_flags"):
-			t.call("recompute_flags")
+		var t: TacTileData = tile_script.new() as TacTileData
+		t.coords = Vector2i(i % GRID_SIZE, i / GRID_SIZE)
+		t.recompute_flags()
 		_tiles[i] = t
 	_elemental_overlay.clear()
 	_invalidate_cache()
@@ -74,19 +74,19 @@ func index(x: int, y: int) -> int:
 	return y * GRID_SIZE + x
 
 
-func get_tile(x: int, y: int) -> Resource:
+func get_tile(x: int, y: int) -> TacTileData:
 	if not is_in_bounds(x, y):
 		return null
 	return _tiles[index(x, y)]
 
 
-func get_tile_by_index(i: int) -> Resource:
+func get_tile_by_index(i: int) -> TacTileData:
 	if i < 0 or i >= TOTAL_TILES:
 		return null
 	return _tiles[i]
 
 
-func all_tiles() -> Array[Resource]:
+func all_tiles() -> Array[TacTileData]:
 	return _tiles.duplicate()
 
 
@@ -117,18 +117,16 @@ func load_room(data: Dictionary) -> Error:
 		var y: int = int(d.get("y", -1))
 		if not is_in_bounds(x, y):
 			continue
-		var t: Resource = get_tile(x, y)
-		t.set("elevation", int(d.get("elevation", 0)))
-		t.set("cover", int(d.get("cover", 0)))
-		t.set("blocks_movement", bool(d.get("blocks_movement", false)))
-		t.set("blocks_vision", bool(d.get("blocks_vision", false)))
+		var t: TacTileData = get_tile(x, y)
+		t.elevation = int(d.get("elevation", 0)) as TacTileData.Elevation
+		t.cover = int(d.get("cover", 0)) as TacTileData.CoverType
+		t.blocks_movement = bool(d.get("blocks_movement", false))
+		t.blocks_vision = bool(d.get("blocks_vision", false))
 		if d.has("tags") and d["tags"] is Array:
 			var tag_list: Array = d["tags"] as Array
 			for tag: Variant in tag_list:
-				var tag_array: Array = t.get("tags") as Array
-				tag_array.append(str(tag))
-		if t.has_method("recompute_flags"):
-			t.call("recompute_flags")
+				t.tags.append(str(tag))
+		t.recompute_flags()
 	_recompute_cover_cache()
 	return OK
 
@@ -365,39 +363,38 @@ func _recompute_cover_cache() -> void:
 	_invalidate_cache()
 	for oy: int in range(GRID_SIZE):
 		for ox: int in range(GRID_SIZE):
-			var oi: int = index(ox, oy)
-			for ty: int in range(GRID_SIZE):
-				for tx: int in range(GRID_SIZE):
-					var ti: int = index(tx, ty)
-					_cover_cache[oi * TOTAL_TILES + ti] = _compute_cover_for_pair(ox, oy, tx, ty)
+			var oi: int = oy * GRID_SIZE + ox
+			var base_idx: int = oi * TOTAL_TILES
+
+			var min_ty: int = max(0, oy - 1)
+			var max_ty: int = min(GRID_SIZE - 1, oy + 1)
+			var min_tx: int = max(0, ox - 1)
+			var max_tx: int = min(GRID_SIZE - 1, ox + 1)
+
+			# Optimization: Cover only applies if the target is adjacent to the observer
+			# (cardinal + diagonal), meaning the distance in x and y cannot exceed 1.
+			# By restricting the loop bounds (min_ty, max_ty, min_tx, max_tx) to +/- 1
+			# from the observer's position, we reduce the number of pairs checked
+			# from 20,736 (144*144) to roughly 1,296 (144*9), resulting in a ~30x speedup.
+			for ty: int in range(min_ty, max_ty + 1):
+				for tx: int in range(min_tx, max_tx + 1):
+					if ox == tx and oy == ty:
+						continue
+
+					var ti: int = ty * GRID_SIZE + tx
+					var target: Resource = _tiles[ti]
+					if target != null and target.has_cover():
+						if has_los(ox, oy, tx, ty):
+							var dx: int = abs(ox - tx)
+							var dy: int = abs(oy - ty)
+							if dx == 1 and dy == 1:
+								var side1: Resource = _tiles[oy * GRID_SIZE + tx]
+								var side2: Resource = _tiles[ty * GRID_SIZE + ox]
+								if (
+									(side1 != null and side1.blocks_vision)
+									or (side2 != null and side2.blocks_vision)
+								):
+									_cover_cache[base_idx + ti] = true
+							elif target.is_heavy_cover():
+								_cover_cache[base_idx + ti] = true
 	_cache_valid = true
-
-
-func _compute_cover_for_pair(ox: int, oy: int, tx: int, ty: int) -> bool:
-	var target: TacTileData = _tiles[ty * GRID_SIZE + tx] as TacTileData
-	if target == null or (target.cover_flags & 3) == 0:  # CoverType.NONE
-		return false
-	## Cover only applies if adjacent to the target (cardinal + diagonal)
-	var dx: int = abs(ox - tx)
-	var dy: int = abs(oy - ty)
-	if dx > 1 or dy > 1:
-		return false
-	if dx == 0 and dy == 0:
-		return false
-	## Check line of sight: if the observer can't see the target, cover is irrelevant.
-	if not has_los(ox, oy, tx, ty):
-		return false
-	## Simple rule: target has cover if the target tile itself provides cover and
-	## there is a blocking tile between observer and target (cardinal or diagonal).
-	## Since dx,dy ≤1, the only "between" case is diagonal adjacency.
-	if dx == 1 and dy == 1:
-		var side1: TacTileData = _tiles[oy * GRID_SIZE + tx] as TacTileData
-		var side2: TacTileData = _tiles[ty * GRID_SIZE + ox] as TacTileData
-		return (
-			(side1 != null and (side1.cover_flags & 64) != 0)
-			or (side2 != null and (side2.cover_flags & 64) != 0)
-		)
-	## Cardinal adjacency: cover applies only if the line of sight crosses a cover boundary.
-	## For adjacent tiles, the observer is directly adjacent, so the target is considered exposed.
-	## We therefore return true only if the target tile is heavy cover (full protection from adjacent).
-	return (target.cover_flags & 2) != 0  # FLAG_COVER_HEAVY
