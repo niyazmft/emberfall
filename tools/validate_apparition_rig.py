@@ -56,7 +56,7 @@ def validate_rig(json_path, schema_path):
 
 if __name__ == "__main__":
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    json_p = os.path.join(base_dir, "data", "char_apparition_rig.json")
+    json_p = os.path.join(base_dir, "char_apparition_rig.json")
     schema_p = os.path.join(base_dir, "schemas", "char_apparition_rig.schema.json")
 
     if validate_rig(json_p, schema_p):

@@ -17,17 +17,3 @@ export.cfg
 # Build artifacts
 *.tmp
 *.import
-
-# Log files
-*.log
-
-# Python bytecode cache
-__pycache__/
-*.pyc
-
-# Generated reports
-*_report.json
-
-# Agent skills - local development tools
-.agents/
-skills-lock.json

@@ -45,6 +45,27 @@ func run_all() -> void:
 		quit(1)
 	else:
 		print("ALL VALIDATION PASSED — math is deterministic.")
+		if not OS.is_debug_build():
+			for child in get_root().get_children():
+				if (
+					child.name
+					in [
+						"ConfigLoader",
+						"BurdenManager",
+						"EntityLifecycle",
+						"RunManager",
+						"GridSystem",
+						"CaptionManager",
+						"AudioMiddleware",
+						"SafeZoneManager",
+						"LayerManager",
+						"ToastManager",
+						"FocusManager",
+						"SettingsManager",
+						"InputRouter"
+					]
+				):
+					child.queue_free()
 		quit(0)
 
 	suite_finished.emit(_passed, _failed)
