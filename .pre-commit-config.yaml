@@ -7,7 +7,7 @@ repos:
       - id: gdformat
         name: GDScript Format (auto-fix)
         language: system
-        entry: /Users/niyaz/Library/Python/3.9/bin/gdformat
+        entry: gdformat
         args: []
         files: \.gd$
         pass_filenames: true
@@ -15,7 +15,7 @@ repos:
       - id: gdlint
         name: GDScript Lint
         language: system
-        entry: /Users/niyaz/Library/Python/3.9/bin/gdlint
+        entry: gdlint
         files: \.gd$
         pass_filenames: true
 

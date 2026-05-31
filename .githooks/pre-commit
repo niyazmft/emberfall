@@ -8,11 +8,11 @@ set -euo pipefail
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$PROJECT_DIR"
 
-PRE_COMMIT_BIN="${PRE_COMMIT_BIN:-/Users/niyaz/Library/Python/3.9/bin/pre-commit}"
+PRE_COMMIT_BIN="${PRE_COMMIT_BIN:-pre-commit}"
 
 if command -v "$PRE_COMMIT_BIN" &>/dev/null; then
     echo "🔒 Running pre-commit checks on staged files..."
     "$PRE_COMMIT_BIN" run --hook-stage=pre-commit
 else
-    echo "⚠️  pre-commit not found — run: pip3 install pre-commit && pre-commit install"
+    echo "⚠️  pre-commit not found — run: pip3 install pre-commit && bash tools/setup_hooks.sh"
 fi

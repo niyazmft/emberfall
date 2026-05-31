@@ -8,9 +8,9 @@ set -euo pipefail
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$PROJECT_DIR"
 
-GODOT_BIN="${GODOT_BIN:-/usr/local/bin/godot}"
-GDFORMAT_BIN="${GDFORMAT_BIN:-/Users/niyaz/Library/Python/3.9/bin/gdformat}"
-GDLINT_BIN="${GDLINT_BIN:-/Users/niyaz/Library/Python/3.9/bin/gdlint}"
+GODOT_BIN="${GODOT_BIN:-godot}"
+GDFORMAT_BIN="${GDFORMAT_BIN:-gdformat}"
+GDLINT_BIN="${GDLINT_BIN:-gdlint}"
 
 echo ""
 echo "╔══════════════════════════════════════════════╗"
@@ -40,7 +40,6 @@ echo ""
 echo "🧹 Step 2: Running GDScript Lint (Editor Scan)..."
 "$GODOT_BIN" --headless --editor --quit --path . 2>&1 | tee tools/godot_lint.log
 
-# Fail if critical errors are found in the output
 if grep -iE "SCRIPT ERROR|Parse Error|Compile Error|hides an autoload singleton|SHADER ERROR" tools/godot_lint.log; then
     echo "------------------------------------------------"
     echo "❌ GDScript linting failed. Check tools/godot_lint.log"
@@ -48,7 +47,6 @@ if grep -iE "SCRIPT ERROR|Parse Error|Compile Error|hides an autoload singleton|
     exit 1
 fi
 
-# Check for general ERROR: lines excluding known benign exit-leak messages
 if grep "ERROR:" tools/godot_lint.log | grep -vE "Resources still in use|ObjectDB instances leaked|Caller thread can't call this function in this node"; then
     echo "------------------------------------------------"
     echo "❌ CRITICAL ERRORS DETECTED. Check tools/godot_lint.log"

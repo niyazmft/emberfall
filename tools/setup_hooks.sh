@@ -27,12 +27,11 @@ echo "  ✅ Git hooks active (pre-commit + pre-push)"
 # ──────────────────────────────────────────────────
 echo ""
 echo "📦 [2/4] Installing pre-commit framework..."
-if ! command -v pre-commit &>/dev/null && ! command -v /Users/niyaz/Library/Python/3.9/bin/pre-commit &>/dev/null; then
+PRE_COMMIT_BIN="${PRE_COMMIT_BIN:-pre-commit}"
+if ! command -v "$PRE_COMMIT_BIN" &>/dev/null; then
     pip3 install pre-commit
 fi
-PRE_COMMIT_BIN="${PRE_COMMIT_BIN:-$(which pre-commit 2>/dev/null || echo /Users/niyaz/Library/Python/3.9/bin/pre-commit)}"
-"$PRE_COMMIT_BIN" install --hook-type pre-commit --hook-type pre-push 2>/dev/null || true
-echo "  ✅ pre-commit installed"
+echo "  ✅ pre-commit installed ($(pre-commit --version 2>/dev/null || echo 'version unknown'))"
 
 # ──────────────────────────────────────────────────
 # 3. Install markdownlint-cli (via npm/node)
@@ -55,7 +54,7 @@ fi
 # ──────────────────────────────────────────────────
 echo ""
 echo "🎮 [4/4] Verifying gdtoolkit..."
-GDFORMAT_BIN="${GDFORMAT_BIN:-/Users/niyaz/Library/Python/3.9/bin/gdformat}"
+GDFORMAT_BIN="${GDFORMAT_BIN:-gdformat}"
 if command -v "$GDFORMAT_BIN" &>/dev/null; then
     echo "  ✅ gdtoolkit found ($("$GDFORMAT_BIN" --version 2>&1 | head -1))"
 else
