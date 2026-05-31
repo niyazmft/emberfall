@@ -140,11 +140,12 @@ Key systems Jules interacts with:
 
 **Access Pattern:**
 ```gdscript
-# Get autoload reference
+# Direct reference (idiomatic and faster)
+if GridSystem:  # Autoloads are globally accessible by name
+    var tile = GridSystem.get_tile(x, y)
+
+# Alternative: get_node (slower, use only when name is dynamic)
 var grid: _GridSystem = get_node("/root/GridSystem")
-# Or use direct reference if in autoload
-if GridSystem:  # Autoloads are globally accessible
-    pass
 ```
 
 ---
