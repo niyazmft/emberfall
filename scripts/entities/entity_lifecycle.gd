@@ -60,22 +60,8 @@ var player_entity: Entity = null:
 	set(value):
 		player_entity = value
 
+
 # ── Safe autoload helpers (avoid class_name / autoload ambiguity) ────────
-var init_time_ms: int = 0
-
-
-func _ready() -> void:
-	var start_time := Time.get_ticks_msec()
-	_initialize()
-	init_time_ms = Time.get_ticks_msec() - start_time
-	if OS.is_debug_build():
-		print("Autoload '%s' initialized in %d ms" % [name, init_time_ms])
-
-
-func _initialize() -> void:
-	pass
-
-
 func _config_node() -> Node:
 	var ml: MainLoop = Engine.get_main_loop()
 	if ml is SceneTree:

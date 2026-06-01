@@ -74,19 +74,10 @@ var _stem_ids: PackedStringArray = PackedStringArray(
 	["BD-BASS", "BD-MECH", "BD-STRESS", "BD-CLIMB"]
 )
 var _caption_timing_tolerance_sec: float = 0.2  ## ±0.2 s per acceptance criteria
-var init_time_ms: int = 0
 
 
 # ── Lifecycle ────────────────────────────────────────────────────────────────
 func _ready() -> void:
-	var start_time := Time.get_ticks_msec()
-	_initialize()
-	init_time_ms = Time.get_ticks_msec() - start_time
-	if OS.is_debug_build():
-		print("Autoload '%s' initialized in %d ms" % [name, init_time_ms])
-
-
-func _initialize() -> void:
 	_print_debug("CaptionManager ready")
 
 

@@ -45,7 +45,6 @@ var _burden_noun_index: int = 0  ## Persisted across runs (memory_state.echo_fla
 ## Internal Classes
 var _event_engine: BurdenEventEngine
 var _caption_bridge: BurdenCaptionBridge
-var init_time_ms: int = 0
 
 ## MWT Matrix (DON-222)
 var _mwt_matrix_script := preload("res://ui/framework/mwt_caption_matrix.gd")
@@ -59,14 +58,6 @@ func _init() -> void:
 
 
 func _ready() -> void:
-	var start_time := Time.get_ticks_msec()
-	_initialize()
-	init_time_ms = Time.get_ticks_msec() - start_time
-	if OS.is_debug_build():
-		print("Autoload '%s' initialized in %d ms" % [name, init_time_ms])
-
-
-func _initialize() -> void:
 	_mwt_matrix = _mwt_matrix_script.new()
 	_load_burden_config()
 

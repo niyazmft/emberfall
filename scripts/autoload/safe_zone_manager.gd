@@ -15,18 +15,9 @@ const BREAKPOINT_EXPAND: float = 1.9
 
 var current_safe_area: Rect2
 var current_aspect_mode: AspectMode = AspectMode.DEFAULT
-var init_time_ms: int = 0
 
 
 func _ready() -> void:
-	var start_time := Time.get_ticks_msec()
-	_initialize()
-	init_time_ms = Time.get_ticks_msec() - start_time
-	if OS.is_debug_build():
-		print("Autoload '%s' initialized in %d ms" % [name, init_time_ms])
-
-
-func _initialize() -> void:
 	get_tree().root.size_changed.connect(_on_size_changed)
 	_update_metrics()
 

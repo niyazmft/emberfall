@@ -11,18 +11,9 @@ const DISMISS_TIME: float = 3.0
 
 var _queue: Array[Dictionary] = []
 var _is_displaying: bool = false
-var init_time_ms: int = 0
 
 
 func _ready() -> void:
-	var start_time := Time.get_ticks_msec()
-	_initialize()
-	init_time_ms = Time.get_ticks_msec() - start_time
-	if OS.is_debug_build():
-		print("Autoload '%s' initialized in %d ms" % [name, init_time_ms])
-
-
-func _initialize() -> void:
 	LayerManager.modal_opened.connect(_on_modal_opened)
 	LayerManager.modal_closed.connect(_on_modal_closed)
 

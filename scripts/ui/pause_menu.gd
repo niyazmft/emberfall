@@ -75,15 +75,8 @@ func _on_settings_requested() -> void:
 
 
 func _on_quit_pressed() -> void:
-	var confirm_scene := load("res://scenes/ui/confirm_modal.tscn") as PackedScene
-	if confirm_scene:
-		var modal := confirm_scene.instantiate()
-		modal.setup("RETURN_SANCTUM_TITLE", "RETURN_SANCTUM_BODY")
-		modal.confirmed.connect(
-			func() -> void:
-				get_tree().paused = false
-				if RunManager.has_method("cmd_return_to_sanctum"):
-					RunManager.call("cmd_return_to_sanctum")
-				hide()
-		)
-		LayerManager.add_modal(modal)
+	get_tree().paused = false
+	# Assuming RunManager exists and has this method
+	if RunManager.has_method("cmd_return_to_sanctum"):
+		RunManager.call("cmd_return_to_sanctum")
+	hide()

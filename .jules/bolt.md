@@ -13,6 +13,3 @@
 **Action:** Always cast explicitly to `TacTileData` when dealing with the flat array in `GridSystem` to unlock GDScript type-safe attribute checks, specifically utilizing bitwise `cover_flags` for logic inside tight loops.
 
 ## 2025-02-27 - [Godot Dictionary iteration] Learning: Deleting from a Dictionary while iterating over its keys() returns a new array, but iterating over the dictionary directly is faster and we can store keys to erase in a local array and erase them after the loop. Iterating over `keys()` makes a copy of the keys, causing array allocation and garbage collection churn inside `_process`. Action: Don't use `keys()` inside high-frequency loops like `_process`. Use a custom array or iterate without modifying the dictionary, keeping track of keys to remove.
-## 2026-06-03 - Cache Dictionary Lookups inside `_process`
-**Learning:** Caching dictionary lookups (e.g. `config.get("key", {})`) inside `_process` prevents per-frame allocations and dictionary hashing overhead.
-**Action:** Extract nested config properties to cached variables populated at init-time for frequently executing methods like `_process`.

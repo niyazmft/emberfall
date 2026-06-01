@@ -2,66 +2,104 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
-  validate-math:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-      - name: Run math validation
-        run: python3 tests/validate_math.py
-
+  # ─────────────────────────────────────────────
+  # JOB 1: Static Analysis & Formatting (Required)
+  # ─────────────────────────────────────────────
   gdscript-format:
+    name: gdscript-format
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install markdownlint-cli
+        run: npm install -g markdownlint-cli
+      - name: Lint Markdown (check only)
+        run: markdownlint '**/*.md' --ignore node_modules --ignore .git
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
       - name: Install gdtoolkit
         run: pip install gdtoolkit
-      - name: Format code
-        run: gdformat scripts/ tests/ ui/
-      - name: Commit files
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git commit -m "style(format): Apply gdformat" -a || true
-      - name: Check Formatting
+      - name: Check GDScript formatting
         run: gdformat --check scripts/ tests/ ui/
+      - name: Validate JSON configs
+        run: |
+          find config/ schemas/ -name '*.json' | while read f; do
+            python3 -m json.tool "$f" > /dev/null && echo "  ✅ $f" || { echo "  ❌ $f"; exit 1; }
+          done
 
-  gdscript-lint:
+  # ─────────────────────────────────────────────
+  # JOB 2: Deterministic Math Validation (Required)
+  # ─────────────────────────────────────────────
+  validate-math:
+    name: validate-math
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Run deterministic math cross-validator
+        run: python3 tests/validate_math.py
+
+  # ─────────────────────────────────────────────
+  # JOB 3: Engine Scan & Test Suite (Required)
+  # ─────────────────────────────────────────────
+  gdscript-lint:
+    name: gdscript-lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cache Godot
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/godot
+          key: godot-4.2.2-${{ runner.os }}-${{ hashFiles('.github/workflows/ci.yml') }}
       - name: Setup Godot
         uses: chickensoft-games/setup-godot@v2
         with:
           version: 4.2.2
           use-dotnet: false
-      - name: Regenerate asset cache
-        run: godot --headless --import --path .
-      - name: Run Godot Lint (Editor Scan)
+      - name: Import Project
+        run: godot --headless --import --path . --quit
+      - name: Run Godot editor scan
         run: |
-          # The editor scan imports assets and parses all scripts.
-          # It catches "hides an autoload singleton" and strict typing errors.
-          godot --headless --editor --quit --path . 2>&1 | tee godot_output.log
-
-          # Fail if critical errors are found in the output
-          if grep -iE "SCRIPT ERROR|Parse Error|Compile Error|hides an autoload singleton" godot_output.log; then
-            echo "------------------------------------------------"
-            echo "❌ GDScript linting failed! Check for shadowing or typing errors."
-            echo "------------------------------------------------"
+          mkdir -p tools
+          godot --headless --editor --quit --path . 2>&1 | tee tools/godot_lint.log
+          if grep -iE "SCRIPT ERROR|Parse Error|Compile Error|hides an autoload singleton" tools/godot_lint.log; then
+            echo "❌ GDScript linting failed."
             exit 1
           fi
-          echo "✅ GDScript linting passed (no parse errors found)."
-# Force refresh 3
+          echo "✅ GDScript lint passed."
+      - name: Run Full Test Suite
+        run: |
+          chmod +x tests/run_all_tests.sh
+          tests/run_all_tests.sh 2>&1 | tee tests/test_output.log
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: |
+            tests/test_output.log
+            tests/validate_math_report.json
+            tools/godot_lint.log
+      - name: Report Test Summary
+        if: always()
+        run: |
+          echo "### Test Results" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          tail -20 tests/test_output.log >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
