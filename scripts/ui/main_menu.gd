@@ -66,4 +66,9 @@ func _on_settings_pressed() -> void:
 
 
 func _on_quit_pressed() -> void:
-	get_tree().quit()
+	var scene: PackedScene = load("res://scenes/ui/confirm_modal.tscn") as PackedScene
+	if scene:
+		var modal: Node = scene.instantiate()
+		modal.call("setup", "CONFIRM_QUIT_TITLE", "CONFIRM_QUIT_BODY")
+		modal.connect("confirmed", func() -> void: get_tree().quit())
+		LayerManager.add_modal(modal)
