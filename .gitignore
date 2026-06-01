@@ -20,3 +20,5 @@ export.cfg
 
 # Test logs
 tools/test_suite.log
+__pycache__/
+*.pyc
