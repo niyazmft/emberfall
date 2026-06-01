@@ -13,3 +13,4 @@
 ## $(date +%Y-%m-%d) - Add confirmation modals to destructive actions
 **Learning:** Destructive UI actions (like quitting the game, returning to the sanctum, or resetting control bindings) were happening instantly upon button press, which can lead to accidental data loss or unexpected game exits, resulting in poor UX.
 **Action:** Added a generic `ConfirmModal` popup that requires the user to explicitly confirm these actions before the logic executes, improving safety and matching standard UX patterns.
+**Action:** Set `mouse_default_cursor_shape = 2` (Pointing Hand) on all `HSlider`, `CheckBox`, `OptionButton`, and `TabContainer` nodes to improve interaction feedback consistently across the settings menu and UI.
