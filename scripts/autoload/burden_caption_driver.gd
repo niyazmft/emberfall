@@ -23,10 +23,18 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	for key: String in _cooldowns.keys():
+	if _cooldowns.is_empty():
+		return
+
+	# ⚡ Bolt: Iterate over dictionary directly to avoid Array allocation every frame.
+	var expired: Array[String] = []
+	for key: String in _cooldowns:
 		_cooldowns[key] -= delta
 		if _cooldowns[key] <= 0.0:
-			_cooldowns.erase(key)
+			expired.append(key)
+
+	for key: String in expired:
+		_cooldowns.erase(key)
 
 
 # ── Internal ────────────────────────────────────────────────────────────────
