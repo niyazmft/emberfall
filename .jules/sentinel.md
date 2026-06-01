@@ -2,3 +2,13 @@
 **Vulnerability:** The input rebinding system (`scripts/ui/remap_panel.gd`) previously used `inst_to_dict()` and `dict_to_inst()` to serialize and deserialize `InputEvent` objects to/from the `user://remap.save` file. This could lead to Insecure Deserialization, as a maliciously crafted `user://remap.save` could inject an arbitrary `@path` property into the JSON that could execute arbitrary Godot resources when `dict_to_inst()` parsed it.
 **Learning:** Functions like `inst_to_dict()` and `dict_to_inst()` are inherently unsafe to use on user-writable files because they lack type guards during deserialization.
 **Prevention:** Avoid `inst_to_dict()` and `dict_to_inst()` entirely for persistence. Use explicit serialization and deserialization functions that perform strict type validation and assign properties directly rather than blindly instantiating arbitrary dictionaries.
+
+## 2026-06-01 - File Encryption for User Settings
+**Vulnerability:** The `SettingsManager` autoload (`scripts/autoload/settings_manager.gd`) previously used `FileAccess.open(..., FileAccess.WRITE)` and `FileAccess.open(..., FileAccess.READ)` in plaintext, combined with `store_var()` and `get_var()`. This could lead to local file tampering or insecure deserialization (arbitrary object instantiation) via a maliciously crafted `user://settings.save` file.
+**Learning:** Saving and loading user data in plaintext using `get_var()` can expose the application to malicious local modifications or deserialization attacks if a user shares or replaces their save file.
+**Prevention:** Always use `FileAccess.open_encrypted_with_pass()` with a deterministically generated, per-device or secure salt when saving data via `store_var()` to ensure integrity and prevent trivial tampering.
+
+## 2026-06-01 - File Encryption for User Input Bindings
+**Vulnerability:** The `RemapPanel` script (`scripts/ui/remap_panel.gd`) previously used `FileAccess.open(..., FileAccess.WRITE)` and `FileAccess.open(..., FileAccess.READ)` in plaintext, combined with `store_var()` and `get_var()`. This could lead to local file tampering or insecure deserialization (arbitrary object instantiation) via a maliciously crafted `user://remap.save` file.
+**Learning:** Saving and loading user input bindings in plaintext using `get_var()` can expose the application to malicious local modifications or deserialization attacks if a user shares or replaces their save file.
+**Prevention:** Always use `FileAccess.open_encrypted_with_pass()` with a deterministically generated, per-device or secure salt when saving data via `store_var()` to ensure integrity and prevent trivial tampering.

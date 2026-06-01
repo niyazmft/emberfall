@@ -30,3 +30,9 @@ HINT_BACK_GP,[B] Back
 MENU_BACK,Back
 SETTINGS_SETTINGS,Settings
 PAUSED,Paused
+CONFIRM_QUIT_TITLE,Quit Game?
+CONFIRM_QUIT_BODY,Are you sure you want to quit the game? Any unsaved progress will be lost.
+CONFIRM_RETURN_TITLE,Return to Sanctum?
+CONFIRM_RETURN_BODY,Are you sure you want to return to the Sanctum? Current room progress will be lost.
+CONFIRM_RESET_TITLE,Reset Controls?
+CONFIRM_RESET_BODY,Are you sure you want to reset all controls to their default bindings?
