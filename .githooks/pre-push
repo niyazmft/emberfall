@@ -10,6 +10,16 @@ set -euo pipefail
 # Ensure common Homebrew/macOS bin directories are in the PATH
 export PATH="/usr/local/bin:/opt/homebrew/bin:$PATH"
 
+# Add Python user bin directories (for gdtoolkit installed via pip --user)
+if [ -d "$HOME/.local/bin" ]; then
+    export PATH="$HOME/.local/bin:$PATH"
+fi
+for py_bin in "$HOME"/Library/Python/*/bin; do
+    if [ -d "$py_bin" ]; then
+        export PATH="$py_bin:$PATH"
+    fi
+done
+
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$PROJECT_DIR"
 
