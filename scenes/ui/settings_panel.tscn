@@ -163,7 +163,6 @@ popup/item_2/text = "Gamepad"
 popup/item_2/id = 2
 
 [node name="BackButton" type="Button" parent="MarginContainer/VBoxContainer"]
-mouse_default_cursor_shape = 2
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
