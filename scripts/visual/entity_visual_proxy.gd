@@ -46,7 +46,8 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	if global_position.distance_to(_target_position) > 0.1:
-		global_position = global_position.lerp(_target_position, delta * lerp_speed)
+		var weight: float = minf(delta * lerp_speed, 1.0)
+		global_position = global_position.lerp(_target_position, weight)
 	else:
 		global_position = _target_position
 
