@@ -1,4 +1,5 @@
 extends BaseStateMachine
+class_name _RunManager
 
 ## RunManager
 ## Implements the Run Manager state machine from System Specification §5.

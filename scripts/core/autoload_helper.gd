@@ -34,28 +34,28 @@ static func get_autoload(autoload_name: String) -> Node:
 
 
 ## Returns the ConfigLoader autoload, or null.
-static func config_loader() -> Node:
-	return get_autoload("ConfigLoader")
+static func config_loader() -> _ConfigLoader:
+	return get_autoload("ConfigLoader") as _ConfigLoader
 
 
 ## Returns the BurdenManager autoload, or null.
-static func burden_manager() -> Node:
-	return get_autoload("BurdenManager")
+static func burden_manager() -> _BurdenManager:
+	return get_autoload("BurdenManager") as _BurdenManager
 
 
 ## Returns the CaptionManager autoload, or null.
-static func caption_manager() -> Node:
-	return get_autoload("CaptionManager")
+static func caption_manager() -> _CaptionManager:
+	return get_autoload("CaptionManager") as _CaptionManager
 
 
 ## Returns the EntityLifecycle autoload, or null.
-static func entity_lifecycle() -> Node:
-	return get_autoload("EntityLifecycle")
+static func entity_lifecycle() -> _EntityLifecycle:
+	return get_autoload("EntityLifecycle") as _EntityLifecycle
 
 
 ## Returns the RunManager autoload, or null.
-static func run_manager() -> Node:
-	return get_autoload("RunManager")
+static func run_manager() -> _RunManager:
+	return get_autoload("RunManager") as _RunManager
 
 
 # ── Derived Helpers ───────────────────────────────────────────────────────────

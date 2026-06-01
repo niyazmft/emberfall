@@ -86,9 +86,10 @@ func _ready() -> void:
 ##
 ## Returns OK on success, or a FileAccess error code on failure.
 func save_game(state: Dictionary) -> Error:
-	state["version"] = SAVE_VERSION
+	var save_data: Dictionary = state.duplicate(true)
+	save_data["version"] = SAVE_VERSION
 
-	var json_text: String = JSON.stringify(state, "\t")
+	var json_text: String = JSON.stringify(save_data, "\t")
 
 	var file: FileAccess = FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if file == null:
@@ -137,7 +138,14 @@ func load_game() -> Dictionary:
 		load_failed.emit(reason)
 		return {}
 
-	var data: Dictionary = json.get_data()
+	var raw_data: Variant = json.get_data()
+	if typeof(raw_data) != TYPE_DICTIONARY:
+		var reason: String = "Parsed JSON is not a Dictionary."
+		push_error("[SaveManager] load_game: %s" % reason)
+		load_failed.emit(reason)
+		return {}
+
+	var data: Dictionary = raw_data as Dictionary
 
 	# Version guard — non-fatal: older saves may still be partially usable.
 	if data.has("version"):
@@ -168,15 +176,13 @@ func delete_save() -> void:
 		_print_debug("delete_save: nothing to delete.")
 		return
 
-	# DirAccess.remove_absolute expects a plain OS path, not a "user://" URI.
-	var abs_path: String = ProjectSettings.globalize_path(SAVE_PATH)
-	var remove_err: Error = DirAccess.remove_absolute(abs_path)
+	var remove_err: Error = DirAccess.remove_absolute(SAVE_PATH)
 	if remove_err != OK:
 		push_error(
 			"[SaveManager] delete_save: DirAccess.remove_absolute() failed (error %d)" % remove_err
 		)
 	else:
-		_print_debug("delete_save: removed %s" % abs_path)
+		_print_debug("delete_save: removed %s" % SAVE_PATH)
 
 
 ## Returns true if a save file is present on disk.
