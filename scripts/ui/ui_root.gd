@@ -29,8 +29,9 @@ func _input(event: InputEvent) -> void:
 			_settings_panel._on_back_pressed()
 			get_viewport().set_input_as_handled()
 		elif _main_menu.visible:
-			# Quit or show quit confirmation
-			pass
+			if not LayerManager.is_modal_active():
+				_main_menu._on_quit_pressed()
+				get_viewport().set_input_as_handled()
 		else:
 			# Toggle Pause
 			_pause_menu.toggle_pause()
