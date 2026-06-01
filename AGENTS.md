@@ -143,16 +143,22 @@ Key systems Jules interacts with:
 | `RunManager` | Game phase flow | `cmd_start_run()`, `transition_to()` |
 | `BurdenManager` | Moral weight system | `record_sentient_kill()`, `update_moral_weight()` |
 | `CaptionManager` | Subtitle system | `schedule()`, `cancel_channel()` |
+| `EventBus` | Centralized signaling | `combat_started.emit()`, `entity_died` |
+| `SaveManager` | Data persistence | `save_game()`, `load_game()`, schema validation |
 
 **Access Pattern:**
 
-```gdscript
-# Direct reference (idiomatic and faster)
-if GridSystem:  # Autoloads are globally accessible by name
-    var tile = GridSystem.get_tile(x, y)
+**ALWAYS** use `AutoloadHelper` to retrieve singletons. This ensures safe initialization order (especially during `_init` and early `_ready`) and returns strictly-typed instances.
 
-# Alternative: get_node (slower, use only when name is dynamic)
-var grid: _GridSystem = get_node("/root/GridSystem")
+```gdscript
+# ✅ CORRECT (Type-safe and lifecycle-safe)
+var bm: _BurdenManager = AutoloadHelper.burden_manager()
+if bm != null:
+    bm.update_moral_weight(10)
+
+# ❌ WRONG (Prone to nulls in _init, lacks strong types)
+var bm = BurdenManager
+var bm = get_node_or_null("/root/BurdenManager")
 ```
 
 ---
