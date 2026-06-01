@@ -17,3 +17,10 @@ export.cfg
 # Build artifacts
 *.tmp
 *.import
+
+# Test logs
+tools/test_suite.log
+
+# Python cache
+__pycache__/
+*.pyc

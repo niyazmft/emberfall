@@ -29,7 +29,9 @@ func _initialize() -> void:
 
 
 func save_settings() -> void:
-	var file: FileAccess = FileAccess.open(SAVE_PATH, FileAccess.WRITE)
+	var file: FileAccess = FileAccess.open_encrypted_with_pass(
+		SAVE_PATH, FileAccess.WRITE, _get_secure_salt()
+	)
 	if file:
 		file.store_var(settings)
 		file.close()
@@ -41,7 +43,9 @@ func load_settings() -> void:
 	if not FileAccess.file_exists(SAVE_PATH):
 		return
 
-	var file: FileAccess = FileAccess.open(SAVE_PATH, FileAccess.READ)
+	var file: FileAccess = FileAccess.open_encrypted_with_pass(
+		SAVE_PATH, FileAccess.READ, _get_secure_salt()
+	)
 	if file:
 		var loaded_settings: Variant = file.get_var()
 		file.close()
@@ -54,6 +58,10 @@ func load_settings() -> void:
 			_print_error("Settings file is corrupted or invalid format")
 	else:
 		_print_error("Failed to open settings file for reading: %s" % SAVE_PATH)
+
+
+func _get_secure_salt() -> String:
+	return OS.get_unique_id() + "_settings_salt"
 
 
 func _merge_dict(base: Dictionary, override: Dictionary) -> void:
