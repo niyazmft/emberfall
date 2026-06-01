@@ -190,4 +190,4 @@ func _initialize() -> void:
 		bm.name = "BurdenManager"
 		root.add_child(bm)
 
-	run_all()
+	call_deferred("run_all")
