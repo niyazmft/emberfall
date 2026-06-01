@@ -238,6 +238,8 @@ func save_bindings() -> void:
 	if file:
 		file.store_var(save_data)
 		file.close()
+	else:
+		push_error("Failed to open remap file for writing: %s" % REMAP_SAVE_PATH)
 
 
 func load_bindings() -> void:
@@ -262,6 +264,9 @@ func load_bindings() -> void:
 						var event: InputEvent = _deserialize_event(event_dict)
 						if event:
 							InputMap.action_add_event(action, event)
+	else:
+		push_error("Failed to open remap file for reading: %s" % REMAP_SAVE_PATH)
+		return
 
 
 func _serialize_event(event: InputEvent) -> Dictionary:
