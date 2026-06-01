@@ -4,6 +4,9 @@
 
 set -euo pipefail
 
+# Ensure common Homebrew/macOS bin directories are in the PATH
+export PATH="/usr/local/bin:/opt/homebrew/bin:$PATH"
+
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$PROJECT_DIR"
 
