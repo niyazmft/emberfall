@@ -12,9 +12,18 @@ var settings: Dictionary = {
 	"accessibility": {"screen_shake": 1.0, "cvd_sim": 0},
 	"controls": {"input_hints": 0}  # 0: Auto, 1: KBM, 2: Gamepad
 }
+var init_time_ms: int = 0
 
 
 func _ready() -> void:
+	var start_time := Time.get_ticks_msec()
+	_initialize()
+	init_time_ms = Time.get_ticks_msec() - start_time
+	if OS.is_debug_build():
+		print("Autoload '%s' initialized in %d ms" % [name, init_time_ms])
+
+
+func _initialize() -> void:
 	load_settings()
 	apply_settings()
 

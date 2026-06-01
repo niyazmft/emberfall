@@ -27,6 +27,7 @@ var total_rooms: int = 0
 var room_queue: Array[Dictionary] = []
 var room_index: int = -1
 var memory_state_loaded: bool = false
+var init_time_ms: int = 0
 
 # Context flags for guards
 var _combat_resolved: bool = false
@@ -53,6 +54,14 @@ signal run_ended(p_result: StringName, p_run_context: Dictionary)
 
 
 func _ready() -> void:
+	var start_time := Time.get_ticks_msec()
+	_initialize()
+	init_time_ms = Time.get_ticks_msec() - start_time
+	if OS.is_debug_build():
+		print("Autoload '%s' initialized in %d ms" % [name, init_time_ms])
+
+
+func _initialize() -> void:
 	_load_config_values()
 	if has_node("/root/EntityLifecycle"):
 		_entity_lifecycle = get_node("/root/EntityLifecycle")

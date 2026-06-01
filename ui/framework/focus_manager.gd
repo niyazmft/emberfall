@@ -7,9 +7,18 @@ extends Node
 var _focus_stack: Array[Dictionary] = []
 var _focus_ring: ColorRect
 var _current_focused: Control = null
+var init_time_ms: int = 0
 
 
 func _ready() -> void:
+	var start_time := Time.get_ticks_msec()
+	_initialize()
+	init_time_ms = Time.get_ticks_msec() - start_time
+	if OS.is_debug_build():
+		print("Autoload '%s' initialized in %d ms" % [name, init_time_ms])
+
+
+func _initialize() -> void:
 	process_mode = PROCESS_MODE_ALWAYS
 	_create_focus_ring()
 	get_viewport().gui_focus_changed.connect(_on_focus_changed)
