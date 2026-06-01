@@ -253,7 +253,7 @@ func get_active_tile_elements(x: int, y: int) -> PackedInt32Array:
 	if not is_in_bounds(x, y):
 		return PackedInt32Array()
 	var out := PackedInt32Array()
-	var effects: Array = get_tile_effects(x, y)
+	var effects: Array = _elemental_overlay.get(index(x, y), [])
 	for eff: Variant in effects:
 		var e: ElementalTypes.ElementType = eff["element"]
 		if not out.has(e):
