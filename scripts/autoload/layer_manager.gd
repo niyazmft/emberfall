@@ -31,7 +31,7 @@ func _setup_pp_rect() -> void:
 	_pp_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_pp_rect.visible = false
 
-	var shader: Shader = load("res://scripts/shaders/pp_burden_master.gdshader") as Shader
+	var shader: Shader = load("res://assets/shaders/pp_burden_master.gdshader") as Shader
 	if shader:
 		var mat: ShaderMaterial = ShaderMaterial.new()
 		mat.shader = shader

@@ -254,7 +254,7 @@ func _create_dissolve_noise() -> void:
 
 
 func _create_tint_material() -> void:
-	var shader: Shader = load("res://scripts/shaders/apparition_composite.gdshader") as Shader
+	var shader: Shader = load("res://assets/shaders/apparition_composite.gdshader") as Shader
 	if shader == null:
 		push_warning("ApparitionRenderer: could not load apparition_composite.gdshader")
 		return

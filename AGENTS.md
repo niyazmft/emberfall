@@ -276,6 +276,18 @@ class_name _ConfigLoader  # ✅ Allows global 'ConfigLoader' to work without col
 class_name ConfigLoader   # ❌ Shadows the autoload singleton
 ```
 
+### Autoload Co-location Exceptions
+
+All autoloads are in `scripts/autoload/` **except** two documented exceptions:
+
+| Autoload | Actual Path | Reason |
+|---|---|---|
+| `EntityLifecycle` | `scripts/entities/entity_lifecycle.gd` | Co-located with `Entity` data class; moving breaks Godot UIDs |
+| `RunManager` | `scripts/state_machine/run_manager.gd` | Owns `BaseStateMachine`; co-location is intentional |
+
+**Do NOT move these files** — all `.uid` sidecar files and `preload()` references would break.
+If adding a new autoload, place it in `scripts/autoload/` unless it has an equally strong co-location justification documented here.
+
 ### Failure Protocol
 
 If a check fails after a change:

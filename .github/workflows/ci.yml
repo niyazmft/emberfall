@@ -59,6 +59,7 @@ jobs:
   gdscript-lint:
     name: gdscript-lint
     runs-on: ubuntu-latest
+    needs: [gdscript-format, validate-math]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
