@@ -239,7 +239,9 @@ func get_tile_effects(x: int, y: int) -> Array:
 	if not is_in_bounds(x, y):
 		return []
 	var idx: int = index(x, y)
-	var raw: Array = _elemental_overlay.get(idx, [])
+	if not _elemental_overlay.has(idx):
+		return []
+	var raw: Array = _elemental_overlay[idx]
 	var out: Array = []
 	out.resize(raw.size())
 	for i: int in range(raw.size()):
@@ -253,7 +255,7 @@ func get_active_tile_elements(x: int, y: int) -> PackedInt32Array:
 	if not is_in_bounds(x, y):
 		return PackedInt32Array()
 	var out := PackedInt32Array()
-	var effects: Array = get_tile_effects(x, y)
+	var effects: Array = _elemental_overlay.get(index(x, y), []) as Array
 	for eff: Variant in effects:
 		var e: ElementalTypes.ElementType = eff["element"]
 		if not out.has(e):

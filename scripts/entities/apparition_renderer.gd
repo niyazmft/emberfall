@@ -19,14 +19,6 @@ const VERTICAL_OFFSETS: Array[int] = [0, 8, 16]
 const OPACITY_TIERS: Array[float] = [0.55, 0.45, 0.35]
 const SCALE_TIERS: Array[float] = [1.00, 0.95, 0.90]
 
-## Configuration data from JSON
-var _rig_config: Dictionary = {}
-
-## Instance-specific layout (initialized from constants, overridden by config)
-var vertical_offsets: Array[int] = [0, 8, 16]
-var opacity_tiers: Array[float] = [0.55, 0.45, 0.35]
-var scale_tiers: Array[float] = [1.00, 0.95, 0.90]
-
 ## Sentinel when no silhouette is available.
 const PLACEHOLDER_ATLAS_UID: String = "placeholder:silhouette"
 
@@ -36,6 +28,26 @@ const PLACEHOLDER_ATLAS_UID: String = "placeholder:silhouette"
 		_update_z_index()
 
 @export var recoil_z_index_offset: int = 2
+
+## Instance-specific layout (initialized from constants, overridden by config)
+var vertical_offsets: Array[int] = [0, 8, 16]
+var opacity_tiers: Array[float] = [0.55, 0.45, 0.35]
+var scale_tiers: Array[float] = [1.00, 0.95, 0.90]
+
+## State machine.
+var state_machine: ApparitionStateMachine
+
+## Configuration data from JSON
+var _rig_config: Dictionary = {}
+
+## Cached config values for performance
+var _cached_dissolve_duration_sec: float = 0.4
+var _cached_dissolve_noise_freq: float = 0.04
+var _cached_recoil_shear_intensity: float = 1.2
+var _cached_trail_lifetime_sec: float = 0.3
+var _cached_trail_intensity: float = 0.2
+var _cached_breathing_amplitude: float = 0.08
+var _cached_breathing_frequency: float = 2.734
 
 ## Current stack of silhouette enemy IDs (oldest → newest).
 var _current_stack: PackedStringArray = []
@@ -54,9 +66,6 @@ var _tint_material: ShaderMaterial
 
 ## Weak reference to the Keeper / owner entity for transform anchoring.
 var _owner: WeakRef
-
-## State machine.
-var state_machine: ApparitionStateMachine
 
 ## Dissolve noise texture (procedural or loaded).
 var _dissolve_noise: NoiseTexture2D
@@ -130,6 +139,23 @@ func _apply_rig_config() -> void:
 	if _rig_config.is_empty():
 		return
 
+	var dissolve: Dictionary = _rig_config.get("dissolve", {}) as Dictionary
+	if not dissolve.is_empty():
+		_cached_dissolve_duration_sec = float(dissolve.get("duration_ms", 400)) / 1000.0
+		_cached_dissolve_noise_freq = float(dissolve.get("noise_frequency", 4.0)) / 100.0
+
+	var breathing: Dictionary = _rig_config.get("breathing", {}) as Dictionary
+	if not breathing.is_empty():
+		_cached_breathing_amplitude = float(breathing.get("amplitude", 0.08))
+		_cached_breathing_frequency = float(breathing.get("frequency", 2.734))
+
+	var trail_config: Dictionary = _rig_config.get("trail", {}) as Dictionary
+	if not trail_config.is_empty():
+		_cached_trail_lifetime_sec = maxf(
+			float(trail_config.get("lifetime_ms", 300)) / 1000.0, 0.001
+		)
+		_cached_trail_intensity = float(trail_config.get("intensity", 0.2))
+
 	var stack: Dictionary = _rig_config.get("stack", {}) as Dictionary
 	if not stack.is_empty():
 		var v_offsets: Variant = stack.get("vertical_offsets")
@@ -153,6 +179,7 @@ func _apply_rig_config() -> void:
 	var recoil: Dictionary = _rig_config.get("recoil", {}) as Dictionary
 	if not recoil.is_empty():
 		recoil_z_index_offset = int(recoil.get("z_promotion", 2))
+		_cached_recoil_shear_intensity = float(recoil.get("shear_intensity", 1.2))
 
 
 # ---------------------------------------------------------------------------
@@ -252,9 +279,7 @@ func _create_dissolve_noise() -> void:
 	_dissolve_noise.width = 128
 	_dissolve_noise.height = 128
 	var noise: FastNoiseLite = FastNoiseLite.new()
-	noise.frequency = (
-		float((_rig_config.get("dissolve", {}) as Dictionary).get("noise_frequency", 4.0)) / 100.0
-	)
+	noise.frequency = _cached_dissolve_noise_freq
 	_dissolve_noise.noise = noise
 
 
@@ -283,10 +308,7 @@ func _create_tint_material() -> void:
 	_tint_material.set_shader_parameter("u_desaturation_amount", 0.2)
 	_tint_material.set_shader_parameter("u_spectral_tint_opacity", 0.4)
 	_tint_material.set_shader_parameter("u_inner_bleed_opacity", 0.15)
-	_tint_material.set_shader_parameter(
-		"u_after_trail_opacity",
-		float((_rig_config.get("trail", {}) as Dictionary).get("intensity", 0.2))
-	)
+	_tint_material.set_shader_parameter("u_after_trail_opacity", _cached_trail_intensity)
 	_tint_material.set_shader_parameter("u_intensity", 1.0)
 
 	_tint_material.set_shader_parameter("u_dissolve_noise", _dissolve_noise)
@@ -352,28 +374,24 @@ func _update_shader_uniforms(_delta: float) -> void:
 	var shear_intensity: float = 0.0
 
 	# Breathing idle animation
-	var breathing: Dictionary = _rig_config.get("breathing", {}) as Dictionary
-	var amplitude: float = float(breathing.get("amplitude", 0.08))
-	var frequency: float = float(breathing.get("frequency", 2.734))
 	var breathing_intensity: float = (
-		1.0 + sin(Time.get_ticks_msec() * 0.001 * frequency * TAU) * amplitude
+		1.0
+		+ (
+			sin(Time.get_ticks_msec() * 0.001 * _cached_breathing_frequency * TAU)
+			* _cached_breathing_amplitude
+		)
 	)
 
 	match state_machine.current_state:
 		ApparitionStateMachine.ApparitionState.ABSORB:
-			var duration: float = (
-				float((_rig_config.get("dissolve", {}) as Dictionary).get("duration_ms", 400))
-				/ 1000.0
+			dissolve_threshold = clampf(
+				state_machine._absorb_timer / _cached_dissolve_duration_sec, 0.0, 1.0
 			)
-			dissolve_threshold = clampf(state_machine._absorb_timer / duration, 0.0, 1.0)
 		ApparitionStateMachine.ApparitionState.RECOIL:
-			var base_shear: float = float(
-				(_rig_config.get("recoil", {}) as Dictionary).get("shear_intensity", 1.2)
-			)
 			# Shear direction depends on owner facing vs. damage source if available,
 			# but here we can just use a simple sine jitter or fixed offset.
 			# For DON-267, we just ensure it's applied correctly.
-			shear_intensity = base_shear
+			shear_intensity = _cached_recoil_shear_intensity
 
 	# Apply to shared material
 	if _tint_material:
@@ -395,10 +413,8 @@ func _update_trail(delta: float) -> void:
 			sprite.modulate.a = lerpf(sprite.modulate.a, 0.0, delta * 10.0)
 		return
 
-	var trail_config: Dictionary = _rig_config.get("trail", {}) as Dictionary
-	var lifetime_ms: float = maxf(float(trail_config.get("lifetime_ms", 300)), 1.0)
-	var interval: float = (lifetime_ms / 1000.0) / TRAIL_COUNT
-	var intensity: float = float(trail_config.get("intensity", 0.2)) * _master_alpha
+	var interval: float = _cached_trail_lifetime_sec / TRAIL_COUNT
+	var intensity: float = _cached_trail_intensity * _master_alpha
 
 	_trail_timer += delta
 	if _trail_timer >= interval:
@@ -418,7 +434,7 @@ func _update_trail(delta: float) -> void:
 		_trail_index = (_trail_index + 1) % TRAIL_COUNT
 
 	# Continuous fade for all trail sprites
-	var fade_speed: float = 1.0 / (lifetime_ms / 1000.0)
+	var fade_speed: float = 1.0 / _cached_trail_lifetime_sec
 	for sprite: Sprite2D in _trail_sprites:
 		if sprite.modulate.a > 0.0:
 			sprite.modulate.a = clampf(sprite.modulate.a - delta * fade_speed * intensity, 0.0, 1.0)
