@@ -353,6 +353,15 @@ func _deserialize_event(d: Dictionary) -> InputEvent:
 
 
 func _on_reset_pressed() -> void:
+	var scene: PackedScene = load("res://scenes/ui/confirm_modal.tscn") as PackedScene
+	if scene:
+		var modal: Node = scene.instantiate()
+		modal.call("setup", "CONFIRM_RESET_TITLE", "CONFIRM_RESET_BODY")
+		modal.connect("confirmed", _on_reset_confirmed)
+		LayerManager.add_modal(modal)
+
+
+func _on_reset_confirmed() -> void:
 	InputMap.load_from_project_settings()
 	save_bindings()
 	create_action_list()

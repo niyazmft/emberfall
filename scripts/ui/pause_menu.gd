@@ -75,8 +75,16 @@ func _on_settings_requested() -> void:
 
 
 func _on_quit_pressed() -> void:
+	var scene: PackedScene = load("res://scenes/ui/confirm_modal.tscn") as PackedScene
+	if scene:
+		var modal: Node = scene.instantiate()
+		modal.call("setup", "CONFIRM_RETURN_TITLE", "CONFIRM_RETURN_BODY")
+		modal.connect("confirmed", _on_quit_confirmed)
+		LayerManager.add_modal(modal)
+
+
+func _on_quit_confirmed() -> void:
 	get_tree().paused = false
-	# Assuming RunManager exists and has this method
 	if RunManager.has_method("cmd_return_to_sanctum"):
 		RunManager.call("cmd_return_to_sanctum")
 	hide()
