@@ -10,7 +10,6 @@ updates:
           - "*"
     commit-message:
       prefix: "ci"
-      prefix-separator: ":"
     labels:
       - "dependencies"
       - "ci"
@@ -25,7 +24,6 @@ updates:
           - "*"
     commit-message:
       prefix: "build"
-      prefix-separator: ":"
     labels:
       - "dependencies"
       - "build"
