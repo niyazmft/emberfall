@@ -9,7 +9,7 @@ updates:
         patterns:
           - "*"
     commit-message:
-      prefix: "ci"
+      prefix: "ci:"
     labels:
       - "dependencies"
       - "ci"
@@ -23,7 +23,7 @@ updates:
         patterns:
           - "*"
     commit-message:
-      prefix: "build"
+      prefix: "build:"
     labels:
       - "dependencies"
       - "build"
