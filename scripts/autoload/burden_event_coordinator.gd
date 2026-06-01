@@ -6,10 +6,20 @@ extends Node
 
 class_name _BurdenEventCoordinator
 
+var init_time_ms: int = 0
+
 # ── Lifecycle ────────────────────────────────────────────────────────────────
 
 
 func _ready() -> void:
+	var start_time := Time.get_ticks_msec()
+	_initialize()
+	init_time_ms = Time.get_ticks_msec() - start_time
+	if OS.is_debug_build():
+		print("Autoload '%s' initialized in %d ms" % [name, init_time_ms])
+
+
+func _initialize() -> void:
 	_connect_signals()
 	_print_debug("BurdenEventCoordinator ready")
 

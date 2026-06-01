@@ -14,11 +14,20 @@ var _stems: Dictionary = {}
 var _stem_router: Node
 var _climb_expanded: bool = false
 var _climb_converged: bool = false
+var init_time_ms: int = 0
 
 # ── Lifecycle ────────────────────────────────────────────────────────────────
 
 
 func _ready() -> void:
+	var start_time := Time.get_ticks_msec()
+	_initialize()
+	init_time_ms = Time.get_ticks_msec() - start_time
+	if OS.is_debug_build():
+		print("Autoload '%s' initialized in %d ms" % [name, init_time_ms])
+
+
+func _initialize() -> void:
 	_setup_router()
 	_setup_stems()
 	_print_debug("AudioMiddleware ready")

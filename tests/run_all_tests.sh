@@ -7,8 +7,6 @@ set -euo pipefail
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$PROJECT_DIR"
 
-GODOT_BIN="${GODOT_BIN:-godot}"
-
 echo "=== Emberfall Test Suite ==="
 
 echo ""
@@ -17,19 +15,19 @@ python3 tests/validate_math.py
 
 echo ""
 echo "--- Running: test_deterministic_math.gd (In-Engine) ---"
-"$GODOT_BIN" --headless --path . -s tests/test_deterministic_math.gd
+godot --headless --path . -s tests/test_deterministic_math.gd
 
 echo ""
 echo "--- Running: test_entity_lifecycle.gd ---"
-"$GODOT_BIN" --headless --path . -s tests/test_entity_lifecycle.gd
+godot --headless --path . -s tests/test_entity_lifecycle.gd
 
 echo ""
 echo "--- Running: test_elemental_resolver.gd ---"
-"$GODOT_BIN" --headless --path . -s tests/test_elemental_resolver.gd
+godot --headless --path . -s tests/test_elemental_resolver.gd
 
 echo ""
 echo "--- Running: test_burden_stem_caption_router.gd ---"
-"$GODOT_BIN" --headless --path . -s tests/test_burden_stem_caption_router.gd
+godot --headless --path . -s tests/test_burden_stem_caption_router.gd
 
 echo ""
 echo "=== ALL TEST SUITES PASSED ==="
