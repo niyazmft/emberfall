@@ -22,12 +22,7 @@ func initialize(config: Dictionary, mwt_matrix: _MWTCaptionMatrix) -> void:
 
 
 func get_caption_node() -> Node:
-	var ml: MainLoop = Engine.get_main_loop()
-	if ml is SceneTree:
-		var n: Node = ml.root.get_node_or_null("CaptionManager")
-		if n:
-			return n
-	return null
+	return AutoloadHelper.caption_manager()
 
 
 func schedule_mwt_transition_caption(

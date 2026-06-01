@@ -277,8 +277,9 @@ func _enter_sanctum(_ctx: Dictionary) -> void:
 	room_index = -1
 	run_seed = 0
 	# Reset burden tracking for new sanctum session.
-	if get_node_or_null("/root/BurdenManager"):
-		get_node("/root/BurdenManager").call("reset")
+	var bm: Node = AutoloadHelper.burden_manager()
+	if bm != null:
+		bm.call("reset")
 
 
 func _enter_biome_generation(_ctx: Dictionary) -> void:
@@ -478,8 +479,9 @@ func _action_reset_run(_ctx: Dictionary) -> void:
 	if _entity_lifecycle:
 		_entity_lifecycle.call("reset_moral_queue")
 		_entity_lifecycle.call("clear_timers")
-	if get_node_or_null("/root/BurdenManager"):
-		get_node("/root/BurdenManager").call("reset")
+	var bm: Node = AutoloadHelper.burden_manager()
+	if bm != null:
+		bm.call("reset")
 
 
 func _compute_moral_deltas() -> Array:
