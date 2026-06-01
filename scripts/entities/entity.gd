@@ -15,64 +15,64 @@ signal hp_changed(new_hp: int, old_hp: int)
 
 # ── Grid Position ───────────────────────────────────────────────────
 @export var x: int = 0:
-	set(value):
-		if x != value:
-			x = value
+	set(p_value):
+		if x != p_value:
+			x = p_value
 			position_changed.emit(x, y)
 
 @export var y: int = 0:
-	set(value):
-		if y != value:
-			y = value
+	set(p_value):
+		if y != p_value:
+			y = p_value
 			position_changed.emit(x, y)
 
 @export var elevation: int = 0:
-	set(value):
-		if elevation != value:
-			elevation = value
+	set(p_value):
+		if elevation != p_value:
+			elevation = p_value
 			elevation_changed.emit(elevation)
 
 ## Facing vector as integer components. Normalized to cardinal directions.
 @export var facing_x: int = 0:
-	set(value):
-		if facing_x != value:
-			facing_x = value
+	set(p_value):
+		if facing_x != p_value:
+			facing_x = p_value
 			facing_changed.emit(facing_x, facing_y)
 
 @export var facing_y: int = 1:
-	set(value):
-		if facing_y != value:
-			facing_y = value
+	set(p_value):
+		if facing_y != p_value:
+			facing_y = p_value
 			facing_changed.emit(facing_x, facing_y)
 
 # ── Core Stats ──────────────────────────────────────────────────────
 @export var hp_max: int = 1:
-	set(value):
-		hp_max = DeterministicMath.clampi(value, 1, GameConstants.HP_MAX_BOUND)
+	set(p_value):
+		hp_max = DeterministicMath.clampi(p_value, 1, GameConstants.HP_MAX_BOUND)
 
 @export var hp: int = 1:
-	set(value):
+	set(p_value):
 		var old_hp: int = hp
-		hp = DeterministicMath.clampi(value, 0, hp_max)
+		hp = DeterministicMath.clampi(p_value, 0, hp_max)
 		if hp != old_hp:
 			hp_changed.emit(hp, old_hp)
 
 @export var off: int = 0:
-	set(value):
-		off = DeterministicMath.clampi(value, 0, GameConstants.STAT_OFF_BOUND)
+	set(p_value):
+		off = DeterministicMath.clampi(p_value, 0, GameConstants.STAT_OFF_BOUND)
 
 @export var def_: int = 0:
-	set(value):
-		def_ = DeterministicMath.clampi(value, 0, GameConstants.STAT_DEF_BOUND)
+	set(p_value):
+		def_ = DeterministicMath.clampi(p_value, 0, GameConstants.STAT_DEF_BOUND)
 
 @export var spd: int = 1:
-	set(value):
-		spd = DeterministicMath.clampi(value, 1, GameConstants.STAT_SPD_BOUND)
+	set(p_value):
+		spd = DeterministicMath.clampi(p_value, 1, GameConstants.STAT_SPD_BOUND)
 
 # ── Moral Weight ────────────────────────────────────────────────────
 @export var moral_flag: int = 0:
-	set(value):
-		moral_flag = DeterministicMath.clampi(value, 0, 999)
+	set(p_value):
+		moral_flag = DeterministicMath.clampi(p_value, 0, 999)
 
 # ── AP (per-phase transient; not persisted across runs) ─────────────
 var ap: int = GameConstants.AP_MAX
@@ -80,9 +80,9 @@ var ap: int = GameConstants.AP_MAX
 # ── State ───────────────────────────────────────────────────────────
 enum State { IDLE, STUNNED, DYING, DEAD, GHOST }
 @export var state: State = State.IDLE:
-	set(value):
-		if state != value:
-			state = value
+	set(p_value):
+		if state != p_value:
+			state = p_value
 			state_changed.emit(state)
 
 # ── Identity ────────────────────────────────────────────────────────

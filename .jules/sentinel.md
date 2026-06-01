@@ -1,0 +1,4 @@
+## 2026-05-31 - Insecure Deserialization in RemapPanel
+**Vulnerability:** The input rebinding system (`scripts/ui/remap_panel.gd`) previously used `inst_to_dict()` and `dict_to_inst()` to serialize and deserialize `InputEvent` objects to/from the `user://remap.save` file. This could lead to Insecure Deserialization, as a maliciously crafted `user://remap.save` could inject an arbitrary `@path` property into the JSON that could execute arbitrary Godot resources when `dict_to_inst()` parsed it.
+**Learning:** Functions like `inst_to_dict()` and `dict_to_inst()` are inherently unsafe to use on user-writable files because they lack type guards during deserialization.
+**Prevention:** Avoid `inst_to_dict()` and `dict_to_inst()` entirely for persistence. Use explicit serialization and deserialization functions that perform strict type validation and assign properties directly rather than blindly instantiating arbitrary dictionaries.

@@ -6,11 +6,11 @@ extends Node2D
 ## Handles: positioning, elevation, facing direction, state effects.
 
 @export var entity: Entity:
-	set(value):
-		if entity != value:
+	set(p_value):
+		if entity != p_value:
 			if entity:
 				_disconnect_entity_signals()
-			entity = value
+			entity = p_value
 			if is_inside_tree() and entity:
 				_connect_entity_signals()
 				_sync_to_entity()
@@ -20,13 +20,16 @@ extends Node2D
 @export var height_indicator: CanvasItem
 
 var _target_position: Vector2
-var _grid_renderer: Node2D
+var _grid_renderer: GridRenderer
 @export var lerp_speed: float = 10.0
 
 
 func _ready() -> void:
 	# Attempt to find GridRenderer in the scene at the expected path
-	_grid_renderer = get_node_or_null("/root/CombatRoom/GridRenderer")
+	var combat_room: Node = get_node_or_null("/root/CombatRoom")
+	if combat_room:
+		_grid_renderer = combat_room.get_node_or_null("GridRenderer") as GridRenderer
+
 	if not _grid_renderer:
 		# Fallback: search the tree if not at the specific path
 		var roots: Window = get_tree().root
