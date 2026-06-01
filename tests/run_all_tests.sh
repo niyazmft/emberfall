@@ -13,6 +13,11 @@
 
 set -euo pipefail
 
+function cleanup() {
+  rm -f tests/temp_runner.gd
+}
+trap cleanup EXIT
+
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$PROJECT_DIR"
 
@@ -66,7 +71,6 @@ func _initialize() -> void:
     root.add_child(t)
 GDEOF
   "$GODOT_BIN" --headless --path . -s tests/temp_runner.gd
-  rm -f tests/temp_runner.gd
 }
 
 run_node_test "res://tests/test_state_machine.gd"  "test_state_machine.gd"
