@@ -25,15 +25,16 @@ var _grid_renderer: GridRenderer
 
 
 func _ready() -> void:
-	# Attempt to find GridRenderer in the scene at the expected path
 	var combat_room: Node = get_node_or_null("/root/CombatRoom")
 	if combat_room:
-		_grid_renderer = combat_room.get_node_or_null("GridRenderer") as GridRenderer
+		for child: Node in combat_room.get_children():
+			if child is GridRenderer:
+				_grid_renderer = child as GridRenderer
+				break
 
 	if not _grid_renderer:
-		# Fallback: search the tree if not at the specific path
-		var roots: Window = get_tree().root
-		_grid_renderer = roots.find_child("GridRenderer", true, false) as GridRenderer
+		# Fallback: search the tree by type instead of string name
+		_grid_renderer = _find_grid_renderer(get_tree().root)
 
 	_setup_greybox()
 
@@ -48,6 +49,16 @@ func _process(delta: float) -> void:
 		global_position = global_position.lerp(_target_position, delta * lerp_speed)
 	else:
 		global_position = _target_position
+
+
+func _find_grid_renderer(node: Node) -> GridRenderer:
+	if node is GridRenderer:
+		return node as GridRenderer
+	for child: Node in node.get_children():
+		var result: GridRenderer = _find_grid_renderer(child)
+		if result != null:
+			return result
+	return null
 
 
 func _sync_to_entity() -> void:
