@@ -15,9 +15,9 @@ jobs:
     name: gdscript-format
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '20'
       - name: Install markdownlint-cli
@@ -25,7 +25,7 @@ jobs:
       - name: Lint Markdown (check only)
         run: markdownlint '**/*.md' --ignore node_modules --ignore .git
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.10'
       - name: Install gdtoolkit
@@ -45,9 +45,9 @@ jobs:
     name: validate-math
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.10'
       - name: Run deterministic math cross-validator
@@ -59,11 +59,12 @@ jobs:
   gdscript-lint:
     name: gdscript-lint
     runs-on: ubuntu-latest
+    needs: [gdscript-format, validate-math]
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Cache Godot
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.local/share/godot
           key: godot-4.2.2-${{ runner.os }}-${{ hashFiles('.github/workflows/ci.yml') }}
@@ -88,7 +89,7 @@ jobs:
           chmod +x tests/run_all_tests.sh
           tests/run_all_tests.sh 2>&1 | tee tests/test_output.log
       - name: Upload Test Results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: test-results

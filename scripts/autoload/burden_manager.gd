@@ -201,21 +201,9 @@ func reset() -> void:
 # ---------------------------------------------------------------------------
 
 
-## Safe helper to access ConfigLoader autoload without static-call parse errors.
-func _config_node() -> Node:
-	var ml: MainLoop = Engine.get_main_loop()
-	if ml is SceneTree:
-		var n: Node = ml.root.get_node_or_null("ConfigLoader")
-		if n:
-			return n
-	return get_node_or_null("/root/ConfigLoader")
-
-
+## Safe helper to access ConfigLoader via AutoloadHelper.
 func _config_int(key: String, fallback: int) -> int:
-	var n := _config_node()
-	if n and n.has_method("get_int"):
-		return n.get_int(key, fallback)
-	return fallback
+	return AutoloadHelper.config_int(key, fallback)
 
 
 func update_moral_weight(moral_flag: int) -> void:

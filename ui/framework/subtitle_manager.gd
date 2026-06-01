@@ -22,8 +22,12 @@ func _ready() -> void:
 
 
 func _process(_delta: float) -> void:
+	if _active_labels.is_empty():
+		return
+
 	## Update opacities for active captions
-	for event: Resource in _active_labels.keys():
+	# ⚡ Bolt: Iterate over dictionary directly to avoid Array allocation every frame.
+	for event: Resource in _active_labels:
 		var label: Label = _active_labels[event] as Label
 		if event.has_method("opacity"):
 			label.modulate.a = float(event.call("opacity"))

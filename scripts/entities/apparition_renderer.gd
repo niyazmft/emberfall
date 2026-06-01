@@ -193,6 +193,11 @@ func trigger_recoil() -> void:
 		state_machine.cmd_recoil()
 
 
+## Alias for trigger_recoil() to match damage effect naming.
+func trigger_damage_effect() -> void:
+	trigger_recoil()
+
+
 ## Call every frame to sync position to owner.
 func sync_to_owner(owner_position: Vector2) -> void:
 	global_position = owner_position
@@ -279,7 +284,7 @@ func _create_dissolve_noise() -> void:
 
 
 func _create_tint_material() -> void:
-	var shader: Shader = load("res://scripts/shaders/apparition_composite.gdshader") as Shader
+	var shader: Shader = load("res://assets/shaders/apparition_composite.gdshader") as Shader
 	if shader == null:
 		push_warning("ApparitionRenderer: could not load apparition_composite.gdshader")
 		return

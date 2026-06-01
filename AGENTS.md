@@ -143,16 +143,22 @@ Key systems Jules interacts with:
 | `RunManager` | Game phase flow | `cmd_start_run()`, `transition_to()` |
 | `BurdenManager` | Moral weight system | `record_sentient_kill()`, `update_moral_weight()` |
 | `CaptionManager` | Subtitle system | `schedule()`, `cancel_channel()` |
+| `EventBus` | Centralized signaling | `combat_started.emit()`, `entity_died` |
+| `SaveManager` | Data persistence | `save_game()`, `load_game()`, schema validation |
 
 **Access Pattern:**
 
-```gdscript
-# Direct reference (idiomatic and faster)
-if GridSystem:  # Autoloads are globally accessible by name
-    var tile = GridSystem.get_tile(x, y)
+**ALWAYS** use `AutoloadHelper` to retrieve singletons. This ensures safe initialization order (especially during `_init` and early `_ready`) and returns strictly-typed instances.
 
-# Alternative: get_node (slower, use only when name is dynamic)
-var grid: _GridSystem = get_node("/root/GridSystem")
+```gdscript
+# ✅ CORRECT (Type-safe and lifecycle-safe)
+var bm: _BurdenManager = AutoloadHelper.burden_manager()
+if bm != null:
+    bm.update_moral_weight(10)
+
+# ❌ WRONG (Prone to nulls in _init, lacks strong types)
+var bm_direct = BurdenManager
+var bm_node = get_node_or_null("/root/BurdenManager")
 ```
 
 ---
@@ -275,6 +281,18 @@ class_name _ConfigLoader  # ✅ Allows global 'ConfigLoader' to work without col
 # WRONG — will trigger CI failure:
 class_name ConfigLoader   # ❌ Shadows the autoload singleton
 ```
+
+### Autoload Co-location Exceptions
+
+All autoloads are in `scripts/autoload/` **except** two documented exceptions:
+
+| Autoload | Actual Path | Reason |
+|---|---|---|
+| `EntityLifecycle` | `scripts/entities/entity_lifecycle.gd` | Co-located with `Entity` data class; moving breaks Godot UIDs |
+| `RunManager` | `scripts/state_machine/run_manager.gd` | Owns `BaseStateMachine`; co-location is intentional |
+
+**Do NOT move these files** — all `.uid` sidecar files and `preload()` references would break.
+If adding a new autoload, place it in `scripts/autoload/` unless it has an equally strong co-location justification documented here.
 
 ### Failure Protocol
 

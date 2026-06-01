@@ -16,11 +16,20 @@ export.cfg
 
 # Build artifacts
 *.tmp
-*.import
 
 # Test logs
 tools/test_suite.log
 
+# Editor lint log (root-level, tools/godot_lint.log is tracked)
+godot_lint.log
+
 # Python cache
 __pycache__/
 *.pyc
+
+# CLI tool logs
+.antigravitycli/
+
+# agents Skills
+.agents/
+skills-lock.json

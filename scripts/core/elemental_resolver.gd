@@ -18,23 +18,11 @@ class_name ElementalInteractionResolver
 
 # ── Config Helpers ──────────────────────────────────────────────────────
 static func _config_float(key: String, fallback: float) -> float:
-	var ml := Engine.get_main_loop()
-	if ml == null or ml.root == null or not ml.root.is_inside_tree():
-		return fallback
-	var loader: Node = ml.root.get_node_or_null("/root/ConfigLoader")
-	if loader != null and loader.has_method("get_float"):
-		return loader.get_float(key, fallback)
-	return fallback
+	return AutoloadHelper.config_float(key, fallback)
 
 
 static func _config_int(key: String, fallback: int) -> int:
-	var ml := Engine.get_main_loop()
-	if ml == null or ml.root == null or not ml.root.is_inside_tree():
-		return fallback
-	var loader: Node = ml.root.get_node_or_null("/root/ConfigLoader")
-	if loader != null and loader.has_method("get_int"):
-		return loader.get_int(key, fallback)
-	return fallback
+	return AutoloadHelper.config_int(key, fallback)
 
 
 # ── Typed Element Queries ─────────────────────────────────────────────────

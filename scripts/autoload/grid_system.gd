@@ -239,7 +239,9 @@ func get_tile_effects(x: int, y: int) -> Array:
 	if not is_in_bounds(x, y):
 		return []
 	var idx: int = index(x, y)
-	var raw: Array = _elemental_overlay.get(idx, [])
+	if not _elemental_overlay.has(idx):
+		return []
+	var raw: Array = _elemental_overlay[idx]
 	var out: Array = []
 	out.resize(raw.size())
 	for i: int in range(raw.size()):
