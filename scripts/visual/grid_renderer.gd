@@ -33,6 +33,7 @@ func _ready() -> void:
 func _render_grid() -> void:
 	# Clear existing visuals for re-render support
 	for child: Node in get_children():
+		remove_child(child)
 		child.queue_free()
 	_tile_sprites.clear()
 
