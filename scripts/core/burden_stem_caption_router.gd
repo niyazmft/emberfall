@@ -45,11 +45,9 @@ func would_dispatch(stem_id: String, event_id: String) -> bool:
 	var marker: RefCounted = markers[event_id] as RefCounted
 
 	var mwt: int = 0
-	var ml: MainLoop = Engine.get_main_loop()
-	if ml is SceneTree:
-		var bm: Node = ml.root.get_node_or_null("BurdenManager")
-		if bm:
-			mwt = int(bm.get("current_mwt_level"))
+	var bm: Node = AutoloadHelper.burden_manager()
+	if bm != null:
+		mwt = int(bm.get("current_mwt_level"))
 
 	if mwt < int(marker.get("mwt_binding")):
 		return false

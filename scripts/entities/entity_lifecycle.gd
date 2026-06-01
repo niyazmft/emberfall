@@ -60,42 +60,23 @@ var player_entity: Entity = null:
 	set(value):
 		player_entity = value
 
-
-# ── Safe autoload helpers (avoid class_name / autoload ambiguity) ────────
-func _config_node() -> Node:
-	var ml: MainLoop = Engine.get_main_loop()
-	if ml is SceneTree:
-		var loader: Node = ml.root.get_node_or_null("ConfigLoader")
-		if loader:
-			return loader
-	return get_node_or_null("/root/ConfigLoader")
-
-
-func _burden_node() -> Node:
-	var ml: MainLoop = Engine.get_main_loop()
-	if ml is SceneTree:
-		var burden: Node = ml.root.get_node_or_null("BurdenManager")
-		if burden:
-			return burden
-	return get_node_or_null("/root/BurdenManager")
+# ── Autoload access helpers ──────────────────────────────────────────────────
+# Delegated to AutoloadHelper — single source of truth for safe autoload access.
 
 
 func _config_int(key: String, fallback: int) -> int:
-	var n: Node = _config_node()
-	if n and n.has_method("get_int"):
-		return n.get_int(key, fallback)
-	return fallback
+	return AutoloadHelper.config_int(key, fallback)
 
 
 func _update_burden_weight(flag: int) -> void:
-	var n: Node = _burden_node()
-	if n and n.has_method("update_moral_weight"):
+	var n: Node = AutoloadHelper.burden_manager()
+	if n != null and n.has_method("update_moral_weight"):
 		n.update_moral_weight(flag)
 
 
 func _record_kill(enemy_id: String, enemy_name: String) -> void:
-	var n: Node = _burden_node()
-	if n and n.has_method("record_sentient_kill"):
+	var n: Node = AutoloadHelper.burden_manager()
+	if n != null and n.has_method("record_sentient_kill"):
 		n.record_sentient_kill(enemy_id, enemy_name)
 
 
@@ -260,7 +241,7 @@ func get_queued_delta_count() -> int:
 
 
 ## Peek at remaining queued deltas. Returns a shallow copy.
-func get_queued_deltas() -> Array:
+func get_queued_deltas() -> Array[MoralDeltaRecord]:
 	return _moral_queue.duplicate()
 
 

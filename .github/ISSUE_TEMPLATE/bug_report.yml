@@ -1,0 +1,80 @@
+name: Bug Report
+description: Report a bug in Emberfall gameplay, UI, or systems.
+title: "[Bug]: "
+labels: ["bug"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      block: |
+        Thanks for reporting a bug. Please fill out the template below so we can reproduce and fix it.
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      description: How broken is it?
+      options:
+        - Critical (crash, data loss, blocker)
+        - High (feature unusable, easy to hit)
+        - Medium (feature usable but wrong result)
+        - Low (cosmetic, edge case)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      description: Where did the bug occur?
+      options:
+        - Windows
+        - Linux
+        - macOS
+        - Web (HTML5)
+        - Android (Termux)
+    validations:
+      required: true
+
+  - type: input
+    id: godot-version
+    attributes:
+      label: Godot version
+      description: Output of `godot --version`
+      placeholder: "4.2.2"
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: How can we trigger this bug?
+      placeholder: |
+        1. Start a new run
+        2. Move keeper to tile (5, 5)
+        3. Attack enemy at (6, 5)
+        4. Observe...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or screenshots
+      description: Paste relevant output or attach images.
