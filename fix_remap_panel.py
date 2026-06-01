@@ -25,7 +25,7 @@ for line in lines:
         in_deserialize = True
 
     if in_deserialize and line.strip() == 'return e':
-        new_lines.insert(-1, '\t\te.device = int(d.get("device", 0))\n')
+        new_lines.append('\t\te.device = int(d.get("device", 0))\n')
 
     new_lines.append(line)
 
