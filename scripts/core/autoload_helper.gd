@@ -58,6 +58,16 @@ static func run_manager() -> _RunManager:
 	return get_autoload("RunManager") as _RunManager
 
 
+## Returns the EventBus autoload, or null.
+static func event_bus() -> _EventBus:
+	return get_autoload("EventBus") as _EventBus
+
+
+## Returns the SaveManager autoload, or null.
+static func save_manager() -> _SaveManager:
+	return get_autoload("SaveManager") as _SaveManager
+
+
 # ── Derived Helpers ───────────────────────────────────────────────────────────
 
 

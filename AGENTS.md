@@ -157,8 +157,8 @@ if bm != null:
     bm.update_moral_weight(10)
 
 # ❌ WRONG (Prone to nulls in _init, lacks strong types)
-var bm = BurdenManager
-var bm = get_node_or_null("/root/BurdenManager")
+var bm_direct = BurdenManager
+var bm_node = get_node_or_null("/root/BurdenManager")
 ```
 
 ---
