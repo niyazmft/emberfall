@@ -17,11 +17,8 @@ export.cfg
 # Build artifacts
 *.tmp
 
-# Test logs
-tools/test_suite.log
-
-# Editor lint log (root-level, tools/godot_lint.log is tracked)
-godot_lint.log
+# Logs
+*.log
 
 # Python cache
 __pycache__/

@@ -13,6 +13,11 @@
 
 set -euo pipefail
 
+function cleanup() {
+  rm -f tests/temp_runner.gd
+}
+trap cleanup EXIT
+
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$PROJECT_DIR"
 
@@ -59,12 +64,13 @@ run_node_test() {
   local LABEL="$2"
   echo ""
   echo "--- Running: ${LABEL} ---"
-  "$GODOT_BIN" --headless --path . -s - <<GDEOF
+  cat <<GDEOF > tests/temp_runner.gd
 extends SceneTree
 func _initialize() -> void:
     var t: Node = (load("${SCRIPT_RES_PATH}") as GDScript).new()
-    get_root().add_child(t)
+    root.add_child(t)
 GDEOF
+  "$GODOT_BIN" --headless --path . -s tests/temp_runner.gd
 }
 
 run_node_test "res://tests/test_state_machine.gd"  "test_state_machine.gd"
