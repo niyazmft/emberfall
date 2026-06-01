@@ -11,18 +11,9 @@ var _modal_stack: Array[Node] = []
 var _dim_rect: ColorRect
 var _dim_tween: Tween
 var _pp_rect: ColorRect
-var init_time_ms: int = 0
 
 
 func _ready() -> void:
-	var start_time := Time.get_ticks_msec()
-	_initialize()
-	init_time_ms = Time.get_ticks_msec() - start_time
-	if OS.is_debug_build():
-		print("Autoload '%s' initialized in %d ms" % [name, init_time_ms])
-
-
-func _initialize() -> void:
 	layer = 100  # Ensure UI is on top
 	_setup_pp_rect()
 	_dim_rect = ColorRect.new()

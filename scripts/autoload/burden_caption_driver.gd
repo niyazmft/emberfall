@@ -13,29 +13,29 @@ const MIN_INTENSITY: float = 0.2
 
 # ── Properties ────────────────────────────────────────────────────────────
 var _cooldowns: Dictionary = {}
-var init_time_ms: int = 0
+var _expired_keys: Array[String] = []
 
 # ── Lifecycle ────────────────────────────────────────────────────────────────
 
 
 func _ready() -> void:
-	var start_time := Time.get_ticks_msec()
-	_initialize()
-	init_time_ms = Time.get_ticks_msec() - start_time
-	if OS.is_debug_build():
-		print("Autoload '%s' initialized in %d ms" % [name, init_time_ms])
-
-
-func _initialize() -> void:
 	_connect_middleware()
 	_print_debug("BurdenCaptionDriver ready")
 
 
 func _process(delta: float) -> void:
-	for key: String in _cooldowns.keys():
+	if _cooldowns.is_empty():
+		return
+
+	# ⚡ Bolt: Iterate over dictionary directly to avoid Array allocation every frame.
+	_expired_keys.clear()
+	for key: String in _cooldowns:
 		_cooldowns[key] -= delta
 		if _cooldowns[key] <= 0.0:
-			_cooldowns.erase(key)
+			_expired_keys.append(key)
+
+	for key: String in _expired_keys:
+		_cooldowns.erase(key)
 
 
 # ── Internal ────────────────────────────────────────────────────────────────

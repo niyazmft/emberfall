@@ -28,7 +28,6 @@ var room_id: String = ""
 ## Key: tile_index (y*GRID_SIZE+x), Value: Array of effect dictionaries.
 ## Each effect: { "element": ElementType, "duration": int, "applied_turn": int }
 var _elemental_overlay: Dictionary = {}
-var init_time_ms: int = 0
 
 ## Engine constant: oil reduces movement speed by 0.8×.
 ## Discrete grid cost: ceil(1 / 0.8) = 2 AP per tile.
@@ -40,14 +39,6 @@ const SLIP_MOVEMENT_BASE_COST: int = 1
 ## Lifecycle
 ## ------------------------------------------------------------------
 func _ready() -> void:
-	var start_time := Time.get_ticks_msec()
-	_initialize()
-	init_time_ms = Time.get_ticks_msec() - start_time
-	if OS.is_debug_build():
-		print("Autoload '%s' initialized in %d ms" % [name, init_time_ms])
-
-
-func _initialize() -> void:
 	_reset_grid()
 
 
