@@ -230,7 +230,11 @@ func save_bindings() -> void:
 			serialized_events.append(_serialize_event(event))
 		save_data[action] = serialized_events
 
-	var file: FileAccess = FileAccess.open(REMAP_SAVE_PATH, FileAccess.WRITE)
+	# SECURITY FIX: Encrypting user input save data to prevent basic manipulation/tampering
+	# and insecure deserialization attacks that could arise from plaintext store_var() usage.
+	var file: FileAccess = FileAccess.open_encrypted_with_pass(
+		REMAP_SAVE_PATH, FileAccess.WRITE, _get_secure_salt()
+	)
 	if file:
 		file.store_var(save_data)
 		file.close()
@@ -240,7 +244,10 @@ func load_bindings() -> void:
 	if not FileAccess.file_exists(REMAP_SAVE_PATH):
 		return
 
-	var file: FileAccess = FileAccess.open(REMAP_SAVE_PATH, FileAccess.READ)
+	# SECURITY FIX: Read encrypted save file to validate integrity and prevent execution of modified user configs.
+	var file: FileAccess = FileAccess.open_encrypted_with_pass(
+		REMAP_SAVE_PATH, FileAccess.READ, _get_secure_salt()
+	)
 	if file:
 		var save_data: Variant = file.get_var()
 		file.close()
@@ -344,3 +351,7 @@ func _on_reset_pressed() -> void:
 	InputMap.load_from_project_settings()
 	save_bindings()
 	create_action_list()
+
+
+func _get_secure_salt() -> String:
+	return OS.get_unique_id() + "_remap_salt"

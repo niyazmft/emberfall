@@ -7,3 +7,8 @@
 **Vulnerability:** The `SettingsManager` autoload (`scripts/autoload/settings_manager.gd`) previously used `FileAccess.open(..., FileAccess.WRITE)` and `FileAccess.open(..., FileAccess.READ)` in plaintext, combined with `store_var()` and `get_var()`. This could lead to local file tampering or insecure deserialization (arbitrary object instantiation) via a maliciously crafted `user://settings.save` file.
 **Learning:** Saving and loading user data in plaintext using `get_var()` can expose the application to malicious local modifications or deserialization attacks if a user shares or replaces their save file.
 **Prevention:** Always use `FileAccess.open_encrypted_with_pass()` with a deterministically generated, per-device or secure salt when saving data via `store_var()` to ensure integrity and prevent trivial tampering.
+
+## 2026-06-01 - File Encryption for User Input Bindings
+**Vulnerability:** The `RemapPanel` script (`scripts/ui/remap_panel.gd`) previously used `FileAccess.open(..., FileAccess.WRITE)` and `FileAccess.open(..., FileAccess.READ)` in plaintext, combined with `store_var()` and `get_var()`. This could lead to local file tampering or insecure deserialization (arbitrary object instantiation) via a maliciously crafted `user://remap.save` file.
+**Learning:** Saving and loading user input bindings in plaintext using `get_var()` can expose the application to malicious local modifications or deserialization attacks if a user shares or replaces their save file.
+**Prevention:** Always use `FileAccess.open_encrypted_with_pass()` with a deterministically generated, per-device or secure salt when saving data via `store_var()` to ensure integrity and prevent trivial tampering.
