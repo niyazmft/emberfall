@@ -46,7 +46,6 @@ class_name _SaveManager
 ## ──────────────────────────────────────────────────────────────────────────
 ## Reference: config/save_schema.json  |  system-specification-core.md §Gate-2-2
 
-
 # ── Constants ──────────────────────────────────────────────────────────────
 
 ## Absolute path to the single save file written by the engine.
@@ -56,11 +55,10 @@ const SAVE_PATH: String = "user://save_state.json"
 ## Mismatch on load triggers a push_warning but does NOT abort the load.
 const SAVE_VERSION: int = 1
 
-
 # ── Signals ────────────────────────────────────────────────────────────────
 
 ## Emitted after a successful write to disk.
-signal save_completed()
+signal save_completed
 
 ## Emitted after a successful read from disk.  Carries the full parsed state.
 signal load_completed(data: Dictionary)
@@ -71,14 +69,15 @@ signal save_failed(reason: String)
 ## Emitted when load_game() cannot read or parse the file.
 signal load_failed(reason: String)
 
-
 # ── Lifecycle ──────────────────────────────────────────────────────────────
+
 
 func _ready() -> void:
 	_print_debug("SaveManager ready. Save path: %s" % SAVE_PATH)
 
 
 # ── Public API ─────────────────────────────────────────────────────────────
+
 
 ## Serializes `state` to JSON and writes it to SAVE_PATH.
 ##
@@ -145,9 +144,13 @@ func load_game() -> Dictionary:
 		var file_version: int = int(data["version"])
 		if file_version != SAVE_VERSION:
 			push_warning(
-				"[SaveManager] load_game: save version mismatch (file=%d, expected=%d). "
-				% [file_version, SAVE_VERSION]
-				+ "Proceeding with best-effort load."
+				(
+					(
+						"[SaveManager] load_game: save version mismatch (file=%d, expected=%d). "
+						% [file_version, SAVE_VERSION]
+					)
+					+ "Proceeding with best-effort load."
+				)
 			)
 	else:
 		push_warning("[SaveManager] load_game: save file has no version field.")
@@ -182,6 +185,7 @@ func has_save() -> bool:
 
 
 # ── Private Helpers ────────────────────────────────────────────────────────
+
 
 ## Prints `msg` only in debug builds.  Never use raw print() for errors;
 ## call push_warning() / push_error() instead.

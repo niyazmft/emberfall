@@ -13,7 +13,6 @@
 class_name _EventBus
 extends Node
 
-
 # ── EntityLifecycle ──────────────────────────────────────────────────────────
 
 ## Fired when an entity transitions between gameplay states.
@@ -31,7 +30,6 @@ signal moral_delta_processed(delta: int, source: String, sentient: bool)
 ## Fired when the player resolves a spare-or-execute choice.
 signal spare_or_execute(entity: Entity, was_spared: bool)
 
-
 # ── BurdenManager ────────────────────────────────────────────────────────────
 
 ## Fired when the kill-history queue changes.
@@ -44,7 +42,6 @@ signal burden_active_changed(active: bool)
 ## Fired when a burden event resolves.
 ## result is a BurdenEventResult instance (widened to Object to avoid coupling).
 signal burden_event_triggered(result: Object)
-
 
 # ── RunManager ───────────────────────────────────────────────────────────────
 
@@ -66,12 +63,10 @@ signal biome_echo_triggered(p_biome_index: int)
 ## Fired when a run ends, carrying its result label and summary context.
 signal run_ended(p_result: StringName, p_run_context: Dictionary)
 
-
 # ── AudioMiddleware ───────────────────────────────────────────────────────────
 
 ## Fired when an audio stem event is detected (e.g. beat, loop, transition).
 signal stem_event_detected(stem_id: String, event_type: String, intensity: float)
-
 
 # ── InputRouter ───────────────────────────────────────────────────────────────
 
@@ -79,15 +74,13 @@ signal stem_event_detected(stem_id: String, event_type: String, intensity: float
 ## device is an InputRouter.InputDevice enum value, widened to int to avoid coupling.
 signal device_changed(device: int)
 
-
 # ── LayerManager ─────────────────────────────────────────────────────────────
 
 ## Fired when a modal layer opens.
-signal modal_opened()
+signal modal_opened
 
 ## Fired when a modal layer closes.
-signal modal_closed()
-
+signal modal_closed
 
 # ── SafeZoneManager ───────────────────────────────────────────────────────────
 

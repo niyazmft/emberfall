@@ -14,8 +14,8 @@ class_name AutoloadHelper
 ## pattern that was duplicated across entity_lifecycle.gd, burden_manager.gd,
 ## elemental_resolver.gd, burden_caption_bridge.gd, and burden_stem_caption_router.gd.
 
-
 # ── Core Accessor ─────────────────────────────────────────────────────────────
+
 
 ## Returns the named autoload Node, or null if the SceneTree is not ready or
 ## the autoload has not been registered.
@@ -31,6 +31,7 @@ static func get_autoload(autoload_name: String) -> Node:
 
 
 # ── Named Autoload Shortcuts ──────────────────────────────────────────────────
+
 
 ## Returns the ConfigLoader autoload, or null.
 static func config_loader() -> Node:
@@ -58,6 +59,7 @@ static func run_manager() -> Node:
 
 
 # ── Derived Helpers ───────────────────────────────────────────────────────────
+
 
 ## Reads an int config value via ConfigLoader.get_int(), returning fallback
 ## if ConfigLoader is unavailable or the key is not set.

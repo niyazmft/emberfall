@@ -60,9 +60,9 @@ var player_entity: Entity = null:
 	set(value):
 		player_entity = value
 
-
 # ── Autoload access helpers ──────────────────────────────────────────────────
 # Delegated to AutoloadHelper — single source of truth for safe autoload access.
+
 
 func _config_int(key: String, fallback: int) -> int:
 	return AutoloadHelper.config_int(key, fallback)
