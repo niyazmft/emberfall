@@ -70,5 +70,9 @@ func _on_quit_pressed() -> void:
 	if scene:
 		var modal: Node = scene.instantiate()
 		modal.call("setup", "CONFIRM_QUIT_TITLE", "CONFIRM_QUIT_BODY")
-		modal.connect("confirmed", func() -> void: get_tree().quit())
+		modal.connect("confirmed", _on_quit_confirmed)
 		LayerManager.add_modal(modal)
+
+
+func _on_quit_confirmed() -> void:
+	get_tree().quit()
