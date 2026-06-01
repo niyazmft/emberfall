@@ -52,6 +52,7 @@ layout_mode = 2
 text = "Audio"
 
 [node name="MasterVol" type="HSlider" parent="MarginContainer/VBoxContainer/ScrollContainer/SettingsList"]
+mouse_default_cursor_shape = 2
 layout_mode = 2
 
 [node name="GraphicsLabel" type="Label" parent="MarginContainer/VBoxContainer/ScrollContainer/SettingsList"]
@@ -59,13 +60,13 @@ layout_mode = 2
 text = "Graphics"
 
 [node name="Resolution" type="OptionButton" parent="MarginContainer/VBoxContainer/ScrollContainer/SettingsList"]
+mouse_default_cursor_shape = 2
 layout_mode = 2
 item_count = 1
 popup/item_0/text = "1920x1080"
 popup/item_0/id = 0
 
 [node name="BackButton" type="Button" parent="MarginContainer/VBoxContainer"]
-mouse_default_cursor_shape = 2
 custom_minimum_size = Vector2(200, 50)
 layout_mode = 2
 size_flags_horizontal = 4

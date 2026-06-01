@@ -227,7 +227,7 @@ func save_bindings() -> void:
 		var events: Array[InputEvent] = InputMap.action_get_events(action)
 		var serialized_events: Array = []
 		for event: InputEvent in events:
-			serialized_events.append(inst_to_dict(event))
+			serialized_events.append(_serialize_event(event))
 		save_data[action] = serialized_events
 
 	var file: FileAccess = FileAccess.open(REMAP_SAVE_PATH, FileAccess.WRITE)
@@ -252,8 +252,92 @@ func load_bindings() -> void:
 					InputMap.action_erase_events(action)
 					var event_list: Array = sd[action] as Array
 					for event_dict: Dictionary in event_list:
-						var event: InputEvent = dict_to_inst(event_dict) as InputEvent
-						InputMap.action_add_event(action, event)
+						var event: InputEvent = _deserialize_event(event_dict)
+						if event:
+							InputMap.action_add_event(action, event)
+
+
+func _serialize_event(event: InputEvent) -> Dictionary:
+	var d: Dictionary = {}
+	d["device"] = event.device
+	if event is InputEventKey:
+		d["type"] = "InputEventKey"
+		d["keycode"] = event.keycode
+		d["physical_keycode"] = event.physical_keycode
+		d["key_label"] = event.key_label
+		d["unicode"] = event.unicode
+		d["echo"] = event.echo
+		d["pressed"] = event.pressed
+		d["shift_pressed"] = event.shift_pressed
+		d["alt_pressed"] = event.alt_pressed
+		d["ctrl_pressed"] = event.ctrl_pressed
+		d["meta_pressed"] = event.meta_pressed
+	elif event is InputEventMouseButton:
+		d["type"] = "InputEventMouseButton"
+		d["button_index"] = event.button_index
+		d["pressed"] = event.pressed
+		d["canceled"] = event.canceled
+		d["double_click"] = event.double_click
+		d["shift_pressed"] = event.shift_pressed
+		d["alt_pressed"] = event.alt_pressed
+		d["ctrl_pressed"] = event.ctrl_pressed
+		d["meta_pressed"] = event.meta_pressed
+	elif event is InputEventJoypadButton:
+		d["type"] = "InputEventJoypadButton"
+		d["button_index"] = event.button_index
+		d["pressed"] = event.pressed
+		d["pressure"] = event.pressure
+	elif event is InputEventJoypadMotion:
+		d["type"] = "InputEventJoypadMotion"
+		d["axis"] = event.axis
+		d["axis_value"] = event.axis_value
+	return d
+
+
+func _deserialize_event(d: Dictionary) -> InputEvent:
+	if not d.has("type"):
+		return null
+	var type: String = d.get("type", "")
+	if type == "InputEventKey":
+		var e: InputEventKey = InputEventKey.new()
+		e.keycode = int(d.get("keycode", 0))
+		e.physical_keycode = int(d.get("physical_keycode", 0))
+		e.key_label = int(d.get("key_label", 0))
+		e.unicode = int(d.get("unicode", 0))
+		e.echo = bool(d.get("echo", false))
+		e.pressed = bool(d.get("pressed", false))
+		e.shift_pressed = bool(d.get("shift_pressed", false))
+		e.alt_pressed = bool(d.get("alt_pressed", false))
+		e.ctrl_pressed = bool(d.get("ctrl_pressed", false))
+		e.device = int(d.get("device", 0))
+		e.meta_pressed = bool(d.get("meta_pressed", false))
+		return e
+	elif type == "InputEventMouseButton":
+		var e: InputEventMouseButton = InputEventMouseButton.new()
+		e.button_index = int(d.get("button_index", 0))
+		e.pressed = bool(d.get("pressed", false))
+		e.canceled = bool(d.get("canceled", false))
+		e.double_click = bool(d.get("double_click", false))
+		e.shift_pressed = bool(d.get("shift_pressed", false))
+		e.alt_pressed = bool(d.get("alt_pressed", false))
+		e.ctrl_pressed = bool(d.get("ctrl_pressed", false))
+		e.device = int(d.get("device", 0))
+		e.meta_pressed = bool(d.get("meta_pressed", false))
+		return e
+	elif type == "InputEventJoypadButton":
+		var e: InputEventJoypadButton = InputEventJoypadButton.new()
+		e.button_index = int(d.get("button_index", 0))
+		e.pressed = bool(d.get("pressed", false))
+		e.device = int(d.get("device", 0))
+		e.pressure = float(d.get("pressure", 0.0))
+		return e
+	elif type == "InputEventJoypadMotion":
+		var e: InputEventJoypadMotion = InputEventJoypadMotion.new()
+		e.axis = int(d.get("axis", 0))
+		e.device = int(d.get("device", 0))
+		e.axis_value = float(d.get("axis_value", 0.0))
+		return e
+	return null
 
 
 func _on_reset_pressed() -> void:

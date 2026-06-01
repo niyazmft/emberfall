@@ -40,28 +40,24 @@ text = "PAUSED"
 horizontal_alignment = 1
 
 [node name="ResumeButton" type="Button" parent="CenterContainer/VBoxContainer"]
-mouse_default_cursor_shape = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(300, 60)
 layout_mode = 2
 text = "PAUSE_RESUME"
 
 [node name="RestartButton" type="Button" parent="CenterContainer/VBoxContainer"]
-mouse_default_cursor_shape = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(300, 60)
 layout_mode = 2
 text = "PAUSE_RESTART"
 
 [node name="SettingsButton" type="Button" parent="CenterContainer/VBoxContainer"]
-mouse_default_cursor_shape = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(300, 60)
 layout_mode = 2
 text = "PAUSE_SETTINGS"
 
 [node name="QuitButton" type="Button" parent="CenterContainer/VBoxContainer"]
-mouse_default_cursor_shape = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(300, 60)
 layout_mode = 2
