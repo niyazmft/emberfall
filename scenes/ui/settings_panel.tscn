@@ -42,7 +42,6 @@ text = "SETTINGS_SETTINGS"
 horizontal_alignment = 1
 
 [node name="TabContainer" type="TabContainer" parent="MarginContainer/VBoxContainer"]
-mouse_default_cursor_shape = 2
 layout_mode = 2
 size_flags_vertical = 3
 
