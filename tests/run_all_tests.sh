@@ -81,4 +81,9 @@ run_node_test "res://tests/test_burden_event.gd"   "test_burden_event.gd"
 run_node_test "res://tests/test_ui_reflow.gd"      "test_ui_reflow.gd"
 
 echo ""
+echo ""
+echo "--- Running: test_base_enemy.gd ---"
+"$GODOT_BIN" --headless --path . -s tests/test_base_enemy.gd
+
+echo ""
 echo "=== ALL TEST SUITES PASSED ==="
