@@ -1,5 +1,6 @@
 extends SceneTree
 
+
 func _initialize() -> void:
 	var script: GDScript = load("res://scripts/ui/remap_panel.gd") as GDScript
 	var panel: Node = script.new()

@@ -19,6 +19,27 @@ func test_remap_logic() -> void:
 	key.keycode = KEY_F
 	InputMap.action_add_event("test_action", key)
 
+	var router: Node = Node.new()
+	router.name = "InputRouter"
+	router.set("current_device", 0)
+	root.add_child(router)
+
+	var panel_vbox: VBoxContainer = VBoxContainer.new()
+	panel_vbox.name = "VBoxContainer"
+	var panel_scroll: ScrollContainer = ScrollContainer.new()
+	panel_scroll.name = "ScrollContainer"
+	var action_list: VBoxContainer = VBoxContainer.new()
+	action_list.name = "ActionList"
+	panel_scroll.add_child(action_list)
+	panel_vbox.add_child(panel_scroll)
+	remap_panel.add_child(panel_vbox)
+
+	var toast: Label = Label.new()
+	toast.name = "ConflictToast"
+	remap_panel.add_child(toast)
+
+	root.add_child(remap_panel)
+
 	remap_panel.call("_ready")
 	print("Action list created")
 
