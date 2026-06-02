@@ -68,6 +68,11 @@ static func save_manager() -> _SaveManager:
 	return get_autoload("SaveManager") as _SaveManager
 
 
+## Returns the GridSystem autoload, or null.
+static func grid_system() -> _GridSystem:
+	return get_autoload("GridSystem") as _GridSystem
+
+
 # ── Derived Helpers ───────────────────────────────────────────────────────────
 
 

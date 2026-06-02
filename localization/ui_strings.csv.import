@@ -15,5 +15,3 @@ dest_files=["res://localization/ui_strings.en.translation", "res://localization/
 
 compress=1
 delimiter=0
-unescape_keys=false
-unescape_translations=true
