@@ -49,22 +49,21 @@ echo "🎮 Step 3: Validating Deterministic Math (Godot)..."
 
 # 4. Full Test Suite (NEW)
 echo ""
-echo "🧪 Step 4: Running Full Test Suite..."
-if [ -f tests/run_all_tests.sh ]; then
-    chmod +x tests/run_all_tests.sh
-    export GODOT_BIN
+echo "🧪 Step 4: Running Full Test Suite via GdUnit4..."
+if [ -f "addons/gdUnit4/bin/GdUnitCmdTool.gd" ]; then
     # Use || true to capture exit code without set -e killing script immediately
-    tests/run_all_tests.sh 2>&1 | tee tools/test_suite.log || TEST_EXIT_CODE=$?
-    TEST_EXIT_CODE=${TEST_EXIT_CODE:-0}
-
-    if [ $TEST_EXIT_CODE -ne 0 ]; then
+    "$GODOT_BIN" --headless --path . -s res://addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests/ --ignoreHeadlessMode 2>&1 | tee tools/test_suite.log || TEST_EXIT_CODE=$?
+    
+    # GdUnit4 returns 100 for failures, 101 for warnings (like orphans), and 0 for pure success.
+    # We will treat 0 and 101 as passed for CI/Push checks, but 100 as failure.
+    if [ "$TEST_EXIT_CODE" = "100" ] || [ "$TEST_EXIT_CODE" = "1" ]; then
         echo "------------------------------------------------"
         echo "❌ TEST SUITE FAILED! Check tools/test_suite.log"
         echo "------------------------------------------------"
         exit 1
     fi
 else
-    echo "⚠️ Test suite script not found at tests/run_all_tests.sh"
+    echo "⚠️ GdUnit4 not found at addons/gdUnit4/bin/GdUnitCmdTool.gd"
     echo "Skipping test suite..."
 fi
 

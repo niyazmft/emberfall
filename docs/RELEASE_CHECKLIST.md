@@ -6,10 +6,10 @@ Use this checklist before every tag-driven release. No stage may be skipped.
 
 ## 1. QA Validation Gate
 
-- [ ] All automated tests pass (`tests/run_all_tests.sh`).
+- [ ] All automated tests pass (`tools/pre_push_check.sh`).
 - [ ] Python mirror validation passes (`python3 tests/validate_math.py`).
 - [ ] Palette validation passes if available (`python3 tests/validate_palettes.py`).
-- [ ] In-engine test runner completes without failures.
+- [ ] In-engine GdUnit4 test runner completes without failures.
 - [ ] **QA Lead sign-off required.**
 
 ## 2. Version Verification

@@ -2,7 +2,7 @@ extends Control
 
 signal finished
 
-@onready var panel: Panel = $Panel as Panel
+@onready var panel: PanelContainer = $Panel as PanelContainer
 @onready var label: Label = $Panel/Label as Label
 
 

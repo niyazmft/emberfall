@@ -17,8 +17,12 @@ func _ready() -> void:
 
 
 func setup(title_key: String, body_key: String) -> void:
-	title_label.text = tr(title_key)
-	body_label.text = tr(body_key)
+	if not is_node_ready():
+		await ready
+	if title_label:
+		title_label.text = tr(title_key)
+	if body_label:
+		body_label.text = tr(body_key)
 
 
 func dismiss() -> void:

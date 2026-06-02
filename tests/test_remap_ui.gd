@@ -1,37 +1,35 @@
-extends SceneTree
-
-
-func _initialize() -> void:
-	test_remap_logic()
-	quit()
+class_name TestRemapUI
+extends GdUnitTestSuite
 
 
 func test_remap_logic() -> void:
-	print("Running Remap Logic Tests...")
+	if FileAccess.file_exists("user://remap.save"):
+		DirAccess.remove_absolute("user://remap.save")
 
-	var script: GDScript = load("res://scripts/ui/remap_panel.gd") as GDScript
-	var remap_panel: Node = script.new()
+	var scene: PackedScene = load("res://scenes/ui/remap_panel.tscn") as PackedScene
+	var remap_panel: Node = auto_free(scene.instantiate())
+	add_child(remap_panel)
 
-	# Test action list creation
-	if not InputMap.has_action("test_action"):
-		InputMap.add_action("test_action")
+	if InputMap.has_action("test_action"):
+		InputMap.erase_action("test_action")
+	InputMap.add_action("test_action")
 	var key: InputEventKey = InputEventKey.new()
 	key.keycode = KEY_F
+	key.physical_keycode = KEY_F
 	InputMap.action_add_event("test_action", key)
 
-	remap_panel.call("_ready")
-	print("Action list created")
-
-	# Test conflict detection
+	var acts: Array[StringName] = []
+	for a: StringName in InputMap.get_actions():
+		if a == &"test_action":
+			acts.append(a)
+	print("Actions list: ", acts)
+	print("Events for test_action: ", InputMap.action_get_events("test_action"))
 	var conflict: StringName = remap_panel.call("find_conflict", key, "other_action") as StringName
-	if conflict == "test_action":
-		print("Conflict detection passed")
-	else:
-		print("Conflict detection failed: ", conflict)
+	assert_that(conflict).is_equal(StringName("test_action"))
 
-	# Test remap
 	var new_key: InputEventKey = InputEventKey.new()
 	new_key.keycode = KEY_G
+	new_key.physical_keycode = KEY_G
 	remap_panel.call("remap_action_to", "test_action", new_key)
 
 	var events: Array[InputEvent] = InputMap.action_get_events("test_action")
@@ -41,14 +39,6 @@ func test_remap_logic() -> void:
 			found = true
 			break
 
-	if found:
-		print("Remap logic passed")
-	else:
-		print("Remap logic failed")
+	assert_that(found).is_true()
 
-	# Test Reset
 	remap_panel.call("_on_reset_pressed")
-	print("Reset to defaults called")
-
-	print("Remap Logic Tests Completed")
-	remap_panel.queue_free()

@@ -127,11 +127,11 @@ func _config_int(key: String, fallback: int) -> int:
 ## Running Tests
 
 ```bash
-# Full test suite (mirrors CI)
-bash tests/run_all_tests.sh
+# Full test suite via GdUnit4 (mirrors CI)
+godot --headless --path . -s res://addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests/ --ignoreHeadlessMode
 
 # Single test file
-godot --headless --path . -s tests/test_deterministic_math.gd
+godot --headless --path . -s res://addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests/test_deterministic_math.gd
 
 # Python cross-platform math validator
 python3 tests/validate_math.py
@@ -148,11 +148,10 @@ bash tools/pre_push_check.sh
 ## Adding a Test
 
 1. Create `tests/test_<feature>.gd`.
-2. Use `extends SceneTree` (with `_initialize()`) for standalone tests.
+2. Use `extends GdUnitTestSuite`.
 3. Use strict typing throughout.
-4. Exit with `quit(0)` (pass) or `quit(1)` (fail).
-5. Add it to `tests/run_all_tests.sh`.
-6. Run the full suite to confirm no regressions.
+4. Use `assert_that()` for assertions.
+5. Run the suite locally or headlessly to confirm no regressions.
 
 ---
 

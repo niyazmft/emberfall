@@ -4,8 +4,7 @@ Please ensure all items are checked before submitting this PR for review.
 
 ## 1. Automated Testing
 - [ ] **Deterministic Math Validation**: Run `python3 tests/validate_math.py`.
-- [ ] **In-Engine Math Validation**: Run `godot --script tests/test_deterministic_math.gd --headless`.
-- [ ] **Full Test Suite**: Run `bash tests/run_all_tests.sh`.
+- [ ] **Full Test Suite**: Run `bash tools/pre_push_check.sh` (which executes GdUnit4 tests).
 
 ## 2. Pre-Commit Hooks
 - [ ] **GDScript Format**: Run `gdformat scripts/ tests/ ui/`.
