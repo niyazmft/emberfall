@@ -63,6 +63,12 @@ func test_heavy_cover() -> bool:
 
 
 func _ready() -> void:
+	# Small delay to ensure all nodes are ready
+	await get_tree().process_frame
+	run_all()
+
+
+func run_all() -> void:
 	var passed: int = 0
 	var failed: int = 0
 	var tests: Array[String] = [
