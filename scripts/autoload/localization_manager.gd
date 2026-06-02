@@ -20,10 +20,7 @@ func _ready() -> void:
 
 
 func _load_translations() -> void:
-	var paths: Array[String] = [
-		"res://localization/",
-		"res://assets/locales/"
-	]
+	var paths: Array[String] = ["res://localization/", "res://assets/locales/"]
 
 	for path: String in paths:
 		var dir: DirAccess = DirAccess.open(path)

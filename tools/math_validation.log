@@ -32,6 +32,13 @@ BurdenCaptionDriver: BurdenCaptionDriver ready
 BurdenEventCoordinator: BurdenEventCoordinator ready
 BurdenManager: reset run-local state (persisted noun_index=0)
 LayerManager: Initialized master post-process shader
+LocalizationManager: Loaded translation: res://localization/ui_strings.fr.translation
+LocalizationManager: Loaded translation: res://localization/ui_strings.de.translation
+LocalizationManager: Loaded translation: res://localization/ui_strings.es.translation
+LocalizationManager: Loaded translation: res://localization/ui_strings.en.translation
+LocalizationManager: Loaded translation: res://assets/locales/ui_strings.en.translation
+LocalizationManager: Locale set to: en
+LocalizationManager: Initialized in 1ms
 [SaveManager] SaveManager ready. Save path: user://save_state.json
 WARNING: ObjectDB instances leaked at exit (run with --verbose for details).
      at: cleanup (core/object/object.cpp:2209)

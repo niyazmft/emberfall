@@ -3,6 +3,7 @@ extends SceneTree
 ## Test: LocalizationManager
 ## Verifies that translations are loaded and correctly applied.
 
+
 func _initialize() -> void:
 	# LocalizationManager is an autoload, but since we are running this script
 	# via 'godot -s', the SceneTree doesn't automatically load autoloads
@@ -63,7 +64,9 @@ func test_set_locale() -> bool:
 	var actual_de: String = tr(key_de)
 
 	if actual_de != expected_de:
-		push_error("Expected tr('%s') to be '%s' (DE), but got '%s'" % [key_de, expected_de, actual_de])
+		push_error(
+			"Expected tr('%s') to be '%s' (DE), but got '%s'" % [key_de, expected_de, actual_de]
+		)
 		return false
 
 	# Test French
@@ -73,7 +76,9 @@ func test_set_locale() -> bool:
 	var actual_fr: String = tr(key_fr)
 
 	if actual_fr != expected_fr:
-		push_error("Expected tr('%s') to be '%s' (FR), but got '%s'" % [key_fr, expected_fr, actual_fr])
+		push_error(
+			"Expected tr('%s') to be '%s' (FR), but got '%s'" % [key_fr, expected_fr, actual_fr]
+		)
 		return false
 
 	# Reset to English
