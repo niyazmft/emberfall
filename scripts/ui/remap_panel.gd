@@ -41,7 +41,8 @@ func create_action_list() -> void:
 		action_list.remove_child(child)
 		child.queue_free()
 
-	for action: StringName in InputMap.get_actions():
+	var actions: Array[StringName] = InputMap.get_actions()
+	for action: StringName in actions:
 		if action.begins_with("ui_"):
 			continue
 
