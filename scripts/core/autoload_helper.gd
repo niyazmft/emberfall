@@ -73,6 +73,11 @@ static func grid_system() -> _GridSystem:
 	return get_autoload("GridSystem") as _GridSystem
 
 
+## Returns the LocalizationManager autoload, or null.
+static func localization_manager() -> Node:
+	return get_autoload("LocalizationManager")
+
+
 # ── Derived Helpers ───────────────────────────────────────────────────────────
 
 
