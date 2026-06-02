@@ -11,12 +11,19 @@ const REMAP_SAVE_PATH: String = "user://remap.save"
 
 var remapping_action: String = ""
 var remapping_button: Button = null
+var _cached_router: Node = null
+
+
+func _get_router() -> Node:
+	if not is_instance_valid(_cached_router):
+		_cached_router = get_node_or_null("/root/InputRouter")
+	return _cached_router
 
 
 func _ready() -> void:
 	load_bindings()
 	create_action_list()
-	var router: Node = get_node_or_null("/root/InputRouter")
+	var router: Node = _get_router()
 	if router and router.has_signal("device_changed"):
 		router.connect("device_changed", _on_device_changed)
 
@@ -67,7 +74,7 @@ func get_action_text(action: StringName) -> String:
 		return "None"
 
 	var current_device: int = 0
-	var router: Node = get_node_or_null("/root/InputRouter")
+	var router: Node = _get_router()
 	if router:
 		current_device = int(router.get("current_device"))
 
@@ -88,7 +95,7 @@ func get_action_icon(action: StringName) -> Texture2D:
 		return null
 
 	var current_device: int = 0
-	var router: Node = get_node_or_null("/root/InputRouter")
+	var router: Node = _get_router()
 	if router:
 		current_device = int(router.get("current_device"))
 
