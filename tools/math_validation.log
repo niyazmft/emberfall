@@ -1,0 +1,70 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+
+=== EMBERFALL DETERMINISTIC MATH VALIDATION ===
+
+
+=== RESULTS ===
+Passed: 353
+Failed: 0
+ALL VALIDATION PASSED — math is deterministic.
+ConfigLoader: loaded config from res://config/game_config.json
+BurdenManager: loaded burden event config from res://config/burden_event_config.json
+CaptionManager: CaptionManager ready
+WARNING: AudioMiddleware: Bus 'BD-BASS' not found, using 'Master'
+     at: push_warning (core/variant/variant_utility.cpp:1034)
+     GDScript backtrace (most recent call first):
+         [0] _setup_stems (res://scripts/autoload/audio_middleware.gd:83)
+         [1] _ready (res://scripts/autoload/audio_middleware.gd:23)
+WARNING: _StemPlayback: No AudioEffectSpectrumAnalyzer found on bus 'Master'.
+     at: push_warning (core/variant/variant_utility.cpp:1034)
+     GDScript backtrace (most recent call first):
+         [0] _setup_analyzer (res://scripts/core/stem_playback.gd:89)
+         [1] _ready (res://scripts/core/stem_playback.gd:44)
+         [2] _setup_stems (res://scripts/autoload/audio_middleware.gd:89)
+         [3] _ready (res://scripts/autoload/audio_middleware.gd:23)
+WARNING: AudioMiddleware: Bus 'BD-MECH' not found, using 'Master'
+     at: push_warning (core/variant/variant_utility.cpp:1034)
+     GDScript backtrace (most recent call first):
+         [0] _setup_stems (res://scripts/autoload/audio_middleware.gd:83)
+         [1] _ready (res://scripts/autoload/audio_middleware.gd:23)
+WARNING: _StemPlayback: No AudioEffectSpectrumAnalyzer found on bus 'Master'.
+     at: push_warning (core/variant/variant_utility.cpp:1034)
+     GDScript backtrace (most recent call first):
+         [0] _setup_analyzer (res://scripts/core/stem_playback.gd:89)
+         [1] _ready (res://scripts/core/stem_playback.gd:44)
+         [2] _setup_stems (res://scripts/autoload/audio_middleware.gd:89)
+         [3] _ready (res://scripts/autoload/audio_middleware.gd:23)
+WARNING: AudioMiddleware: Bus 'BD-STRESS' not found, using 'Master'
+     at: push_warning (core/variant/variant_utility.cpp:1034)
+     GDScript backtrace (most recent call first):
+         [0] _setup_stems (res://scripts/autoload/audio_middleware.gd:83)
+         [1] _ready (res://scripts/autoload/audio_middleware.gd:23)
+WARNING: _StemPlayback: No AudioEffectSpectrumAnalyzer found on bus 'Master'.
+     at: push_warning (core/variant/variant_utility.cpp:1034)
+     GDScript backtrace (most recent call first):
+         [0] _setup_analyzer (res://scripts/core/stem_playback.gd:89)
+         [1] _ready (res://scripts/core/stem_playback.gd:44)
+         [2] _setup_stems (res://scripts/autoload/audio_middleware.gd:89)
+         [3] _ready (res://scripts/autoload/audio_middleware.gd:23)
+WARNING: AudioMiddleware: Bus 'BD-CLIMB' not found, using 'Master'
+     at: push_warning (core/variant/variant_utility.cpp:1034)
+     GDScript backtrace (most recent call first):
+         [0] _setup_stems (res://scripts/autoload/audio_middleware.gd:83)
+         [1] _ready (res://scripts/autoload/audio_middleware.gd:23)
+WARNING: _StemPlayback: No AudioEffectSpectrumAnalyzer found on bus 'Master'.
+     at: push_warning (core/variant/variant_utility.cpp:1034)
+     GDScript backtrace (most recent call first):
+         [0] _setup_analyzer (res://scripts/core/stem_playback.gd:89)
+         [1] _ready (res://scripts/core/stem_playback.gd:44)
+         [2] _setup_stems (res://scripts/autoload/audio_middleware.gd:89)
+         [3] _ready (res://scripts/autoload/audio_middleware.gd:23)
+AudioMiddleware: AudioMiddleware ready
+BurdenCaptionDriver: BurdenCaptionDriver ready
+BurdenEventCoordinator: BurdenEventCoordinator ready
+LayerManager: Initialized master post-process shader
+[SaveManager] SaveManager ready. Save path: user://save_state.json
+WARNING: ObjectDB instances leaked at exit (run with --verbose for details).
+   at: cleanup (core/object/object.cpp:2663)
+ERROR: 2 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:810)
