@@ -54,6 +54,8 @@ signal run_ended(p_result: StringName, p_run_context: Dictionary)
 
 
 func _ready() -> void:
+	setup_state_machine()
+
 	_load_config_values()
 	if has_node("/root/EntityLifecycle"):
 		_entity_lifecycle = get_node("/root/EntityLifecycle")
@@ -64,6 +66,16 @@ func _ready() -> void:
 func _on_mwt_reached(_moral_flag: int, _remaining: int) -> void:
 	# When MWT is reached, the Burden Event system takes over.
 	_moral_eval_waiting_burden = true
+
+
+func setup_state_machine() -> void:
+	if _initialized:
+		return
+	_register_states()
+	_register_transitions()
+	set_default_state(RunState.SANCTUM)
+	set_error_state(RunState.ERROR)
+	initialize()
 
 
 func _load_config_values() -> void:
@@ -371,8 +383,7 @@ func _enter_error(_ctx: Dictionary) -> void:
 
 
 func _guard_memory_loaded(_ctx: Dictionary) -> bool:
-	# A new run can start even if no memory was loaded (it will generate a new seed)
-	return true
+	return memory_state_loaded
 
 
 func _guard_topology_ready(_ctx: Dictionary) -> bool:

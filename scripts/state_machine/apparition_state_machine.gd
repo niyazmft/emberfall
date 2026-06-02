@@ -106,6 +106,9 @@ func _register_states() -> void:
 
 
 func _register_transitions() -> void:
+	# INACTIVE → MANIFEST
+	register_transition(ApparitionState.INACTIVE, ApparitionState.MANIFEST)
+
 	# MANIFEST → IDLE (guard: manifest timer elapsed)
 	register_transition(
 		ApparitionState.MANIFEST,
@@ -133,6 +136,14 @@ func _register_transitions() -> void:
 	# IDLE → ABSORB (guard: absolve / burden deactivated)
 	register_transition(
 		ApparitionState.IDLE,
+		ApparitionState.ABSORB,
+		Callable(self, "_guard_absolve_triggered"),
+		Callable()
+	)
+
+	# RECOIL → ABSORB
+	register_transition(
+		ApparitionState.RECOIL,
 		ApparitionState.ABSORB,
 		Callable(self, "_guard_absolve_triggered"),
 		Callable()

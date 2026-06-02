@@ -16,6 +16,17 @@ func _ready() -> void:
 	_setup_visual_proxy()
 
 
+func _process(_delta: float) -> void:
+	# Sync apparition position to the visual proxy's position (which interpolates)
+	if has_node("ApparitionRenderer"):
+		var renderer: Node = get_node("ApparitionRenderer")
+		if renderer.has_method("sync_to_owner"):
+			if visual_proxy:
+				renderer.call("sync_to_owner", visual_proxy.global_position)
+			else:
+				renderer.call("sync_to_owner", global_position)
+
+
 func _setup_entity() -> void:
 	# Initialize entity if not set
 	if entity == null:

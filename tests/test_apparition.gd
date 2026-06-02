@@ -115,6 +115,7 @@ func test_state_machine_manifest_to_idle() -> bool:
 	# Fast-forward manifest timer
 	for _i: int in range(60):
 		sm.update(0.016)
+		renderer._process(0.016)
 
 	if sm.current_state != ApparitionStateMachine.ApparitionState.IDLE:
 		push_error("Expected IDLE after manifest duration elapsed")
@@ -142,9 +143,11 @@ func test_state_machine_recoil_z_promotion() -> bool:
 	sm.cmd_manifest()
 	for _i: int in range(60):
 		sm.update(0.016)
+		renderer._process(0.016)
 
 	# Simulate recoil
 	sm.cmd_recoil()
+	renderer._process(0.016)
 	if not sm._recoil_promotion_active:
 		push_error("Expected recoil promotion active flag")
 		return false
@@ -155,6 +158,7 @@ func test_state_machine_recoil_z_promotion() -> bool:
 	# Fast-forward recoil
 	for _i: int in range(10):
 		sm.update(0.016)
+		renderer._process(0.016)
 
 	# After recoil, z_index should restore
 	if renderer.z_index != 9:
@@ -182,6 +186,8 @@ func test_keeper_integration_damage_triggers_recoil() -> bool:
 	# Fast-forward manifest
 	for _i: int in range(60):
 		k._process(0.016)
+		if k._apparition:
+			k._apparition._process(0.016)
 
 	var sm: ApparitionStateMachine = k._apparition.state_machine
 	if sm.current_state != ApparitionStateMachine.ApparitionState.IDLE:

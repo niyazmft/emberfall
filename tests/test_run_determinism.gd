@@ -1,5 +1,5 @@
 extends SceneTree
-## Unit tests for RunManager deterministic seeding and persistence.
+## Unit tests for _RunManager deterministic seeding and persistence.
 ## Run via `godot --headless --path . -s tests/test_run_determinism.gd`.
 
 
@@ -33,11 +33,11 @@ func run_all() -> void:
 func test_replay_code_roundtrip() -> bool:
 	var seeds: Array[int] = [12345, 0, -1, 0x7FFFFFFFFFFFFFFF, 0x123456789ABCDEF0]
 	for s: int in seeds:
-		var code: String = RunManager.seed_to_replay_code(s)
+		var code: String = _RunManager.seed_to_replay_code(s)
 		if code.length() != 16:
 			push_error("Expected 16-char replay code, got %d for seed %d" % [code.length(), s])
 			return false
-		var decoded: int = RunManager.replay_code_to_seed(code)
+		var decoded: int = _RunManager.replay_code_to_seed(code)
 		if decoded != s:
 			# Note: Godot's hex_to_int handles unsigned 64-bit hex.
 			# If s was negative (like -1), decoded should be the same bit pattern.
@@ -54,7 +54,8 @@ func test_replay_code_roundtrip() -> bool:
 func test_deterministic_room_queue() -> bool:
 	var seed_val: int = 987654321
 
-	var rm1: RunManager = RunManager.new()
+	var rm1: _RunManager = _RunManager.new()
+	rm1.setup_state_machine()
 	root.add_child(rm1)
 	rm1.memory_state_loaded = true
 	rm1.cmd_start_run(seed_val)
@@ -65,7 +66,8 @@ func test_deterministic_room_queue() -> bool:
 	var queue1: Array = rm1.room_queue.duplicate(true)
 	rm1.queue_free()
 
-	var rm2: RunManager = RunManager.new()
+	var rm2: _RunManager = _RunManager.new()
+	rm2.setup_state_machine()
 	root.add_child(rm2)
 	rm2.memory_state_loaded = true
 	rm2.cmd_start_run(seed_val)
@@ -105,7 +107,8 @@ func test_deterministic_room_queue() -> bool:
 
 
 func test_save_load_persistence() -> bool:
-	var rm: RunManager = RunManager.new()
+	var rm: _RunManager = _RunManager.new()
+	rm.setup_state_machine()
 	root.add_child(rm)
 	rm.memory_state_loaded = true
 	rm.cmd_start_run(1337)
@@ -128,7 +131,7 @@ func test_save_load_persistence() -> bool:
 		push_error("Saved room_index mismatch: expected 1, got %d" % saved["room_index"])
 		return false
 
-	var rm2: RunManager = RunManager.new()
+	var rm2: _RunManager = _RunManager.new()
 	root.add_child(rm2)
 	rm2.load_run_state(saved)
 

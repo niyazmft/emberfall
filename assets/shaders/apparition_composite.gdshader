@@ -1,8 +1,8 @@
 shader_type canvas_item;
 
-## Apparition Composite Tint Shader
-## Burden Event Asset Spec §2.2
-## Single-pass composite tinting for apparition silhouettes.
+// Apparition Composite Tint Shader
+// Burden Event Asset Spec §2.2
+// Single-pass composite tinting for apparition silhouettes.
 
 uniform float u_desaturation_amount : hint_range(0.0, 1.0) = 0.2;
 uniform float u_spectral_tint_opacity : hint_range(0.0, 1.0) = 0.4;
@@ -51,7 +51,7 @@ void fragment() {
 		discard;
 	}
 
-	// 1. Desaturation ×0.20 (preserve 20 % of original chroma)
+	// 1. Desaturation x0.20 (preserve 20 % of original chroma)
 	float gray = dot(col, grayscale_weights());
 	vec3 desat_col = mix(vec3(gray), col, u_desaturation_amount);
 
