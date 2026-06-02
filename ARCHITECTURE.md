@@ -60,7 +60,7 @@ Emberfall is a tactical grid combat game built in Godot 4.2+ featuring:
 
 ## Visual System (2.5D)
 
-### Architecture
+### Visual Architecture
 
 ```text
 CombatRoom
@@ -101,7 +101,7 @@ Node2D
 
 ## Burden System
 
-### Architecture
+### Burden Architecture
 
 Split into focused components to handle moral weight and game events:
 
