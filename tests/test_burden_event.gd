@@ -51,17 +51,19 @@ func test_config_loads() -> bool:
 	if not bm._config_loaded:
 		push_error("Expected config to be loaded")
 		return false
-	if bm._collective_nouns.size() != 8:
-		push_error("Expected 8 collective nouns, got %d" % bm._collective_nouns.size())
+	if bm._event_engine._collective_nouns.size() != 8:
+		push_error(
+			"Expected 8 collective nouns, got %d" % bm._event_engine._collective_nouns.size()
+		)
 		return false
-	if bm._numbness_cap != 5:
-		push_error("Expected numbness_cap = 5, got %d" % bm._numbness_cap)
+	if bm._event_engine._numbness_cap != 5:
+		push_error("Expected numbness_cap = 5, got %d" % bm._event_engine._numbness_cap)
 		return false
-	if bm._variants_first.size() != 3:
-		push_error("Expected 3 first variants, got %d" % bm._variants_first.size())
+	if bm._event_engine._variants_first.size() != 3:
+		push_error("Expected 3 first variants, got %d" % bm._event_engine._variants_first.size())
 		return false
-	if bm._variants_repeat.size() != 2:
-		push_error("Expected 2 repeat variants, got %d" % bm._variants_repeat.size())
+	if bm._event_engine._variants_repeat.size() != 2:
+		push_error("Expected 2 repeat variants, got %d" % bm._event_engine._variants_repeat.size())
 		return false
 	return true
 
@@ -180,7 +182,7 @@ func test_noun_rotation_deterministic() -> bool:
 	var _noun3: String = bm2.select_collective_noun(topo + 1, 0)
 	## We only assert determinism, not that different seeds ALWAYS differ.
 	## But we do assert the index is in range.
-	if bm1._burden_noun_index < 0 or bm1._burden_noun_index >= bm1._noun_pool_size:
+	if bm1._burden_noun_index < 0 or bm1._burden_noun_index >= bm1._event_engine._noun_pool_size:
 		push_error("Noun index out of range: %d" % bm1._burden_noun_index)
 		return false
 
@@ -224,15 +226,15 @@ func test_localization_keys_unique() -> bool:
 	bm.reset()
 
 	var keys: Array[String] = []
-	for v: Dictionary in bm._variants_first:
+	for v: Dictionary in bm._event_engine._variants_first:
 		keys.append(str(v.get("localization_key", "")))
-	for v: Dictionary in bm._variants_repeat:
+	for v: Dictionary in bm._event_engine._variants_repeat:
 		keys.append(str(v.get("localization_key", "")))
 
 	keys.append("BE_PHASE_A")
 	keys.append("BE_PHASE_C")
 	keys.append("BE_PHASE_D")
-	keys.append(bm._numbness_localization_key)
+	keys.append(bm._event_engine._numbness_localization_key)
 
 	var seen: Dictionary = {}
 	for k: String in keys:

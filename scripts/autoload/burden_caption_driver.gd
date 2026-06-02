@@ -42,8 +42,9 @@ func _process(delta: float) -> void:
 
 
 func _connect_middleware() -> void:
-	if AudioMiddleware and AudioMiddleware.has_signal("stem_event_detected"):
-		AudioMiddleware.stem_event_detected.connect(_on_stem_event)
+	var am: _AudioMiddleware = AutoloadHelper.get_autoload("AudioMiddleware") as _AudioMiddleware
+	if am != null and am.has_signal("stem_event_detected"):
+		am.stem_event_detected.connect(_on_stem_event)
 
 
 func _on_stem_event(stem_id: String, event_type: String, intensity: float) -> void:
@@ -95,15 +96,16 @@ func _map_and_trigger_caption(stem_id: String, event_type: String, intensity: fl
 				duration = 2.0
 
 	if not caption_text.is_empty():
-		if CaptionManager and CaptionManager.has_method("schedule"):
+		var cm: Node = AutoloadHelper.get_autoload("CaptionManager")
+		if cm != null and cm.has_method("schedule"):
 			# Channel.BURDEN = 1
 			# CaptionCurve.LINEAR = 1
-			CaptionManager.call("schedule", caption_text, 1, 0.0, duration, 1, loc_key)
+			cm.call("schedule", caption_text, 1, 0.0, duration, 1, loc_key)
 			_print_debug("Triggered caption: %s (intensity=%.2f)" % [caption_text, intensity])
 
 		# Also report to CaptionManager for screen readers/internal tracking
-		if CaptionManager and CaptionManager.has_method("report_stem_transient"):
-			CaptionManager.call("report_stem_transient", stem_id, event_type, intensity)
+		if cm != null and cm.has_method("report_stem_transient"):
+			cm.call("report_stem_transient", stem_id, event_type, intensity)
 
 
 func _print_debug(msg: String) -> void:

@@ -5,18 +5,20 @@ class_name _LocalizationManager
 ## Handles loading .translation files and managing the active locale.
 
 const SETTINGS_PATH: String = "user://settings.cfg"
-const LOCALE_SECTION: String = "locale"
-const LOCALE_KEY: String = "language"
 
 var init_time_ms: int = 0
 
 
 func _ready() -> void:
 	var start_time: int = Time.get_ticks_msec()
-	_load_translations()
-	_apply_saved_locale()
+	_initialize()
 	init_time_ms = int(Time.get_ticks_msec() - start_time)
 	_print_debug("Initialized in %dms" % init_time_ms)
+
+
+func _initialize() -> void:
+	_load_translations()
+	_apply_saved_locale()
 
 
 func _load_translations() -> void:
@@ -40,12 +42,16 @@ func _load_translations() -> void:
 
 
 func _apply_saved_locale() -> void:
-	var config: ConfigFile = ConfigFile.new()
-	var err: Error = config.load(SETTINGS_PATH)
 	var locale: String = "en"
-
-	if err == OK:
-		locale = str(config.get_value(LOCALE_SECTION, LOCALE_KEY, "en"))
+	if FileAccess.file_exists(SETTINGS_PATH):
+		var file: FileAccess = FileAccess.open_encrypted_with_pass(
+			SETTINGS_PATH, FileAccess.READ, _get_secure_salt()
+		)
+		if file:
+			var settings: Variant = file.get_var()
+			file.close()
+			if settings is Dictionary:
+				locale = str(settings.get("locale", "en"))
 
 	TranslationServer.set_locale(locale)
 	_print_debug("Locale set to: %s" % locale)
@@ -54,15 +60,32 @@ func _apply_saved_locale() -> void:
 func set_locale(p_locale: String) -> void:
 	TranslationServer.set_locale(p_locale)
 
-	var config: ConfigFile = ConfigFile.new()
-	# Ignore load error, we might be creating it for the first time
-	var _err_load: Error = config.load(SETTINGS_PATH)
-	config.set_value(LOCALE_SECTION, LOCALE_KEY, p_locale)
-	var err: Error = config.save(SETTINGS_PATH)
-	if err != OK:
+	var settings: Dictionary = {}
+	if FileAccess.file_exists(SETTINGS_PATH):
+		var file: FileAccess = FileAccess.open_encrypted_with_pass(
+			SETTINGS_PATH, FileAccess.READ, _get_secure_salt()
+		)
+		if file:
+			var loaded: Variant = file.get_var()
+			file.close()
+			if loaded is Dictionary:
+				settings = loaded
+
+	settings["locale"] = p_locale
+
+	var file: FileAccess = FileAccess.open_encrypted_with_pass(
+		SETTINGS_PATH, FileAccess.WRITE, _get_secure_salt()
+	)
+	if file:
+		file.store_var(settings)
+		file.close()
+		_print_debug("Locale changed to: %s and saved" % p_locale)
+	else:
 		push_error("LocalizationManager: Failed to save locale setting to %s" % SETTINGS_PATH)
 
-	_print_debug("Locale changed to: %s and saved" % p_locale)
+
+func _get_secure_salt() -> String:
+	return OS.get_unique_id() + "_localization_salt"
 
 
 func _print_debug(msg: String) -> void:
