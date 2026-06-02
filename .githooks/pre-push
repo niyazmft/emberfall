@@ -111,8 +111,10 @@ echo "  ✅ Math validation OK"
 echo ""
 echo "🎮 [4/4] Godot Script Parse Check..."
 if command -v "$GODOT_BIN" &>/dev/null; then
+    touch addons/.gdignore
     "$GODOT_BIN" --headless --editor --quit --path . 2>&1 | tee tools/godot_lint.log
-    if grep -iE "SCRIPT ERROR|Parse Error|Compile Error|hides an autoload singleton|SHADER ERROR" tools/godot_lint.log | grep -v "addons/gdUnit4"; then
+    rm -f addons/.gdignore
+    if grep -iE "SCRIPT ERROR|Parse Error|Compile Error|hides an autoload singleton|SHADER ERROR" tools/godot_lint.log; then
         echo ""
         echo "  ❌ Godot reported script/shader errors. Fix before pushing."
         exit 1

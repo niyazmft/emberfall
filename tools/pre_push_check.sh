@@ -40,7 +40,9 @@ python3 tests/validate_math.py
 # 2. GDScript Linting (Editor Scan)
 echo ""
 echo "🧹 Step 2: Running GDScript Lint (Editor Scan)..."
+touch addons/.gdignore
 "$GODOT_BIN" --headless --editor --quit --path . 2>&1 | tee tools/godot_lint.log
+rm -f addons/.gdignore
 
 # 3. In-Engine Math Validation
 echo ""
