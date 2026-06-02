@@ -86,13 +86,25 @@ func test_caption_driver_mapping() -> bool:
 	# Mock CaptionManager
 	var cm: Node = Node.new()
 	cm.name = "CaptionManager"
+
+	# Replace existing autoload node if it exists
+	var existing_cm: Node = get_tree().root.get_node_or_null("CaptionManager")
+	if existing_cm:
+		get_tree().root.remove_child(existing_cm)
+
 	get_tree().root.add_child(cm)
 
 	var results := {"caption_received": false, "received_text": ""}
 
 	# Add dummy schedule method
 	var script: GDScript = GDScript.new()
-	script.source_code = "extends Node\nsignal scheduled(text: String)\nfunc schedule(text: String, _channel: int, _offset: float, _duration: float, _curve: int, _loc_key: String) -> void:\n\tscheduled.emit(text)"
+	script.source_code = (
+		"extends Node\n"
+		+ "signal scheduled(text: String)\n"
+		+ "func schedule(text: String, _channel: int, _offset: float, _duration: float, _curve: int, _loc_key: String) -> void:\n"
+		+ "	scheduled.emit(text)\n"
+		+ "func report_stem_transient(_a: String, _b: String, _c: float) -> void: pass"
+	)
 	script.reload()
 	cm.set_script(script)
 	cm.connect(
@@ -111,24 +123,47 @@ func test_caption_driver_mapping() -> bool:
 	if not results.caption_received:
 		push_error("BurdenCaptionDriver failed to trigger caption")
 		cm.queue_free()
+		if existing_cm:
+			get_tree().root.add_child(existing_cm)
 		return false
 
 	if results.received_text != "[Deep impact]":
 		push_error("Expected '[Deep impact]', got '%s'" % results.received_text)
 		cm.queue_free()
+		if existing_cm:
+			get_tree().root.add_child(existing_cm)
 		return false
 
 	driver.queue_free()
 	cm.queue_free()
+
+	# Restore existing autoload
+	if existing_cm:
+		get_tree().root.add_child(existing_cm)
+
 	return true
 
 
 func test_caption_driver_cooldown() -> bool:
+	# Mock CaptionManager
 	var cm: Node = Node.new()
 	cm.name = "CaptionManager"
+
+	# Replace existing autoload node if it exists
+	var existing_cm: Node = get_tree().root.get_node_or_null("CaptionManager")
+	if existing_cm:
+		get_tree().root.remove_child(existing_cm)
+
 	get_tree().root.add_child(cm)
+
 	var script: GDScript = GDScript.new()
-	script.source_code = "extends Node\nsignal scheduled\nfunc schedule(_a: String,_b: int,_c: float,_d: float,_e: int,_f: String) -> void:\n\tscheduled.emit()"
+	script.source_code = (
+		"extends Node\n"
+		+ "signal scheduled\n"
+		+ "func schedule(_a: String, _b: int, _c: float, _d: float, _e: int, _f: String) -> void:\n"
+		+ "	scheduled.emit()\n"
+		+ "func report_stem_transient(_a: String, _b: String, _c: float) -> void: pass"
+	)
 	script.reload()
 	cm.set_script(script)
 
@@ -145,10 +180,17 @@ func test_caption_driver_cooldown() -> bool:
 	if results.call_count != 1:
 		push_error("Cooldown failed: expected 1 call, got %d" % results.call_count)
 		cm.queue_free()
+		if existing_cm:
+			get_tree().root.add_child(existing_cm)
 		return false
 
 	driver.queue_free()
 	cm.queue_free()
+
+	# Restore existing autoload
+	if existing_cm:
+		get_tree().root.add_child(existing_cm)
+
 	return true
 
 
