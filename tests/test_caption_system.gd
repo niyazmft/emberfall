@@ -150,38 +150,40 @@ func _test_burden_transition_captions() -> void:
 	bm._lifetime_trigger_count = 0
 
 	## Verify config loaded
-	_assert(bm._caption_transitions.has("0_to_1"), "0_to_1 transition exists")
-	_assert(bm._caption_transitions.has("2_to_3"), "2_to_3 transition exists")
-	_assert(bm._caption_transitions.has("3_to_0_emergency"), "3_to_0_emergency exists")
-	_assert(bm._caption_transitions.has("3_to_0_normal"), "3_to_0_normal exists")
-	_assert(bm._caption_transitions.has("2_to_1"), "2_to_1 transition exists")
-	_assert(bm._caption_transitions.has("1_to_0"), "1_to_0 transition exists")
+	_assert(bm._caption_bridge._caption_transitions.has("0_to_1"), "0_to_1 transition exists")
+	_assert(bm._caption_bridge._caption_transitions.has("2_to_3"), "2_to_3 transition exists")
+	_assert(
+		bm._caption_bridge._caption_transitions.has("3_to_0_emergency"), "3_to_0_emergency exists"
+	)
+	_assert(bm._caption_bridge._caption_transitions.has("3_to_0_normal"), "3_to_0_normal exists")
+	_assert(bm._caption_bridge._caption_transitions.has("2_to_1"), "2_to_1 transition exists")
+	_assert(bm._caption_bridge._caption_transitions.has("1_to_0"), "1_to_0 transition exists")
 
 	## Verify offsets
-	var t0_1: Dictionary = bm._caption_transitions["0_to_1"]
+	var t0_1: Dictionary = bm._caption_bridge._caption_transitions["0_to_1"]
 	_assertf(float(t0_1.get("offset_sec", 0.0)), 2.0, 0.001, "0→1 offset = 2.0 s")
 	_assert(str(t0_1.get("curve", "")) == "EXPONENTIAL", "0→1 curve = EXPONENTIAL")
 
-	var t2_3: Dictionary = bm._caption_transitions["2_to_3"]
+	var t2_3: Dictionary = bm._caption_bridge._caption_transitions["2_to_3"]
 	_assertf(float(t2_3.get("offset_sec", 0.0)), 2.5, 0.001, "2→3 offset = 2.5 s")
 	_assert(str(t2_3.get("curve", "")) == "EXPONENTIAL", "2→3 curve = EXPONENTIAL")
 
-	var t_emerg: Dictionary = bm._caption_transitions["3_to_0_emergency"]
+	var t_emerg: Dictionary = bm._caption_bridge._caption_transitions["3_to_0_emergency"]
 	_assertf(float(t_emerg.get("offset_sec", 0.0)), 0.5, 0.001, "emergency 3→0 offset = 0.5 s")
 	_assert(
 		str(t_emerg.get("curve", "")) == "STEEP_EXPONENTIAL",
 		"emergency 3→0 curve = STEEP_EXPONENTIAL"
 	)
 
-	var t2_1: Dictionary = bm._caption_transitions["2_to_1"]
+	var t2_1: Dictionary = bm._caption_bridge._caption_transitions["2_to_1"]
 	_assertf(float(t2_1.get("offset_sec", 0.0)), 1.0, 0.001, "2→1 offset = 1.0 s")
 	_assert(str(t2_1.get("curve", "")) == "LINEAR", "2→1 curve = LINEAR")
 
-	var t1_0: Dictionary = bm._caption_transitions["1_to_0"]
+	var t1_0: Dictionary = bm._caption_bridge._caption_transitions["1_to_0"]
 	_assertf(float(t1_0.get("offset_sec", 0.0)), 1.0, 0.001, "1→0 offset = 1.0 s")
 	_assert(str(t1_0.get("curve", "")) == "LINEAR", "1→0 curve = LINEAR")
 
-	var t_norm: Dictionary = bm._caption_transitions["3_to_0_normal"]
+	var t_norm: Dictionary = bm._caption_bridge._caption_transitions["3_to_0_normal"]
 	_assertf(float(t_norm.get("offset_sec", 0.0)), 2.5, 0.001, "normal 3→0 offset = 2.5 s")
 	_assert(str(t_norm.get("curve", "")) == "LOGARITHMIC", "normal 3→0 curve = LOGARITHMIC")
 	_assertf(float(t_norm.get("duration_sec", 0.0)), 5.0, 0.001, "normal 3→0 duration = 5.0 s")
@@ -282,7 +284,7 @@ func _test_normal_3_to_0_transition() -> void:
 	var bm := BURDEN_SCRIPT.new()
 	bm._load_burden_config()
 
-	var data: Dictionary = bm._caption_transitions.get("3_to_0_normal", {})
+	var data: Dictionary = bm._caption_bridge._caption_transitions.get("3_to_0_normal", {})
 	_assert(not data.is_empty(), "3_to_0_normal config exists")
 	_assertf(float(data.get("offset_sec", 0.0)), 2.5, 0.001, "normal 3→0 offset")
 	_assertf(float(data.get("duration_sec", 0.0)), 5.0, 0.001, "normal 3→0 duration")

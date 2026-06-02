@@ -143,6 +143,7 @@ Key systems Jules interacts with:
 | `RunManager` | Game phase flow | `cmd_start_run()`, `transition_to()` |
 | `BurdenManager` | Moral weight system | `record_sentient_kill()`, `update_moral_weight()` |
 | `CaptionManager` | Subtitle system | `schedule()`, `cancel_channel()` |
+| `LocalizationManager` | Language management | `set_locale()`, translation loading |
 | `EventBus` | Centralized signaling | `combat_started.emit()`, `entity_died` |
 | `SaveManager` | Data persistence | `save_game()`, `load_game()`, schema validation |
 

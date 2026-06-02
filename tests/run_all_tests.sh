@@ -55,6 +55,10 @@ echo ""
 echo "--- Running: test_remap_ui.gd ---"
 "$GODOT_BIN" --headless --path . -s tests/test_remap_ui.gd
 
+echo ""
+echo "--- Running: test_localization_manager.gd ---"
+"$GODOT_BIN" --headless --path . -s tests/test_localization_manager.gd
+
 # ── 3. Node-based tests (extends Node, _ready() entry, quit() on done) ───────
 # These need a SceneTree host. We use an inline bootstrap — same mechanism
 # as tests/test_runner.gd — so no extra scene files are required.

@@ -50,11 +50,17 @@ EntityLifecycle="*res://scripts/entities/entity_lifecycle.gd"  ## Exception: liv
 RunManager="*res://scripts/state_machine/run_manager.gd"  ## Exception: lives in state_machine/ (owns BaseStateMachine); moving would break UIDs
 GridSystem="*res://scripts/autoload/grid_system.gd"
 LayerManager="*res://scripts/autoload/layer_manager.gd"
+LocalizationManager="*res://scripts/autoload/localization_manager.gd"
 ToastManager="*res://scripts/autoload/toast_manager.gd"
 FocusManager="*res://ui/framework/focus_manager.gd"
 SettingsManager="*res://scripts/autoload/settings_manager.gd"
 SaveManager="*res://scripts/autoload/save_manager.gd"
 InputRouter="*res://scripts/autoload/input_router.gd"
 
+[internationalization]
+
+locale/fallback="en"
+
 [physics]
+
 2d/run_on_separate_thread=true

@@ -73,6 +73,14 @@ static func grid_system() -> _GridSystem:
 	return get_autoload("GridSystem") as _GridSystem
 
 
+## Returns the LocalizationManager autoload, or null.
+## NOTE: Returns Node instead of _LocalizationManager to prevent engine Parse Errors
+## and circularities in headless Godot environments where class_name resolution
+## may fail during early initialization.
+static func localization_manager() -> Node:
+	return get_autoload("LocalizationManager")
+
+
 # ── Derived Helpers ───────────────────────────────────────────────────────────
 
 
