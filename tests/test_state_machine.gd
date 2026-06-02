@@ -31,7 +31,7 @@ func run_all() -> void:
 		"test_run_manager_full_lifecycle",
 		"test_run_manager_biome_boundary",
 		"test_run_manager_player_defeat",
-		"test_run_manager_final_encounter_win",
+		"test_run_manager_final_encounter_won",
 		"test_run_manager_config_loaded",
 	]
 
@@ -133,18 +133,8 @@ func test_base_entry_exit_order() -> bool:
 	var sm: BaseStateMachine = _new_empty_state_machine()
 	var log_list: Array[String] = []
 
-	sm.register_state(
-		0,
-		&"A",
-		Callable(self, "_make_logger").bind(log_list, "enter_A"),
-		Callable(self, "_make_logger").bind(log_list, "exit_A")
-	)
-	sm.register_state(
-		1,
-		&"B",
-		Callable(self, "_make_logger").bind(log_list, "enter_B"),
-		Callable(self, "_make_logger").bind(log_list, "exit_B")
-	)
+	sm.register_state(0, &"A", _make_logger(log_list, "enter_A"), _make_logger(log_list, "exit_A"))
+	sm.register_state(1, &"B", _make_logger(log_list, "enter_B"), _make_logger(log_list, "exit_B"))
 	sm.register_transition(0, 1)
 	sm.set_default_state(0)
 	sm.initialize()
@@ -167,21 +157,9 @@ func test_base_transition_action_between_exit_entry() -> bool:
 	var sm: BaseStateMachine = _new_empty_state_machine()
 	var log_list: Array[String] = []
 
-	sm.register_state(
-		0,
-		&"A",
-		Callable(self, "_make_logger").bind(log_list, "enter_A"),
-		Callable(self, "_make_logger").bind(log_list, "exit_A")
-	)
-	sm.register_state(
-		1,
-		&"B",
-		Callable(self, "_make_logger").bind(log_list, "enter_B"),
-		Callable(self, "_make_logger").bind(log_list, "exit_B")
-	)
-	sm.register_transition(
-		0, 1, Callable(), Callable(self, "_make_logger").bind(log_list, "action_0_1")
-	)
+	sm.register_state(0, &"A", _make_logger(log_list, "enter_A"), _make_logger(log_list, "exit_A"))
+	sm.register_state(1, &"B", _make_logger(log_list, "enter_B"), _make_logger(log_list, "exit_B"))
+	sm.register_transition(0, 1, Callable(), _make_logger(log_list, "action_0_1"))
 	sm.set_default_state(0)
 	sm.initialize()
 
@@ -210,7 +188,7 @@ func test_base_error_fallback() -> bool:
 	sm.set_error_state(99)
 	sm.initialize()
 
-	# Force transition to unregistered state 5
+	# Force transition to unregistered state id 5
 	sm.force_state(5)
 	# Should have fallen back to ERROR (99)
 	if sm.current_state != 99:
@@ -458,14 +436,12 @@ func test_run_manager_config_loaded() -> bool:
 
 func _new_empty_state_machine() -> BaseStateMachine:
 	var sm: BaseStateMachine = BaseStateMachine.new()
-	get_tree().root.add_child(sm)
 	return sm
 
 
 func _new_run_manager() -> _RunManager:
 	var rm: _RunManager = _RunManager.new()
-	get_tree().root.add_child(rm)
-	# Godot calls _ready() automatically when added to tree.
+	rm.setup_state_machine()
 	return rm
 
 
@@ -477,8 +453,8 @@ func _always_false_guard(_ctx: Dictionary) -> bool:
 	return false
 
 
-func _make_logger(log: Array[String], msg: String, _ctx: Dictionary = {}) -> void:
-	log.append(msg)
+func _make_logger(log: Array[String], msg: String) -> Callable:
+	return func(_ctx: Dictionary) -> void: log.append(msg)
 
 
 func _ready() -> void:

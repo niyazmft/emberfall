@@ -124,8 +124,7 @@ func transition_to(target_id: int, context: Dictionary = {}) -> bool:
 		state_transition_attempted.emit(from_name, to_name, false)
 		return false
 
-	_run_transition_actions(from_id, target_id, context)
-	_change_state(target_id, context)
+	_change_state(target_id, context, true)
 	state_transition_attempted.emit(from_name, to_name, true)
 	return true
 
@@ -196,13 +195,16 @@ func _run_transition_actions(from_id: int, to_id: int, context: Dictionary) -> v
 				return
 
 
-func _change_state(to_id: int, context: Dictionary) -> void:
+func _change_state(to_id: int, context: Dictionary, run_actions: bool = false) -> void:
 	var old_id := current_state
 	if old_id != -1 and _states.has(old_id):
 		var old: Dictionary = _states[old_id] as Dictionary
 		if old["exit"].is_valid():
 			old["exit"].call(context)
 		state_exited.emit(old["name"], context)
+
+	if run_actions:
+		_run_transition_actions(old_id, to_id, context)
 
 	previous_state = old_id
 	current_state = to_id

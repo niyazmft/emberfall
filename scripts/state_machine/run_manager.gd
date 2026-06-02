@@ -383,8 +383,7 @@ func _enter_error(_ctx: Dictionary) -> void:
 
 
 func _guard_memory_loaded(_ctx: Dictionary) -> bool:
-	# A new run can start even if no memory was loaded (it will generate a new seed)
-	return true
+	return memory_state_loaded
 
 
 func _guard_topology_ready(_ctx: Dictionary) -> bool:

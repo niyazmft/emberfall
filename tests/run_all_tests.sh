@@ -64,11 +64,11 @@ run_node_test() {
   local LABEL="$2"
   echo ""
   echo "--- Running: ${LABEL} ---"
-  cat <<GDEOF > tests/temp_runner.gd
+	cat <<GDEOF > tests/temp_runner.gd
 extends SceneTree
 func _initialize() -> void:
-    var t: Node = (load("${SCRIPT_RES_PATH}") as GDScript).new()
-    root.add_child(t)
+	var t: Node = (load("${SCRIPT_RES_PATH}") as GDScript).new()
+	root.add_child(t)
 GDEOF
   "$GODOT_BIN" --headless --path . -s tests/temp_runner.gd
 }
