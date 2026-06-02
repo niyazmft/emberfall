@@ -423,7 +423,7 @@ func _parse_function_arguments(input: String) -> Array[Dictionary]:
 		token = next_token(input, current_index)
 		# fallback to not end in a endless loop
 		if token == TOKEN_NOT_MATCH:
-			var error : = """
+			var error := """
 				Parsing Error: Invalid token at pos %d found.
 				Please report this error!
 				source_code:

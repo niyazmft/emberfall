@@ -226,6 +226,9 @@ static func extract_zip(zip_package :String, dest_path :String) -> GdUnitResult:
 			DirAccess.make_dir_recursive_absolute(new_file_path)
 			continue
 		var file: FileAccess = FileAccess.open(new_file_path, FileAccess.WRITE)
+		if file == null:
+			zip.close()
+			return GdUnitResult.error("Can't open file to write: '%s'. Error: %s" % [new_file_path, error_string(FileAccess.get_open_error())])
 		file.store_buffer(zip.read_file(zip_entry))
 	@warning_ignore("return_value_discarded")
 	zip.close()

@@ -282,13 +282,16 @@ func simulate_screen_touch_pressed(index: int, position: Vector2, double_tap := 
 
 @warning_ignore("return_value_discarded")
 func simulate_screen_touch_press(index: int, position: Vector2, double_tap := false) -> GdUnitSceneRunner:
+	var active_scene := scene()
+	if active_scene == null:
+		return self
 	if is_emulate_mouse_from_touch():
 		# we need to simulate in addition to the touch the mouse events
 		set_mouse_position(position)
 		simulate_mouse_button_press(MOUSE_BUTTON_LEFT)
 	# push touch press event at position
 	var event := InputEventScreenTouch.new()
-	event.window_id = scene().get_window().get_window_id()
+	event.window_id = active_scene.get_window().get_window_id()
 	event.index = index
 	event.position = position
 	event.double_tap = double_tap

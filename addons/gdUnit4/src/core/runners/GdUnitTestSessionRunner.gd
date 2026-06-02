@@ -127,7 +127,8 @@ func _process(_delta: float) -> void:
 			var result := await _hooks.execute_startup(_test_session)
 			if result.is_error():
 				push_error(result.error_message())
-			await _executor.run_and_wait(_test_cases)
+			else:
+				await _executor.run_and_wait(_test_cases)
 			result = await _hooks.execute_shutdown(_test_session)
 			if result.is_error():
 				push_error(result.error_message())

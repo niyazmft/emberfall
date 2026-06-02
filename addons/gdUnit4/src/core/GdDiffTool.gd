@@ -177,7 +177,7 @@ static func longestCommonSubsequence(text1 :String, text2 :String) -> PackedStri
 			lcsResultList.append(text2Words[j])
 			i += 1
 			j += 1
-		else: if (solutionMatrix[i + 1][j] >= solutionMatrix[i][j + 1]):
+		elif (solutionMatrix[i + 1][j] >= solutionMatrix[i][j + 1]):
 			i += 1
 		else:
 			j += 1
@@ -204,11 +204,11 @@ static func markTextDifferences(text1 :String, text2 :String, lcsList :PackedStr
 				i = text1Words.size()
 				j = text2Words.size()
 
-			else: if text1Words[i] != lcsList[k]:
+			elif text1Words[i] != lcsList[k]:
 				while i < text1Words.size() and text1Words[i] != lcsList[k]:
 					stringBuffer += "<SPAN style='BACKGROUND-COLOR:" + deleteColor.to_html() + "'>" + text1Words[i] + " </SPAN>"
 					i += 1
-			else: if text2Words[j] != lcsList[k]:
+			elif text2Words[j] != lcsList[k]:
 				while j < text2Words.size() and text2Words[j] != lcsList[k]:
 					stringBuffer += "<SPAN style='BACKGROUND-COLOR:" + insertColor.to_html() + "'>" + text2Words[j] + " </SPAN>"
 					j += 1

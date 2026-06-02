@@ -30,7 +30,7 @@ func register_cb(cmd_name: String, cb: Callable) -> CmdCommandHandler:
 			("The callback '%s:%s' for command '%s' has invalid function signature. "
 			+"The callback signature must be 'func name(value: PackedStringArray)'")
 			% [cb.get_object().get_class(), cb.get_method(), cmd_name])
-		return null
+		return self
 
 	registered_cb[CB_SINGLE_ARG] = cb
 	_command_cbs[cmd_name] = registered_cb
@@ -50,7 +50,7 @@ func register_cbv(cmd_name: String, cb: Callable) -> CmdCommandHandler:
 			("The callback '%s:%s' for command '%s' has invalid function signature. "
 			+"The callback signature must be 'func name(value: PackedStringArray)'")
 			% [cb.get_object().get_class(), cb.get_method(), cmd_name])
-		return null
+		return self
 
 	registered_cb[CB_MULTI_ARGS] = cb
 	_command_cbs[cmd_name] = registered_cb

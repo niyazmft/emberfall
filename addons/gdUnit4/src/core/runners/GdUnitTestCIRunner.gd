@@ -241,20 +241,20 @@ func show_options(show_advanced: bool = false) -> void:
 		Color.DARK_SALMON
 	)
 	for option in _cmd_options.default_options():
-		descripe_option(option)
+		describe_option(option)
 	if show_advanced:
 		console_info(
 			"-- Advanced options --------------------------------------------------------------------------",
 			Color.DARK_SALMON
 		)
 		for option in _cmd_options.advanced_options():
-			descripe_option(option)
+			describe_option(option)
 
 
 ## Describes a single command line option.[br]
 ## [br]
 ## [param cmd_option] The option to describe.
-func descripe_option(cmd_option: CmdOption) -> void:
+func describe_option(cmd_option: CmdOption) -> void:
 	console_info(
 		"  %-40s" % str(cmd_option.commands()),
 		Color.CORNFLOWER_BLUE
