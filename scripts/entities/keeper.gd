@@ -9,6 +9,7 @@ extends Node2D
 ## Scene: res://scenes/keeper.tscn
 
 @export var entity: Entity
+@export var visual_proxy: EntityVisualProxy
 
 ## Configurable properties
 @export var sprite_scale: float = 1.0
@@ -31,14 +32,16 @@ func _ready() -> void:
 	_apparition = _find_or_create_apparition()
 	_apparition.bind_owner(self)
 
-	# Connect entity state changes to apparition effects.
-	# Note: Entity is a RefCounted data class with no built-in signals,
-	# so external combat system must call apply_damage() on this Keeper node.
+	# Connect visual_proxy to entity
+	if visual_proxy and entity:
+		visual_proxy.entity = entity
 
 
 func _process(_delta: float) -> void:
-	# Sync apparition position every frame.
-	if _apparition:
+	# Sync apparition position to the visual proxy's position (which interpolates)
+	if _apparition and visual_proxy:
+		_apparition.sync_to_owner(visual_proxy.global_position)
+	elif _apparition:
 		_apparition.sync_to_owner(global_position)
 
 
@@ -52,10 +55,12 @@ func _process(_delta: float) -> void:
 func apply_damage(damage: int) -> void:
 	if entity == null:
 		return
-	if has_node("/root/EntityLifecycle"):
-		EntityLifecycle.apply_damage(null, entity, damage)
+	var lifecycle: _EntityLifecycle = AutoloadHelper.entity_lifecycle()
+	if lifecycle:
+		lifecycle.apply_damage(null, entity, damage)
 	else:
 		entity.apply_damage(damage)
+
 	if _apparition:
 		_apparition.trigger_recoil()
 
@@ -69,14 +74,16 @@ func heal(amount: int) -> void:
 
 ## Record a sentient enemy kill via BurdenManager.
 func record_sentient_kill(enemy_id: String, enemy_name: String = "") -> void:
-	if BurdenManager:
-		BurdenManager.record_sentient_kill(enemy_id, enemy_name)
+	var bm: _BurdenManager = AutoloadHelper.burden_manager()
+	if bm:
+		bm.record_sentient_kill(enemy_id, enemy_name)
 
 
 ## Update moral weight via BurdenManager (called by MoralEval / combat resolution).
 func update_moral_weight(moral_flag: int) -> void:
-	if BurdenManager:
-		BurdenManager.update_moral_weight(moral_flag)
+	var bm: _BurdenManager = AutoloadHelper.burden_manager()
+	if bm:
+		bm.update_moral_weight(moral_flag)
 
 
 ## Convenience: is the Keeper alive?

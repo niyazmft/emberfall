@@ -24,7 +24,7 @@ const COLOR_OIL: Color = Color(0.0, 0.0, 0.55)  # Dark Blue
 
 func _ready() -> void:
 	# Idiomatic access to Autoloaded systems
-	_grid_system = GridSystem
+	_grid_system = AutoloadHelper.grid_system()
 	_diamond_tex = _generate_diamond_texture()
 	_render_grid()
 
@@ -44,8 +44,8 @@ func _render_grid() -> void:
 	# Draw order: Isometric grids are typically rendered from back-to-front.
 	# Sorting by (x + y) ensures correct depth for flat grids.
 	# Nested loops naturally follow this order in isometric space.
-	for y: int in range(GridSystem.GRID_SIZE):
-		for x: int in range(GridSystem.GRID_SIZE):
+	for y: int in range(_grid_system.GRID_SIZE):
+		for x: int in range(_grid_system.GRID_SIZE):
 			var tile: TacTileData = _grid_system.get_tile(x, y)
 			if tile:
 				_render_tile(x, y, tile)

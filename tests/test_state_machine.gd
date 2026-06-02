@@ -1,5 +1,5 @@
 extends Node
-## Unit / integration tests for BaseStateMachine framework and RunManager lifecycle.
+## Unit / integration tests for BaseStateMachine framework and _RunManager lifecycle.
 ## Run via Godot Editor test runner or `godot --headless --script tests/test_state_machine.gd`.
 ##
 ## Covers:
@@ -9,9 +9,9 @@ extends Node
 ##   AC-4: Transition actions run between exit and entry
 ##   AC-5: Frame-rate independent update accumulates state_time
 ##   AC-6: Error state fallback on invalid transition target
-##   AC-7: RunManager full lifecycle SANCTUM → ... → RUN_RESOLUTION → SANCTUM
-##   AC-8: RunManager biome boundary detection
-##   AC-9: RunManager config-driven defaults (fallback if game_config.json missing)
+##   AC-7: _RunManager full lifecycle SANCTUM → ... → RUN_RESOLUTION → SANCTUM
+##   AC-8: _RunManager biome boundary detection
+##   AC-9: _RunManager config-driven defaults (fallback if game_config.json missing)
 
 
 func run_all() -> void:
@@ -242,13 +242,13 @@ func test_base_update_delta_accumulation() -> bool:
 
 
 # ===========================================================================
-# RunManager Lifecycle Tests
+# _RunManager Lifecycle Tests
 # ===========================================================================
 
 
 func test_run_manager_starts_in_sanctum() -> bool:
-	var rm: RunManager = _new_run_manager()
-	if rm.current_state != RunManager.RunState.SANCTUM:
+	var rm: _RunManager = _new_run_manager()
+	if rm.current_state != _RunManager.RunState.SANCTUM:
 		push_error("Expected initial state SANCTUM, got %d" % rm.current_state)
 		return false
 	if rm.get_current_state_name() != &"SANCTUM":
@@ -258,13 +258,13 @@ func test_run_manager_starts_in_sanctum() -> bool:
 
 
 func test_run_manager_requires_memory_loaded() -> bool:
-	var rm: RunManager = _new_run_manager()
+	var rm: _RunManager = _new_run_manager()
 	# memory_state_loaded defaults to false; guard should block transition
-	var ok: bool = rm.transition_to(RunManager.RunState.BIOME_GENERATION)
+	var ok: bool = rm.transition_to(_RunManager.RunState.BIOME_GENERATION)
 	if ok:
 		push_error("Expected start_run blocked when memory_state_loaded=false")
 		return false
-	if rm.current_state != RunManager.RunState.SANCTUM:
+	if rm.current_state != _RunManager.RunState.SANCTUM:
 		push_error("Expected remain in SANCTUM")
 		return false
 	return true
@@ -272,7 +272,7 @@ func test_run_manager_requires_memory_loaded() -> bool:
 
 func test_run_manager_full_lifecycle() -> bool:
 	# Use a tiny room count to keep the test fast
-	var rm: RunManager = _new_run_manager()
+	var rm: _RunManager = _new_run_manager()
 	rm.biome_count = 1
 	rm.rooms_per_biome_min = 2
 	rm.rooms_per_biome_max = 2
@@ -280,7 +280,7 @@ func test_run_manager_full_lifecycle() -> bool:
 	# 1. SANCTUM → BIOME_GENERATION (with memory loaded)
 	rm.memory_state_loaded = true
 	rm.cmd_start_run()
-	if rm.current_state != RunManager.RunState.BIOME_GENERATION:
+	if rm.current_state != _RunManager.RunState.BIOME_GENERATION:
 		push_error(
 			"Expected BIOME_GENERATION after start_run, got %s" % rm.get_current_state_name()
 		)
@@ -289,7 +289,7 @@ func test_run_manager_full_lifecycle() -> bool:
 	# Fast-forward biome generation timer
 	for _i: int in range(10):
 		rm.update(0.02)
-	if rm.current_state != RunManager.RunState.ROOM:
+	if rm.current_state != _RunManager.RunState.ROOM:
 		push_error("Expected ROOM after topology_ready, got %s" % rm.get_current_state_name())
 		return false
 	if rm.room_queue.size() != 2:
@@ -301,20 +301,20 @@ func test_run_manager_full_lifecycle() -> bool:
 
 	# 2. ROOM → MORAL_EVAL → ROOM (simulate combat in room 0)
 	rm.cmd_combat_resolved()
-	if rm.current_state != RunManager.RunState.MORAL_EVAL:
+	if rm.current_state != _RunManager.RunState.MORAL_EVAL:
 		push_error("Expected MORAL_EVAL after combat_resolved")
 		return false
 
 	# Fast-forward moral eval timer
 	for _i: int in range(10):
 		rm.update(0.02)
-	if rm.current_state != RunManager.RunState.ROOM:
+	if rm.current_state != _RunManager.RunState.ROOM:
 		push_error("Expected ROOM after moral eval auto-resolve")
 		return false
 
 	# 3. ROOM → ROOM (next room, no biome boundary since single biome)
 	rm.cmd_next_room()
-	if rm.current_state != RunManager.RunState.ROOM:
+	if rm.current_state != _RunManager.RunState.ROOM:
 		push_error("Expected ROOM after next_room")
 		return false
 	if rm.room_index != 1:
@@ -323,13 +323,13 @@ func test_run_manager_full_lifecycle() -> bool:
 
 	# 4. Final room → RUN_RESOLUTION (run end because queue exhausted)
 	rm.cmd_next_room()
-	if rm.current_state != RunManager.RunState.RUN_RESOLUTION:
+	if rm.current_state != _RunManager.RunState.RUN_RESOLUTION:
 		push_error("Expected RUN_RESOLUTION after final room, got %s" % rm.get_current_state_name())
 		return false
 
 	# 5. RUN_RESOLUTION → SANCTUM
 	rm.cmd_return_to_sanctum()
-	if rm.current_state != RunManager.RunState.SANCTUM:
+	if rm.current_state != _RunManager.RunState.SANCTUM:
 		push_error("Expected SANCTUM after return_to_sanctum")
 		return false
 
@@ -337,7 +337,7 @@ func test_run_manager_full_lifecycle() -> bool:
 
 
 func test_run_manager_biome_boundary() -> bool:
-	var rm: RunManager = _new_run_manager()
+	var rm: _RunManager = _new_run_manager()
 	rm.biome_count = 2
 	rm.rooms_per_biome_min = 1
 	rm.rooms_per_biome_max = 1
@@ -353,7 +353,7 @@ func test_run_manager_biome_boundary() -> bool:
 		return false
 
 	rm.cmd_next_room()
-	if rm.current_state != RunManager.RunState.BIOME_THRESHOLD:
+	if rm.current_state != _RunManager.RunState.BIOME_THRESHOLD:
 		push_error(
 			"Expected BIOME_THRESHOLD at biome boundary, got %s" % rm.get_current_state_name()
 		)
@@ -362,7 +362,7 @@ func test_run_manager_biome_boundary() -> bool:
 	# Fast-forward echo timer
 	for _i: int in range(10):
 		rm.update(0.02)
-	if rm.current_state != RunManager.RunState.ROOM:
+	if rm.current_state != _RunManager.RunState.ROOM:
 		push_error("Expected ROOM after echo_triggered")
 		return false
 	if rm.room_index != 1:
@@ -373,7 +373,7 @@ func test_run_manager_biome_boundary() -> bool:
 
 
 func test_run_manager_player_defeat() -> bool:
-	var rm: RunManager = _new_run_manager()
+	var rm: _RunManager = _new_run_manager()
 	rm.biome_count = 1
 	rm.rooms_per_biome_min = 3
 	rm.rooms_per_biome_max = 3
@@ -393,7 +393,7 @@ func test_run_manager_player_defeat() -> bool:
 
 	# Player dies in first room
 	rm.cmd_player_defeated()
-	if rm.current_state != RunManager.RunState.RUN_RESOLUTION:
+	if rm.current_state != _RunManager.RunState.RUN_RESOLUTION:
 		push_error("Expected RUN_RESOLUTION after player_defeated")
 		return false
 	if not results.received:
@@ -406,7 +406,7 @@ func test_run_manager_player_defeat() -> bool:
 
 
 func test_run_manager_final_encounter_won() -> bool:
-	var rm: RunManager = _new_run_manager()
+	var rm: _RunManager = _new_run_manager()
 	rm.biome_count = 1
 	rm.rooms_per_biome_min = 2
 	rm.rooms_per_biome_max = 2
@@ -426,7 +426,7 @@ func test_run_manager_final_encounter_won() -> bool:
 
 	# Win final encounter
 	rm.cmd_final_encounter_won()
-	if rm.current_state != RunManager.RunState.RUN_RESOLUTION:
+	if rm.current_state != _RunManager.RunState.RUN_RESOLUTION:
 		push_error("Expected RUN_RESOLUTION after final_encounter_won")
 		return false
 	if not results.received:
@@ -439,7 +439,7 @@ func test_run_manager_final_encounter_won() -> bool:
 
 
 func test_run_manager_config_loaded() -> bool:
-	var rm: RunManager = _new_run_manager()
+	var rm: _RunManager = _new_run_manager()
 	# If game_config.json is present, values should be loaded from it.
 	# If missing, hard-coded defaults per ConfigLoader DEFAULTS apply.
 	if rm.biome_count == 0:
@@ -462,8 +462,8 @@ func _new_empty_state_machine() -> BaseStateMachine:
 	return sm
 
 
-func _new_run_manager() -> RunManager:
-	var rm: RunManager = RunManager.new()
+func _new_run_manager() -> _RunManager:
+	var rm: _RunManager = _RunManager.new()
 	get_tree().root.add_child(rm)
 	# Godot calls _ready() automatically when added to tree.
 	return rm
