@@ -78,10 +78,8 @@ jobs:
       - name: Run Godot editor scan
         run: |
           mkdir -p tools
-          touch addons/.gdignore
           godot --headless --editor --quit --path . 2>&1 | tee tools/godot_lint.log
-          rm -f addons/.gdignore
-          if grep -iE "SCRIPT ERROR|Parse Error|Compile Error|hides an autoload singleton" tools/godot_lint.log; then
+          if ! python3 tools/filter_godot_errors.py tools/godot_lint.log; then
             echo "❌ GDScript linting failed."
             exit 1
           fi

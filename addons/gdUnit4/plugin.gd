@@ -3,9 +3,9 @@ extends EditorPlugin
 
 var _gd_inspector: Control
 var _gd_console: Control
-var _filesystem_context_menu: EditorContextMenuPlugin
-var _editor_context_menu: EditorContextMenuPlugin
-var _editor_code_context_menu: EditorContextMenuPlugin
+var _filesystem_context_menu: Variant
+var _editor_context_menu: Variant
+var _editor_code_context_menu: Variant
 
 
 func _enter_tree() -> void:
@@ -68,21 +68,31 @@ func check_running_in_test_env() -> bool:
 
 
 func _add_context_menus() -> void:
+	# Only add context menus on Godot 4.5+
+	if Engine.get_version_info().hex < 0x40500:
+		return
+	
 	_filesystem_context_menu = preload("res://addons/gdUnit4/src/ui/menu/GdUnitEditorFileSystemContextMenuHandler.gd").new()
 	_editor_context_menu = preload("res://addons/gdUnit4/src/ui/menu/GdUnitScriptEditorContextMenuHandler.gd").new()
 	_editor_code_context_menu = preload("res://addons/gdUnit4/src/ui/menu/GdUnitScriptEditorContextMenuHandler.gd").new()
-	add_context_menu_plugin(EditorContextMenuPlugin.CONTEXT_SLOT_FILESYSTEM, _filesystem_context_menu)
-	add_context_menu_plugin(EditorContextMenuPlugin.CONTEXT_SLOT_SCRIPT_EDITOR, _editor_context_menu)
-	add_context_menu_plugin(EditorContextMenuPlugin.CONTEXT_SLOT_SCRIPT_EDITOR_CODE, _editor_code_context_menu)
+	if self.has_method("add_context_menu_plugin"):
+		self.call("add_context_menu_plugin", 0, _filesystem_context_menu)
+		self.call("add_context_menu_plugin", 1, _editor_context_menu)
+		self.call("add_context_menu_plugin", 2, _editor_code_context_menu)
 
 
 func _remove_context_menus() -> void:
-	if is_instance_valid(_filesystem_context_menu):
-		remove_context_menu_plugin(_filesystem_context_menu)
-	if is_instance_valid(_editor_context_menu):
-		remove_context_menu_plugin(_editor_context_menu)
-	if is_instance_valid(_editor_code_context_menu):
-		remove_context_menu_plugin(_editor_code_context_menu)
+	# Only remove context menus on Godot 4.5+
+	if Engine.get_version_info().hex < 0x40500:
+		return
+	
+	if self.has_method("remove_context_menu_plugin"):
+		if is_instance_valid(_filesystem_context_menu as Object):
+			self.call("remove_context_menu_plugin", _filesystem_context_menu)
+		if is_instance_valid(_editor_context_menu as Object):
+			self.call("remove_context_menu_plugin", _editor_context_menu)
+		if is_instance_valid(_editor_code_context_menu as Object):
+			self.call("remove_context_menu_plugin", _editor_code_context_menu)
 
 
 func _on_resource_saved(resource: Resource) -> void:
