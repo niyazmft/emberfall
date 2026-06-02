@@ -79,6 +79,7 @@ run_node_test "res://tests/test_audio_wiring.gd"   "test_audio_wiring.gd"
 run_node_test "res://tests/test_caption_system.gd" "test_caption_system.gd"
 run_node_test "res://tests/test_burden_event.gd"   "test_burden_event.gd"
 run_node_test "res://tests/test_ui_reflow.gd"      "test_ui_reflow.gd"
+run_node_test "res://tests/test_tile_data.gd"     "test_tile_data.gd"
 
 echo ""
 echo "=== ALL TEST SUITES PASSED ==="
