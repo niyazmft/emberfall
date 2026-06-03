@@ -1,7 +1,7 @@
 # Emberfall Development Roadmap - Project Board
 
 **Project:** Emberfall Tactical Combat Game  
-**Repository:** https://github.com/niyazmft/emberfall  
+**Repository:** <https://github.com/niyazmft/emberfall>  
 **Last Updated:** 2026-06-03  
 **Current Phase:** Phase 4 (Minimum Viable Gameplay)  
 
@@ -11,6 +11,7 @@
 
 This document serves as the project board tracking all development tasks across phases.  
 **Status Legend:**
+
 - ✅ **Done** - Completed and merged
 - 🔄 **In Progress** - Currently being worked on
 - ⏳ **Ready** - Can start immediately (no blockers)
@@ -133,6 +134,7 @@ After completing all Phase 4 tasks, a player can:
 **Week:** 1-2  
 **Focus:** Combat Input + Enemy AI  
 **Parallel Work:**
+
 - Agent 1: Task 4.1 (Combat Input)
 - Agent 2: Task 4.2 (Enemy AI)
 - Agent 3: Task 4.7 (Settings Menu) - *Independent task*
@@ -187,6 +189,7 @@ Independent:
 *Waiting for Phase 4 completion before planning*
 
 **Potential Areas:**
+
 - More enemy types (Mage, Assassin, Support)
 - Skills/Abilities system
 - Status effects (burn, stun, poison)
@@ -201,6 +204,7 @@ Independent:
 ## How to Use This Board
 
 **For Jules (Developer):**
+
 1. Pick a task with ⏳ "Ready" status
 2. Check "Blocked By" - ensure dependencies are done
 3. Check "Can Parallel With" - coordinate with other agents
@@ -208,6 +212,7 @@ Independent:
 5. Move to ✅ "Done" after PR merged
 
 **For You (Director):**
+
 1. Review board weekly
 2. Check critical path (4.1 → 4.2 → 4.3)
 3. Reprioritize if blockers arise
