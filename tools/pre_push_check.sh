@@ -42,10 +42,7 @@ echo ""
 echo "🧹 Step 2: Running GDScript Lint (Editor Scan)..."
 "$GODOT_BIN" --headless --editor --quit --path . 2>&1 | tee tools/godot_lint.log
 
-# 3. In-Engine Math Validation
-echo ""
-echo "🎮 Step 3: Validating Deterministic Math (Godot)..."
-"$GODOT_BIN" --headless --path . -s tests/test_deterministic_math.gd 2>&1 | tee tools/math_validation.log
+# (Step 3 was removed since Godot standalone math validation was migrated to GdUnit4)
 
 # 4. Full Test Suite (NEW)
 echo ""
@@ -76,8 +73,8 @@ if grep -iE "SCRIPT ERROR|Parse Error|Compile Error|hides an autoload singleton|
     exit 1
 fi
 
-# Also check for general ERROR: but exclude common exit-leak false positives
-if grep "ERROR:" tools/godot_lint.log tools/math_validation.log tools/test_suite.log | grep -vE "Resources still in use|ObjectDB instances leaked|Caller thread can't call this function in this node"; then
+# Also check for general ERROR: but exclude common exit-leak false positives and intentional test errors
+if grep "ERROR:" tools/godot_lint.log tools/test_suite.log 2>/dev/null | grep -ivE "resources still in use|objectdb instances leaked|caller thread can't call this function|statemachine: attempted to change to unregistered state"; then
     echo "------------------------------------------------"
     echo "❌ CRITICAL ERRORS DETECTED! Check tools/*.log"
     echo "------------------------------------------------"
