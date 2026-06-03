@@ -158,7 +158,7 @@ After completing all Phase 4 tasks, a player can:
 
 ## Dependency Graph
 
-```
+```text
 Phase 4A (Sprint 1-2):
 ├─ 4.1 Combat Input ──┐
 │                      ├─→ 4.3 Turn Manager ──┐
@@ -186,7 +186,9 @@ Independent:
 
 ## Phase 5 Backlog (Future)
 
-*Waiting for Phase 4 completion before planning*
+### Phase 5 Status
+
+Waiting for Phase 4 completion before planning
 
 **Potential Areas:**
 
