@@ -5,8 +5,7 @@ All PRs submitted by Google Jules must pass this checklist before being consider
 ## 1. Automated Testing
 
 - [ ] **Deterministic Math Validation**: Run `python3 tests/validate_math.py`. All tests must pass with 0 errors.
-- [ ] **In-Engine Math Validation**: Run `godot --script tests/test_deterministic_math.gd --headless`. All engine-side math must match expected deterministic outputs.
-- [ ] **Full Test Suite**: Run `bash tests/run_all_tests.sh`. All unit and integration tests must pass.
+- [ ] **Full Test Suite**: Run `bash tools/pre_push_check.sh` (which executes GdUnit4 tests). All unit and integration tests must pass.
 
 ## 2. Integrity Checks
 

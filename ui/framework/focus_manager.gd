@@ -1,6 +1,6 @@
+# gdlint: disable=class-name
 class_name _FocusManager
 extends Node
-
 ## FocusManager (DON-298)
 ## Handles keyboard/gamepad focus trapping for modals and provides a global focus ring.
 
@@ -44,9 +44,13 @@ func pop_modal_focus() -> void:
 
 	var state: Dictionary = _focus_stack.pop_back()
 	for node: Variant in state.disabled_nodes.keys():
+		if type_string(typeof(node)) == "Object" and not is_instance_valid(node):
+			continue
+		if node == null:
+			continue
 		var control: Control = node as Control
 		if is_instance_valid(control):
-			control.focus_mode = state.disabled_nodes[control] as Control.FocusMode
+			control.focus_mode = state.disabled_nodes[node] as Control.FocusMode
 
 
 func _create_focus_ring() -> void:

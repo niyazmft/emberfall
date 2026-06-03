@@ -1,81 +1,42 @@
-extends Node
-## Unit / integration tests for BaseStateMachine framework and _RunManager lifecycle.
-## Run via Godot Editor test runner or `godot --headless --script tests/test_state_machine.gd`.
-##
-## Covers:
-##   AC-1: Explicit state enumeration, registration, default/error states
-##   AC-2: Guarded transitions (accept / reject)
-##   AC-3: Entry / exit actions invoked in correct order
-##   AC-4: Transition actions run between exit and entry
-##   AC-5: Frame-rate independent update accumulates state_time
-##   AC-6: Error state fallback on invalid transition target
-##   AC-7: _RunManager full lifecycle SANCTUM → ... → RUN_RESOLUTION → SANCTUM
-##   AC-8: _RunManager biome boundary detection
-##   AC-9: _RunManager config-driven defaults (fallback if game_config.json missing)
+class_name TestStateMachine
+extends GdUnitTestSuite
 
 
-func run_all() -> void:
-	var passed: int = 0
-	var failed: int = 0
-	var tests: Array[String] = [
-		"test_base_registration_and_default",
-		"test_base_valid_transition",
-		"test_base_guard_blocks_invalid",
-		"test_base_guard_allows_valid",
-		"test_base_entry_exit_order",
-		"test_base_transition_action_between_exit_entry",
-		"test_base_error_fallback",
-		"test_base_update_delta_accumulation",
-		"test_run_manager_starts_in_sanctum",
-		"test_run_manager_requires_memory_loaded",
-		"test_run_manager_full_lifecycle",
-		"test_run_manager_biome_boundary",
-		"test_run_manager_player_defeat",
-		"test_run_manager_final_encounter_won",
-		"test_run_manager_config_loaded",
-	]
-
-	for name: String in tests:
-		print("Running %s ..." % name)
-		var ok: Variant = call(name)
-		if ok is bool and ok:
-			passed += 1
-			print("  PASS")
-		else:
-			failed += 1
-			print("  FAIL (returned %s)" % str(ok))
-
-	print("")
-	print("Results: %d passed, %d failed out of %d" % [passed, failed, tests.size()])
-	if failed > 0:
-		push_error("StateMachine test suite had failures.")
-		get_tree().quit(1)
-	else:
-		get_tree().quit(0)
+func _new_empty_state_machine() -> BaseStateMachine:
+	return auto_free(BaseStateMachine.new())
 
 
-# ===========================================================================
-# BaseStateMachine Tests
-# ===========================================================================
+func _new_run_manager() -> _RunManager:
+	var rm: _RunManager = auto_free(_RunManager.new())
+	rm.setup_state_machine()
+	add_child(rm)
+	return rm
 
 
-func test_base_registration_and_default() -> bool:
+func _always_true_guard(_ctx: Dictionary) -> bool:
+	return true
+
+
+func _always_false_guard(_ctx: Dictionary) -> bool:
+	return false
+
+
+func _make_logger(log: Array[String], msg: String) -> Callable:
+	return func(_ctx: Dictionary) -> void: log.append(msg)
+
+
+func test_base_registration_and_default() -> void:
 	var sm: BaseStateMachine = _new_empty_state_machine()
 	sm.register_state(0, &"A")
 	sm.register_state(1, &"B")
 	sm.set_default_state(0)
 	sm.initialize()
 
-	if sm.current_state != 0:
-		push_error("Expected default state 0, got %d" % sm.current_state)
-		return false
-	if sm.get_current_state_name() != &"A":
-		push_error("Expected state name A")
-		return false
-	return true
+	assert_that(sm.current_state).is_equal(0)
+	assert_that(sm.get_current_state_name()).is_equal(&"A")
 
 
-func test_base_valid_transition() -> bool:
+func test_base_valid_transition() -> void:
 	var sm: BaseStateMachine = _new_empty_state_machine()
 	sm.register_state(0, &"A")
 	sm.register_state(1, &"B")
@@ -84,16 +45,11 @@ func test_base_valid_transition() -> bool:
 	sm.initialize()
 
 	var ok: bool = sm.transition_to(1)
-	if not ok:
-		push_error("Expected transition A→B to succeed")
-		return false
-	if sm.current_state != 1:
-		push_error("Expected state B after transition")
-		return false
-	return true
+	assert_that(ok).is_true()
+	assert_that(sm.current_state).is_equal(1)
 
 
-func test_base_guard_blocks_invalid() -> bool:
+func test_base_guard_blocks_invalid() -> void:
 	var sm: BaseStateMachine = _new_empty_state_machine()
 	sm.register_state(0, &"A")
 	sm.register_state(1, &"B")
@@ -102,16 +58,11 @@ func test_base_guard_blocks_invalid() -> bool:
 	sm.initialize()
 
 	var ok: bool = sm.transition_to(1)
-	if ok:
-		push_error("Expected guarded A→B to be blocked")
-		return false
-	if sm.current_state != 0:
-		push_error("Expected state to remain A after blocked transition")
-		return false
-	return true
+	assert_that(ok).is_false()
+	assert_that(sm.current_state).is_equal(0)
 
 
-func test_base_guard_allows_valid() -> bool:
+func test_base_guard_allows_valid() -> void:
 	var sm: BaseStateMachine = _new_empty_state_machine()
 	sm.register_state(0, &"A")
 	sm.register_state(1, &"B")
@@ -120,16 +71,11 @@ func test_base_guard_allows_valid() -> bool:
 	sm.initialize()
 
 	var ok: bool = sm.transition_to(1)
-	if not ok:
-		push_error("Expected guarded A→B to succeed")
-		return false
-	if sm.current_state != 1:
-		push_error("Expected state B after transition")
-		return false
-	return true
+	assert_that(ok).is_true()
+	assert_that(sm.current_state).is_equal(1)
 
 
-func test_base_entry_exit_order() -> bool:
+func test_base_entry_exit_order() -> void:
 	var sm: BaseStateMachine = _new_empty_state_machine()
 	var log_list: Array[String] = []
 
@@ -141,19 +87,12 @@ func test_base_entry_exit_order() -> bool:
 
 	log_list.clear()
 	sm.transition_to(1)
-	if log_list.size() != 2:
-		push_error("Expected 2 logged calls, got %d: %s" % [log_list.size(), str(log_list)])
-		return false
-	if log_list[0] != "exit_A":
-		push_error("Expected exit_A first, got %s" % log_list[0])
-		return false
-	if log_list[1] != "enter_B":
-		push_error("Expected enter_B second, got %s" % log_list[1])
-		return false
-	return true
+	assert_that(log_list.size()).is_equal(2)
+	assert_that(log_list[0]).is_equal("exit_A")
+	assert_that(log_list[1]).is_equal("enter_B")
 
 
-func test_base_transition_action_between_exit_entry() -> bool:
+func test_base_transition_action_between_exit_entry() -> void:
 	var sm: BaseStateMachine = _new_empty_state_machine()
 	var log_list: Array[String] = []
 
@@ -165,22 +104,13 @@ func test_base_transition_action_between_exit_entry() -> bool:
 
 	log_list.clear()
 	sm.transition_to(1)
-	if log_list.size() != 3:
-		push_error("Expected 3 logged calls, got %d: %s" % [log_list.size(), str(log_list)])
-		return false
-	if log_list[0] != "exit_A":
-		push_error("Expected exit_A first, got %s" % log_list[0])
-		return false
-	if log_list[1] != "action_0_1":
-		push_error("Expected action_0_1 second, got %s" % log_list[1])
-		return false
-	if log_list[2] != "enter_B":
-		push_error("Expected enter_B third, got %s" % log_list[2])
-		return false
-	return true
+	assert_that(log_list.size()).is_equal(3)
+	assert_that(log_list[0]).is_equal("exit_A")
+	assert_that(log_list[1]).is_equal("action_0_1")
+	assert_that(log_list[2]).is_equal("enter_B")
 
 
-func test_base_error_fallback() -> bool:
+func test_base_error_fallback() -> void:
 	var sm: BaseStateMachine = _new_empty_state_machine()
 	sm.register_state(0, &"A")
 	sm.register_state(99, &"ERROR")
@@ -188,133 +118,73 @@ func test_base_error_fallback() -> bool:
 	sm.set_error_state(99)
 	sm.initialize()
 
-	# Force transition to unregistered state id 5
 	sm.force_state(5)
-	# Should have fallen back to ERROR (99)
-	if sm.current_state != 99:
-		push_error("Expected fallback to ERROR state 99, got %d" % sm.current_state)
-		return false
-	return true
+	assert_that(sm.current_state).is_equal(99)
 
 
-func test_base_update_delta_accumulation() -> bool:
+func test_base_update_delta_accumulation() -> void:
 	var sm: BaseStateMachine = _new_empty_state_machine()
 	sm.register_state(0, &"A", Callable(), Callable(), Callable())
 	sm.set_default_state(0)
 	sm.initialize()
 
-	if sm.state_time != 0.0:
-		push_error("Expected initial state_time 0")
-		return false
+	assert_that(sm.state_time).is_equal(0.0)
 
 	sm.update(0.016)
-	if not is_equal_approx(sm.state_time, 0.016):
-		push_error("Expected state_time 0.016 after one update, got %f" % sm.state_time)
-		return false
+	assert_that(is_equal_approx(sm.state_time, 0.016)).is_true()
 
 	sm.update(0.033)
-	if not is_equal_approx(sm.state_time, 0.049):
-		push_error("Expected state_time 0.049 after two updates, got %f" % sm.state_time)
-		return false
-	return true
+	assert_that(is_equal_approx(sm.state_time, 0.049)).is_true()
 
 
-# ===========================================================================
-# _RunManager Lifecycle Tests
-# ===========================================================================
-
-
-func test_run_manager_starts_in_sanctum() -> bool:
+func test_run_manager_starts_in_sanctum() -> void:
 	var rm: _RunManager = _new_run_manager()
-	if rm.current_state != _RunManager.RunState.SANCTUM:
-		push_error("Expected initial state SANCTUM, got %d" % rm.current_state)
-		return false
-	if rm.get_current_state_name() != &"SANCTUM":
-		push_error("Expected state name SANCTUM")
-		return false
-	return true
+	assert_that(rm.current_state).is_equal(_RunManager.RunState.SANCTUM)
+	assert_that(rm.get_current_state_name()).is_equal(&"SANCTUM")
 
 
-func test_run_manager_requires_memory_loaded() -> bool:
+func test_run_manager_requires_memory_loaded() -> void:
 	var rm: _RunManager = _new_run_manager()
-	# memory_state_loaded defaults to false; guard should block transition
 	var ok: bool = rm.transition_to(_RunManager.RunState.BIOME_GENERATION)
-	if ok:
-		push_error("Expected start_run blocked when memory_state_loaded=false")
-		return false
-	if rm.current_state != _RunManager.RunState.SANCTUM:
-		push_error("Expected remain in SANCTUM")
-		return false
-	return true
+	assert_that(ok).is_false()
+	assert_that(rm.current_state).is_equal(_RunManager.RunState.SANCTUM)
 
 
-func test_run_manager_full_lifecycle() -> bool:
-	# Use a tiny room count to keep the test fast
+func test_run_manager_full_lifecycle() -> void:
 	var rm: _RunManager = _new_run_manager()
 	rm.biome_count = 1
 	rm.rooms_per_biome_min = 2
 	rm.rooms_per_biome_max = 2
 
-	# 1. SANCTUM → BIOME_GENERATION (with memory loaded)
 	rm.memory_state_loaded = true
 	rm.cmd_start_run()
-	if rm.current_state != _RunManager.RunState.BIOME_GENERATION:
-		push_error(
-			"Expected BIOME_GENERATION after start_run, got %s" % rm.get_current_state_name()
-		)
-		return false
+	assert_that(rm.current_state).is_equal(_RunManager.RunState.BIOME_GENERATION)
 
-	# Fast-forward biome generation timer
 	for _i: int in range(10):
 		rm.update(0.02)
-	if rm.current_state != _RunManager.RunState.ROOM:
-		push_error("Expected ROOM after topology_ready, got %s" % rm.get_current_state_name())
-		return false
-	if rm.room_queue.size() != 2:
-		push_error("Expected 2 rooms, got %d" % rm.room_queue.size())
-		return false
-	if rm.room_index != 0:
-		push_error("Expected room_index 0, got %d" % rm.room_index)
-		return false
+	assert_that(rm.current_state).is_equal(_RunManager.RunState.ROOM)
+	assert_that(rm.room_queue.size()).is_equal(2)
+	assert_that(rm.room_index).is_equal(0)
 
-	# 2. ROOM → MORAL_EVAL → ROOM (simulate combat in room 0)
 	rm.cmd_combat_resolved()
-	if rm.current_state != _RunManager.RunState.MORAL_EVAL:
-		push_error("Expected MORAL_EVAL after combat_resolved")
-		return false
+	assert_that(rm.current_state).is_equal(_RunManager.RunState.MORAL_EVAL)
 
-	# Fast-forward moral eval timer
 	for _i: int in range(10):
 		rm.update(0.02)
-	if rm.current_state != _RunManager.RunState.ROOM:
-		push_error("Expected ROOM after moral eval auto-resolve")
-		return false
+	assert_that(rm.current_state).is_equal(_RunManager.RunState.ROOM)
 
-	# 3. ROOM → ROOM (next room, no biome boundary since single biome)
 	rm.cmd_next_room()
-	if rm.current_state != _RunManager.RunState.ROOM:
-		push_error("Expected ROOM after next_room")
-		return false
-	if rm.room_index != 1:
-		push_error("Expected room_index 1, got %d" % rm.room_index)
-		return false
+	assert_that(rm.current_state).is_equal(_RunManager.RunState.ROOM)
+	assert_that(rm.room_index).is_equal(1)
 
-	# 4. Final room → RUN_RESOLUTION (run end because queue exhausted)
 	rm.cmd_next_room()
-	if rm.current_state != _RunManager.RunState.RUN_RESOLUTION:
-		push_error("Expected RUN_RESOLUTION after final room, got %s" % rm.get_current_state_name())
-		return false
+	assert_that(rm.current_state).is_equal(_RunManager.RunState.RUN_RESOLUTION)
 
-	# 5. RUN_RESOLUTION → SANCTUM
 	rm.cmd_return_to_sanctum()
-	if rm.current_state != _RunManager.RunState.SANCTUM:
-		push_error("Expected SANCTUM after return_to_sanctum")
-		return false
-
-	return true
+	assert_that(rm.current_state).is_equal(_RunManager.RunState.SANCTUM)
 
 
-func test_run_manager_biome_boundary() -> bool:
+func test_run_manager_biome_boundary() -> void:
 	var rm: _RunManager = _new_run_manager()
 	rm.biome_count = 2
 	rm.rooms_per_biome_min = 1
@@ -325,32 +195,18 @@ func test_run_manager_biome_boundary() -> bool:
 	for _i: int in range(10):
 		rm.update(0.02)
 
-	# room 0 (biome 0) -> next room is biome 1 => boundary
-	if rm.room_queue.size() != 2:
-		push_error("Expected 2 rooms for 2 biomes × 1")
-		return false
+	assert_that(rm.room_queue.size()).is_equal(2)
 
 	rm.cmd_next_room()
-	if rm.current_state != _RunManager.RunState.BIOME_THRESHOLD:
-		push_error(
-			"Expected BIOME_THRESHOLD at biome boundary, got %s" % rm.get_current_state_name()
-		)
-		return false
+	assert_that(rm.current_state).is_equal(_RunManager.RunState.BIOME_THRESHOLD)
 
-	# Fast-forward echo timer
 	for _i: int in range(10):
 		rm.update(0.02)
-	if rm.current_state != _RunManager.RunState.ROOM:
-		push_error("Expected ROOM after echo_triggered")
-		return false
-	if rm.room_index != 1:
-		push_error("Expected room_index 1 after boundary, got %d" % rm.room_index)
-		return false
-
-	return true
+	assert_that(rm.current_state).is_equal(_RunManager.RunState.ROOM)
+	assert_that(rm.room_index).is_equal(1)
 
 
-func test_run_manager_player_defeat() -> bool:
+func test_run_manager_player_defeat() -> void:
 	var rm: _RunManager = _new_run_manager()
 	rm.biome_count = 1
 	rm.rooms_per_biome_min = 3
@@ -369,21 +225,13 @@ func test_run_manager_player_defeat() -> bool:
 	for _i: int in range(10):
 		rm.update(0.02)
 
-	# Player dies in first room
 	rm.cmd_player_defeated()
-	if rm.current_state != _RunManager.RunState.RUN_RESOLUTION:
-		push_error("Expected RUN_RESOLUTION after player_defeated")
-		return false
-	if not results.received:
-		push_error("Expected run_ended signal")
-		return false
-	if results.value != &"DEFEAT":
-		push_error("Expected DEFEAT result, got %s" % results.value)
-		return false
-	return true
+	assert_that(rm.current_state).is_equal(_RunManager.RunState.RUN_RESOLUTION)
+	assert_that(results.received).is_true()
+	assert_that(results.value).is_equal(&"DEFEAT")
 
 
-func test_run_manager_final_encounter_won() -> bool:
+func test_run_manager_final_encounter_won() -> void:
 	var rm: _RunManager = _new_run_manager()
 	rm.biome_count = 1
 	rm.rooms_per_biome_min = 2
@@ -402,60 +250,13 @@ func test_run_manager_final_encounter_won() -> bool:
 	for _i: int in range(10):
 		rm.update(0.02)
 
-	# Win final encounter
 	rm.cmd_final_encounter_won()
-	if rm.current_state != _RunManager.RunState.RUN_RESOLUTION:
-		push_error("Expected RUN_RESOLUTION after final_encounter_won")
-		return false
-	if not results.received:
-		push_error("Expected run_ended signal")
-		return false
-	if results.value != &"TRIUMPH":
-		push_error("Expected TRIUMPH result, got %s" % results.value)
-		return false
-	return true
+	assert_that(rm.current_state).is_equal(_RunManager.RunState.RUN_RESOLUTION)
+	assert_that(results.received).is_true()
+	assert_that(results.value).is_equal(&"TRIUMPH")
 
 
-func test_run_manager_config_loaded() -> bool:
+func test_run_manager_config_loaded() -> void:
 	var rm: _RunManager = _new_run_manager()
-	# If game_config.json is present, values should be loaded from it.
-	# If missing, hard-coded defaults per ConfigLoader DEFAULTS apply.
-	if rm.biome_count == 0:
-		push_error("Expected biome_count > 0 after config load")
-		return false
-	if rm.rooms_per_biome_min > rm.rooms_per_biome_max:
-		push_error("rooms_per_biome_min must not exceed max")
-		return false
-	return true
-
-
-# ===========================================================================
-# Helpers
-# ===========================================================================
-
-
-func _new_empty_state_machine() -> BaseStateMachine:
-	var sm: BaseStateMachine = BaseStateMachine.new()
-	return sm
-
-
-func _new_run_manager() -> _RunManager:
-	var rm: _RunManager = _RunManager.new()
-	rm.setup_state_machine()
-	return rm
-
-
-func _always_true_guard(_ctx: Dictionary) -> bool:
-	return true
-
-
-func _always_false_guard(_ctx: Dictionary) -> bool:
-	return false
-
-
-func _make_logger(log: Array[String], msg: String) -> Callable:
-	return func(_ctx: Dictionary) -> void: log.append(msg)
-
-
-func _ready() -> void:
-	run_all()
+	assert_that(rm.biome_count).is_greater(0)
+	assert_that(rm.rooms_per_biome_min <= rm.rooms_per_biome_max).is_true()

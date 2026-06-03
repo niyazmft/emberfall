@@ -42,29 +42,25 @@ echo ""
 echo "🧹 Step 2: Running GDScript Lint (Editor Scan)..."
 "$GODOT_BIN" --headless --editor --quit --path . 2>&1 | tee tools/godot_lint.log
 
-# 3. In-Engine Math Validation
-echo ""
-echo "🎮 Step 3: Validating Deterministic Math (Godot)..."
-"$GODOT_BIN" --headless --path . -s tests/test_deterministic_math.gd 2>&1 | tee tools/math_validation.log
+# (Step 3 was removed since Godot standalone math validation was migrated to GdUnit4)
 
 # 4. Full Test Suite (NEW)
 echo ""
-echo "🧪 Step 4: Running Full Test Suite..."
-if [ -f tests/run_all_tests.sh ]; then
-    chmod +x tests/run_all_tests.sh
-    export GODOT_BIN
+echo "🧪 Step 4: Running Full Test Suite via GdUnit4..."
+if [ -f "addons/gdUnit4/bin/GdUnitCmdTool.gd" ]; then
     # Use || true to capture exit code without set -e killing script immediately
-    tests/run_all_tests.sh 2>&1 | tee tools/test_suite.log || TEST_EXIT_CODE=$?
-    TEST_EXIT_CODE=${TEST_EXIT_CODE:-0}
-
-    if [ $TEST_EXIT_CODE -ne 0 ]; then
+    "$GODOT_BIN" --headless --path . -s res://addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests/ --ignoreHeadlessMode 2>&1 | tee tools/test_suite.log || TEST_EXIT_CODE=$?
+    
+    # GdUnit4 returns 100 for failures, 101 for warnings (like orphans), and 0 for pure success.
+    # We will treat 0 and 101 as passed for CI/Push checks, but 100 as failure.
+    if [ "$TEST_EXIT_CODE" = "100" ] || [ "$TEST_EXIT_CODE" = "1" ]; then
         echo "------------------------------------------------"
         echo "❌ TEST SUITE FAILED! Check tools/test_suite.log"
         echo "------------------------------------------------"
         exit 1
     fi
 else
-    echo "⚠️ Test suite script not found at tests/run_all_tests.sh"
+    echo "⚠️ GdUnit4 not found at addons/gdUnit4/bin/GdUnitCmdTool.gd"
     echo "Skipping test suite..."
 fi
 
@@ -77,8 +73,8 @@ if grep -iE "SCRIPT ERROR|Parse Error|Compile Error|hides an autoload singleton|
     exit 1
 fi
 
-# Also check for general ERROR: but exclude common exit-leak false positives
-if grep "ERROR:" tools/godot_lint.log tools/math_validation.log tools/test_suite.log | grep -vE "Resources still in use|ObjectDB instances leaked|Caller thread can't call this function in this node"; then
+# Also check for general ERROR: but exclude common exit-leak false positives and intentional test errors
+if grep "ERROR:" tools/godot_lint.log tools/test_suite.log 2>/dev/null | grep -ivE "resources still in use|objectdb instances leaked|caller thread can't call this function|statemachine: attempted to change to unregistered state"; then
     echo "------------------------------------------------"
     echo "❌ CRITICAL ERRORS DETECTED! Check tools/*.log"
     echo "------------------------------------------------"

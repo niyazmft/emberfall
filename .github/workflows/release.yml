@@ -43,9 +43,10 @@ jobs:
       - name: Regenerate asset cache
         run: godot --headless --import --path .
       - name: Run Godot test suites
-        run: |
-          chmod +x tests/run_all_tests.sh
-          tests/run_all_tests.sh
+        uses: MikeSchulze/gdUnit4-action@v1
+        with:
+          godot-version: '4.2.2'
+          paths: 'res://tests'
 
       - name: Export Windows build
         run: |

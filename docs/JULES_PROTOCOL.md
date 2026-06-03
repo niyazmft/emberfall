@@ -29,7 +29,7 @@ Google Jules is an autonomous coding agent used to offload programming-heavy tas
 ## Post-Submission Handling
 
 1. Once Jules submits a PR, the QA Lead is notified.
-2. QA Lead runs the validation suite (`tests/run_all_tests.sh`).
+2. QA Lead runs the validation suite (`tools/pre_push_check.sh` which executes GdUnit4).
 3. If any automated test fails, the PR is closed immediately, and the `jules` label is removed from the issue for manual triage.
 4. If all tests pass, QA Lead performs a manual code review and sign-off on the checklist.
 5. RM performs a final check before merging.

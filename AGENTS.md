@@ -198,8 +198,8 @@ CombatRoom (Node2D)
 ## Testing Commands
 
 ```bash
-# Run all tests
-bash tests/run_all_tests.sh
+# Run all tests via GdUnit4
+godot --headless --path . -s res://addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests/ --ignoreHeadlessMode
 
 # Run specific test
 godot --headless --path . -s tests/test_entity_lifecycle.gd
@@ -312,7 +312,7 @@ GitHub Actions (`.github/workflows/ci.yml`) runs **exactly the same checks** as 
 |---|---|
 | `gdscript-format` | `gdformat`, `markdownlint`, and `json.tool` |
 | `validate-math` | `python3 tests/validate_math.py` |
-| `gdscript-lint` | Godot headless editor scan + `tests/run_all_tests.sh` |
+| `gdscript-lint` | Godot headless editor scan + GdUnit4 test suite |
 
 > **CI uses `--check` only (no auto-fix).** Auto-fixing happens locally via hooks.
 > If CI fails on formatting, it means the pre-push hook was bypassed — run `bash tools/setup_hooks.sh` to re-install hooks.
@@ -347,8 +347,7 @@ GitHub Actions (`.github/workflows/ci.yml`) runs **exactly the same checks** as 
 
 1. Create `tests/test_feature.gd`
 2. Use strict typing throughout
-3. Include in `tests/run_all_tests.sh`
-4. Run `bash tests/run_all_tests.sh` to verify
+3. Run `godot --headless --path . -s res://addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests/test_feature.gd` to verify
 
 ### Debugging Tips
 

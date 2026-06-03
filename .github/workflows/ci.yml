@@ -1,5 +1,9 @@
 name: CI
 
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
 on:
   push:
     branches: [main]
@@ -79,28 +83,25 @@ jobs:
         run: |
           mkdir -p tools
           godot --headless --editor --quit --path . 2>&1 | tee tools/godot_lint.log
-          if grep -iE "SCRIPT ERROR|Parse Error|Compile Error|hides an autoload singleton" tools/godot_lint.log; then
+          if ! python3 tools/filter_godot_errors.py tools/godot_lint.log; then
             echo "❌ GDScript linting failed."
             exit 1
           fi
           echo "✅ GDScript lint passed."
-      - name: Run Full Test Suite
-        run: |
-          chmod +x tests/run_all_tests.sh
-          tests/run_all_tests.sh 2>&1 | tee tests/test_output.log
+      - name: Run GdUnit4 Tests
+        uses: MikeSchulze/gdUnit4-action@v1
+        with:
+          godot-version: '4.2.2'
+          version: 'v4.4.3'
+          paths: 'res://tests'
+          publish-report: true
+          report-name: 'gdUnit4-report'
       - name: Upload Test Results
         uses: actions/upload-artifact@v7
         if: always()
         with:
           name: test-results
           path: |
-            tests/test_output.log
-            tests/validate_math_report.json
             tools/godot_lint.log
-      - name: Report Test Summary
-        if: always()
-        run: |
-          echo "### Test Results" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          tail -20 tests/test_output.log >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
+            tests/validate_math_report.json
+
