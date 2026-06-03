@@ -163,9 +163,9 @@ Phase 4A (Sprint 1-2):
 ├─ 4.1 Combat Input ──┐
 │                      ├─→ 4.3 Turn Manager ──┐
 └─ 4.2 Enemy AI ──────┘                        ├─→ 4.6 Combat HUD
-                                               ├─→ 4.8 Moral Choice
-                                               └─→ 4.4 Room Loading
-                                                    └─→ 4.5 Enemy Variety
+   │                                           ├─→ 4.8 Moral Choice
+   │                                           └─→ 4.4 Room Loading
+   └───────────────────────────────────────────→ 4.5 Enemy Variety
 
 Independent:
 └─ 4.7 Settings Menu (can start anytime)
