@@ -19,6 +19,9 @@ export.cfg
 
 # Logs
 *.log
+/reports/
+/test_log.txt
+/tests/validate_math_report.json
 
 # Python cache
 __pycache__/
