@@ -19,6 +19,8 @@ export.cfg
 
 # Logs
 *.log
+/reports/
+/test_log.txt
 
 # Python cache
 __pycache__/
