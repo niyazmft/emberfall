@@ -8,7 +8,7 @@ config/version="0.1.0-sprint1"
 config/description="Tactical grid combat with deterministic AP economy"
 config/icon="res://assets/icons/icon.png"
 run/main_scene="res://scenes/title_screen.tscn"
-config/features=PackedStringArray("4.2", "Mobile")
+config/features=PackedStringArray("4.6", "Mobile")
 boot_splash/show_image=false
 
 [display]

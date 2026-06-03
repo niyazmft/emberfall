@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-**Engine:** Godot 4.2.2
+**Engine:** Godot 4.6.3
 **Language:** GDScript
 **Genre:** Tactical grid combat game
 **Architecture:** Deterministic math, component-based entities, state machines
@@ -372,7 +372,7 @@ When picking up or completing a task, agents **MUST** keep the local tracker up 
 
 **One-time setup:** Run `bash tools/setup_hooks.sh` after cloning.
 
-- Godot 4.2.2 — must be on `PATH` (or set `GODOT_BIN`)
+- Godot 4.6.3 — must be on `PATH` (or set `GODOT_BIN`)
 - gdtoolkit (`gdformat`, `gdlint`) — install via `pip3 install gdtoolkit`
 - `markdownlint-cli` — install via `npm install -g markdownlint-cli`
 - `pre-commit` — install via `pip3 install pre-commit`

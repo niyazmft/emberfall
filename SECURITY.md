@@ -20,7 +20,7 @@ Please **do not** file public GitHub issues for security vulnerabilities.
 
 ## Scope
 
-Emberfall is a turn-based tactical roguelike game built with Godot 4.2.2. The
+Emberfall is a turn-based tactical roguelike game built with Godot 4.6.3. The
 project is primarily a single-player offline experience, so the attack surface
 is limited to:
 

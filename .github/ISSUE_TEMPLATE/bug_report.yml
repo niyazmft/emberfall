@@ -42,7 +42,7 @@ body:
     attributes:
       label: Godot version
       description: Output of `godot --version`
-      placeholder: "4.2.2"
+      placeholder: "4.6.3"
     validations:
       required: true
 
