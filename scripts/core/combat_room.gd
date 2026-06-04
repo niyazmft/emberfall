@@ -6,16 +6,20 @@ extends Node2D
 ##   - EntityContainer (YSort): Depth-sorted game entities
 ##   - UIOverlay: CanvasLayer for HUD and menus
 
+const KEEPER_SCENE_PATH: String = "res://scenes/keeper.tscn"
+const GRUNT_SCENE_PATH: String = "res://scenes/enemies/enemy_grunt.tscn"
+
 @export var test_mode: bool = true  # Spawn test enemies
+
+var _grid_system: _GridSystem
+var _player: Node2D  # Type will be Keeper
+var _enemies_node: Node2D
+var _combat_input: CombatInput
 
 @onready var grid_renderer: GridRenderer = $GridRenderer
 @onready var entity_container: Node2D = $EntityContainer
 @onready var ui_overlay: CanvasLayer = $UIOverlay
 @onready var camera: Camera2D = $Camera2D
-
-var _grid_system: _GridSystem
-var _player: Node2D  # Type will be Keeper
-var _enemies_node: Node2D
 
 
 func _ready() -> void:
@@ -23,6 +27,9 @@ func _ready() -> void:
 
 	if test_mode:
 		_spawn_test_encounter()
+
+	_combat_input = CombatInput.new(_player, _enemies_node, grid_renderer)
+	add_child(_combat_input)
 
 	_setup_camera()
 
@@ -33,11 +40,11 @@ func _spawn_test_encounter() -> void:
 
 
 func _spawn_player() -> void:
-	var keeper_scene := preload("res://scenes/keeper.tscn")
+	var keeper_scene: PackedScene = load(KEEPER_SCENE_PATH)
 	var keeper: Node2D = keeper_scene.instantiate() as Node2D
 
 	# Initializing entity data block
-	var entity_resource := Entity.new("Keeper", 5, 5, 40, 12, 6)
+	var entity_resource: Entity = Entity.new("Keeper", 5, 5, 40, 12, 6)
 	entity_resource.is_player = true
 
 	# Assigning entity to keeper before adding to tree if possible
@@ -54,13 +61,13 @@ func _spawn_player() -> void:
 
 
 func _spawn_enemies() -> void:
-	var grunt_scene := preload("res://scenes/enemies/enemy_grunt.tscn")
+	var grunt_scene: PackedScene = load(GRUNT_SCENE_PATH)
 
 	_enemies_node = Node2D.new()
 	_enemies_node.name = "Enemies"
 	entity_container.add_child(_enemies_node)
 
-	for i in range(3):  # Spawn 3 grunts
+	for i: int in range(3):  # Spawn 3 grunts
 		var grunt: Node2D = grunt_scene.instantiate() as Node2D
 		_enemies_node.add_child(grunt)
 
@@ -77,7 +84,11 @@ func _setup_camera() -> void:
 
 
 func _input(event: InputEvent) -> void:
-	# Handle player input via Input Actions, NOT raw keycodes!
+	# Delegate to combat input handler
+	if _combat_input and _combat_input.handle_input(event):
+		return
+
+	# Handle player movement via Input Actions
 	if event.is_action_pressed("move_up"):
 		_try_move_player(0, -1)
 	elif event.is_action_pressed("move_down"):

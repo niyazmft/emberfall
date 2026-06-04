@@ -18,10 +18,10 @@ extends Node2D
 @export var base_sprite: Sprite2D
 @export var shadow_sprite: Sprite2D
 @export var height_indicator: CanvasItem
+@export var lerp_speed: float = 10.0
 
 var _target_position: Vector2
 var _grid_renderer: GridRenderer
-@export var lerp_speed: float = 10.0
 
 
 func _ready() -> void:
@@ -122,10 +122,14 @@ func _on_entity_state_changed(state: Entity.State) -> void:
 
 func _on_entity_hp_changed(new_hp: int, old_hp: int) -> void:
 	if new_hp < old_hp:
+		var app: Node = null
 		if has_node("ApparitionRenderer"):
-			var app: Node = get_node("ApparitionRenderer")
-			if app.has_method("trigger_damage_effect"):
-				app.call("trigger_damage_effect")
+			app = get_node("ApparitionRenderer")
+		elif get_parent() and get_parent().has_node("ApparitionRenderer"):
+			app = get_parent().get_node("ApparitionRenderer")
+
+		if app and app.has_method("trigger_damage_effect"):
+			app.call("trigger_damage_effect")
 
 
 func _update_elevation_visuals(elevation: int) -> void:
@@ -200,7 +204,7 @@ func _setup_greybox() -> void:
 		add_child(shadow_sprite)
 
 	if not height_indicator and not has_node("HeightIndicator"):
-		var hi := ColorRect.new()
+		var hi: ColorRect = ColorRect.new()
 		hi.name = "HeightIndicator"
 		hi.size = Vector2(32, 4)
 		hi.position = Vector2(-16, 2)
