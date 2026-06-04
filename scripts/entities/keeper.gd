@@ -23,6 +23,7 @@ var _apparition: ApparitionRenderer
 
 
 func _ready() -> void:
+	add_to_group("player")
 	# Auto-create Entity data block if not assigned in inspector.
 	if entity == null:
 		entity = Entity.new("Keeper", 0, 0, 40, 12, 6, 0, 1, 0)

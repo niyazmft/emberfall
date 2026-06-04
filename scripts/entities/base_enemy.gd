@@ -11,6 +11,7 @@ var _combat_system: Node  ## Placeholder for future combat system
 
 
 func _ready() -> void:
+	add_to_group("enemies")
 	_grid_system = AutoloadHelper.grid_system()
 	_setup_entity()
 	_setup_visual_proxy()
@@ -64,12 +65,58 @@ func _handle_move(action: Dictionary) -> void:
 	var target_y: int = action.get("target_y", entity.y)
 
 	if _grid_system and _grid_system.can_move(entity.x, entity.y, target_x, target_y):
+		# Calculate facing BEFORE updating position
+		var dx: int = target_x - entity.x
+		var dy: int = target_y - entity.y
+
 		entity.set_grid_position(target_x, target_y)
 
+		# Update facing if moved
+		if dx != 0 or dy != 0:
+			entity.set_facing(DeterministicMath.sgn(dx), DeterministicMath.sgn(dy))
 
-func _handle_attack(_action: Dictionary) -> void:
-	## Placeholder for attack handling
-	pass
+		# Consume AP for movement
+		# Sprint 1: simple 1 AP per tile for cardinal, 2 for diagonal
+		var cost: int = 1
+		if dx != 0 and dy != 0:
+			cost = 2
+		entity.ap = DeterministicMath.clampi(entity.ap - cost, 0, GameConstants.AP_MAX)
+
+
+func _handle_attack(action: Dictionary) -> void:
+	var target_node: Node2D = action.get("target") as Node2D
+	if target_node == null:
+		return
+
+	var target_entity: Entity = target_node.get("entity") as Entity
+	if target_entity == null:
+		return
+
+	# Gather cover tiles for damage formula
+	var cover_tiles: Array[Vector2i] = []
+	if _grid_system:
+		var all_tiles: Array = _grid_system.all_tiles()
+		for tile: TacTileData in all_tiles:
+			if tile.has_cover():
+				cover_tiles.append(tile.coords)
+
+	# Calculate damage
+	var damage: int = CombatFormula.compute_damage_from_entities(entity, target_entity, cover_tiles)
+
+	# Apply damage through lifecycle
+	var lifecycle: _EntityLifecycle = AutoloadHelper.entity_lifecycle()
+	if lifecycle:
+		lifecycle.apply_damage(entity, target_entity, damage)
+	else:
+		target_entity.apply_damage(damage)
+
+	# Trigger recoil on target if it has the method
+	if target_node.has_method("apply_damage"):
+		target_node.call("apply_damage", 0)  # Call with 0 just to trigger visual/recoil
+
+	# Consume AP
+	var cost: int = CombatFormula.action_cost("attack_basic")
+	entity.ap = DeterministicMath.clampi(entity.ap - cost, 0, GameConstants.AP_MAX)
 
 
 ## Damage API
