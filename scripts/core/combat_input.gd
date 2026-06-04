@@ -31,7 +31,7 @@ func handle_input(event: InputEvent) -> bool:
 	if current_state == State.IDLE:
 		if event.is_action_pressed("combat_mode"):
 			_start_targeting()
-			return true
+			return current_state == State.TARGETING
 	if current_state == State.TARGETING:
 		if event.is_action_pressed("combat_confirm"):
 			_execute_attack()
@@ -66,12 +66,16 @@ func _start_targeting() -> void:
 
 
 func _stop_targeting() -> void:
+	_clear_targeting_state()
+	targeting_cancelled.emit()
+
+
+func _clear_targeting_state() -> void:
 	current_state = State.IDLE
 	_target_index = -1
 	_valid_targets.clear()
 	if _grid_renderer:
 		_grid_renderer.clear_highlights()
-	targeting_cancelled.emit()
 
 
 func _cycle_target() -> void:
@@ -157,4 +161,4 @@ func _execute_attack() -> void:
 	player_ent.ap -= cost
 
 	attack_executed.emit(target, damage)
-	_stop_targeting()
+	_clear_targeting_state()
