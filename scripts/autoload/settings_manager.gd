@@ -8,7 +8,7 @@ const SAVE_PATH: String = "user://settings.json"
 
 enum SettingCategory { DISPLAY, AUDIO, INPUT, ACCESSIBILITY }
 
-var settings: Dictionary = {
+const DEFAULT_SETTINGS: Dictionary = {
 	"audio":
 	{
 		"master_volume": 1.0,
@@ -26,10 +26,12 @@ var settings: Dictionary = {
 	"accessibility":
 	{
 		"screen_shake": 1.0,
-		"cvd_sim": 0,  # 0: None, 1: Protanopia, 2: Deuteranopia, 3: Tritanopia
+		"cvd_sim": 0,
 	},
-	"controls": {"input_hints": 0, "bindings": {}}  # 0: Auto, 1: KBM, 2: Gamepad
+	"controls": {"input_hints": 0, "bindings": {}}
 }
+
+var settings: Dictionary = DEFAULT_SETTINGS.duplicate(true)
 
 var init_time_ms: int = 0
 
@@ -109,28 +111,7 @@ func _load_legacy_settings() -> void:
 
 
 func reset_to_defaults() -> void:
-	settings = {
-		"audio":
-		{
-			"master_volume": 1.0,
-			"music_volume": 0.8,
-			"sfx_volume": 0.8,
-			"mute": false,
-		},
-		"video":
-		{
-			"fullscreen": true,
-			"resolution_width": 1920,
-			"resolution_height": 1080,
-			"vsync": true,
-		},
-		"accessibility":
-		{
-			"screen_shake": 1.0,
-			"cvd_sim": 0,
-		},
-		"controls": {"input_hints": 0, "bindings": {}}
-	}
+	settings = DEFAULT_SETTINGS.duplicate(true)
 	InputMap.load_from_project_settings()
 	apply_settings()
 	save_settings()

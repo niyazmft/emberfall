@@ -15,7 +15,7 @@ func before_test() -> void:
 
 func test_settings_default_values() -> void:
 	var sm: Node = AutoloadHelper.settings_manager()
-	assert_not_null(sm)
+	assert_object(sm).is_not_null()
 	var settings: Dictionary = sm.get("settings")
 	assert_float(settings.audio.master_volume).is_equal(1.0)
 	assert_bool(settings.video.fullscreen).is_true()
@@ -24,7 +24,7 @@ func test_settings_default_values() -> void:
 
 func test_settings_save_load() -> void:
 	var sm: Node = AutoloadHelper.settings_manager()
-	assert_not_null(sm)
+	assert_object(sm).is_not_null()
 	var settings: Dictionary = sm.get("settings")
 	settings.audio.master_volume = 0.5
 	settings.video.fullscreen = false
@@ -78,7 +78,7 @@ func test_apply_video_settings() -> void:
 
 func test_reset_to_defaults() -> void:
 	var sm: Node = AutoloadHelper.settings_manager()
-	assert_not_null(sm)
+	assert_object(sm).is_not_null()
 	var settings: Dictionary = sm.get("settings")
 	settings.audio.master_volume = 0.1
 	sm.call("save_settings")

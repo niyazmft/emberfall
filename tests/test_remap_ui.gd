@@ -41,4 +41,7 @@ func test_remap_logic() -> void:
 
 	assert_that(found).is_true()
 
-	remap_panel.call("_on_reset_pressed")
+	# Clean up: restore original binding
+	InputMap.action_erase_events("test_action")
+	InputMap.action_add_event("test_action", key)
+	InputMap.erase_action("test_action")
