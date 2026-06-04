@@ -31,7 +31,7 @@ func handle_input(event: InputEvent) -> bool:
 	if current_state == State.IDLE:
 		if event.is_action_pressed("combat_mode"):
 			_start_targeting()
-			return true
+			return current_state == State.TARGETING
 	if current_state == State.TARGETING:
 		if event.is_action_pressed("combat_confirm"):
 			_execute_attack()
