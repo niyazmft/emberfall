@@ -7,26 +7,33 @@ func before_test() -> void:
 		DirAccess.remove_absolute("user://settings.json")
 	if FileAccess.file_exists("user://settings.save"):
 		DirAccess.remove_absolute("user://settings.save")
-	SettingsManager.reset_to_defaults()
+
+	var sm := AutoloadHelper.settings_manager()
+	if sm != null:
+		sm.reset_to_defaults()
 
 
 func test_settings_default_values() -> void:
-	assert_float(SettingsManager.settings.audio.master_volume).is_equal(1.0)
-	assert_bool(SettingsManager.settings.video.fullscreen).is_true()
-	assert_int(SettingsManager.settings.video.resolution_width).is_equal(1920)
+	var sm := AutoloadHelper.settings_manager()
+	assert_not_null(sm)
+	assert_float(sm.settings.audio.master_volume).is_equal(1.0)
+	assert_bool(sm.settings.video.fullscreen).is_true()
+	assert_int(sm.settings.video.resolution_width).is_equal(1920)
 
 
 func test_settings_save_load() -> void:
-	SettingsManager.settings.audio.master_volume = 0.5
-	SettingsManager.settings.video.fullscreen = false
-	SettingsManager.save_settings()
+	var sm := AutoloadHelper.settings_manager()
+	assert_not_null(sm)
+	sm.settings.audio.master_volume = 0.5
+	sm.settings.video.fullscreen = false
+	sm.save_settings()
 
 	# Reset local state
-	SettingsManager.settings.audio.master_volume = 1.0
+	sm.settings.audio.master_volume = 1.0
 
-	SettingsManager.load_settings()
-	assert_float(SettingsManager.settings.audio.master_volume).is_equal(0.5)
-	assert_bool(SettingsManager.settings.video.fullscreen).is_false()
+	sm.load_settings()
+	assert_float(sm.settings.audio.master_volume).is_equal(0.5)
+	assert_bool(sm.settings.video.fullscreen).is_false()
 
 
 func test_ui_to_settings_sync() -> void:
@@ -41,7 +48,8 @@ func test_ui_to_settings_sync() -> void:
 	slider.value = 0.2
 	slider.value_changed.emit(0.2)
 
-	assert_float(SettingsManager.settings.audio.master_volume).is_equal(0.2)
+	var sm := AutoloadHelper.settings_manager()
+	assert_float(sm.settings.audio.master_volume).is_equal(0.2)
 
 
 func test_apply_video_settings() -> void:
@@ -58,20 +66,27 @@ func test_apply_video_settings() -> void:
 	var apply_btn: Button = panel.get_node("%ApplyButton") as Button
 	apply_btn.pressed.emit()
 
-	assert_int(SettingsManager.settings.video.resolution_width).is_equal(1280)
-	assert_int(SettingsManager.settings.video.resolution_height).is_equal(720)
+	var sm := AutoloadHelper.settings_manager()
+	assert_int(sm.settings.video.resolution_width).is_equal(1280)
+	assert_int(sm.settings.video.resolution_height).is_equal(720)
 
 
 func test_reset_to_defaults() -> void:
-	SettingsManager.settings.audio.master_volume = 0.1
-	SettingsManager.save_settings()
+	var sm := AutoloadHelper.settings_manager()
+	assert_not_null(sm)
+	sm.settings.audio.master_volume = 0.1
+	sm.save_settings()
 
-	SettingsManager.reset_to_defaults()
-	assert_float(SettingsManager.settings.audio.master_volume).is_equal(1.0)
+	sm.reset_to_defaults()
+	assert_float(sm.settings.audio.master_volume).is_equal(1.0)
 
 	if not FileAccess.file_exists("user://settings.json"):
 		fail("settings.json should exist after reset_to_defaults")
 
-	var file := FileAccess.open("user://settings.json", FileAccess.READ)
-	var json := JSON.parse_string(file.get_as_text())
-	assert_float(json.audio.master_volume).is_equal(1.0)
+	var file: FileAccess = FileAccess.open("user://settings.json", FileAccess.READ)
+	var json_data: Variant = JSON.parse_string(file.get_as_text())
+	if json_data is Dictionary:
+		var audio: Dictionary = json_data.get("audio", {}) as Dictionary
+		assert_float(audio.get("master_volume", 0.0)).is_equal(1.0)
+	else:
+		fail("Parsed JSON is not a dictionary")

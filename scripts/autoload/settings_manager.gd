@@ -28,7 +28,7 @@ var settings: Dictionary = {
 		"screen_shake": 1.0,
 		"cvd_sim": 0,  # 0: None, 1: Protanopia, 2: Deuteranopia, 3: Tritanopia
 	},
-	"controls": {"input_hints": 0, "bindings": {}}  # 0: Auto, 1: KBM, 2: Gamepad  # Action name -> Array of serialized events
+	"controls": {"input_hints": 0, "bindings": {}}  # 0: Auto, 1: KBM, 2: Gamepad
 }
 
 var init_time_ms: int = 0
