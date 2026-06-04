@@ -15,7 +15,7 @@ var current_state: State = State.IDLE
 var _player: Node2D
 var _enemies_node: Node2D
 var _grid_renderer: GridRenderer
-var _grid_system: _GridSystem
+var _grid_system: Node
 var _valid_targets: Array[Node2D] = []
 var _target_index: int = -1
 
@@ -147,7 +147,7 @@ func _execute_attack() -> void:
 		player_ent, target_ent, cover_tiles
 	)
 
-	var lifecycle: _EntityLifecycle = AutoloadHelper.entity_lifecycle()
+	var lifecycle: Node = AutoloadHelper.entity_lifecycle()
 	if lifecycle:
 		lifecycle.apply_damage(player_ent, target_ent, damage)
 	else:
