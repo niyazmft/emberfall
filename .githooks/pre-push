@@ -36,7 +36,7 @@ echo "╚═══════════════════════�
 # STEP 0: GDScript Format (check then fail if dirty)
 # ──────────────────────────────────────────────────
 echo ""
-echo "🎨 [0/4] GDScript Format Check..."
+echo "🎨 [0/5] GDScript Format Check..."
 if command -v "$GDFORMAT_BIN" &>/dev/null; then
     "$GDFORMAT_BIN" scripts/ tests/ ui/ 2>&1
     if ! git diff --quiet -- '*.gd'; then
@@ -55,7 +55,7 @@ fi
 # STEP 1: GDScript Lint
 # ──────────────────────────────────────────────────
 echo ""
-echo "🔍 [1/4] GDScript Lint..."
+echo "🔍 [1/5] GDScript Lint..."
 if command -v "$GDLINT_BIN" &>/dev/null; then
     GDLINT_OUTPUT=$("$GDLINT_BIN" scripts/ tests/ ui/ 2>&1 || true)
     if echo "$GDLINT_OUTPUT" | grep -q "^ERROR"; then
@@ -73,7 +73,7 @@ fi
 # STEP 2: Markdown Lint (check then fail if dirty)
 # ──────────────────────────────────────────────────
 echo ""
-echo "📝 [2/4] Markdown Lint..."
+echo "📝 [2/5] Markdown Lint..."
 MARKDOWNLINT_BIN="$(which markdownlint 2>/dev/null || echo "")"
 if [ -n "$MARKDOWNLINT_BIN" ]; then
     # Auto-fix first
@@ -101,7 +101,7 @@ fi
 # STEP 3: Deterministic Math Validation (Python)
 # ──────────────────────────────────────────────────
 echo ""
-echo "⚖️  [3/4] Deterministic Math Validation..."
+echo "⚖️  [3/5] Deterministic Math Validation..."
 python3 tests/validate_math.py
 echo "  ✅ Math validation OK"
 
@@ -109,7 +109,7 @@ echo "  ✅ Math validation OK"
 # STEP 4: Godot Editor Scan (GDScript parse errors)
 # ──────────────────────────────────────────────────
 echo ""
-echo "🎮 [4/4] Godot Script Parse Check..."
+echo "🎮 [4/5] Godot Script Parse Check..."
 if command -v "$GODOT_BIN" &>/dev/null; then
     "$GODOT_BIN" --headless --editor --quit --path . 2>&1 | tee tools/godot_lint.log
     if ! python3 tools/filter_godot_errors.py tools/godot_lint.log; then
@@ -122,8 +122,29 @@ else
     echo "  ⚠️  Godot not found at '$GODOT_BIN' — skipping engine scan"
 fi
 
+# ──────────────────────────────────────────────────
+# STEP 5: GdUnit4 Test Suite
+# ──────────────────────────────────────────────────
+echo ""
+echo "🧪 [5/5] Running GdUnit4 Test Suite..."
+if command -v "$GODOT_BIN" &>/dev/null && [ -f "addons/gdUnit4/bin/GdUnitCmdTool.gd" ]; then
+    TEST_EXIT_CODE=0
+    "$GODOT_BIN" --headless --path . -s res://addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests/ --ignoreHeadlessMode 2>&1 | tee tools/test_suite.log || TEST_EXIT_CODE=$?
+
+    # GdUnit4 exit codes: 0 = success, 101 = warnings (orphans), other non-zero = failure
+    if [ "$TEST_EXIT_CODE" -ne 0 ] && [ "$TEST_EXIT_CODE" -ne 101 ]; then
+        echo ""
+        echo "  ❌ GdUnit4 test suite FAILED. Check tools/test_suite.log"
+        exit 1
+    fi
+    echo "  ✅ GdUnit4 tests passed"
+else
+    echo "  ⚠️  GdUnit4 not found — skipping test suite"
+fi
+
 echo ""
 echo "╔══════════════════════════════════════════════╗"
 echo "║   ✅ All checks passed — push is clean!      ║"
 echo "╚══════════════════════════════════════════════╝"
 echo ""
+
