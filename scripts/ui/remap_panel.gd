@@ -2,30 +2,18 @@ extends Control
 
 ## RemapPanel
 ## UI panel for rebinding keyboard, mouse, and gamepad controls.
-## Reference: DON-197
-
-const REMAP_SAVE_PATH: String = "user://remap.save"
 
 @onready var action_list: VBoxContainer = $VBoxContainer/ScrollContainer/ActionList
 @onready var conflict_toast: Label = $ConflictToast
 
 var remapping_action: String = ""
 var remapping_button: Button = null
-var _cached_router: Node = null
-
-
-func _get_router() -> Node:
-	if not is_instance_valid(_cached_router):
-		_cached_router = get_node_or_null("/root/InputRouter")
-	return _cached_router
 
 
 func _ready() -> void:
-	load_bindings()
 	create_action_list()
-	var router: Node = _get_router()
-	if router and router.has_signal("device_changed"):
-		router.connect("device_changed", _on_device_changed)
+	if InputRouter.has_signal("device_changed"):
+		InputRouter.device_changed.connect(_on_device_changed)
 
 	# Focus the first item for keyboard/gamepad accessibility when the list is populated
 	call_deferred("_focus_first_item")
@@ -73,10 +61,7 @@ func get_action_text(action: StringName) -> String:
 	if events.is_empty():
 		return "None"
 
-	var current_device: int = 0
-	var router: Node = _get_router()
-	if router:
-		current_device = int(router.get("current_device"))
+	var current_device: int = int(InputRouter.current_device)
 
 	for event: InputEvent in events:
 		if current_device == 0:  # KEYBOARD_MOUSE
@@ -94,10 +79,7 @@ func get_action_icon(action: StringName) -> Texture2D:
 	if events.is_empty():
 		return null
 
-	var current_device: int = 0
-	var router: Node = _get_router()
-	if router:
-		current_device = int(router.get("current_device"))
+	var current_device: int = int(InputRouter.current_device)
 
 	for event: InputEvent in events:
 		if current_device == 0:  # KEYBOARD_MOUSE
@@ -111,9 +93,6 @@ func get_action_icon(action: StringName) -> Texture2D:
 
 
 func _find_icon_for_event(event: InputEvent) -> Texture2D:
-	# Icons would be loaded from res://assets/ui/icons/
-	# Since assets are missing in this environment, we return null.
-	# The system is icon-ready once assets are added.
 	var path: String = "res://assets/ui/icons/"
 	if event is InputEventKey:
 		path += "keys/" + String(event.as_text()).to_lower() + ".png"
@@ -171,7 +150,7 @@ func remap_action_to(action: StringName, event: InputEvent) -> void:
 			InputMap.action_erase_event(action, old_event)
 
 	InputMap.action_add_event(action, event)
-	save_bindings()
+	# SettingsManager will handle persistence on back_pressed or apply
 	create_action_list()
 
 	# Refocus the button that was just remapped
@@ -222,157 +201,9 @@ func show_conflict_warning(other_action: StringName) -> void:
 		timer.timeout.connect(conflict_toast.hide)
 
 
-func _on_device_changed(_device_type: String) -> void:
+func _on_device_changed(_device: _InputRouter.InputDevice) -> void:
 	create_action_list()
 
 
-func save_bindings() -> void:
-	var save_data: Dictionary = {}
-	for action: StringName in InputMap.get_actions():
-		if action.begins_with("ui_"):
-			continue
-		var events: Array[InputEvent] = InputMap.action_get_events(action)
-		var serialized_events: Array = []
-		for event: InputEvent in events:
-			serialized_events.append(_serialize_event(event))
-		save_data[action] = serialized_events
-
-	# SECURITY FIX: Encrypting user input save data to prevent basic manipulation/tampering
-	# and insecure deserialization attacks that could arise from plaintext store_var() usage.
-	var file: FileAccess = FileAccess.open_encrypted_with_pass(
-		REMAP_SAVE_PATH, FileAccess.WRITE, _get_secure_salt()
-	)
-	if file:
-		file.store_var(save_data)
-		file.close()
-	else:
-		push_error("Failed to open remap file for writing: %s" % REMAP_SAVE_PATH)
-
-
-func load_bindings() -> void:
-	if not FileAccess.file_exists(REMAP_SAVE_PATH):
-		return
-
-	# SECURITY FIX: Read encrypted save file to validate integrity and prevent execution of modified user configs.
-	var file: FileAccess = FileAccess.open_encrypted_with_pass(
-		REMAP_SAVE_PATH, FileAccess.READ, _get_secure_salt()
-	)
-	if file:
-		var save_data: Variant = file.get_var()
-		file.close()
-
-		if save_data is Dictionary:
-			var sd: Dictionary = save_data as Dictionary
-			for action: StringName in sd.keys():
-				if InputMap.has_action(action):
-					InputMap.action_erase_events(action)
-					var event_list: Array = sd[action] as Array
-					for event_dict: Dictionary in event_list:
-						var event: InputEvent = _deserialize_event(event_dict)
-						if event:
-							InputMap.action_add_event(action, event)
-	else:
-		push_error("Failed to open remap file for reading: %s" % REMAP_SAVE_PATH)
-		return
-
-
-func _serialize_event(event: InputEvent) -> Dictionary:
-	var d: Dictionary = {}
-	d["device"] = event.device
-	if event is InputEventKey:
-		d["type"] = "InputEventKey"
-		d["keycode"] = event.keycode
-		d["physical_keycode"] = event.physical_keycode
-		d["key_label"] = event.key_label
-		d["unicode"] = event.unicode
-		d["echo"] = event.echo
-		d["pressed"] = event.pressed
-		d["shift_pressed"] = event.shift_pressed
-		d["alt_pressed"] = event.alt_pressed
-		d["ctrl_pressed"] = event.ctrl_pressed
-		d["meta_pressed"] = event.meta_pressed
-	elif event is InputEventMouseButton:
-		d["type"] = "InputEventMouseButton"
-		d["button_index"] = event.button_index
-		d["pressed"] = event.pressed
-		d["canceled"] = event.canceled
-		d["double_click"] = event.double_click
-		d["shift_pressed"] = event.shift_pressed
-		d["alt_pressed"] = event.alt_pressed
-		d["ctrl_pressed"] = event.ctrl_pressed
-		d["meta_pressed"] = event.meta_pressed
-	elif event is InputEventJoypadButton:
-		d["type"] = "InputEventJoypadButton"
-		d["button_index"] = event.button_index
-		d["pressed"] = event.pressed
-		d["pressure"] = event.pressure
-	elif event is InputEventJoypadMotion:
-		d["type"] = "InputEventJoypadMotion"
-		d["axis"] = event.axis
-		d["axis_value"] = event.axis_value
-	return d
-
-
-func _deserialize_event(d: Dictionary) -> InputEvent:
-	if not d.has("type"):
-		return null
-	var type: String = d.get("type", "")
-	if type == "InputEventKey":
-		var e: InputEventKey = InputEventKey.new()
-		e.keycode = int(d.get("keycode", 0))
-		e.physical_keycode = int(d.get("physical_keycode", 0))
-		e.key_label = int(d.get("key_label", 0))
-		e.unicode = int(d.get("unicode", 0))
-		e.echo = bool(d.get("echo", false))
-		e.pressed = bool(d.get("pressed", false))
-		e.shift_pressed = bool(d.get("shift_pressed", false))
-		e.alt_pressed = bool(d.get("alt_pressed", false))
-		e.ctrl_pressed = bool(d.get("ctrl_pressed", false))
-		e.device = int(d.get("device", 0))
-		e.meta_pressed = bool(d.get("meta_pressed", false))
-		return e
-	elif type == "InputEventMouseButton":
-		var e: InputEventMouseButton = InputEventMouseButton.new()
-		e.button_index = int(d.get("button_index", 0))
-		e.pressed = bool(d.get("pressed", false))
-		e.canceled = bool(d.get("canceled", false))
-		e.double_click = bool(d.get("double_click", false))
-		e.shift_pressed = bool(d.get("shift_pressed", false))
-		e.alt_pressed = bool(d.get("alt_pressed", false))
-		e.ctrl_pressed = bool(d.get("ctrl_pressed", false))
-		e.device = int(d.get("device", 0))
-		e.meta_pressed = bool(d.get("meta_pressed", false))
-		return e
-	elif type == "InputEventJoypadButton":
-		var e: InputEventJoypadButton = InputEventJoypadButton.new()
-		e.button_index = int(d.get("button_index", 0))
-		e.pressed = bool(d.get("pressed", false))
-		e.device = int(d.get("device", 0))
-		e.pressure = float(d.get("pressure", 0.0))
-		return e
-	elif type == "InputEventJoypadMotion":
-		var e: InputEventJoypadMotion = InputEventJoypadMotion.new()
-		e.axis = int(d.get("axis", 0))
-		e.device = int(d.get("device", 0))
-		e.axis_value = float(d.get("axis_value", 0.0))
-		return e
-	return null
-
-
-func _on_reset_pressed() -> void:
-	var scene: PackedScene = load("res://scenes/ui/confirm_modal.tscn") as PackedScene
-	if scene:
-		var modal: Node = scene.instantiate()
-		modal.call("setup", "CONFIRM_RESET_TITLE", "CONFIRM_RESET_BODY")
-		modal.connect("confirmed", _on_reset_confirmed)
-		LayerManager.add_modal(modal)
-
-
-func _on_reset_confirmed() -> void:
-	InputMap.load_from_project_settings()
-	save_bindings()
+func refresh() -> void:
 	create_action_list()
-
-
-func _get_secure_salt() -> String:
-	return OS.get_unique_id() + "_remap_salt"
