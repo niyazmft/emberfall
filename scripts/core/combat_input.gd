@@ -129,6 +129,7 @@ func _execute_attack() -> void:
 
 	var cost: int = CombatFormula.action_cost("attack_basic")
 	if int(player_ent.get("ap")) < cost:
+		ToastManager.show_toast("Not enough AP")
 		return
 
 	var target: Node2D = _valid_targets[_target_index]
@@ -152,8 +153,12 @@ func _execute_attack() -> void:
 	var lifecycle: Node = AutoloadHelper.entity_lifecycle()
 	if lifecycle:
 		lifecycle.call("apply_damage", player_ent, target_ent, damage)
+		if not target_ent.call("alive"):
+			lifecycle.call("process_kill", target_ent)
 	else:
 		target_ent.call("apply_damage", damage)
+		if not target_ent.call("alive"):
+			target_ent.call("process_kill")
 
 	# Consume AP
 	player_ent.set("ap", int(player_ent.get("ap")) - cost)

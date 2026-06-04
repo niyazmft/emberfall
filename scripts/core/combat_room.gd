@@ -28,8 +28,11 @@ func _ready() -> void:
 	if test_mode:
 		_spawn_test_encounter()
 
-	_combat_input = CombatInput.new(_player, _enemies_node, grid_renderer)
-	add_child(_combat_input)
+	if _player and _enemies_node:
+		_combat_input = CombatInput.new(_player, _enemies_node, grid_renderer)
+		add_child(_combat_input)
+	else:
+		push_warning("CombatRoom: _player or _enemies_node is null. CombatInput will not be initialized.")
 
 	_setup_camera()
 
@@ -40,7 +43,7 @@ func _spawn_test_encounter() -> void:
 
 
 func _spawn_player() -> void:
-	var keeper_scene: PackedScene = load(KEEPER_SCENE_PATH)
+	var keeper_scene: PackedScene = preload(KEEPER_SCENE_PATH)
 	var keeper: Node2D = keeper_scene.instantiate() as Node2D
 
 	# Initializing entity data block
@@ -61,7 +64,7 @@ func _spawn_player() -> void:
 
 
 func _spawn_enemies() -> void:
-	var grunt_scene: PackedScene = load(GRUNT_SCENE_PATH)
+	var grunt_scene: PackedScene = preload(GRUNT_SCENE_PATH)
 
 	_enemies_node = Node2D.new()
 	_enemies_node.name = "Enemies"
