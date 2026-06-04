@@ -60,10 +60,10 @@ func _setup_options() -> void:
 
 
 func _load_ui_from_settings() -> void:
-	var sm: _SettingsManager = AutoloadHelper.settings_manager()
+	var sm: Node = AutoloadHelper.settings_manager()
 	if sm == null:
 		return
-	var s: Dictionary = sm.settings
+	var s: Dictionary = sm.get("settings")
 
 	# Audio
 	var audio_cfg: Dictionary = s.get("audio", {}) as Dictionary
@@ -114,38 +114,42 @@ func _connect_signals() -> void:
 
 
 func _on_audio_changed(value: Variant, key: String) -> void:
-	var sm: _SettingsManager = AutoloadHelper.settings_manager()
+	var sm: Node = AutoloadHelper.settings_manager()
 	if sm != null:
-		sm.settings.audio[key] = value
-		sm.apply_audio_settings()
+		var settings: Dictionary = sm.get("settings")
+		settings.audio[key] = value
+		sm.call("apply_audio_settings")
 
 
 func _on_apply_video_settings() -> void:
-	var sm: _SettingsManager = AutoloadHelper.settings_manager()
+	var sm: Node = AutoloadHelper.settings_manager()
 	if sm == null:
 		return
 	var idx: int = _resolution_option.selected
+	var settings: Dictionary = sm.get("settings")
 	if idx >= 0 and idx < _resolutions.size():
 		var res: Vector2i = _resolutions[idx]
-		sm.settings.video.resolution_width = res.x
-		sm.settings.video.resolution_height = res.y
-	sm.settings.video.fullscreen = _fullscreen_check.button_pressed
-	sm.settings.video.vsync = _vsync_check.button_pressed
-	sm.apply_video_settings()
-	sm.save_settings()
+		settings.video.resolution_width = res.x
+		settings.video.resolution_height = res.y
+	settings.video.fullscreen = _fullscreen_check.button_pressed
+	settings.video.vsync = _vsync_check.button_pressed
+	sm.call("apply_video_settings")
+	sm.call("save_settings")
 
 
 func _on_accessibility_changed(value: Variant, key: String) -> void:
-	var sm: _SettingsManager = AutoloadHelper.settings_manager()
+	var sm: Node = AutoloadHelper.settings_manager()
 	if sm != null:
-		sm.settings.accessibility[key] = value
-		sm.apply_accessibility_settings()
+		var settings: Dictionary = sm.get("settings")
+		settings.accessibility[key] = value
+		sm.call("apply_accessibility_settings")
 
 
 func _on_controls_changed(index: int, key: String) -> void:
-	var sm: _SettingsManager = AutoloadHelper.settings_manager()
+	var sm: Node = AutoloadHelper.settings_manager()
 	if sm != null:
-		sm.settings.controls[key] = index
+		var settings: Dictionary = sm.get("settings")
+		settings.controls[key] = index
 
 
 func _on_reset_pressed() -> void:
@@ -158,17 +162,17 @@ func _on_reset_pressed() -> void:
 
 
 func _on_reset_confirmed() -> void:
-	var sm: _SettingsManager = AutoloadHelper.settings_manager()
+	var sm: Node = AutoloadHelper.settings_manager()
 	if sm != null:
-		sm.reset_to_defaults()
+		sm.call("reset_to_defaults")
 		_load_ui_from_settings()
 
 
 func _on_back_pressed() -> void:
-	var sm: _SettingsManager = AutoloadHelper.settings_manager()
+	var sm: Node = AutoloadHelper.settings_manager()
 	if sm != null:
 		sm.call("sync_bindings_to_settings")
-		sm.save_settings()
+		sm.call("save_settings")
 	back_pressed.emit()
 	hide()
 

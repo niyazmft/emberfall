@@ -181,10 +181,10 @@ func apply_video_settings() -> void:
 
 func apply_accessibility_settings() -> void:
 	var access_cfg: Dictionary = settings.get("accessibility", {}) as Dictionary
-	if has_node("/root/BurdenShaderManager"):
-		get_node("/root/BurdenShaderManager").call(
-			"set_cvd_mode", int(access_cfg.get("cvd_sim", 0))
-		)
+	# Use AutoloadHelper for consistency and safety
+	var bsm: Node = AutoloadHelper.get_autoload("BurdenShaderManager")
+	if bsm != null:
+		bsm.call("set_cvd_mode", int(access_cfg.get("cvd_sim", 0)))
 
 
 func _apply_bus_volume(bus_name: String, volume_linear: float, mute: bool) -> void:
