@@ -37,9 +37,9 @@ func decide_action(p_entity: Entity = null) -> Dictionary:
 	if player_entity == null:
 		return {"type": "wait"}
 
-	var player_pos := player_entity.grid_position()
-	var enemy_pos := enemy_entity.grid_position()
-	var dist := _grid_distance(enemy_pos, player_pos)
+	var player_pos: Vector2i = player_entity.grid_position()
+	var enemy_pos: Vector2i = enemy_entity.grid_position()
+	var dist: int = _grid_distance(enemy_pos, player_pos)
 
 	match behavior:
 		BehaviorType.GRUNT:
@@ -57,7 +57,7 @@ func _grunt_behavior(enemy_pos: Vector2i, player_pos: Vector2i, dist: int) -> Di
 	if dist <= 1:
 		return {"type": "attack", "target": _player_node}
 
-	var next_tile := _get_next_tile_towards(player_pos)
+	var next_tile: Vector2i = _get_next_tile_towards(player_pos)
 	if next_tile != enemy_pos:
 		return {"type": "move", "target_x": next_tile.x, "target_y": next_tile.y}
 
@@ -68,12 +68,12 @@ func _archer_behavior(enemy_pos: Vector2i, player_pos: Vector2i, dist: int) -> D
 	# Maintain 2-3 tile distance
 	if dist < 2:
 		# Too close, move away
-		var next_tile := _get_next_tile_towards(player_pos, true)
+		var next_tile: Vector2i = _get_next_tile_towards(player_pos, true)
 		if next_tile != enemy_pos:
 			return {"type": "move", "target_x": next_tile.x, "target_y": next_tile.y}
 	elif dist > 3:
 		# Too far, move towards
-		var next_tile := _get_next_tile_towards(player_pos)
+		var next_tile: Vector2i = _get_next_tile_towards(player_pos)
 		if next_tile != enemy_pos:
 			return {"type": "move", "target_x": next_tile.x, "target_y": next_tile.y}
 	else:
@@ -94,9 +94,9 @@ func _get_next_tile_towards(target_pos: Vector2i, away: bool = false) -> Vector2
 	if enemy_entity == null or grid_system == null:
 		return Vector2i(enemy_entity.x, enemy_entity.y) if enemy_entity else Vector2i.ZERO
 
-	var current_pos := enemy_entity.grid_position()
-	var best_tile := current_pos
-	var min_dist := _grid_distance(current_pos, target_pos)
+	var current_pos: Vector2i = enemy_entity.grid_position()
+	var best_tile: Vector2i = current_pos
+	var min_dist: int = _grid_distance(current_pos, target_pos)
 	if away:
 		min_dist = -1
 
@@ -104,20 +104,20 @@ func _get_next_tile_towards(target_pos: Vector2i, away: bool = false) -> Vector2
 	var occupied_coords: Array[Vector2i] = _get_occupied_coords()
 
 	# Check all 8 neighbors
-	for dx in range(-1, 2):
-		for dy in range(-1, 2):
+	for dx: int in range(-1, 2):
+		for dy: int in range(-1, 2):
 			if dx == 0 and dy == 0:
 				continue
 
-			var nx := current_pos.x + dx
-			var ny := current_pos.y + dy
-			var n_pos := Vector2i(nx, ny)
+			var nx: int = current_pos.x + dx
+			var ny: int = current_pos.y + dy
+			var n_pos: Vector2i = Vector2i(nx, ny)
 
 			if grid_system.can_move(current_pos.x, current_pos.y, nx, ny):
 				if n_pos in occupied_coords:
 					continue
 
-				var d := _grid_distance(n_pos, target_pos)
+				var d: int = _grid_distance(n_pos, target_pos)
 				if away:
 					if d > min_dist:
 						min_dist = d
@@ -134,18 +134,18 @@ func _get_occupied_coords() -> Array[Vector2i]:
 	var occupied: Array[Vector2i] = []
 
 	# Player
-	var player := get_tree().get_first_node_in_group("player") as Node2D
+	var player: Node2D = get_tree().get_first_node_in_group("player") as Node2D
 	if player:
 		var pent: Entity = player.get("entity") as Entity
 		if pent:
 			occupied.append(Vector2i(pent.x, pent.y))
 
 	# Enemies
-	var enemies := get_tree().get_nodes_in_group("enemies")
-	for enemy in enemies:
+	var enemies: Array[Node] = get_tree().get_nodes_in_group("enemies")
+	for enemy: Node in enemies:
 		if enemy == get_parent():  # Skip self
 			continue
-		var e_node := enemy as Node2D
+		var e_node: Node2D = enemy as Node2D
 		if e_node:
 			var e_ent: Entity = e_node.get("entity") as Entity
 			if e_ent and e_ent.alive():

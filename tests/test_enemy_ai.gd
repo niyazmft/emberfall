@@ -20,6 +20,7 @@ func before_test() -> void:
 
 	_enemy = BaseEnemy.new()
 	_enemy.entity = Entity.new("Enemy", 8, 8, 50, 10, 5)
+	_enemy._grid_system = _grid  # Inject grid system
 	add_child(_enemy)
 	_enemy.add_to_group("enemies")
 
@@ -35,7 +36,7 @@ func test_grunt_moves_towards_player() -> void:
 	_enemy.entity.set_grid_position(8, 8)
 	_player.entity.set_grid_position(5, 5)
 
-	var action := _ai.decide_action()
+	var action: Dictionary = _ai.decide_action()
 
 	assert_dict(action).contains_key("type")
 	assert_str(action["type"]).is_equal("move")
@@ -52,7 +53,7 @@ func test_grunt_attacks_adjacent_player() -> void:
 	_enemy.entity.set_grid_position(6, 5)
 	_player.entity.set_grid_position(5, 5)
 
-	var action := _ai.decide_action()
+	var action: Dictionary = _ai.decide_action()
 
 	assert_dict(action).contains_key("type")
 	assert_str(action["type"]).is_equal("attack")
@@ -64,14 +65,14 @@ func test_archer_moves_away_when_too_close() -> void:
 	_enemy.entity.set_grid_position(6, 5)
 	_player.entity.set_grid_position(5, 5)
 
-	var action := _ai.decide_action()
+	var action: Dictionary = _ai.decide_action()
 
 	assert_dict(action).contains_key("type")
 	assert_str(action["type"]).is_equal("move")
 	# Distance is 1, Archer wants 2-3. Should move away.
 	# (7,5) or (7,6) or (7,4) etc.
 	# _get_next_tile_towards(player, true)
-	var dist_after := max(abs(action["target_x"] - 5), abs(action["target_y"] - 5))
+	var dist_after: int = int(max(abs(action["target_x"] - 5), abs(action["target_y"] - 5)))
 	assert_int(dist_after).is_greater_than(1)
 
 
@@ -80,7 +81,7 @@ func test_archer_attacks_at_range_2() -> void:
 	_enemy.entity.set_grid_position(7, 5)
 	_player.entity.set_grid_position(5, 5)
 
-	var action := _ai.decide_action()
+	var action: Dictionary = _ai.decide_action()
 
 	assert_dict(action).contains_key("type")
 	assert_str(action["type"]).is_equal("attack")
@@ -91,7 +92,7 @@ func test_archer_moves_towards_when_too_far() -> void:
 	_enemy.entity.set_grid_position(10, 5)
 	_player.entity.set_grid_position(5, 5)
 
-	var action := _ai.decide_action()
+	var action: Dictionary = _ai.decide_action()
 
 	assert_dict(action).contains_key("type")
 	assert_str(action["type"]).is_equal("move")
@@ -103,13 +104,13 @@ func test_tank_behavior_is_grunt_like() -> void:
 	_enemy.entity.set_grid_position(8, 8)
 	_player.entity.set_grid_position(5, 5)
 
-	var action := _ai.decide_action()
+	var action: Dictionary = _ai.decide_action()
 	assert_str(action["type"]).is_equal("move")
 
 
 func test_ai_avoids_occupied_tiles() -> void:
 	# Add another enemy at (7,7)
-	var other_enemy := BaseEnemy.new()
+	var other_enemy: BaseEnemy = BaseEnemy.new()
 	other_enemy.entity = Entity.new("Blocker", 7, 7, 50, 10, 5)
 	add_child(other_enemy)
 	other_enemy.add_to_group("enemies")
@@ -118,14 +119,14 @@ func test_ai_avoids_occupied_tiles() -> void:
 	_enemy.entity.set_grid_position(8, 8)
 	_player.entity.set_grid_position(5, 5)
 
-	var action := _ai.decide_action()
+	var action: Dictionary = _ai.decide_action()
 
 	assert_str(action["type"]).is_equal("move")
 	# Should NOT move to (7,7) because it's occupied
 	assert_bool(action["target_x"] == 7 and action["target_y"] == 7).is_false()
 
 	# Should still move towards player, e.g. (7,8) or (8,7)
-	var dist_after := max(abs(action["target_x"] - 5), abs(action["target_y"] - 5))
+	var dist_after: int = int(max(abs(action["target_x"] - 5), abs(action["target_y"] - 5)))
 	assert_int(dist_after).is_less_than(3)
 
 
@@ -133,7 +134,7 @@ func test_base_enemy_facing_updates_on_move() -> void:
 	_enemy.entity.set_grid_position(8, 8)
 	_enemy.entity.set_facing(0, 1)
 
-	var action := {"type": "move", "target_x": 7, "target_y": 7}
+	var action: Dictionary = {"type": "move", "target_x": 7, "target_y": 7}
 	_enemy._execute_action(action)
 
 	assert_int(_enemy.entity.x).is_equal(7)
@@ -144,7 +145,7 @@ func test_base_enemy_facing_updates_on_move() -> void:
 
 func test_base_enemy_consumes_ap_on_move() -> void:
 	_enemy.entity.ap = 10
-	var action := {"type": "move", "target_x": 7, "target_y": 8}
+	var action: Dictionary = {"type": "move", "target_x": 7, "target_y": 8}
 	_enemy._execute_action(action)
 
 	assert_int(_enemy.entity.ap).is_equal(9)
