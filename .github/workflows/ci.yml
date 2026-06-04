@@ -71,11 +71,11 @@ jobs:
         uses: actions/cache@v5
         with:
           path: ~/.local/share/godot
-          key: godot-4.2.2-${{ runner.os }}-${{ hashFiles('.github/workflows/ci.yml') }}
+          key: godot-4.6.3-${{ runner.os }}-${{ hashFiles('.github/workflows/ci.yml') }}
       - name: Setup Godot
         uses: chickensoft-games/setup-godot@v2
         with:
-          version: 4.2.2
+          version: 4.6.3
           use-dotnet: false
       - name: Import Project
         run: godot --headless --import --path . --quit
@@ -91,8 +91,8 @@ jobs:
       - name: Run GdUnit4 Tests
         uses: MikeSchulze/gdUnit4-action@v1
         with:
-          godot-version: '4.2.2'
-          version: 'v4.4.3'
+          godot-version: '4.6.3'
+          version: 'v6.1.3'
           paths: 'res://tests'
           publish-report: true
           report-name: 'gdUnit4-report'

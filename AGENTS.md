@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-**Engine:** Godot 4.2.2
+**Engine:** Godot 4.6.3
 **Language:** GDScript
 **Genre:** Tactical grid combat game
 **Architecture:** Deterministic math, component-based entities, state machines
@@ -334,6 +334,16 @@ GitHub Actions (`.github/workflows/ci.yml`) runs **exactly the same checks** as 
 
 ---
 
+## Task & Project Management Workflow
+
+When picking up or completing a task, agents **MUST** keep the local tracker up to date:
+
+1. **Check the Board**: Always consult `PROJECT_BOARD.md` for current sprint goals and active tasks.
+2. **Update Status**: When starting or finishing a task, you must update the task's status in `PROJECT_BOARD.md` (e.g., from ⏳ "Ready" to 🔄 "In Progress", or to ✅ "Done").
+3. **Hybrid Tracking**: Ensure you also create or reference the matching GitHub Issue as per global rules. The user manages the visual GitHub Project board, but `PROJECT_BOARD.md` is the primary map for AI agents.
+
+---
+
 ## Common Operations
 
 ### Adding a New Enemy Type
@@ -362,7 +372,7 @@ GitHub Actions (`.github/workflows/ci.yml`) runs **exactly the same checks** as 
 
 **One-time setup:** Run `bash tools/setup_hooks.sh` after cloning.
 
-- Godot 4.2.2 — must be on `PATH` (or set `GODOT_BIN`)
+- Godot 4.6.3 — must be on `PATH` (or set `GODOT_BIN`)
 - gdtoolkit (`gdformat`, `gdlint`) — install via `pip3 install gdtoolkit`
 - `markdownlint-cli` — install via `npm install -g markdownlint-cli`
 - `pre-commit` — install via `pip3 install pre-commit`

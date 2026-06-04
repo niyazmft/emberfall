@@ -2,9 +2,9 @@
 
 [![CI](https://github.com/niyazmft/emberfall/actions/workflows/ci.yml/badge.svg)](https://github.com/niyazmft/emberfall/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Godot 4.2.2](https://img.shields.io/badge/Godot-4.2.2-478cbf?logo=godot-engine&logoColor=white)](https://godotengine.org/)
+[![Godot 4.6.3](https://img.shields.io/badge/Godot-4.6.3-478cbf?logo=godot-engine&logoColor=white)](https://godotengine.org/)
 
-A deterministic, grid-based tactics engine built entirely in **Godot 4.2.2**, with a
+A deterministic, grid-based tactics engine built entirely in **Godot 4.6.3**, with a
 focus on performance for Android via Termux.
 
 > **Unique angle:** Project Emberfall is constructed and maintained by a workforce
@@ -19,7 +19,7 @@ focus on performance for Android via Termux.
 
 ## Features
 
-- **Engine:** Godot 4.2.2 (Stable), optimized for Android via Termux
+- **Engine:** Godot 4.6.3 (Stable), optimized for Android via Termux
 - **Deterministic Combat:** 100% deterministic math, identical outcomes on all platforms
 - **Grid-Based Tactics:** Flexible 12×12 grid with elevation and cover
 - **Elemental System:** Fire/Oil/Wind/Water interactions with combo effects
@@ -34,7 +34,7 @@ focus on performance for Android via Termux.
 
 | Tool | Version | Notes |
 |------|---------|-------|
-| Godot Engine | **4.2.2** | Other 4.x versions may work but are untested |
+| Godot Engine | **4.6.3** | Other 4.x versions may work but are untested |
 | Python | **3.10+** | Only required for the math validation script |
 | Git | latest | For version-controlled git hooks |
 
@@ -76,7 +76,7 @@ For contribution guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Tech Stack
 
-- **Engine:** [Godot 4.2.2](https://godotengine.org/) (GDScript)
+- **Engine:** [Godot 4.6.3](https://godotengine.org/) (GDScript)
 - **Validation:** [Python 3.10+](https://www.python.org/) for cross-platform math checks
 - **Formatting:** [gdtoolkit](https://github.com/Scony/godot-gdscript-toolkit) (`gdformat` / `gdlint`)
 - **Pre-commit Hooks:** [pre-commit](https://pre-commit.com/) framework

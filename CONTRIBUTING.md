@@ -6,7 +6,7 @@
 
 | Tool | Version | Install |
 |---|---|---|
-| [Godot Engine](https://godotengine.org/download) | **4.2.2** | Download binary, add to `PATH` as `godot` |
+| [Godot Engine](https://godotengine.org/download) | **4.6.3** | Download binary, add to `PATH` as `godot` |
 | [gdtoolkit](https://github.com/Scony/godot-gdscript-toolkit) | latest | `pip3 install gdtoolkit` |
 | [markdownlint-cli](https://github.com/igorshubovych/markdownlint-cli) | latest | `npm install -g markdownlint-cli` |
 | [pre-commit](https://pre-commit.com/) | latest | `pip3 install pre-commit` |
@@ -141,7 +141,7 @@ bash tools/pre_push_check.sh
 ```
 
 > [!TIP]
-> Set `GODOT_BIN=/path/to/godot4.2.2` if your binary isn't on `PATH` as `godot`.
+> Set `GODOT_BIN=/path/to/godot4.6.3` if your binary isn't on `PATH` as `godot`.
 
 ---
 
