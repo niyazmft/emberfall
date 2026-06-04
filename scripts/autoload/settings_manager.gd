@@ -9,25 +9,26 @@ const SAVE_PATH: String = "user://settings.json"
 enum SettingCategory { DISPLAY, AUDIO, INPUT, ACCESSIBILITY }
 
 var settings: Dictionary = {
-	"audio": {
+	"audio":
+	{
 		"master_volume": 1.0,
 		"music_volume": 0.8,
 		"sfx_volume": 0.8,
 		"mute": false,
 	},
-	"video": {
+	"video":
+	{
 		"fullscreen": true,
 		"resolution_width": 1920,
 		"resolution_height": 1080,
 		"vsync": true,
 	},
-	"accessibility": {
+	"accessibility":
+	{
 		"screen_shake": 1.0,
 		"cvd_sim": 0,  # 0: None, 1: Protanopia, 2: Deuteranopia, 3: Tritanopia
 	},
-	"controls": {
-		"input_hints": 0  # 0: Auto, 1: KBM, 2: Gamepad
-	}
+	"controls": {"input_hints": 0}  # 0: Auto, 1: KBM, 2: Gamepad
 }
 
 var init_time_ms: int = 0
@@ -76,7 +77,12 @@ func load_settings() -> void:
 			else:
 				_print_error("Settings JSON is not a dictionary")
 		else:
-			_print_error("JSON Parse Error: %s at line %d" % [json.get_error_message(), json.get_error_line()])
+			_print_error(
+				(
+					"JSON Parse Error: %s at line %d"
+					% [json.get_error_message(), json.get_error_line()]
+				)
+			)
 	else:
 		_print_error("Failed to open settings file for reading: %s" % SAVE_PATH)
 
@@ -102,25 +108,26 @@ func _load_legacy_settings() -> void:
 
 func reset_to_defaults() -> void:
 	settings = {
-		"audio": {
+		"audio":
+		{
 			"master_volume": 1.0,
 			"music_volume": 0.8,
 			"sfx_volume": 0.8,
 			"mute": false,
 		},
-		"video": {
+		"video":
+		{
 			"fullscreen": true,
 			"resolution_width": 1920,
 			"resolution_height": 1080,
 			"vsync": true,
 		},
-		"accessibility": {
+		"accessibility":
+		{
 			"screen_shake": 1.0,
 			"cvd_sim": 0,
 		},
-		"controls": {
-			"input_hints": 0
-		}
+		"controls": {"input_hints": 0}
 	}
 	apply_settings()
 	save_settings()
@@ -167,7 +174,9 @@ func apply_settings() -> void:
 	# Apply CVD Simulation if there's a system for it
 	# In Emberfall, this might be handled by a shader or a singleton
 	if has_node("/root/BurdenShaderManager"):
-		get_node("/root/BurdenShaderManager").call("set_cvd_mode", int(access_cfg.get("cvd_sim", 0)))
+		get_node("/root/BurdenShaderManager").call(
+			"set_cvd_mode", int(access_cfg.get("cvd_sim", 0))
+		)
 
 
 func _apply_bus_volume(bus_name: String, volume_linear: float, mute: bool) -> void:
