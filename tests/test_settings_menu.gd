@@ -5,7 +5,9 @@ func before_test() -> void:
 	# Clear settings file before tests
 	if FileAccess.file_exists("user://settings.json"):
 		DirAccess.remove_absolute("user://settings.json")
-	SettingsManager.load_settings()
+	if FileAccess.file_exists("user://settings.save"):
+		DirAccess.remove_absolute("user://settings.save")
+	SettingsManager.reset_to_defaults()
 
 
 func test_settings_default_values() -> void:
@@ -32,16 +34,14 @@ func test_ui_to_settings_sync() -> void:
 		return
 
 	var panel_scene: PackedScene = load("res://scenes/ui/settings_panel.tscn")
-	var panel = panel_scene.instantiate()
+	var panel: Node = auto_free(panel_scene.instantiate())
 	add_child(panel)
 
-	var slider: HSlider = panel.get_node("%MasterSlider")
+	var slider: HSlider = panel.get_node("%MasterSlider") as HSlider
 	slider.value = 0.2
 	slider.value_changed.emit(0.2)
 
 	assert_float(SettingsManager.settings.audio.master_volume).is_equal(0.2)
-
-	panel.queue_free()
 
 
 func test_apply_video_settings() -> void:
@@ -49,16 +49,14 @@ func test_apply_video_settings() -> void:
 		return
 
 	var panel_scene: PackedScene = load("res://scenes/ui/settings_panel.tscn")
-	var panel = panel_scene.instantiate()
+	var panel: Node = auto_free(panel_scene.instantiate())
 	add_child(panel)
 
-	var res_option: OptionButton = panel.get_node("%ResolutionOption")
+	var res_option: OptionButton = panel.get_node("%ResolutionOption") as OptionButton
 	res_option.selected = 2  # 1280x720
 
-	var apply_btn: Button = panel.get_node("%ApplyButton")
+	var apply_btn: Button = panel.get_node("%ApplyButton") as Button
 	apply_btn.pressed.emit()
 
 	assert_int(SettingsManager.settings.video.resolution_width).is_equal(1280)
 	assert_int(SettingsManager.settings.video.resolution_height).is_equal(720)
-
-	panel.queue_free()
