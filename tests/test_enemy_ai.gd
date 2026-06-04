@@ -144,12 +144,12 @@ func test_base_enemy_facing_updates_on_move() -> void:
 
 
 func test_base_enemy_consumes_ap_on_move() -> void:
-	_enemy.entity.ap = 10
+	_enemy.entity.ap = 6
 	var action: Dictionary = {"type": "move", "target_x": 7, "target_y": 8}
 	_enemy._execute_action(action)
 
-	assert_int(_enemy.entity.ap).is_equal(9)
+	assert_int(_enemy.entity.ap).is_equal(5)
 
 	action = {"type": "move", "target_x": 6, "target_y": 7}
 	_enemy._execute_action(action)
-	assert_int(_enemy.entity.ap).is_equal(7)  # Diagonal move costs 2
+	assert_int(_enemy.entity.ap).is_equal(3)  # Diagonal move costs 2

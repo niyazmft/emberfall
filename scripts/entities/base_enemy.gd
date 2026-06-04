@@ -96,7 +96,7 @@ func _handle_attack(action: Dictionary) -> void:
 	# Gather cover tiles for damage formula
 	var cover_tiles: Array[Vector2i] = []
 	if _grid_system:
-		for tile in _grid_system.all_tiles():
+		for tile: TacTileData in _grid_system.all_tiles():
 			if tile.has_cover():
 				cover_tiles.append(tile.coords)
 

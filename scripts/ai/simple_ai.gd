@@ -25,7 +25,11 @@ func decide_action(p_entity: Entity = null) -> Dictionary:
 	if enemy_entity == null:
 		return {"type": "wait"}
 
-	_player_node = get_tree().get_first_node_in_group("player") as Node2D
+	var tree: SceneTree = get_tree()
+	if tree == null:
+		return {"type": "wait"}
+
+	_player_node = tree.get_first_node_in_group("player") as Node2D
 	if (
 		_player_node == null
 		or not _player_node.has_method("alive")
@@ -133,15 +137,19 @@ func _get_next_tile_towards(target_pos: Vector2i, away: bool = false) -> Vector2
 func _get_occupied_coords() -> Array[Vector2i]:
 	var occupied: Array[Vector2i] = []
 
+	var tree: SceneTree = get_tree()
+	if tree == null:
+		return occupied
+
 	# Player
-	var player: Node2D = get_tree().get_first_node_in_group("player") as Node2D
+	var player: Node2D = tree.get_first_node_in_group("player") as Node2D
 	if player:
 		var pent: Entity = player.get("entity") as Entity
 		if pent:
 			occupied.append(Vector2i(pent.x, pent.y))
 
 	# Enemies
-	for enemy in get_tree().get_nodes_in_group("enemies"):
+	for enemy: Node in tree.get_nodes_in_group("enemies"):
 		if enemy == get_parent():  # Skip self
 			continue
 		var e_node: Node2D = enemy as Node2D
