@@ -1,5 +1,5 @@
-extends Node2D
 class_name GridRenderer
+extends Node2D
 ## GridRenderer
 ## Visual system for rendering the 12×12 tactical grid with isometric
 ## projection and elevation terraces.
@@ -7,19 +7,20 @@ class_name GridRenderer
 ## Projection: Isometric (64×32)
 ## Art Style: Greybox vector-like diamonds
 
-@export var tile_size: Vector2 = Vector2(64, 32)
-@export var elevation_step: float = 16.0
-
-var _grid_system: _GridSystem
-var _tile_sprites: Array[Sprite2D] = []
-var _diamond_tex: Texture2D
-
 # Greybox colors based on specification
 const COLOR_FLOOR: Color = Color(0.5, 0.5, 0.5)  # Grey
 const COLOR_ELEV_1: Color = Color(0.75, 0.75, 0.75)  # Light Grey
 const COLOR_ELEV_2: Color = Color(1.0, 1.0, 1.0)  # White
 const COLOR_COVER: Color = Color(0.55, 0.27, 0.07)  # Brown
 const COLOR_OIL: Color = Color(0.0, 0.0, 0.55)  # Dark Blue
+
+@export var tile_size: Vector2 = Vector2(64, 32)
+@export var elevation_step: float = 16.0
+
+var _grid_system: _GridSystem
+var _tile_sprites: Array[Sprite2D] = []
+var _highlights: Dictionary = {}  # Vector2i -> Sprite2D
+var _diamond_tex: Texture2D
 
 
 func _ready() -> void:
@@ -58,7 +59,7 @@ func _render_tile(x: int, y: int, tile: TacTileData) -> void:
 	# 1. Elevation Terraces: Visual Stacking
 	# We draw diamonds from ground up to the tile's actual elevation.
 	for e: int in range(elev_val + 1):
-		var sprite := Sprite2D.new()
+		var sprite: Sprite2D = Sprite2D.new()
 		sprite.texture = _diamond_tex
 		sprite.centered = true
 		sprite.position = _grid_to_world(x, y, e)
@@ -77,13 +78,13 @@ func _render_tile(x: int, y: int, tile: TacTileData) -> void:
 
 	# 2. Cover Visual (Greybox)
 	if tile.cover != TacTileData.CoverType.NONE:
-		var cover_sprite := Sprite2D.new()
+		var cover_sprite: Sprite2D = Sprite2D.new()
 		cover_sprite.texture = _diamond_tex
 		cover_sprite.scale = Vector2(0.4, 0.4)
 		cover_sprite.modulate = COLOR_COVER
 
 		# Position on top of the highest terrace
-		var pos := _grid_to_world(x, y, elev_val)
+		var pos: Vector2 = _grid_to_world(x, y, elev_val)
 		pos.y -= 4.0  # Floating slightly above
 		cover_sprite.position = pos
 		add_child(cover_sprite)
@@ -91,7 +92,7 @@ func _render_tile(x: int, y: int, tile: TacTileData) -> void:
 
 	# 3. Elemental Effects (Oil)
 	if _grid_system.has_oil_tile(x, y):
-		var oil_sprite := Sprite2D.new()
+		var oil_sprite: Sprite2D = Sprite2D.new()
 		oil_sprite.texture = _diamond_tex
 		oil_sprite.scale = Vector2(0.8, 0.8)
 		oil_sprite.modulate = COLOR_OIL
@@ -103,8 +104,8 @@ func _render_tile(x: int, y: int, tile: TacTileData) -> void:
 
 ## Internal: Convert grid coordinates and elevation to isometric world position.
 func _grid_to_world(x: int, y: int, elevation: int) -> Vector2:
-	var gx := float(x)
-	var gy := float(y)
+	var gx: float = float(x)
+	var gy: float = float(y)
 
 	# Isometric transformation:
 	# Standard formula for 2:1 isometric (64x32)
@@ -133,11 +134,52 @@ func grid_to_world(x: int, y: int, elevation: int = -1) -> Vector2:
 	return _grid_to_world(x, y, elev)
 
 
+## Public API: Highlight a specific tile with a color (e.g., for targeting).
+func highlight_tile(x: int, y: int, color: Color) -> void:
+	if not _grid_system:
+		return
+
+	var key: Vector2i = Vector2i(x, y)
+
+	# If already highlighted, just update color
+	if _highlights.has(key):
+		var sprite: Sprite2D = _highlights[key]
+		sprite.modulate = color
+		return
+
+	var tile: TacTileData = _grid_system.get_tile(x, y)
+	if not tile:
+		return
+
+	var sprite: Sprite2D = Sprite2D.new()
+	sprite.texture = _diamond_tex
+	sprite.centered = true
+	sprite.scale = Vector2(0.9, 0.9)  # Slightly smaller than the tile
+	sprite.modulate = color
+	# Ensure some transparency if not provided
+	if sprite.modulate.a == 1.0:
+		sprite.modulate.a = 0.6
+
+	sprite.position = grid_to_world(x, y, int(tile.elevation))
+	sprite.position.y -= 1.0  # Slightly above to avoid Z-fighting
+
+	add_child(sprite)
+	_highlights[key] = sprite
+
+
+## Public API: Clear all active highlights.
+func clear_highlights() -> void:
+	for sprite: Sprite2D in _highlights.values():
+		if is_instance_valid(sprite):
+			sprite.queue_free()
+	_highlights.clear()
+
+
 ## Procedural diamond texture generation for greyboxing.
 func _generate_diamond_texture() -> Texture2D:
 	var w: int = int(tile_size.x)
 	var h: int = int(tile_size.y)
-	var img := Image.create(w, h, false, Image.FORMAT_RGBA8)
+	var img: Image = Image.create(w, h, false, Image.FORMAT_RGBA8)
 
 	var hw: float = w / 2.0
 	var hh: float = h / 2.0
