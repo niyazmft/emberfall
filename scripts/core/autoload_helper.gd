@@ -73,6 +73,13 @@ static func grid_system() -> _GridSystem:
 	return get_autoload("GridSystem") as _GridSystem
 
 
+## Returns the SettingsManager autoload, or null.
+## NOTE: Returns Node instead of _SettingsManager to prevent engine Parse Errors
+## and circularities in headless Godot environments.
+static func settings_manager() -> Node:
+	return get_autoload("SettingsManager")
+
+
 ## Returns the LocalizationManager autoload, or null.
 ## NOTE: Returns Node instead of _LocalizationManager to prevent engine Parse Errors
 ## and circularities in headless Godot environments where class_name resolution

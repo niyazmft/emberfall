@@ -71,6 +71,7 @@ func _on_restart_pressed() -> void:
 
 
 func _on_settings_requested() -> void:
+	SettingsModal.show_modal()
 	settings_requested.emit()
 
 
