@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://c7p9q4r5s6t1u"]
+[gd_scene load_steps=3 format=3 uid="uid://c7p9q4r5s6t1u"]
 
 [ext_resource type="Script" path="res://scripts/ui/settings_panel.gd" id="1_s7p8q"]
+[ext_resource type="PackedScene" uid="uid://c6r2j8w1v4p5m" path="res://scenes/ui/remap_panel.tscn" id="2_remap"]
 
 [node name="SettingsPanel" type="Control"]
 layout_mode = 3
@@ -47,6 +48,7 @@ size_flags_vertical = 3
 
 [node name="SETTINGS_AUDIO" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
 layout_mode = 2
+theme_override_constants/separation = 10
 
 [node name="MasterVol" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO"]
 layout_mode = 2
@@ -57,10 +59,10 @@ size_flags_horizontal = 3
 text = "SETTINGS_MASTER_VOL"
 
 [node name="MasterSlider" type="HSlider" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO/MasterVol"]
-mouse_default_cursor_shape = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
+mouse_default_cursor_shape = 2
 max_value = 1.0
 step = 0.05
 value = 1.0
@@ -74,10 +76,10 @@ size_flags_horizontal = 3
 text = "SETTINGS_MUSIC_VOL"
 
 [node name="MusicSlider" type="HSlider" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO/MusicVol"]
-mouse_default_cursor_shape = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
+mouse_default_cursor_shape = 2
 max_value = 1.0
 step = 0.05
 value = 0.8
@@ -91,17 +93,45 @@ size_flags_horizontal = 3
 text = "SETTINGS_SFX_VOL"
 
 [node name="SFXSlider" type="HSlider" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO/SFXVol"]
-mouse_default_cursor_shape = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
+mouse_default_cursor_shape = 2
 max_value = 1.0
 step = 0.05
 value = 0.8
 
+[node name="Mute" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO/Mute"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "SETTINGS_MUTE"
+
+[node name="MuteCheck" type="CheckBox" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO/Mute"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_default_cursor_shape = 2
+
 [node name="SETTINGS_VIDEO" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
 visible = false
 layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Resolution" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_VIDEO"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_VIDEO/Resolution"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "SETTINGS_RESOLUTION"
+
+[node name="ResolutionOption" type="OptionButton" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_VIDEO/Resolution"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+mouse_default_cursor_shape = 2
 
 [node name="Fullscreen" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_VIDEO"]
 layout_mode = 2
@@ -112,13 +142,33 @@ size_flags_horizontal = 3
 text = "SETTINGS_FULLSCREEN"
 
 [node name="FullscreenCheck" type="CheckBox" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_VIDEO/Fullscreen"]
-mouse_default_cursor_shape = 2
 unique_name_in_owner = true
 layout_mode = 2
+mouse_default_cursor_shape = 2
+
+[node name="VSync" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_VIDEO"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_VIDEO/VSync"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "SETTINGS_VSYNC"
+
+[node name="VSyncCheck" type="CheckBox" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_VIDEO/VSync"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_default_cursor_shape = 2
+
+[node name="ApplyButton" type="Button" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_VIDEO"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+text = "SETTINGS_APPLY"
 
 [node name="SETTINGS_ACCESSIBILITY" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
 visible = false
 layout_mode = 2
+theme_override_constants/separation = 10
 
 [node name="ScreenShake" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_ACCESSIBILITY"]
 layout_mode = 2
@@ -129,17 +179,32 @@ size_flags_horizontal = 3
 text = "SETTINGS_SCREEN_SHAKE"
 
 [node name="ShakeSlider" type="HSlider" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_ACCESSIBILITY/ScreenShake"]
-mouse_default_cursor_shape = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
+mouse_default_cursor_shape = 2
 max_value = 2.0
 step = 0.1
 value = 1.0
 
+[node name="CVDSim" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_ACCESSIBILITY"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_ACCESSIBILITY/CVDSim"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "SETTINGS_CVD_SIM"
+
+[node name="CVDOption" type="OptionButton" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_ACCESSIBILITY/CVDSim"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+
 [node name="SETTINGS_CONTROLS" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
 visible = false
 layout_mode = 2
+theme_override_constants/separation = 10
 
 [node name="InputHints" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_CONTROLS"]
 layout_mode = 2
@@ -150,20 +215,25 @@ size_flags_horizontal = 3
 text = "SETTINGS_INPUT_HINTS"
 
 [node name="InputHintsOption" type="OptionButton" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_CONTROLS/InputHints"]
+unique_name_in_owner = true
+layout_mode = 2
 mouse_default_cursor_shape = 2
-unique_name_in_owner = true
-layout_mode = 2
-item_count = 3
-selected = 0
-popup/item_0/text = "Auto"
-popup/item_0/id = 0
-popup/item_1/text = "Keyboard & Mouse"
-popup/item_1/id = 1
-popup/item_2/text = "Gamepad"
-popup/item_2/id = 2
 
-[node name="BackButton" type="Button" parent="MarginContainer/VBoxContainer"]
+[node name="RemapPanel" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_CONTROLS" instance=ExtResource("2_remap")]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="ResetButton" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 4
+text = "SETTINGS_RESET_DEFAULTS"
+
+[node name="BackButton" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
 text = "MENU_BACK"
