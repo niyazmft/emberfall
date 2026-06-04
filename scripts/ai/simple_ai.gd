@@ -141,8 +141,7 @@ func _get_occupied_coords() -> Array[Vector2i]:
 			occupied.append(Vector2i(pent.x, pent.y))
 
 	# Enemies
-	var enemies: Array[Node] = get_tree().get_nodes_in_group("enemies")
-	for enemy: Node in enemies:
+	for enemy in get_tree().get_nodes_in_group("enemies"):
 		if enemy == get_parent():  # Skip self
 			continue
 		var e_node: Node2D = enemy as Node2D

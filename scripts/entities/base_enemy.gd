@@ -12,7 +12,8 @@ var _combat_system: Node  ## Placeholder for future combat system
 
 func _ready() -> void:
 	add_to_group("enemies")
-	_grid_system = AutoloadHelper.grid_system()
+	if _grid_system == null:
+		_grid_system = AutoloadHelper.grid_system()
 	_setup_entity()
 	_setup_visual_proxy()
 
@@ -95,8 +96,7 @@ func _handle_attack(action: Dictionary) -> void:
 	# Gather cover tiles for damage formula
 	var cover_tiles: Array[Vector2i] = []
 	if _grid_system:
-		var all_tiles: Array[TacTileData] = _grid_system.all_tiles()
-		for tile: TacTileData in all_tiles:
+		for tile in _grid_system.all_tiles():
 			if tile.has_cover():
 				cover_tiles.append(tile.coords)
 
