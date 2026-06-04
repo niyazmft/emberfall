@@ -30,8 +30,7 @@ func _init(player: Node2D, enemies_node: Node2D, grid_renderer: GridRenderer) ->
 func handle_input(event: InputEvent) -> bool:
 	if current_state == State.IDLE:
 		if event.is_action_pressed("combat_mode"):
-			_start_targeting()
-			return true
+			return _start_targeting()
 	if current_state == State.TARGETING:
 		if event.is_action_pressed("combat_confirm"):
 			_execute_attack()
@@ -44,34 +43,36 @@ func handle_input(event: InputEvent) -> bool:
 			return true
 		# Consume movement inputs during targeting to prevent player from moving
 		if (
-			event.is_action("move_up")
-			or event.is_action("move_down")
-			or event.is_action("move_left")
-			or event.is_action("move_right")
+			event.is_action_pressed("move_up")
+			or event.is_action_pressed("move_down")
+			or event.is_action_pressed("move_left")
+			or event.is_action_pressed("move_right")
 		):
 			return true
 	return false
 
 
-func _start_targeting() -> void:
+func _start_targeting() -> bool:
 	_find_valid_targets()
 	if _valid_targets.is_empty():
 		# Optional: Toast "No targets in range"
-		return
+		return false
 
 	current_state = State.TARGETING
 	_target_index = 0
 	_update_highlights()
 	targeting_started.emit()
+	return true
 
 
-func _stop_targeting() -> void:
+func _stop_targeting(cancelled: bool = true) -> void:
 	current_state = State.IDLE
 	_target_index = -1
 	_valid_targets.clear()
 	if _grid_renderer:
 		_grid_renderer.clear_highlights()
-	targeting_cancelled.emit()
+	if cancelled:
+		targeting_cancelled.emit()
 
 
 func _cycle_target() -> void:
@@ -157,4 +158,4 @@ func _execute_attack() -> void:
 	player_ent.ap -= cost
 
 	attack_executed.emit(target, damage)
-	_stop_targeting()
+	_stop_targeting(false)
