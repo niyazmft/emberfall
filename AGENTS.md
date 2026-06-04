@@ -256,9 +256,10 @@ The pre-push hook runs these steps in order — it will **abort the push** if an
 3. **Markdown Lint** — `markdownlint **/*.md --fix` (auto-fix, then verify)
 4. **Math Validation** — `python3 tests/validate_math.py`
 5. **Godot Editor Scan** — headless editor import to catch parse/type errors
+6. **GdUnit4 Test Suite** — runs all tests in `tests/` via GdUnit4 CLI
 
-> The pre-push hook **does NOT run the full test suite** by default (that takes minutes).
-> Use `bash tools/pre_push_check.sh` to run everything including tests before a PR.
+> The pre-push hook runs the **full test suite** to ensure local and CI checks are identical.
+> You can also run `bash tools/pre_push_check.sh` manually at any time.
 
 ### Markdownlint Rules (`.markdownlint.json`)
 
