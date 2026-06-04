@@ -60,3 +60,18 @@ func test_apply_video_settings() -> void:
 
 	assert_int(SettingsManager.settings.video.resolution_width).is_equal(1280)
 	assert_int(SettingsManager.settings.video.resolution_height).is_equal(720)
+
+
+func test_reset_to_defaults() -> void:
+	SettingsManager.settings.audio.master_volume = 0.1
+	SettingsManager.save_settings()
+
+	SettingsManager.reset_to_defaults()
+	assert_float(SettingsManager.settings.audio.master_volume).is_equal(1.0)
+
+	if not FileAccess.file_exists("user://settings.json"):
+		fail("settings.json should exist after reset_to_defaults")
+
+	var file := FileAccess.open("user://settings.json", FileAccess.READ)
+	var json := JSON.parse_string(file.get_as_text())
+	assert_float(json.audio.master_volume).is_equal(1.0)

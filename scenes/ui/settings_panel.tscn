@@ -220,6 +220,7 @@ layout_mode = 2
 mouse_default_cursor_shape = 2
 
 [node name="RemapPanel" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_CONTROLS" instance=ExtResource("2_remap")]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 

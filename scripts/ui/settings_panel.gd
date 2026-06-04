@@ -5,6 +5,8 @@ extends Control
 
 signal back_pressed
 
+@onready var _margin_container: MarginContainer = $MarginContainer
+
 @onready var _master_slider: HSlider = %MasterSlider
 @onready var _music_slider: HSlider = %MusicSlider
 @onready var _sfx_slider: HSlider = %SFXSlider
@@ -19,6 +21,7 @@ signal back_pressed
 @onready var _cvd_option: OptionButton = %CVDOption
 
 @onready var _input_hints_option: OptionButton = %InputHintsOption
+@onready var _remap_panel: Control = %RemapPanel
 @onready var _reset_button: Button = %ResetButton
 @onready var _back_button: Button = %BackButton
 
@@ -31,6 +34,9 @@ var _resolutions: Array[Vector2i] = [
 
 
 func _ready() -> void:
+	SafeZoneManager.safe_area_changed.connect(_on_safe_area_changed)
+	_apply_safe_area()
+
 	_setup_options()
 	_load_ui_from_settings()
 	_connect_signals()
@@ -38,7 +44,7 @@ func _ready() -> void:
 
 func _setup_options() -> void:
 	_resolution_option.clear()
-	for res in _resolutions:
+	for res: Vector2i in _resolutions:
 		_resolution_option.add_item("%dx%d" % [res.x, res.y])
 
 	_input_hints_option.clear()
@@ -57,28 +63,34 @@ func _load_ui_from_settings() -> void:
 	var s: Dictionary = SettingsManager.settings
 
 	# Audio
-	_master_slider.value = s.audio.master_volume
-	_music_slider.value = s.audio.music_volume
-	_sfx_slider.value = s.audio.sfx_volume
-	_mute_check.button_pressed = s.audio.get("mute", false)
+	var audio_cfg: Dictionary = s.get("audio", {}) as Dictionary
+	_master_slider.value = audio_cfg.get("master_volume", 1.0)
+	_music_slider.value = audio_cfg.get("music_volume", 0.8)
+	_sfx_slider.value = audio_cfg.get("sfx_volume", 0.8)
+	_mute_check.button_pressed = audio_cfg.get("mute", false)
 
 	# Video
+	var video_cfg: Dictionary = s.get("video", {}) as Dictionary
 	var current_res := Vector2i(
-		s.video.get("resolution_width", 1920), s.video.get("resolution_height", 1080)
+		video_cfg.get("resolution_width", 1920), video_cfg.get("resolution_height", 1080)
 	)
 	var res_index := _resolutions.find(current_res)
 	if res_index != -1:
 		_resolution_option.selected = res_index
 
-	_fullscreen_check.button_pressed = s.video.fullscreen
-	_vsync_check.button_pressed = s.video.get("vsync", true)
+	_fullscreen_check.button_pressed = video_cfg.get("fullscreen", true)
+	_vsync_check.button_pressed = video_cfg.get("vsync", true)
 
 	# Accessibility
-	_shake_slider.value = s.accessibility.screen_shake
-	_cvd_option.selected = s.accessibility.get("cvd_sim", 0)
+	var access_cfg: Dictionary = s.get("accessibility", {}) as Dictionary
+	_shake_slider.value = access_cfg.get("screen_shake", 1.0)
+	_cvd_option.selected = access_cfg.get("cvd_sim", 0)
 
 	# Controls
-	_input_hints_option.selected = s.controls.input_hints
+	var controls_cfg: Dictionary = s.get("controls", {}) as Dictionary
+	_input_hints_option.selected = controls_cfg.get("input_hints", 0)
+	if _remap_panel.has_method("refresh"):
+		_remap_panel.call("refresh")
 
 
 func _connect_signals() -> void:
@@ -100,34 +112,35 @@ func _connect_signals() -> void:
 
 func _on_audio_changed(value: Variant, key: String) -> void:
 	SettingsManager.settings.audio[key] = value
-	SettingsManager.apply_settings()
+	SettingsManager.apply_audio_settings()
 
 
 func _on_apply_video_settings() -> void:
-	var res := _resolutions[_resolution_option.selected]
-	SettingsManager.settings.video.resolution_width = res.x
-	SettingsManager.settings.video.resolution_height = res.y
+	var idx: int = _resolution_option.selected
+	if idx >= 0 and idx < _resolutions.size():
+		var res: Vector2i = _resolutions[idx]
+		SettingsManager.settings.video.resolution_width = res.x
+		SettingsManager.settings.video.resolution_height = res.y
 	SettingsManager.settings.video.fullscreen = _fullscreen_check.button_pressed
 	SettingsManager.settings.video.vsync = _vsync_check.button_pressed
-	SettingsManager.apply_settings()
+	SettingsManager.apply_video_settings()
 	SettingsManager.save_settings()
 
 
 func _on_accessibility_changed(value: Variant, key: String) -> void:
 	SettingsManager.settings.accessibility[key] = value
-	SettingsManager.apply_settings()
+	SettingsManager.apply_accessibility_settings()
 
 
 func _on_controls_changed(index: int, key: String) -> void:
 	SettingsManager.settings.controls[key] = index
-	SettingsManager.apply_settings()
 
 
 func _on_reset_pressed() -> void:
 	var scene: PackedScene = load("res://scenes/ui/confirm_modal.tscn") as PackedScene
 	if scene:
 		var modal: Node = scene.instantiate()
-		modal.call("setup", "CONFIRM_RESET_TITLE", "CONFIRM_RESET_BODY")
+		modal.call("setup", "CONFIRM_RESET_SETTINGS_TITLE", "CONFIRM_RESET_SETTINGS_BODY")
 		modal.connect("confirmed", _on_reset_confirmed)
 		LayerManager.add_modal(modal)
 
@@ -138,6 +151,19 @@ func _on_reset_confirmed() -> void:
 
 
 func _on_back_pressed() -> void:
+	SettingsManager.call("sync_bindings_to_settings")
 	SettingsManager.save_settings()
 	back_pressed.emit()
 	hide()
+
+
+func _on_safe_area_changed(_rect: Rect2) -> void:
+	_apply_safe_area()
+
+
+func _apply_safe_area() -> void:
+	var margins: Dictionary = SafeZoneManager.get_safe_margins() as Dictionary
+	_margin_container.add_theme_constant_override("margin_left", int(margins.get("left", 0)))
+	_margin_container.add_theme_constant_override("margin_top", int(margins.get("top", 0)))
+	_margin_container.add_theme_constant_override("margin_right", int(margins.get("right", 0)))
+	_margin_container.add_theme_constant_override("margin_bottom", int(margins.get("bottom", 0)))

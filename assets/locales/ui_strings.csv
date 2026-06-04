@@ -44,3 +44,5 @@ CONFIRM_RETURN_TITLE,Return to Sanctum?
 CONFIRM_RETURN_BODY,Are you sure you want to return to the Sanctum? Current room progress will be lost.
 CONFIRM_RESET_TITLE,Reset Controls?
 CONFIRM_RESET_BODY,Are you sure you want to reset all controls to their default bindings?
+CONFIRM_RESET_SETTINGS_TITLE,Reset Settings?
+CONFIRM_RESET_SETTINGS_BODY,Are you sure you want to reset ALL settings (audio, video, accessibility, controls) to their default values?
