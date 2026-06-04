@@ -131,8 +131,8 @@ if command -v "$GODOT_BIN" &>/dev/null && [ -f "addons/gdUnit4/bin/GdUnitCmdTool
     TEST_EXIT_CODE=0
     "$GODOT_BIN" --headless --path . -s res://addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests/ --ignoreHeadlessMode 2>&1 | tee tools/test_suite.log || TEST_EXIT_CODE=$?
 
-    # GdUnit4 exit codes: 0 = success, 101 = warnings (orphans), 100/1 = failure
-    if [ "$TEST_EXIT_CODE" = "100" ] || [ "$TEST_EXIT_CODE" = "1" ]; then
+    # GdUnit4 exit codes: 0 = success, 101 = warnings (orphans), other non-zero = failure
+    if [ "$TEST_EXIT_CODE" -ne 0 ] && [ "$TEST_EXIT_CODE" -ne 101 ]; then
         echo ""
         echo "  ❌ GdUnit4 test suite FAILED. Check tools/test_suite.log"
         exit 1
