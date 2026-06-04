@@ -61,8 +61,7 @@ func _on_new_game_pressed() -> void:
 
 
 func _on_settings_pressed() -> void:
-	# Assuming SettingsModal is a registered singleton or available via LayerManager
-	_print_debug("Settings pressed")
+	SettingsModal.show_modal()
 
 
 func _on_quit_pressed() -> void:
