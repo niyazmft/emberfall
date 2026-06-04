@@ -139,8 +139,9 @@ func test_insufficient_ap() -> void:
 	confirm_event.action = "combat_confirm"
 	confirm_event.pressed = true
 
-	assert_bool(_combat_input.handle_input(confirm_event)).is_true()  # Event consumed
-	assert_int(_combat_input.current_state).is_equal(CombatInput.State.TARGETING)  # Still targeting because attack failed
+	assert_bool(_combat_input.handle_input(confirm_event)).is_true()
+	# Still targeting because attack failed
+	assert_int(_combat_input.current_state).is_equal(CombatInput.State.TARGETING)
 	assert_int(_player.entity.ap).is_equal(1)
 
 
