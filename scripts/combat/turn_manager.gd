@@ -61,7 +61,8 @@ func _process_state() -> void:
 			_start_next_turn()
 
 		CombatState.PLAYER_TURN:
-			var entity: Entity = turn_order[current_turn_index].get("entity") as Entity
+			var actor: Node2D = turn_order[current_turn_index]
+			var entity: Entity = actor.get("entity") as Entity
 			_regen_ap(entity)
 			turn_started.emit(entity, true)
 
@@ -115,6 +116,10 @@ func _start_next_turn() -> void:
 
 
 func _end_current_turn() -> void:
+	if current_turn_index < 0 or current_turn_index >= turn_order.size():
+		_change_state(CombatState.CHECK_END_CONDITIONS)
+		return
+
 	var current_actor: Node2D = turn_order[current_turn_index]
 	var entity: Entity = current_actor.get("entity") as Entity
 
@@ -132,10 +137,8 @@ func _advance_turn() -> void:
 
 func _execute_enemy_turn(p_enemy: Node2D) -> void:
 	if p_enemy.has_method("take_turn"):
-		await p_enemy.call("take_turn")
+		p_enemy.call("take_turn")
 
-	# Small delay for visual clarity?
-	# For now, immediate.
 	_end_current_turn()
 
 

@@ -7,28 +7,28 @@ var _turn_manager: TurnManager
 
 
 func before_test() -> void:
-	_player = auto_free(Node2D.new())
-	var p_ent = Entity.new("Player", 0, 0, 10, 5, 5)
+	_player = auto_free(Node2D.new()) as Node2D
+	var p_ent: Entity = Entity.new("Player", 0, 0, 10, 5, 5)
 	p_ent.is_player = true
 	p_ent.spd = 10
 	_player.set("entity", p_ent)
 	_player.set_script(load("res://scripts/entities/keeper.gd"))
 
-	_enemy1 = auto_free(Node2D.new())
-	var e1_ent = Entity.new("Enemy1", 1, 1, 10, 5, 5)
+	_enemy1 = auto_free(Node2D.new()) as Node2D
+	var e1_ent: Entity = Entity.new("Enemy1", 1, 1, 10, 5, 5)
 	e1_ent.is_player = false
 	e1_ent.spd = 5
 	_enemy1.set("entity", e1_ent)
 	_enemy1.set_script(load("res://scripts/entities/base_enemy.gd"))
 
-	_enemy2 = auto_free(Node2D.new())
-	var e2_ent = Entity.new("Enemy2", 2, 2, 10, 5, 5)
+	_enemy2 = auto_free(Node2D.new()) as Node2D
+	var e2_ent: Entity = Entity.new("Enemy2", 2, 2, 10, 5, 5)
 	e2_ent.is_player = false
 	e2_ent.spd = 15
 	_enemy2.set("entity", e2_ent)
 	_enemy2.set_script(load("res://scripts/entities/base_enemy.gd"))
 
-	_turn_manager = auto_free(TurnManager.new())
+	_turn_manager = auto_free(TurnManager.new()) as TurnManager
 	add_child(_turn_manager)
 
 
@@ -64,7 +64,7 @@ func test_turn_progression() -> void:
 
 
 func test_ap_regeneration() -> void:
-	var p_ent: Entity = _player.get("entity")
+	var p_ent: Entity = _player.get("entity") as Entity
 	p_ent.ap = 2
 
 	_turn_manager.start_combat(_player, [_enemy1, _enemy2])
@@ -80,8 +80,8 @@ func test_ap_regeneration() -> void:
 func test_combat_victory() -> void:
 	_turn_manager.start_combat(_player, [_enemy1, _enemy2])
 
-	var e1_ent: Entity = _enemy1.get("entity")
-	var e2_ent: Entity = _enemy2.get("entity")
+	var e1_ent: Entity = _enemy1.get("entity") as Entity
+	var e2_ent: Entity = _enemy2.get("entity") as Entity
 
 	e1_ent.hp = 0
 	e1_ent.state = Entity.State.DEAD
@@ -89,19 +89,20 @@ func test_combat_victory() -> void:
 	e2_ent.state = Entity.State.DEAD
 
 	# Manually trigger check
-	_turn_manager._change_state(TurnManager.CombatState.CHECK_END_CONDITIONS)
+	_turn_manager.current_state = TurnManager.CombatState.CHECK_END_CONDITIONS
+	_turn_manager._process_state()
 
 	assert_int(_turn_manager.current_state).is_equal(TurnManager.CombatState.COMBAT_END)
-	# Signal checking in GdUnit4 is a bit different but let's assume this is enough for now
 
 
 func test_combat_defeat() -> void:
 	_turn_manager.start_combat(_player, [_enemy1, _enemy2])
 
-	var p_ent: Entity = _player.get("entity")
+	var p_ent: Entity = _player.get("entity") as Entity
 	p_ent.hp = 0
 	p_ent.state = Entity.State.DEAD
 
-	_turn_manager._change_state(TurnManager.CombatState.CHECK_END_CONDITIONS)
+	_turn_manager.current_state = TurnManager.CombatState.CHECK_END_CONDITIONS
+	_turn_manager._process_state()
 
 	assert_int(_turn_manager.current_state).is_equal(TurnManager.CombatState.COMBAT_END)
