@@ -15,6 +15,7 @@ var _grid_system: _GridSystem
 var _player: Node2D  # Type will be Keeper
 var _enemies_node: Node2D
 var _combat_input: CombatInput
+var _turn_manager: TurnManager
 
 @onready var grid_renderer: GridRenderer = $GridRenderer
 @onready var entity_container: Node2D = $EntityContainer
@@ -31,7 +32,23 @@ func _ready() -> void:
 	_combat_input = CombatInput.new(_player, _enemies_node, grid_renderer)
 	add_child(_combat_input)
 
+	_setup_turn_manager()
 	_setup_camera()
+
+
+func _setup_turn_manager() -> void:
+	_turn_manager = TurnManager.new()
+	_turn_manager.name = "TurnManager"
+	add_child(_turn_manager)
+
+	_turn_manager.combat_ended.connect(_on_combat_ended)
+
+	var enemies: Array[Node2D] = []
+	for child in _enemies_node.get_children():
+		if child is Node2D:
+			enemies.append(child)
+
+	_turn_manager.start_combat(_player, enemies)
 
 
 func _spawn_test_encounter() -> void:
@@ -84,6 +101,9 @@ func _setup_camera() -> void:
 
 
 func _input(event: InputEvent) -> void:
+	if _turn_manager.current_state != TurnManager.CombatState.PLAYER_TURN:
+		return
+
 	# Delegate to combat input handler
 	if _combat_input and _combat_input.handle_input(event):
 		return
@@ -97,6 +117,8 @@ func _input(event: InputEvent) -> void:
 		_try_move_player(-1, 0)
 	elif event.is_action_pressed("move_right"):
 		_try_move_player(1, 0)
+	elif event.is_action_pressed("combat_end_turn"):
+		_turn_manager.end_player_turn()
 
 
 func _try_move_player(dx: int, dy: int) -> void:
@@ -104,6 +126,12 @@ func _try_move_player(dx: int, dy: int) -> void:
 		return
 
 	var entity: Entity = _player.get("entity") as Entity
+
+	# Consume AP for movement
+	var cost: int = CombatFormula.action_cost("move_cardinal")
+	if entity.ap < cost:
+		return
+
 	var new_x: int = entity.x + dx
 	var new_y: int = entity.y + dy
 
@@ -111,3 +139,12 @@ func _try_move_player(dx: int, dy: int) -> void:
 		entity.set_grid_position(new_x, new_y)
 		# Facing update
 		entity.set_facing(dx, dy)
+		# Deduct AP
+		entity.ap -= cost
+
+
+func _on_combat_ended(victory: bool) -> void:
+	if victory:
+		print("Victory!")
+	else:
+		print("Defeat!")
