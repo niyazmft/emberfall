@@ -65,22 +65,27 @@ func _handle_move(action: Dictionary) -> void:
 	var target_x: int = action.get("target_x", entity.x)
 	var target_y: int = action.get("target_y", entity.y)
 
-	if _grid_system and _grid_system.can_move(entity.x, entity.y, target_x, target_y):
-		# Calculate facing BEFORE updating position
-		var dx: int = target_x - entity.x
-		var dy: int = target_y - entity.y
+	# Calculate facing BEFORE updating position
+	var dx: int = target_x - entity.x
+	var dy: int = target_y - entity.y
 
+	# Sprint 1: simple 1 AP per tile for cardinal, 2 for diagonal
+	var cost: int = 1
+	if dx != 0 and dy != 0:
+		cost = 2
+
+	# Reject if insufficient AP
+	if entity.ap < cost:
+		return
+
+	if _grid_system and _grid_system.can_move(entity.x, entity.y, target_x, target_y):
 		entity.set_grid_position(target_x, target_y)
 
 		# Update facing if moved
 		if dx != 0 or dy != 0:
 			entity.set_facing(DeterministicMath.sgn(dx), DeterministicMath.sgn(dy))
 
-		# Consume AP for movement
-		# Sprint 1: simple 1 AP per tile for cardinal, 2 for diagonal
-		var cost: int = 1
-		if dx != 0 and dy != 0:
-			cost = 2
+		# Consume AP
 		entity.ap = DeterministicMath.clampi(entity.ap - cost, 0, GameConstants.AP_MAX)
 
 
@@ -91,6 +96,11 @@ func _handle_attack(action: Dictionary) -> void:
 
 	var target_entity: Entity = target_node.get("entity") as Entity
 	if target_entity == null:
+		return
+
+	# Consume AP
+	var cost: int = CombatFormula.action_cost("attack_basic")
+	if entity.ap < cost:
 		return
 
 	# Gather cover tiles for damage formula
@@ -110,12 +120,11 @@ func _handle_attack(action: Dictionary) -> void:
 	else:
 		target_entity.apply_damage(damage)
 
-	# Trigger recoil on target if it has the method
-	if target_node.has_method("apply_damage"):
-		target_node.call("apply_damage", 0)  # Call with 0 just to trigger visual/recoil
+	# Trigger visual recoil on target if it exposes the hook
+	if target_node.has_method("trigger_damage_effect"):
+		target_node.call("trigger_damage_effect")
 
-	# Consume AP
-	var cost: int = CombatFormula.action_cost("attack_basic")
+	# Deduct AP
 	entity.ap = DeterministicMath.clampi(entity.ap - cost, 0, GameConstants.AP_MAX)
 
 

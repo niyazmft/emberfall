@@ -51,6 +51,12 @@ func _process(_delta: float) -> void:
 # ---------------------------------------------------------------------------
 
 
+## Visual-only damage hook for combat system (avoids re-entering damage pipeline).
+func trigger_damage_effect() -> void:
+	if _apparition:
+		_apparition.trigger_recoil()
+
+
 ## Apply damage to the Keeper entity and trigger recoil on the apparition.
 ## Delegates to EntityLifecycle for canonical state transitions.
 func apply_damage(damage: int) -> void:

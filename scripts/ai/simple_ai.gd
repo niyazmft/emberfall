@@ -100,9 +100,13 @@ func _get_next_tile_towards(target_pos: Vector2i, away: bool = false) -> Vector2
 
 	var current_pos: Vector2i = enemy_entity.grid_position()
 	var best_tile: Vector2i = current_pos
-	var min_dist: int = _grid_distance(current_pos, target_pos)
+	var min_dist: int
 	if away:
 		min_dist = -1
+	else:
+		# Sentinel larger than any possible grid distance so any valid
+		# neighbour is considered when the ideal tile is occupied.
+		min_dist = GameConstants.GRID_W * 2 + 1
 
 	# Get all entities once to avoid repeated group lookups in the loop
 	var occupied_coords: Array[Vector2i] = _get_occupied_coords()
@@ -116,6 +120,10 @@ func _get_next_tile_towards(target_pos: Vector2i, away: bool = false) -> Vector2
 			var nx: int = current_pos.x + dx
 			var ny: int = current_pos.y + dy
 			var n_pos: Vector2i = Vector2i(nx, ny)
+
+			# Skip out-of-bounds tiles to avoid crash in can_move
+			if nx < 0 or nx >= GameConstants.GRID_W or ny < 0 or ny >= GameConstants.GRID_H:
+				continue
 
 			if grid_system.can_move(current_pos.x, current_pos.y, nx, ny):
 				if n_pos in occupied_coords:
@@ -162,4 +170,6 @@ func _get_occupied_coords() -> Array[Vector2i]:
 
 
 func _grid_distance(a: Vector2i, b: Vector2i) -> int:
-	return max(abs(a.x - b.x), abs(a.y - b.y))
+	var dx: int = DeterministicMath.absi(a.x - b.x)
+	var dy: int = DeterministicMath.absi(a.y - b.y)
+	return DeterministicMath.maxi(dx, dy)
