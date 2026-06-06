@@ -17,3 +17,6 @@ menu.title.continue,Continue,Fortsetzen,Continuar,Continuer
 menu.title.new_game,New Game,Neues Spiel,Nuevo Juego,Nouveau Jeu
 menu.title.settings,Settings,Einstellungen,Ajustes,Paramètres
 menu.title.quit,Quit,Beenden,Salir,Quitter
+BIOME_NAME_SANCTUM,Sanctum,Sanctum,Sanctum,Sanctum
+BIOME_NAME_CRUCIBLE,Crucible,Schmelztiegel,Crisol,Creuset
+BIOME_NAME_BIOME_3,The Void,Die Leere,El Vacío,Le Vide
