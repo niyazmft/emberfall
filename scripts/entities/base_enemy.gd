@@ -5,6 +5,8 @@ extends Node2D
 @export var entity: Entity
 @export var ai_controller: Node  ## Will integrate with behavior tree
 @export var visual_proxy: EntityVisualProxy
+@export var debug_color: Color = Color.WHITE
+@export var visual_scale: float = 1.0
 
 var _grid_system: _GridSystem
 var _combat_system: Node  ## Placeholder for future combat system
@@ -15,6 +17,7 @@ func _ready() -> void:
 	if _grid_system == null:
 		_grid_system = AutoloadHelper.grid_system()
 	_setup_entity()
+	_setup_ai()
 	_setup_visual_proxy()
 
 
@@ -36,10 +39,17 @@ func _setup_entity() -> void:
 		entity.is_player = false
 
 
+func _setup_ai() -> void:
+	# Virtual method for subclasses to override
+	pass
+
+
 func _setup_visual_proxy() -> void:
 	# Connect visual_proxy to entity
 	if visual_proxy and entity:
 		visual_proxy.entity = entity
+		visual_proxy.modulate = debug_color
+		visual_proxy.scale = Vector2(visual_scale, visual_scale)
 
 
 ## Combat API

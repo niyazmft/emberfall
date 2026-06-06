@@ -1,24 +1,8 @@
 [gd_scene load_steps=3 format=3 uid="uid://enemy_grunt_001"]
 
 [ext_resource type="PackedScene" uid="uid://base_enemy_001" path="res://scenes/enemies/base_enemy.tscn" id="1_base_enemy"]
-[ext_resource type="Script" path="res://scripts/entities/entity.gd" id="2_entity"]
-
-[sub_resource type="Resource" id="Resource_1"]
-script = ExtResource("2_entity")
-x = 0
-y = 0
-elevation = 0
-facing_x = 0
-facing_y = 1
-hp_max = 30
-hp = 30
-off = 8
-def_ = 4
-spd = 1
-moral_flag = 0
-state = 0
-entity_name = "Grunt"
-is_player = false
+[ext_resource type="Script" path="res://scripts/entities/enemies/enemy_grunt.gd" id="2_grunt_script"]
 
 [node name="EnemyGrunt" instance=ExtResource("1_base_enemy")]
-entity = SubResource("Resource_1")
+script = ExtResource("2_grunt_script")
+debug_color = Color(1, 1, 1, 1)
