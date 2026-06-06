@@ -43,12 +43,16 @@ func _setup_turn_manager() -> void:
 
 	_turn_manager.combat_ended.connect(_on_combat_ended)
 
+	if not is_instance_valid(_player) or not is_instance_valid(_enemies_node):
+		return
+
 	var enemies: Array[Node2D] = []
 	for child in _enemies_node.get_children():
 		if child is Node2D:
 			enemies.append(child)
 
-	_turn_manager.start_combat(_player, enemies)
+	if not enemies.is_empty() or test_mode:
+		_turn_manager.start_combat(_player, enemies)
 
 
 func _spawn_test_encounter() -> void:
@@ -118,6 +122,8 @@ func _input(event: InputEvent) -> void:
 	elif event.is_action_pressed("move_right"):
 		_try_move_player(1, 0)
 	elif event.is_action_pressed("combat_end_turn"):
+		if _combat_input.current_state == CombatInput.State.TARGETING:
+			_combat_input._stop_targeting()
 		_turn_manager.end_player_turn()
 
 

@@ -1,4 +1,5 @@
 extends GdUnitTestSuite
+const __source = "res://scripts/combat/turn_manager.gd"
 
 
 class MockCombatant:
@@ -21,6 +22,7 @@ var _enemy2: MockCombatant
 var _turn_manager: TurnManager
 
 
+#region setup
 func before_test() -> void:
 	var p_ent: Entity = Entity.new("Player", 0, 0, 10, 5, 5)
 	p_ent.is_player = true
@@ -41,6 +43,10 @@ func before_test() -> void:
 	add_child(_turn_manager)
 
 
+#endregion
+
+
+#region initiative_tests
 func test_initiative_sorting() -> void:
 	_turn_manager.start_combat(_player, [_enemy1, _enemy2])
 
@@ -51,6 +57,10 @@ func test_initiative_sorting() -> void:
 	assert_object(_turn_manager.turn_order[2]).is_equal(_enemy1)
 
 
+#endregion
+
+
+#region turn_progression_tests
 func test_turn_progression() -> void:
 	_turn_manager.start_combat(_player, [_enemy1, _enemy2])
 
@@ -70,38 +80,55 @@ func test_turn_progression() -> void:
 	assert_int(_turn_manager.current_state).is_equal(TurnManager.CombatState.PLAYER_TURN)
 
 
+#endregion
+
+
+#region ap_economy_tests
 func test_ap_regeneration() -> void:
-	_player.entity.ap = 2
+	var p_ent: Entity = _player.get("entity") as Entity
+	p_ent.ap = GameConstants.AP_REGEN
 
 	_turn_manager.start_combat(_player, [_enemy1, _enemy2])
 	# Player turn starts
 	# AP should regen by GameConstants.AP_REGEN (2)
-	assert_int(_player.entity.ap).is_equal(4)
+	var expected: int = min(GameConstants.AP_MAX, GameConstants.AP_REGEN + GameConstants.AP_REGEN)
+	assert_int(p_ent.ap).is_equal(expected)
 
 	_turn_manager.end_player_turn()
 	# Round 2 starts, Player turn starts again
-	assert_int(_player.entity.ap).is_equal(6)  # 4 + 2 = 6 (AP_MAX)
+	expected = min(GameConstants.AP_MAX, expected + GameConstants.AP_REGEN)
+	assert_int(p_ent.ap).is_equal(expected)
 
 
+#endregion
+
+
+#region combat_end_tests
 func test_combat_victory() -> void:
 	_turn_manager.start_combat(_player, [_enemy1, _enemy2])
 
-	_enemy1.entity.hp = 0
-	_enemy2.entity.hp = 0
+	var e1_ent: Entity = _enemy1.get("entity") as Entity
+	var e2_ent: Entity = _enemy2.get("entity") as Entity
+	e1_ent.hp = 0
+	e2_ent.hp = 0
 
 	# Manually trigger check
 	_turn_manager.current_state = TurnManager.CombatState.CHECK_END_CONDITIONS
 	_turn_manager._process_state_loop()
 
 	assert_int(_turn_manager.current_state).is_equal(TurnManager.CombatState.COMBAT_END)
+	await assert_signal(_turn_manager).is_emitted("combat_ended", [true])
 
 
 func test_combat_defeat() -> void:
 	_turn_manager.start_combat(_player, [_enemy1, _enemy2])
 
-	_player.entity.hp = 0
+	var p_ent: Entity = _player.get("entity") as Entity
+	p_ent.hp = 0
 
 	_turn_manager.current_state = TurnManager.CombatState.CHECK_END_CONDITIONS
 	_turn_manager._process_state_loop()
 
 	assert_int(_turn_manager.current_state).is_equal(TurnManager.CombatState.COMBAT_END)
+	await assert_signal(_turn_manager).is_emitted("combat_ended", [false])
+#endregion

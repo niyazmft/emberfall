@@ -28,6 +28,8 @@ var _is_processing_state: bool = false
 # ── Lifecycle ───────────────────────────────────────────────────────
 func _ready() -> void:
 	_lifecycle = AutoloadHelper.entity_lifecycle()
+	if _lifecycle and _lifecycle.has_signal("entity_state_changed"):
+		_lifecycle.connect("entity_state_changed", _on_entity_state_changed)
 
 
 # ── Public API ──────────────────────────────────────────────────────
@@ -124,6 +126,8 @@ func _calculate_initiative() -> void:
 			var b_ent: Entity = b.get("entity") as Entity
 			if not a_ent or not b_ent:
 				return false
+			if a_ent.spd == b_ent.spd:
+				return a.get_instance_id() < b.get_instance_id()
 			return a_ent.spd > b_ent.spd
 	)
 
@@ -178,7 +182,7 @@ func _execute_enemy_turn(p_enemy: Node2D) -> void:
 	if p_enemy.has_method("take_turn"):
 		p_enemy.call("take_turn")
 
-	current_state = CombatState.CHECK_END_CONDITIONS
+	_change_state(CombatState.CHECK_END_CONDITIONS)
 
 
 func _regen_current_actor_ap() -> void:
@@ -192,7 +196,7 @@ func _regen_current_actor_ap() -> void:
 		)
 
 
-func _check_end_conditions() -> void:
+func _is_combat_over() -> bool:
 	var player_alive: bool = (
 		is_instance_valid(_player) and _player.has_method("alive") and _player.call("alive")
 	)
@@ -203,13 +207,26 @@ func _check_end_conditions() -> void:
 			break
 
 	if not player_alive:
-		current_state = CombatState.COMBAT_END
+		_change_state(CombatState.COMBAT_END)
 		combat_ended.emit(false)
-		return
+		return true
 
 	if not enemies_alive:
-		current_state = CombatState.COMBAT_END
+		_change_state(CombatState.COMBAT_END)
 		combat_ended.emit(true)
-		return
+		return true
 
-	_advance_turn_logic()
+	return false
+
+
+func _check_end_conditions() -> void:
+	if not _is_combat_over():
+		_advance_turn_logic()
+
+
+func _on_entity_state_changed(_entity: Entity, _old_state: int, new_state: int) -> void:
+	# Entity.State constants used as ints to avoid potential circular dependency issues
+	# DEAD = 3, GHOST = 4
+	if new_state == 3 or new_state == 4:
+		if current_state != CombatState.IDLE and current_state != CombatState.COMBAT_END:
+			_is_combat_over()
