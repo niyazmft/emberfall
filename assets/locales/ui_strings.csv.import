@@ -6,10 +6,10 @@ uid="uid://ctdqrdlwvk7b7"
 
 [deps]
 
-files=["res://assets/locales/ui_strings.en.translation"]
+files=["res://assets/locales/ui_strings.en.translation", "res://assets/locales/ui_strings.de.translation", "res://assets/locales/ui_strings.es.translation", "res://assets/locales/ui_strings.fr.translation", "res://assets/locales/ui_strings.ja.translation", "res://assets/locales/ui_strings.ko.translation", "res://assets/locales/ui_strings.zh_Hans.translation"]
 
 source_file="res://assets/locales/ui_strings.csv"
-dest_files=["res://assets/locales/ui_strings.en.translation"]
+dest_files=["res://assets/locales/ui_strings.en.translation", "res://assets/locales/ui_strings.de.translation", "res://assets/locales/ui_strings.es.translation", "res://assets/locales/ui_strings.fr.translation", "res://assets/locales/ui_strings.ja.translation", "res://assets/locales/ui_strings.ko.translation", "res://assets/locales/ui_strings.zh_Hans.translation"]
 
 [params]
 

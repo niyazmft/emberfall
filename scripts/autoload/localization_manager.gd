@@ -18,6 +18,7 @@ func _ready() -> void:
 
 func _initialize() -> void:
 	_load_translations()
+	_validate_localization_matrix()
 	_apply_saved_locale()
 
 
@@ -82,6 +83,22 @@ func set_locale(p_locale: String) -> void:
 		_print_debug("Locale changed to: %s and saved" % p_locale)
 	else:
 		push_error("LocalizationManager: Failed to save locale setting to %s" % SETTINGS_PATH)
+
+
+func _validate_localization_matrix() -> void:
+	var required_locales: Array[String] = ["en", "de", "es", "fr", "ja", "ko", "zh-Hans"]
+	var loaded_locales: Array = TranslationServer.get_loaded_locales()
+
+	for locale in required_locales:
+		if not locale in loaded_locales:
+			push_warning(
+				(
+					"LocalizationManager: Required locale '%s' is missing from loaded translations."
+					% locale
+				)
+			)
+		else:
+			_print_debug("Locale '%s' verified as loaded." % locale)
 
 
 func _get_secure_salt() -> String:

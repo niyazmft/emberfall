@@ -28,6 +28,8 @@ var total_rooms: int = 0
 var room_queue: Array[Dictionary] = []
 var room_index: int = -1
 var memory_state_loaded: bool = false
+var _biomes: Array[String] = []
+var _biome_configs: Dictionary = {}
 
 # Context flags for guards
 var _combat_resolved: bool = false
@@ -85,6 +87,29 @@ func _load_config_values() -> void:
 	rooms_per_biome_min = AutoloadHelper.config_int("ROOMS_PER_BIOME_MIN", 8)
 	rooms_per_biome_max = AutoloadHelper.config_int("ROOMS_PER_BIOME_MAX", 12)
 	_dying_duration = float(AutoloadHelper.config_int("DYING_DURATION_TURNS", 1))
+	_load_biome_config()
+
+
+func _load_biome_config() -> void:
+	var path := "res://config/biomes.json"
+	if not FileAccess.file_exists(path):
+		push_warning("RunManager: Biome config not found at %s" % path)
+		return
+
+	var file := FileAccess.open(path, FileAccess.READ)
+	var text := file.get_as_text()
+	var parsed: Variant = JSON.parse_string(text)
+	if parsed is Dictionary:
+		var d := parsed as Dictionary
+		if d.has("biome_order") and d["biome_order"] is Array:
+			_biomes.clear()
+			for b: Variant in d["biome_order"]:
+				_biomes.append(str(b))
+		if d.has("biomes") and d["biomes"] is Dictionary:
+			_biome_configs = d["biomes"]
+
+		if not _biomes.is_empty():
+			biome_count = _biomes.size()
 
 
 # ---------------------------------------------------------------------------
@@ -464,7 +489,11 @@ func _action_start_run(_ctx: Dictionary) -> void:
 func _action_generate_rooms(_ctx: Dictionary) -> void:
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.seed = run_seed
-	for b: int in range(biome_count):
+	for b_idx: int in range(biome_count):
+		var biome_id: String = str(b_idx)
+		if b_idx < _biomes.size():
+			biome_id = _biomes[b_idx]
+
 		var count: int = rng.randi_range(rooms_per_biome_min, rooms_per_biome_max)
 		for r: int in range(count):
 			var current_room_idx: int = room_queue.size()
@@ -474,7 +503,7 @@ func _action_generate_rooms(_ctx: Dictionary) -> void:
 				. append(
 					{
 						"room_id": room_id,
-						"biome": b,
+						"biome": biome_id,
 						"room_in_biome": r,
 						"topology_seed":
 						SeedGovernance.hash_int(run_seed, "TOPO" + str(current_room_idx)),
@@ -522,14 +551,18 @@ func _is_biome_boundary(next_room_index: int) -> bool:
 		return false
 	if next_room_index >= room_queue.size():
 		return false
-	var current_biome: int = int(room_queue[room_index]["biome"])
-	var next_biome: int = int(room_queue[next_room_index]["biome"])
-	return current_biome != next_biome
+	var current_biome: Variant = room_queue[room_index]["biome"]
+	var next_biome: Variant = room_queue[next_room_index]["biome"]
+	return str(current_biome) != str(next_biome)
 
 
 func _get_current_biome_index() -> int:
 	if room_index >= 0 and room_index < room_queue.size():
-		return int(room_queue[room_index]["biome"])
+		var biome_val: Variant = room_queue[room_index]["biome"]
+		if biome_val is String:
+			var idx: int = _biomes.find(biome_val)
+			return idx if idx != -1 else 0
+		return int(biome_val)
 	return 0
 
 
