@@ -1,5 +1,6 @@
 extends GdUnitTestSuite
 
+
 func test_entity_status_bar_sync() -> void:
 	var EntityClass: GDScript = load("res://scripts/entities/entity.gd")
 	var EntityVisualProxyClass: GDScript = load("res://scripts/visual/entity_visual_proxy.gd")
