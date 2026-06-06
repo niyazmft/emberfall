@@ -515,8 +515,7 @@ gh project item-edit --id "$P_ID" --project-id "$PRJ" \
 # Status
 gh project item-edit --id "$P_ID" --project-id "$PRJ" \
   --field-id PVTSSF_lAHOAI5hvc4BZpb5zhUmpS0 \
-  --single-select-option-id <Ready|Backlog option id>
-```
+  --single-select-option-id <Backlog|Ready|In progress|In review|Done option id>
 
 **Cached option IDs** (Emberfall project):
 
