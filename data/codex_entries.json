@@ -1,0 +1,19 @@
+{
+  "version": "1.0.0",
+  "entries": [
+    {
+      "id": "WORLD_ECHO",
+      "title": "World Echoes",
+      "localization_key": "CODEX_WORLD_ECHO",
+      "category": "Lore",
+      "default_unlocked": false
+    },
+    {
+      "id": "THE_BURDEN",
+      "title": "The Burden",
+      "localization_key": "CODEX_THE_BURDEN",
+      "category": "Mechanics",
+      "default_unlocked": true
+    }
+  ]
+}
