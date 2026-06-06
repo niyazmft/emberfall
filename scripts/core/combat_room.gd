@@ -66,6 +66,16 @@ func _on_room_entered(_room_index: int, room_data: Dictionary) -> void:
 	# Center camera
 	_setup_camera()
 
+	# Setup HUD
+	_setup_hud()
+
+
+func _setup_hud() -> void:
+	var combat_hud: Control = $UIOverlay/CombatHUD
+	if combat_hud and _player:
+		var player_entity: Entity = _player.get("entity") as Entity
+		combat_hud.call("setup", player_entity, _turn_manager, _combat_input)
+
 
 func _setup_turn_manager() -> void:
 	_turn_manager = TurnManager.new()
@@ -89,6 +99,11 @@ func _setup_turn_manager() -> void:
 func _spawn_test_encounter() -> void:
 	_spawn_player()
 	_spawn_enemies()
+
+	_combat_input = CombatInput.new(_player, _enemies_node, grid_renderer)
+	add_child(_combat_input)
+	_setup_turn_manager()
+	_setup_hud()
 
 
 func _spawn_player() -> void:

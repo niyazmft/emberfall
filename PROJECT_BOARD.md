@@ -102,7 +102,7 @@ This document serves as the project board tracking all development tasks across 
 
 | Task | Issue | Status | Priority | Blocked By | Can Parallel With |
 |------|-------|--------|----------|--------------|-------------------|
-| 4.6 Combat HUD | #134 | ⚠️ Blocked | MEDIUM | 4.1, 4.3 | 4.7, 4.8 |
+| 4.6 Combat HUD | #134 | 🔄 In Progress | MEDIUM | 4.1, 4.3 | 4.7, 4.8 |
 | 4.7 Settings Menu | #136 | ⏳ Ready | MEDIUM | None | 4.6, 4.8 |
 | 4.8 Moral Choice UI | #137 | ⚠️ Blocked | MEDIUM | 4.1, 4.3 | 4.6, 4.7 |
 

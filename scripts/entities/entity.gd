@@ -12,6 +12,7 @@ signal elevation_changed(elevation: int)
 signal facing_changed(fx: int, fy: int)
 signal state_changed(state: State)
 signal hp_changed(new_hp: int, old_hp: int)
+signal ap_changed(new_ap: int, old_ap: int)
 
 # ── Grid Position ───────────────────────────────────────────────────
 @export var x: int = 0:
@@ -75,7 +76,12 @@ signal hp_changed(new_hp: int, old_hp: int)
 		moral_flag = DeterministicMath.clampi(p_value, 0, 999)
 
 # ── AP (per-phase transient; not persisted across runs) ─────────────
-var ap: int = GameConstants.AP_MAX
+var ap: int = GameConstants.AP_MAX:
+	set(p_value):
+		var old_ap: int = ap
+		ap = DeterministicMath.clampi(p_value, 0, GameConstants.AP_MAX)
+		if ap != old_ap:
+			ap_changed.emit(ap, old_ap)
 
 # ── State ───────────────────────────────────────────────────────────
 enum State { IDLE, STUNNED, DYING, DEAD, GHOST }
