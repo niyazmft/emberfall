@@ -12,25 +12,25 @@ enum Rarity { COMMON, UNCOMMON, RARE, LEGENDARY }
 @export var type: ItemType = ItemType.CONSUMABLE
 @export var rarity: Rarity = Rarity.COMMON
 @export var stats: Dictionary = {}
-@export var stack_limit: int = 1
+@export var stackLimit: int = 1
 @export var description: String = ""
 
 
 ## Factory method to create an Item from a Dictionary (parsed JSON).
-static func from_dict(data: Dictionary) -> Item:
-	var item := Item.new()
+static func fromDict(data: Dictionary) -> Item:
+	var item: Item = Item.new()
 	item.id = data.get("id", "")
 	item.name = data.get("name", "Unknown Item")
-	item.type = _parse_type(data.get("type", "CONSUMABLE"))
-	item.rarity = _parse_rarity(data.get("rarity", "COMMON"))
+	item.type = _parseType(data.get("type", "CONSUMABLE"))
+	item.rarity = _parseRarity(data.get("rarity", "COMMON"))
 	item.stats = data.get("stats", {})
-	item.stack_limit = int(data.get("stack_limit", 1))
+	item.stackLimit = int(data.get("stackLimit", data.get("stack_limit", 1)))
 	item.description = data.get("description", "")
 	return item
 
 
-static func _parse_type(type_str: String) -> ItemType:
-	match type_str.to_upper():
+static func _parseType(typeStr: String) -> ItemType:
+	match typeStr.to_upper():
 		"WEAPON":
 			return ItemType.WEAPON
 		"ARMOR":
@@ -43,8 +43,8 @@ static func _parse_type(type_str: String) -> ItemType:
 			return ItemType.CONSUMABLE
 
 
-static func _parse_rarity(rarity_str: String) -> Rarity:
-	match rarity_str.to_upper():
+static func _parseRarity(rarityStr: String) -> Rarity:
+	match rarityStr.to_upper():
 		"COMMON":
 			return Rarity.COMMON
 		"UNCOMMON":

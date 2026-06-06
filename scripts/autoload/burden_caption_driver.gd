@@ -72,27 +72,27 @@ func _map_and_trigger_caption(stem_id: String, event_type: String, intensity: fl
 	match stem_id:
 		"BD-BASS":
 			if event_type == "impact":
+				caption_text = "[Deep impact]"
 				loc_key = "BE_CAP_BASS_IMPACT"
-				caption_text = tr(loc_key)
 				duration = 1.5
 		"BD-MECH":
 			if event_type == "clang":
+				caption_text = "[Mechanical clang]"
 				loc_key = "BE_CAP_MECH_CLANG"
-				caption_text = tr(loc_key)
 				duration = 0.8
 		"BD-STRESS":
 			if event_type == "swell_start" or event_type == "high_stress":
+				caption_text = "[Tension rising]"
 				loc_key = "BE_CAP_STRESS_SWELL"
-				caption_text = tr(loc_key)
 				duration = 2.0
 		"BD-CLIMB":
 			if event_type == "width_change":
 				if intensity > 0.7:
+					caption_text = "[The walls widen]"
 					loc_key = "BE_CAP_CLIMB_EXPAND"
-					caption_text = tr(loc_key)
 				elif intensity < 0.3:
+					caption_text = "[Everything converges]"
 					loc_key = "BE_CAP_CLIMB_CONVERGE"
-					caption_text = tr(loc_key)
 				duration = 2.0
 
 	if not caption_text.is_empty():
