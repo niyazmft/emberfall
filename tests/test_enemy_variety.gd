@@ -20,9 +20,7 @@ func test_enemy_grunt_variety() -> void:
 	assert_that(grunt.entity.def_).is_equal(4)
 	assert_that(grunt.entity.spd).is_equal(4)
 
-	assert_that(int(grunt.ai_controller.behavior)).is_equal(
-		int(EnemyAIController.BehaviorType.GRUNT)
-	)
+	assert_that(grunt.ai_controller.behavior).is_equal(EnemyAIController.BehaviorType.GRUNT)
 	assert_that(grunt.debug_color).is_equal(Color.WHITE)
 	assert_that(grunt.visual_proxy.modulate).is_equal(Color.WHITE)
 
@@ -39,9 +37,7 @@ func test_enemy_archer_variety() -> void:
 	assert_that(archer.entity.def_).is_equal(2)
 	assert_that(archer.entity.spd).is_equal(5)
 
-	assert_that(int(archer.ai_controller.behavior)).is_equal(
-		int(EnemyAIController.BehaviorType.ARCHER)
-	)
+	assert_that(archer.ai_controller.behavior).is_equal(EnemyAIController.BehaviorType.ARCHER)
 	assert_that(archer.debug_color).is_equal(Color.GREEN)
 	assert_that(archer.visual_proxy.modulate).is_equal(Color.GREEN)
 
@@ -58,7 +54,7 @@ func test_enemy_tank_variety() -> void:
 	assert_that(tank.entity.def_).is_equal(8)
 	assert_that(tank.entity.spd).is_equal(2)
 
-	assert_that(int(tank.ai_controller.behavior)).is_equal(int(EnemyAIController.BehaviorType.TANK))
+	assert_that(tank.ai_controller.behavior).is_equal(EnemyAIController.BehaviorType.TANK)
 	assert_that(tank.debug_color).is_equal(Color.BLUE)
 	assert_that(tank.visual_proxy.modulate).is_equal(Color.BLUE)
 	assert_that(tank.visual_scale).is_equal(1.2)
