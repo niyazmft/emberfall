@@ -2,7 +2,7 @@
 
 **Project:** Emberfall Tactical Combat Game  
 **Repository:** <https://github.com/niyazmft/emberfall>  
-**Last Updated:** 2026-06-04
+**Last Updated:** 2026-06-03
 **Current Phase:** Phase 4 (Minimum Viable Gameplay)  
 
 ---
@@ -104,7 +104,7 @@ This document serves as the project board tracking all development tasks across 
 |------|-------|--------|----------|--------------|-------------------|
 | 4.6 Combat HUD | #134 | 🔄 In Progress | MEDIUM | 4.1, 4.3 | 4.7, 4.8 |
 | 4.7 Settings Menu | #136 | ⏳ Ready | MEDIUM | None | 4.6, 4.8 |
-| 4.8 Moral Choice UI | #137 | ✅ Done | MEDIUM | 4.1, 4.3 | 4.6, 4.7 |
+| 4.8 Moral Choice UI | #137 | ⚠️ Blocked | MEDIUM | 4.1, 4.3 | 4.6, 4.7 |
 
 **Sprint 4 Goal:** Game feels polished and complete  
 **Definition of Done:** HUD shows stats, settings work, moral choices visible
@@ -229,9 +229,9 @@ Waiting for Phase 4 completion before planning
 | 2026-06-03 | Created board with Phase 1-4 tasks |
 | | Phase 1-3 marked complete |
 | | Phase 4 tasks with dependencies mapped |
-| 2026-06-04 | Task 4.8 (Moral Choice UI) marked ✅ Done |
+| 2026-06-03 | Updated Task 4.6 (Combat HUD) status to In Progress (Jules) |
 
 ---
 
-*Last Updated: 2026-06-04*
+*Last Updated: 2026-06-03*
 *Next Review: After Sprint 1 completion (Week 2)*

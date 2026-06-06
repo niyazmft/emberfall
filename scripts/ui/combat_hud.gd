@@ -7,6 +7,7 @@ extends Control
 @onready var hotbar: Control = $MarginContainer/BottomChrome/Hotbar
 @onready var prompts: Label = $MarginContainer/BottomChrome/Prompts
 @onready var status_icons: Control = $MarginContainer/BottomChrome/StatusIcons
+@onready var action_buttons: Control = $MarginContainer/BottomChrome/ActionButtons
 
 # HP/AP Display
 @onready var hp_bar: ProgressBar = %HPBar
@@ -35,10 +36,9 @@ func _ready() -> void:
 	_reflow_bottom_chrome()
 
 	# Connect button signals
+	move_button.pressed.connect(_on_move_pressed)
 	attack_button.pressed.connect(_on_attack_pressed)
 	end_turn_button.pressed.connect(_on_end_turn_pressed)
-	# Move button currently placeholder as movement is WASD
-	move_button.disabled = true
 
 
 func setup(player_entity: Entity, turn_manager: TurnManager, combat_input: CombatInput) -> void:
@@ -121,6 +121,10 @@ func _on_attack_executed(target: Node2D, damage: int) -> void:
 	log_action("Dealt %d damage to %s" % [damage, target_name])
 
 
+func _on_move_pressed() -> void:
+	log_action("USE WASD TO MOVE")
+
+
 func _on_attack_pressed() -> void:
 	if _combat_input:
 		# Use public signal-triggering method if it exists,
@@ -137,9 +141,9 @@ func _on_end_turn_pressed() -> void:
 
 
 func _enable_action_buttons(enabled: bool) -> void:
+	move_button.disabled = !enabled
 	attack_button.disabled = !enabled
 	end_turn_button.disabled = !enabled
-	# move_button remains disabled for now
 
 
 func _on_safe_area_changed(_rect: Rect2) -> void:
@@ -165,10 +169,11 @@ func _reflow_bottom_chrome() -> void:
 	# 2. Prompts (above hotbar)
 	# 3. Status Icons (above prompts)
 
-	# We ensure child order: StatusIcons, Prompts, Hotbar
+	# We ensure child order: StatusIcons, Prompts, ActionButtons, Hotbar
 	bottom_chrome.move_child(status_icons, 0)
 	bottom_chrome.move_child(prompts, 1)
-	bottom_chrome.move_child(hotbar, 2)
+	bottom_chrome.move_child(action_buttons, 2)
+	bottom_chrome.move_child(hotbar, 3)
 
 	# If viewport is very tight (SHRINK mode), we might want to hide status icons
 	if SafeZoneManager.current_aspect_mode == SafeZoneManager.AspectMode.SHRINK:

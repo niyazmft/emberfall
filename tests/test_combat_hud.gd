@@ -55,7 +55,7 @@ func test_turn_indicator() -> void:
 	var player_entity: Entity = Entity.new("Player")
 	player_entity.is_player = true
 
-	hud.call("_on_turn_started", player_entity, true)
+	turn_manager.turn_started.emit(player_entity, true)
 	assert_str(turn_label.text).is_equal("Your Turn")
 	assert_bool(attack_button.disabled).is_false()
 	assert_bool(end_turn_button.disabled).is_false()
@@ -63,7 +63,7 @@ func test_turn_indicator() -> void:
 	var enemy_entity: Entity = Entity.new("Grunt")
 	enemy_entity.is_player = false
 
-	hud.call("_on_turn_started", enemy_entity, false)
+	turn_manager.turn_started.emit(enemy_entity, false)
 	assert_str(turn_label.text).is_equal("Enemy Turn: Grunt")
 	assert_bool(attack_button.disabled).is_true()
 	assert_bool(end_turn_button.disabled).is_true()
