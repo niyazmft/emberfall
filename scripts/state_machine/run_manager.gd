@@ -310,8 +310,18 @@ func _update_biome_generation(delta: float, _elapsed: float) -> void:
 func _enter_room(_ctx: Dictionary) -> void:
 	# Reset one-shot flags that are room-scoped
 	_combat_resolved = false
-	# Emit event for UI / encounter spawner
+
 	var room_data: Dictionary = _get_current_room_data()
+	var room_id: String = room_data.get("room_id", "room_standard_01")
+
+	# Load room definition and augment room_data
+	var room_def := RoomLoader.load_room_data(room_id)
+	if not room_def.is_empty():
+		for key: String in room_def:
+			if not room_data.has(key):
+				room_data[key] = room_def[key]
+
+	# Emit event for UI / encounter spawner
 	room_entered.emit(room_index, room_data)
 
 
@@ -458,10 +468,12 @@ func _action_generate_rooms(_ctx: Dictionary) -> void:
 		var count: int = rng.randi_range(rooms_per_biome_min, rooms_per_biome_max)
 		for r: int in range(count):
 			var current_room_idx: int = room_queue.size()
+			var room_id := "room_standard_0%d" % (rng.randi_range(1, 5))
 			(
 				room_queue
 				. append(
 					{
+						"room_id": room_id,
 						"biome": b,
 						"room_in_biome": r,
 						"topology_seed":

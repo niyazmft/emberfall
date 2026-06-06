@@ -93,37 +93,65 @@ func all_tiles() -> Array[TacTileData]:
 ## Load a room from a JSON Dictionary. Expected shape:
 ## {
 ##   "id": "room_01",
-##   "tiles": [
-##     {"x":0, "y":0, "elevation":0, "cover":0, "blocks_movement":false, "blocks_vision":false},
-##     ...
-##   ]
+##   "layout": {
+##     "elevation": [...],
+##     "cover": [...],
+##     "blocked": [...],
+##     "vision_blocked": [...]
+##   }
 ## }
-## Missing tiles keep default values.
+## OR (legacy support):
+## {
+##   "id": "room_01",
+##   "tiles": [{"x":0, "y":0, ...}]
+## }
 func load_room(data: Dictionary) -> Error:
 	_reset_grid()
 	if data.has("id"):
 		room_id = str(data["id"])
-	if not data.has("tiles") or not data["tiles"] is Array:
-		return ERR_INVALID_DATA
-	var tile_list: Array = data["tiles"] as Array
-	for entry: Variant in tile_list:
-		if not entry is Dictionary:
-			continue
-		var d: Dictionary = entry as Dictionary
-		var x: int = int(d.get("x", -1))
-		var y: int = int(d.get("y", -1))
-		if not is_in_bounds(x, y):
-			continue
-		var t: TacTileData = get_tile(x, y)
-		t.elevation = int(d.get("elevation", 0)) as TacTileData.Elevation
-		t.cover = int(d.get("cover", 0)) as TacTileData.CoverType
-		t.blocks_movement = bool(d.get("blocks_movement", false))
-		t.blocks_vision = bool(d.get("blocks_vision", false))
-		if d.has("tags") and d["tags"] is Array:
-			var tag_list: Array = d["tags"] as Array
-			for tag: Variant in tag_list:
-				t.tags.append(str(tag))
-		t.recompute_flags()
+
+	if data.has("layout") and data["layout"] is Dictionary:
+		var layout: Dictionary = data["layout"] as Dictionary
+		var elevation: Array = layout.get("elevation", []) as Array
+		var cover: Array = layout.get("cover", []) as Array
+		var blocked: Array = layout.get("blocked", []) as Array
+		var vision: Array = layout.get("vision_blocked", []) as Array
+
+		for i: int in range(TOTAL_TILES):
+			var t: TacTileData = _tiles[i]
+			if i < elevation.size():
+				t.elevation = int(elevation[i]) as TacTileData.Elevation
+			if i < cover.size():
+				t.cover = int(cover[i]) as TacTileData.CoverType
+			if i < blocked.size():
+				t.blocks_movement = bool(blocked[i])
+			if i < vision.size():
+				t.blocks_vision = bool(vision[i])
+			t.recompute_flags()
+	elif data.has("tiles") and data["tiles"] is Array:
+		var tile_list: Array = data["tiles"] as Array
+		for entry: Variant in tile_list:
+			if not entry is Dictionary:
+				continue
+			var d: Dictionary = entry as Dictionary
+			var x: int = int(d.get("x", -1))
+			var y: int = int(d.get("y", -1))
+			if not is_in_bounds(x, y):
+				continue
+			var t: TacTileData = get_tile(x, y)
+			t.elevation = int(d.get("elevation", 0)) as TacTileData.Elevation
+			t.cover = int(d.get("cover", 0)) as TacTileData.CoverType
+			t.blocks_movement = bool(d.get("blocks_movement", false))
+			t.blocks_vision = bool(d.get("blocks_vision", false))
+			if d.has("tags") and d["tags"] is Array:
+				var tag_list: Array = d["tags"] as Array
+				for tag: Variant in tag_list:
+					t.tags.append(str(tag))
+			t.recompute_flags()
+	else:
+		# Fallback to default empty grid if no layout or tiles found
+		pass
+
 	_recompute_cover_cache()
 	return OK
 
