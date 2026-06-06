@@ -1,48 +1,92 @@
-keys,en
-MENU_NEW_RUN,New Run
-MENU_CONTINUE,Continue
-MENU_SETTINGS,Settings
-MENU_QUIT,Quit
-MENU_TITLE,Emberfall
-PAUSE_RESUME,Resume
-PAUSE_RESTART,Restart Room
-PAUSE_SETTINGS,Settings
-PAUSE_QUIT_SANCTUM,Quit to Sanctum
-SETTINGS_AUDIO,Audio
-SETTINGS_VIDEO,Video
-SETTINGS_ACCESSIBILITY,Accessibility
-SETTINGS_CONTROLS,Controls
-SETTINGS_MASTER_VOL,Master Volume
-SETTINGS_MUSIC_VOL,Music Volume
-SETTINGS_SFX_VOL,SFX Volume
-SETTINGS_MUTE,Mute All
-SETTINGS_FULLSCREEN,Fullscreen
-SETTINGS_RESOLUTION,Resolution
-SETTINGS_VSYNC,VSync
-SETTINGS_APPLY,Apply Video Settings
-SETTINGS_RESET_DEFAULTS,Reset to Defaults
-SETTINGS_SCREEN_SHAKE,Screen Shake
-SETTINGS_CVD_SIM,CVD Simulation
-CVD_NONE,None
-CVD_PROTANOPIA,Protanopia
-CVD_DEUTERANOPIA,Deuteranopia
-CVD_TRITANOPIA,Tritanopia
-SETTINGS_INPUT_HINTS,Input Hints
-OPTION_AUTO,Auto
-OPTION_KBM,Keyboard & Mouse
-OPTION_GP,Gamepad
-HINT_SELECT_KBM,[Enter] Select
-HINT_SELECT_GP,[A] Select
-HINT_BACK_KBM,[Esc] Back
-HINT_BACK_GP,[B] Back
-MENU_BACK,Back
-SETTINGS_SETTINGS,Settings
-PAUSED,Paused
-CONFIRM_QUIT_TITLE,Quit Game?
-CONFIRM_QUIT_BODY,Are you sure you want to quit the game? Any unsaved progress will be lost.
-CONFIRM_RETURN_TITLE,Return to Sanctum?
-CONFIRM_RETURN_BODY,Are you sure you want to return to the Sanctum? Current room progress will be lost.
-CONFIRM_RESET_TITLE,Reset Controls?
-CONFIRM_RESET_BODY,Are you sure you want to reset all controls to their default bindings?
-CONFIRM_RESET_SETTINGS_TITLE,Reset Settings?
-CONFIRM_RESET_SETTINGS_BODY,Are you sure you want to reset ALL settings (audio, video, accessibility, controls) to their default values?
+keys,en,de,es,fr,ja,ko,zh-Hans
+MENU_NEW_RUN,New Run,Neuer Durchlauf,Nueva Partida,Nouvelle Partie,新しい実行,새 런,新运行
+MENU_CONTINUE,Continue,Fortsetzen,Continuar,Continuer,再開,계속하기,继续
+MENU_SETTINGS,Settings,Einstellungen,Ajustes,Paramètres,設定,설정,设置
+MENU_QUIT,Quit,Beenden,Salir,Quitter,終了,종료,退出
+MENU_TITLE,Emberfall,Emberfall,Emberfall,Emberfall,エンバーフォール,엠버폴,余烬之秋
+PAUSE_RESUME,Resume,Fortsetzen,Reanudar,Reprendre,再開,재개,继续
+PAUSE_RESTART,Restart Room,Raum neustarten,Reiniciar Sala,Recommencer la salle,部屋をやり直す,방 재시작,重启房间
+PAUSE_SETTINGS,Settings,Einstellungen,Ajustes,Paramètres,設定,설정,设置
+PAUSE_QUIT_SANCTUM,Quit to Sanctum,Zum Sanktum zurückkehren,Salir al Santuario,Quitter vers le Sanctuaire,サンクタムへ戻る,성소로 돌아가기,退回到避难所
+SETTINGS_AUDIO,Audio,Audio,Audio,Audio,オーディオ,오디오,音频
+SETTINGS_VIDEO,Video,Video,Video,Vidéo,ビデオ,비디오,视频
+SETTINGS_ACCESSIBILITY,Accessibility,Barrierefreiheit,Accesibilidad,Accessibilité,アクセシビリティ,접근성,辅助功能
+SETTINGS_CONTROLS,Controls,Steuerung,Controles,Commandes,操作,조작,控制
+SETTINGS_MASTER_VOL,Master Volume,Gesamtlautstärke,Volumen Maestro,Volume Principal,マスター音量,마스터 볼륨,主音量
+SETTINGS_MUSIC_VOL,Music Volume,Musiklautstärke,Volumen de Música,Volume de la Musique,BGM音量,배경음 볼륨,音乐音量
+SETTINGS_SFX_VOL,SFX Volume,Effektlautstärke,Volumen de SFX,Volume des SFX,SE音量,효과음 볼륨,音效音量
+SETTINGS_MUTE,Mute All,Alle stummschalten,Silenciar Todo,Tout couper,すべてミュート,모두 음소거,全部静音
+SETTINGS_FULLSCREEN,Fullscreen,Vollbild,Pantalla Completa,Plein Écran,フルスクリーン,전체 화면,全屏
+SETTINGS_RESOLUTION,Resolution,Auflösung,Resolución,Résolution,解像度,해상도,分辨率
+SETTINGS_VSYNC,VSync,VSync,VSync,VSync,垂直同期,수직 동기화,垂直同步
+SETTINGS_APPLY,Apply Video Settings,Video-Einstellungen übernehmen,Aplicar Ajustes de Vídeo,Appliquer les Paramètres Vidéo,ビデオ設定を適用,비디오 설정 적용,应用视频设置
+SETTINGS_RESET_DEFAULTS,Reset to Defaults,Standardwerte wiederherstellen,Restablecer Valores,Réinitialiser par défaut,デフォルトに戻す,기본값으로 재설정,恢复默认
+SETTINGS_SCREEN_SHAKE,Screen Shake,Bildschirmwackeln,Sacudida de Pantalla,Secousse de l'écran,画面の揺れ,화면 흔들림,屏幕抖动
+SETTINGS_CVD_SIM,CVD Simulation,CVD Simulation,Simulación CVD,Simulation de CVD,色覚多様性シミュレーション,색각 이상 시뮬레이션,色盲模拟
+CVD_NONE,None,Keine,Ninguno,Aucun,なし,없음,无
+CVD_PROTANOPIA,Protanopia,Protanopie,Protanopía,Protanopie,1型色覚,제1색맹,红色盲
+CVD_DEUTERANOPIA,Deuteranopia,Deuteranopie,Deuteranopía,Deuteranopie,2型色覚,제2색맹,绿色盲
+CVD_TRITANOPIA,Tritanopia,Tritanopie,Tritanopía,Tritanopie,3型色覚,제3색맹,蓝色盲
+SETTINGS_INPUT_HINTS,Input Hints,Eingabehinweise,Consejos de Entrada,Conseils d'Entrée,入力ヒント,입력 힌트,输入提示
+OPTION_AUTO,Auto,Auto,Auto,Auto,自動,자동,自动
+OPTION_KBM,Keyboard & Mouse,Tastatur & Maus,Teclado y Ratón,Clavier et Souris,キーボード&マウス,키보드 및 마우스,键盘鼠标
+OPTION_GP,Gamepad,Gamepad,Mando,Manette,ゲームパッド,게임패드,手柄
+HINT_SELECT_KBM,[Enter] Select,[Eingabe] Auswählen,[Enter] Seleccionar,[Entrée] Sélectionner,[Enter] 選択,[Enter] 선택,[Enter] 选择
+HINT_SELECT_GP,[A] Select,[A] Auswählen,[A] Seleccionar,[A] Sélectionner,[A] 選択,[A] 선택,[A] 选择
+HINT_BACK_KBM,[Esc] Back,[Esc] Zurück,[Esc] Atrás,[Échap] Retour,[Esc] 戻る,[Esc] 뒤로,[Esc] 返回
+HINT_BACK_GP,[B] Back,[B] Zurück,[B] Atrás,[B] Retour,[B] 戻る,[B] 뒤로,[B] 返回
+MENU_BACK,Back,Zurück,Atrás,Retour,戻る,뒤로,返回
+SETTINGS_SETTINGS,Settings,Einstellungen,Ajustes,Paramètres,設定,설정,设置
+PAUSED,Paused,Pausiert,En Pausa,En Pause,一時停止,일시 정지,已暂停
+CONFIRM_QUIT_TITLE,Quit Game?,Spiel beenden?,¿Salir del Juego?,Quitter le Jeu ?,ゲームを終了しますか？,게임을 종료하시겠습니까?,退出游戏？
+CONFIRM_QUIT_BODY,Are you sure you want to quit the game? Any unsaved progress will be lost.,Bist du sicher dass du das Spiel beenden willst? Ungespeicherter Fortschritt geht verloren.,¿Estás seguro de que quieres salir del juego? Se perderá cualquier progreso no guardado.,Êtes-vous sûr de vouloir quitter le jeu ? Toute progression non sauvegardée sera perdue.,ゲームを終了してもよろしいですか？保存されていない進行状況は失われます。,게임을 종료하시겠습니까? 저장되지 않은 모든 진행 상황이 삭제됩니다.,确定要退出游戏吗？所有未保存的进度都将丢失。
+CONFIRM_RETURN_TITLE,Return to Sanctum?,Zum Sanktum zurückkehren?,¿Volver al Santuario?,Retourner au Sanctuaire ?,サンクタムへ戻りますか？,성소로 돌아가시겠습니까?,返回避难所？
+CONFIRM_RETURN_BODY,Are you sure you want to return to the Sanctum? Current room progress will be lost.,Bist du sicher dass du zum Sanktum zurückkehren willst? Der Fortschritt im aktuellen Raum geht verloren.,¿Estás seguro de que quieres volver al Santuario? Se perderá el progreso de la sala actual.,Êtes-vous sûr de vouloir retourner au Sanctuaire ? La progression de la salle actuelle sera perdue.,サンクタムに戻ってもよろしいですか？現在の部屋の進行状況は失われます。,성소로 돌아가시겠습니까? 현재 방의 진행 상황이 삭제됩니다.,确定要返回避难所吗？当前房间的进度将丢失。
+CONFIRM_RESET_TITLE,Reset Controls?,Steuerung zurücksetzen?,¿Restablecer Controles?,Réinitialiser les Commandes ?,操作設定をリセットしますか？,조작 설정을 재설정하시겠습니까?,重置控制？
+CONFIRM_RESET_BODY,Are you sure you want to reset all controls to their default bindings?,Bist du sicher dass du alle Steuerelemente auf ihre Standardbelegungen zurücksetzen willst?,¿Estás seguro de que quieres restablecer todos los controles a sus asignaciones por defecto?,Êtes-vous sûr de vouloir réinitialiser toutes les commandes à leurs configurations par défaut ?,すべての操作設定をデフォルトに戻してもよろしいですか？,모든 조작 설정을 기본값으로 재설정하시겠습니까?,确定要将所有控制重置为默认绑定吗？
+CONFIRM_RESET_SETTINGS_TITLE,Reset Settings?,Einstellungen zurücksetzen?,¿Restablecer Ajustes?,Réinitialiser les Paramètres ?,設定をリセットしますか？,설정을 재설정하시겠습니까?,重置设置？
+CONFIRM_RESET_SETTINGS_BODY,Are you sure you want to reset ALL settings (audio, video, accessibility, controls) to their default values?,Bist du sicher dass du ALLE Einstellungen (Audio, Video, Barrierefreiheit, Steuerung) auf ihre Standardwerte zurücksetzen willst?,¿Estás seguro de que quieres restablecer TODOS los ajustes (audio, vídeo, accesibilidad, controles) a sus valores por defecto?,Êtes-vous sûr de vouloir réinitialiser TOUS les paramètres (audio, vidéo, accessibilité, commandes) à leurs valeurs par défaut ?,すべての設定（オーディオ、ビデオ、アクセシビリティ、操作）をデフォルトに戻してもよろしいですか？,모든 설정(오디오, 비디오, 접근성, 조작)을 기본값으로 재설정하시겠습니까?,确定要将所有设置（音频、视频、辅助功能、控制）重置为默认值吗？
+UNIT_KEEPER,Keeper,Wächter,Guardián,Gardien,キーパー,키퍼,守护者
+UNIT_GRUNT,Grunt,Scherge,Subalterno,Grognard,グラント,그란트,小卒
+UNIT_ARCHER,Archer,Bogenschütze,Arquero,Archer,アーチャー,궁수,弓箭手
+UNIT_TANK,Tank,Panzer,Tanque,Tank,タンク,탱크,坦克
+HUD_TURN_PLAYER,Your Turn,Du bist am Zug,Tu Turno,Votre Tour,あなたのターン,당신의 차례,你的回合
+HUD_TURN_ENEMY,Enemy Turn: %s,Gegnerzug: %s,Turno Enemigo: %s,Tour de l'Ennemie : %s,敵のターン: %s,적의 차례: %s,敌人回合: %s
+HUD_ROUND,Round %d,Runde %d,Ronda %d,Manche %d,ラウンド %d,라운드 %d,第 %d 轮
+HUD_SELECT_TARGET,SELECT TARGET,ZIEL WÄHLEN,SELECCIONAR OBJETIVO,CHOISIR UNE CIBLE,ターゲットを選択,대상 선택,选择目标
+HUD_DEALT_DAMAGE,Dealt %d damage to %s,%d Schaden an %s verursacht,Infligido %d de daño a %s,Dégâts infligés : %d à %s,%s に %d ダメージを与えた,%s에게 %d의 피해를 입혔습니다,对 %s 造成了 %d 点伤害
+HUD_MOVE_HINT,USE WASD TO MOVE,WASD ZUM BEWEGEN NUTZEN,USA WASD PARA MOVERTE,UTILISER WASD POUR SE DÉPLACER,WASDで移動,WASD를 사용하여 이동,使用 WASD 移动
+ELEMENT_NONE,None,Keine,Ninguno,Aucun,なし,없음,无
+ELEMENT_FIRE,Fire,Feuer,Fuego,Feu,火,불,火
+ELEMENT_WATER,Water,Wasser,Agua,Eau,水,물,水
+ELEMENT_WIND,Wind,Wind,Viento,Vent,風,바람,风
+ELEMENT_OIL,Oil,Öl,Aceite,Huile,油,기름,油
+BE_PHASE_A,The Stillness,Die Stille,La Quietud,Le Calme,静止,고요,宁静
+BE_PHASE_C,The memory passes into you.,Die Erinnerung geht auf dich über.,El recuerdo pasa a ti.,La mémoire passe en vous.,記憶があなたの中に流れ込む,기억이 당신에게 전달됩니다,记忆正进入你的体内
+BE_PHASE_D,You exhale. The embers cool.,Du atmest aus. Die Glut kühlt ab.,Exhalas. Las brasas se enfrían.,Vous exhalez. Les braises refroidissent.,息を吐く。残り火が冷える。,숨을 내뱉습니다. 잔불이 식습니다.,你呼出一口气。余烬冷却。
+BE_NUMBNESS_CAP,The burden is silent,Die Last ist still,La carga está en silencio,Le fardeau est silencieux,重荷は沈黙している,무거운 짐은 침묵합니다,负担是沉寂的
+BE_B_FIRST_A,Three keepers of their own small truths. You hold them now. That is the burden.,Drei Wächter ihrer eigenen kleinen Wahrheiten. Du hältst sie jetzt. Das ist die Last.,Tres guardianes de sus propias pequeñas verdades. Ahora los sostienes tú. Esa es la carga.,Trois gardiens de leurs propres petites vérités. Vous les tenez maintenant. C'est le fardeau.,自分たちの小さな真実を守る3人の守護者。今、あなたがそれらを握っている。それが重荷だ。,자신만의 작은 진실을 간직한 세 명의 수호자. 이제 당신이 그들을 붙잡고 있습니다. 그것이 바로 무게입니다.,三个守着各自微小真相的守护者。你现在握着他们。这就是负担。
+BE_B_FIRST_B,Three echoes, and the world is quieter for their leaving. You carry what remains.,Drei Echos, und die Welt ist stiller durch ihr Scheiden. Du trägst, was bleibt.,Tres ecos, y el mundo es más silencioso por su partida. Tú cargas con lo que queda.,Trois échos, et le monde est plus silencieux après leur départ. Vous portez ce qui reste.,3つの残響、彼らが去ったことで世界はより静かになった。あなたは残されたものを運ぶ。,세 개의 메아리, 그들이 떠나 세상은 더 조용해졌습니다. 당신은 남겨진 것을 운반합니다.,三个回声，世界因他们的离去而变得更加安静。你承载着残留的一切。
+BE_B_FIRST_C,Three bearers, each walking their own uncertain path. That path ends with you.,Drei Überbringer, jeder auf seinem eigenen ungewissen Pfad. Dieser Pfad endet bei dir.,Tres portadores, cada uno recorriendo su propio camino incierto. Ese camino termina contigo.,Trois porteurs, chacun marchant sur son propre chemin incertain. Ce chemin s'arrête avec vous.,3人の運搬人、それぞれが不確かな道を歩んでいた。その道はあなたで終わる。,세 명의 운반자, 각자 자신만의 불확실한 길을 걷고 있습니다. 그 길은 당신에게서 끝납니다.,三个持有人，各自走在自己不确定的道路上。那条路在你的面前终结。
+BE_B_REPEAT_R1,More remnants. The burden holds.,Mehr Überreste. Die Last hält an.,Más restos. La carga se mantiene.,Plus de vestiges. Le fardeau demeure.,さらなる残骸。重荷は続く。,더 많은 잔해들. 무게는 유지됩니다.,更多残余。负担仍在。
+BE_B_REPEAT_R2,More echoes. The world does not forget.,Mehr Echos. Die Welt vergisst nicht.,Más ecos. El mundo no olvida.,Plus d'échos. Le monde n'oublie pas.,さらなる残響。世界は忘れない。,더 많은 메아리들. 세상은 잊지 않습니다.,更多回声。世界不会忘记。
+BE_CAP_BASS_IMPACT,[Deep impact],[Tiefes Auftreffen],[Impacto profundo],[Impact profond],[深い衝撃],[깊은 충격],[深沉冲击]
+BE_CAP_MECH_CLANG,[Mechanical clang],[Mechanisches Scheppern],[Clang mecánico],[Cliquetis mécanique],[機械的な金属音],[기계적 쇵소리],[机械铿锵声]
+BE_CAP_STRESS_SWELL,[Tension rising],[Spannung steigt],[Tensión en aumento],[La tension monte],[緊張が高まる],[긴장 고조],[紧张感上升]
+BE_CAP_CLIMB_EXPAND,[The walls widen],[Die Wände weiten sich],[Las paredes se ensanchan],[Les murs s'élargissent],[壁が広がる],[벽이 넓어집니다],[墙壁扩宽]
+BE_CAP_CLIMB_CONVERGE,[Everything converges],[Alles läuft zusammen],[Todo converge],[Tout converge],[すべてが収束する],[모든 것이 수렴됩니다],[一切汇聚]
+NOUN_KEEPERS,keepers,Wächter,guardianes,gardiens,守護者,수호자,守护者
+NOUN_BEARERS,bearers,Überbringer,portadores,porteurs,運搬人,운반자,持有人
+NOUN_REMNANTS,remnants,Überreste,restos,vestiges,残骸,잔해,残余
+NOUN_ECHOES,echoes,Echos,ecos,échos,残響,메아리,回声
+NOUN_CARRIERS,carriers,Träger,portadores,porteurs,運び手,운반인,携带者
+NOUN_VESSELS,vessels,Gefäße,recipientes,vaisseaux,器,그릇,容器
+NOUN_WITNESSES,witnesses,Zeugen,testigos,témoins,目撃者,목격자,目击者
+NOUN_THREADS,threads,Fäden,hilos,fils,糸,실,丝线
+COUNT_THREE,Three,Drei,Tres,Trois,3つ,셋,三个
+COUNT_MORE,More,Mehr,Más,Plus,さらに,더 많이,更多
+STAT_HP,HP,LP,PV,PV,HP,HP,生命值
+STAT_AP,AP,AP,PA,PA,AP,AP,行动点
+STAT_OFF,OFF,ANG,OFE,OFF,攻撃,공격,攻击
+STAT_DEF,DEF,ABW,DEF,DÉF,防御,방어,防御
+STAT_SPD,SPD,GES,VEL,VIT,速度,속도,速度
