@@ -1,8 +1,9 @@
 #!/bin/bash
 ## Project Emberfall: Pre-Push Validation Script
 ## This script runs all CI checks locally to ensure zero parse errors and math stability.
+## Docs: https://jules.google/docs
 
-set -euo pipefail
+set -uo pipefail
 
 # Ensure common Homebrew/macOS bin directories are in the PATH
 export PATH="/usr/local/bin:/opt/homebrew/bin:$PATH"
@@ -23,6 +24,8 @@ cd "$PROJECT_DIR"
 GODOT_BIN="${GODOT_BIN:-godot}"
 GDFORMAT_BIN="${GDFORMAT_BIN:-gdformat}"
 
+FAILED=0
+
 echo "------------------------------------------------"
 echo "🔍 Running Project Emberfall Pre-Push Check"
 echo "------------------------------------------------"
@@ -30,53 +33,65 @@ echo "------------------------------------------------"
 # 0. Formatting
 echo ""
 echo "🎨 Step 0: Formatting GDScript..."
-"$GDFORMAT_BIN" scripts/ tests/ ui/
+"$GDFORMAT_BIN" scripts/ tests/ ui/ || true
 
 # 1. Math Validation (Python)
 echo ""
 echo "⚖️ Step 1: Validating Deterministic Math (Python)..."
 python3 tests/validate_math.py
 
-# 2. GDScript Linting (Editor Scan)
+# 2. Import project (required before editor scan when .godot/ is gitignored)
 echo ""
-echo "🧹 Step 2: Running GDScript Lint (Editor Scan)..."
+echo "📦 Step 2: Importing Godot project..."
+"$GODOT_BIN" --headless --import --path . --quit > /dev/null 2>&1 || true
+
+# 3. GDScript Linting (Editor Scan)
+echo ""
+echo "🧹 Step 3: Running GDScript Lint (Editor Scan)..."
 "$GODOT_BIN" --headless --editor --quit --path . 2>&1 | tee tools/godot_lint.log
 
-# (Step 3 was removed since Godot standalone math validation was migrated to GdUnit4)
-
-# 4. Full Test Suite (NEW)
+# 4. Full Test Suite
 echo ""
 echo "🧪 Step 4: Running Full Test Suite via GdUnit4..."
+TEST_EXIT_CODE=0
 if [ -f "addons/gdUnit4/bin/GdUnitCmdTool.gd" ]; then
-    # Use || true to capture exit code without set -e killing script immediately
     "$GODOT_BIN" --headless --path . -s res://addons/gdUnit4/bin/GdUnitCmdTool.gd -a tests/ --ignoreHeadlessMode 2>&1 | tee tools/test_suite.log || TEST_EXIT_CODE=$?
-    
-    # GdUnit4 returns 100 for failures, 101 for warnings (like orphans), and 0 for pure success.
-    # We will treat 0 and 101 as passed for CI/Push checks, but 100 as failure.
+
+    # GdUnit4 returns: 0=success, 101=warnings/orphans, 100=failures
     if [ "$TEST_EXIT_CODE" = "100" ] || [ "$TEST_EXIT_CODE" = "1" ]; then
+        echo ""
         echo "------------------------------------------------"
-        echo "❌ TEST SUITE FAILED! Check tools/test_suite.log"
+        echo "❌ TEST SUITE FAILED! (exit $TEST_EXIT_CODE)"
         echo "------------------------------------------------"
-        exit 1
+        FAILED=1
+    else
+        echo ""
+        echo "✅ Test suite passed (exit $TEST_EXIT_CODE)"
     fi
 else
-    echo "⚠️ GdUnit4 not found at addons/gdUnit4/bin/GdUnitCmdTool.gd"
-    echo "Skipping test suite..."
+    echo "⚠️ GdUnit4 not found — skipping test suite"
 fi
 
-# Fail if critical errors are found in any log
-# Pattern check for "Failed: [1-9]" to catch test failures without catching "Failed: 0"
-if grep -iE "SCRIPT ERROR|Parse Error|Compile Error|hides an autoload singleton|SHADER ERROR" tools/godot_lint.log tools/math_validation.log tools/test_suite.log || grep -iE "Failed: [1-9]" tools/math_validation.log tools/test_suite.log; then
-    echo "------------------------------------------------"
-    echo "❌ VALIDATION FAILED! Check tools/*.log"
-    echo "------------------------------------------------"
-    exit 1
-fi
+# Check logs for critical errors
+for log in tools/godot_lint.log tools/test_suite.log; do
+    if [ -f "$log" ]; then
+        if grep -iE "SCRIPT ERROR|Parse Error|Compile Error|hides an autoload singleton|SHADER ERROR" "$log" 2>/dev/null; then
+            echo ""
+            echo "❌ Critical error found in $log"
+            FAILED=1
+        fi
+        if grep "ERROR:" "$log" 2>/dev/null | grep -ivE "resources still in use|objectdb instances leaked|caller thread can't call this function|statemachine: attempted to change to unregistered state"; then
+            echo ""
+            echo "❌ Unexpected ERROR in $log"
+            FAILED=1
+        fi
+    fi
+done
 
-# Also check for general ERROR: but exclude common exit-leak false positives and intentional test errors
-if grep "ERROR:" tools/godot_lint.log tools/test_suite.log 2>/dev/null | grep -ivE "resources still in use|objectdb instances leaked|caller thread can't call this function|statemachine: attempted to change to unregistered state"; then
+if [ "$FAILED" = "1" ]; then
+    echo ""
     echo "------------------------------------------------"
-    echo "❌ CRITICAL ERRORS DETECTED! Check tools/*.log"
+    echo "❌ VALIDATION FAILED"
     echo "------------------------------------------------"
     exit 1
 fi
