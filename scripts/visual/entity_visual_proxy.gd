@@ -167,13 +167,29 @@ func _update_facing_visuals(facing_x: int, facing_y: int) -> void:
 
 
 func _update_state_visuals(state: Entity.State) -> void:
+	var emitter: _SFXEmitter = AutoloadHelper.sfx_emitter()
 	match state:
 		Entity.State.DYING:
 			modulate = Color(1.0, 0.4, 0.4)
+			if emitter:
+				var path: String = "res://assets/audio/sfx/enemy_dying.wav"
+				if ResourceLoader.exists(path):
+					var sfx: AudioStream = load(path) as AudioStream
+					emitter.play_sfx_2d(sfx, global_position)
 		Entity.State.STUNNED:
 			modulate = Color(1.0, 1.0, 0.0)
+			if emitter:
+				var path: String = "res://assets/audio/sfx/stunned.wav"
+				if ResourceLoader.exists(path):
+					var sfx: AudioStream = load(path) as AudioStream
+					emitter.play_sfx_2d(sfx, global_position)
 		Entity.State.DEAD:
 			modulate = Color(0.3, 0.3, 0.3, 0.6)
+			if emitter:
+				var path: String = "res://assets/audio/sfx/enemy_death.wav"
+				if ResourceLoader.exists(path):
+					var sfx: AudioStream = load(path) as AudioStream
+					emitter.play_sfx_2d(sfx, global_position)
 		_:
 			modulate = Color.WHITE
 
