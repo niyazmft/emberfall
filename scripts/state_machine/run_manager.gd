@@ -97,9 +97,6 @@ func _load_biome_config() -> void:
 		return
 
 	var file := FileAccess.open(path, FileAccess.READ)
-	if file == null:
-		push_error("RunManager: Failed to open biome config at %s" % path)
-		return
 	var text := file.get_as_text()
 	var parsed: Variant = JSON.parse_string(text)
 	if parsed is Dictionary:

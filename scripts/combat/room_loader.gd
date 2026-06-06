@@ -6,7 +6,7 @@ extends Node
 
 const ROOMS_PATH := "res://config/rooms/"
 const KEEPER_SCENE_PATH := "res://scenes/keeper.tscn"
-const ENEMY_SCENES: Dictionary = {
+const ENEMY_SCENES := {
 	"grunt": "res://scenes/enemies/enemy_grunt.tscn",
 	"archer": "res://scenes/enemies/enemy_archer.tscn",
 	"tank": "res://scenes/enemies/enemy_tank.tscn"
