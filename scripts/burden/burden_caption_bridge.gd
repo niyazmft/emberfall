@@ -116,7 +116,7 @@ func schedule_burden_event_captions(result: BurdenEventResult) -> void:
 	if cm == null:
 		return
 
-	var dm := AutoloadHelper.get_autoload("DialogueManager")
+	var dm: Node = AutoloadHelper.get_autoload("DialogueManager")
 
 	## Phase A: stillness caption (BURDEN channel, per DON-222 requirement)
 	if not result.phase_a_localization_key.is_empty() and cm.has_method("schedule"):
