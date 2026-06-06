@@ -54,6 +54,10 @@ func _ready() -> void:
 
 
 func _loadConfig() -> void:
+	_configData.clear()
+	for path: String in _loadedFiles:
+		_loadedFiles[path] = false
+
 	_loadJsonToConfig(CONFIG_PATH)
 	_loadJsonToConfig(ITEMS_PATH)
 	_loadJsonToConfig(EQUIPMENT_PATH)

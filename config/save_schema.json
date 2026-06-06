@@ -32,11 +32,6 @@
       "type": "int",
       "default": 0,
       "description": "Highest moral_flag ever reached across all runs (achievement / unlock gating)."
-    },
-    "tutorial_complete": {
-      "type": "bool",
-      "default": false,
-      "description": "Flag indicating if the player has completed the initial tutorial sequence."
     }
   },
   "run_state": {
