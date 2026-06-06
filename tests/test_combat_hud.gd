@@ -70,3 +70,26 @@ func test_turn_indicator() -> void:
 
 	hud.queue_free()
 	turn_manager.queue_free()
+
+
+func test_hotbar_integration() -> void:
+	var hud: Control = load(COMBAT_HUD_SCENE).instantiate() as Control
+	add_child(hud)
+
+	hud.call("setup", null, null, null)
+
+	var hotbar: Control = hud.get_node("MarginContainer/BottomChrome/Hotbar")
+	var slots_container: HBoxContainer = hotbar.get_node("%SlotsContainer")
+
+	# Check if placeholder abilities are set
+	var first_slot: Button = slots_container.get_child(0) as Button
+	assert_str(first_slot.tooltip_text).is_equal("Quick Strike")
+
+	var third_slot: Button = slots_container.get_child(2) as Button
+	assert_str(third_slot.tooltip_text).is_equal("Meditate")
+
+	# Verify empty slot
+	var last_slot: Button = slots_container.get_child(6) as Button
+	assert_str(last_slot.tooltip_text).is_equal("")
+
+	hud.queue_free()

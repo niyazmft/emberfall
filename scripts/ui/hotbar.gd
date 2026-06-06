@@ -2,7 +2,7 @@ extends Control
 ## Hotbar (DON-196)
 ## Manages action slots and responsive overflow.
 
-@onready var slots_container: HBoxContainer = $HBoxContainer/ScrollContainer/HBoxContainer
+@onready var slots_container: HBoxContainer = %SlotsContainer
 @onready var left_arrow: Button = $HBoxContainer/LeftArrow
 @onready var right_arrow: Button = $HBoxContainer/RightArrow
 @onready var scroll_container: ScrollContainer = $HBoxContainer/ScrollContainer
@@ -16,13 +16,41 @@ func _ready() -> void:
 	get_tree().root.size_changed.connect(_on_viewport_resized)
 	_on_viewport_resized()
 
+	# Clear initial slots to be ready for dynamic data
+	clear_hotbar()
+
+
+## Updates the hotbar with a list of abilities.
+func set_abilities(abilities: Array) -> void:
+	clear_hotbar()
+	var slotCount: int = slots_container.get_child_count()
+
+	for i: int in range(abilities.size()):
+		if i >= slotCount:
+			break
+
+		var slot: Control = slots_container.get_child(i) as Control
+		if slot and slot.has_method("set_ability_data"):
+			slot.call("set_ability_data", abilities[i])
+
+
+## Clears all ability data from slots.
+func clear_hotbar() -> void:
+	for slot: Node in slots_container.get_children():
+		if slot.has_method("set_ability_data"):
+			slot.call("set_ability_data", {})
+
+
+## Highlights a specific slot by ID or index.
+func select_slot(index: int) -> void:
+	for i: int in range(slots_container.get_child_count()):
+		var slot: Node = slots_container.get_child(i)
+		if slot.has_method("set_selected"):
+			slot.call("set_selected", i == index)
+
 
 func _on_viewport_resized() -> void:
 	var viewport_width := get_viewport().get_visible_rect().size.x
-	# DESIGN_WIDTH is 320. 360 design px is 360/320 * DESIGN_WIDTH.
-	# If viewport width is less than 360 relative to a 320 base.
-	# Godot's stretch mode "canvas_items" means the viewport size we see is the design size if using scaling.
-	# Acceptance criteria says "viewport width < 360 design px".
 
 	if viewport_width < 360.0:
 		left_arrow.show()
