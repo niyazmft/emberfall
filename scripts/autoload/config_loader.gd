@@ -6,6 +6,8 @@ class_name _ConfigLoader
 ## All tunable values live in res://config/game_config.json per gameplay standards.
 
 const CONFIG_PATH := "res://config/game_config.json"
+const ITEMS_PATH := "res://config/items.json"
+const EQUIPMENT_PATH := "res://config/entity_equipment.json"
 
 # Fallback defaults (sensible so the game runs even if config is missing)
 const DEFAULTS: Dictionary = {
@@ -52,22 +54,26 @@ func _ready() -> void:
 
 
 func _load_config() -> void:
-	if FileAccess.file_exists(CONFIG_PATH):
-		var file := FileAccess.open(CONFIG_PATH, FileAccess.READ)
+	_load_json_to_config(CONFIG_PATH)
+	_load_json_to_config(ITEMS_PATH)
+	_load_json_to_config(EQUIPMENT_PATH)
+
+
+func _load_json_to_config(path: String) -> void:
+	if FileAccess.file_exists(path):
+		var file := FileAccess.open(path, FileAccess.READ)
 		if file:
 			var text: String = file.get_as_text()
 			var parsed: Variant = JSON.parse_string(text)
 			if parsed is Dictionary:
-				_config = parsed
+				_config.merge(parsed, true)
 				_loaded = true
-				print("ConfigLoader: loaded config from %s" % CONFIG_PATH)
+				print("ConfigLoader: loaded config from %s" % path)
 			else:
-				push_warning(
-					"ConfigLoader: config file was not a valid JSON object; using defaults."
-				)
+				push_warning("ConfigLoader: config file %s was not a valid JSON object." % path)
 			file.close()
 	else:
-		push_warning("ConfigLoader: config file not found at %s; using defaults." % CONFIG_PATH)
+		push_warning("ConfigLoader: config file not found at %s." % path)
 
 
 ## Get a gameplay constant. First checks config JSON, then falls back to DEFAULTS.
