@@ -109,7 +109,7 @@ func equip_item(item_id: String, slot: String) -> bool:
 		return false
 
 	# Validate item type for slot
-	var allowed_types: Array = slot_definitions.get(slot, [])
+	var allowed_types: Array[String] = slot_definitions.get(slot, []) as Array[String]
 	var type_str := _item_type_to_string(item_data.type)
 	if not type_str in allowed_types:
 		return false
