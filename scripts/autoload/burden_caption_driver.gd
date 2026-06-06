@@ -90,7 +90,7 @@ func _map_and_trigger_caption(stem_id: String, event_type: String, intensity: fl
 					loc_key = "BE_CAP_CLIMB_CONVERGE"
 				duration = 2.0
 
-	var dm := AutoloadHelper.get_autoload("DialogueManager")
+	var dm: Node = AutoloadHelper.get_autoload("DialogueManager")
 	if dm and dm.call("has_dialogue", loc_key):
 		caption_text = dm.call("get_dialogue", loc_key).get("text", "")
 
