@@ -21,10 +21,15 @@ var _turn_manager: TurnManager
 @onready var entity_container: Node2D = $EntityContainer
 @onready var ui_overlay: CanvasLayer = $UIOverlay
 @onready var camera: Camera2D = $Camera2D
+@onready var camera_shaker: CameraShaker = $Camera2D/CameraShaker
 
 
 func _ready() -> void:
 	_grid_system = AutoloadHelper.grid_system()
+
+	var event_bus: _EventBus = AutoloadHelper.event_bus()
+	if event_bus:
+		event_bus.entity_state_changed.connect(_on_entity_state_changed)
 
 	var run_manager := AutoloadHelper.run_manager()
 	if run_manager:
@@ -52,6 +57,16 @@ func _on_room_entered(_room_index: int, room_data: Dictionary) -> void:
 
 	# Spawn entities
 	_player = RoomLoader.spawn_entities(room_data, entity_container, _enemies_node)
+
+	if _player and _player.get("entity"):
+		var player_ent: Entity = _player.get("entity") as Entity
+		player_ent.hp_changed.connect(_on_entity_hp_changed)
+
+	if _enemies_node:
+		for enemy in _enemies_node.get_children():
+			if enemy.get("entity"):
+				var enemy_ent: Entity = enemy.get("entity") as Entity
+				enemy_ent.hp_changed.connect(_on_entity_hp_changed)
 
 	# Setup combat systems
 	if _combat_input:
@@ -125,6 +140,7 @@ func _spawn_player() -> void:
 	if _player.get("entity"):
 		var entity: Entity = _player.get("entity") as Entity
 		entity.set_grid_position(5, 5)
+		entity.hp_changed.connect(_on_entity_hp_changed)
 
 
 func _spawn_enemies() -> void:
@@ -142,6 +158,7 @@ func _spawn_enemies() -> void:
 		var entity: Entity = grunt.get("entity") as Entity
 		if entity:
 			entity.set_grid_position(8 + i, 3 + i)
+			entity.hp_changed.connect(_on_entity_hp_changed)
 
 
 func _setup_camera() -> void:
@@ -198,5 +215,21 @@ func _try_move_player(dx: int, dy: int) -> void:
 func _on_combat_ended(victory: bool) -> void:
 	if victory:
 		print("Victory!")
+		if camera_shaker:
+			camera_shaker.add_trauma(0.5)
 	else:
 		print("Defeat!")
+
+
+func _on_entity_hp_changed(new_hp: int, old_hp: int) -> void:
+	if new_hp < old_hp:
+		if camera_shaker:
+			camera_shaker.add_trauma(0.3)
+
+
+func _on_entity_state_changed(
+	entity: Entity, _old_state: Entity.State, new_state: Entity.State
+) -> void:
+	if new_state == Entity.State.DEAD or new_state == Entity.State.DYING:
+		if camera_shaker:
+			camera_shaker.add_trauma(0.4)
