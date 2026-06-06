@@ -63,12 +63,8 @@ func apply_config(config: Dictionary) -> void:
 		_template_repeat = phase_b.get(
 			"template_repeat", "{count} {collective_noun}. The burden holds."
 		)
-	)
-	_template_repeat = phase_b.get(
-		"template_repeat", "{count} {collective_noun}. The burden holds."
-	)
-	_count_first = phase_b.get("count_first", "COUNT_THREE")
-	_count_repeat = phase_b.get("count_repeat", "COUNT_MORE")
+	_count_first = phase_b.get("count_first", "Three")
+	_count_repeat = phase_b.get("count_repeat", "More")
 
 
 func apply_defaults() -> void:
@@ -81,17 +77,40 @@ func apply_defaults() -> void:
 	_fallback_variant_id = "BE_B_FIRST_A"
 	_template_first = "{count} {collective_noun} of their own small truths. You hold them now. That is the burden."
 	_template_repeat = "{count} {collective_noun}. The burden holds."
-	_count_first = "COUNT_THREE"
-	_count_repeat = "COUNT_MORE"
+	_count_first = "Three"
+	_count_repeat = "More"
 	_numbness_localization_key = "BE_NUMBNESS_CAP"
 	_variants_first = [
-		{"id": "BE_B_FIRST_A", "text": "", "localization_key": "BE_B_FIRST_A"},
-		{"id": "BE_B_FIRST_B", "text": "", "localization_key": "BE_B_FIRST_B"},
-		{"id": "BE_B_FIRST_C", "text": "", "localization_key": "BE_B_FIRST_C"},
+		{
+			"id": "BE_B_FIRST_A",
+			"text":
+			"Three keepers of their own small truths. You hold them now. That is the burden.",
+			"localization_key": "BE_B_FIRST_A"
+		},
+		{
+			"id": "BE_B_FIRST_B",
+			"text":
+			"Three echoes, and the world is quieter for their leaving. You carry what remains.",
+			"localization_key": "BE_B_FIRST_B"
+		},
+		{
+			"id": "BE_B_FIRST_C",
+			"text":
+			"Three bearers, each walking their own uncertain path. That path ends with you.",
+			"localization_key": "BE_B_FIRST_C"
+		},
 	]
 	_variants_repeat = [
-		{"id": "BE_B_REPEAT_R1", "text": "", "localization_key": "BE_B_REPEAT_R1"},
-		{"id": "BE_B_REPEAT_R2", "text": "", "localization_key": "BE_B_REPEAT_R2"},
+		{
+			"id": "BE_B_REPEAT_R1",
+			"text": "More remnants. The burden holds.",
+			"localization_key": "BE_B_REPEAT_R1"
+		},
+		{
+			"id": "BE_B_REPEAT_R2",
+			"text": "More echoes. The world does not forget.",
+			"localization_key": "BE_B_REPEAT_R2"
+		},
 	]
 
 
@@ -120,8 +139,8 @@ func select_collective_noun(topology_seed: int, room_index: int) -> String:
 		topology_seed, "NOUN" + str(room_index), _noun_pool_size
 	)
 	if _collective_nouns.is_empty():
-		return "NOUN_KEEPERS"  # fallback
-	return "NOUN_" + str(_collective_nouns[idx]).to_upper()
+		return "keepers"  # fallback
+	return str(_collective_nouns[idx])
 
 
 ## Internal helper to get the noun index for persistence
@@ -229,7 +248,12 @@ func trigger_burden_event(
 	## --- Phase C (Choiceless Choice) ---
 	var phases: Dictionary = config.get("phases", {})
 	var phase_c: Dictionary = phases.get("C", {})
-	result.phase_c_text = tr(str(phase_c.get("localization_key", "BE_PHASE_C")))
+
+	if dm and dm.call("hasDialogue", "BE_PHASE_C"):
+		var d: Dictionary = dm.call("getDialogue", "BE_PHASE_C")
+		result.phase_c_text = d.get("text", "The memory passes into you.")
+	else:
+		result.phase_c_text = str(phase_c.get("text", "The memory passes into you."))
 	result.phase_c_duration_ms = int(phase_c.get("C", 15000))
 	result.phase_c_hold_ms = int(phase_c.get("C_hold", 5000))
 	result.phase_c_mandatory_input_hold_ms = int(phase_c.get("C_mandatory_input_hold", 5000))
@@ -238,7 +262,12 @@ func trigger_burden_event(
 
 	## --- Phase D (Return) ---
 	var phase_d: Dictionary = phases.get("D", {})
-	result.phase_d_text = tr(str(phase_d.get("localization_key", "BE_PHASE_D")))
+
+	if dm and dm.call("hasDialogue", "BE_PHASE_D"):
+		var d: Dictionary = dm.call("getDialogue", "BE_PHASE_D")
+		result.phase_d_text = d.get("text", "You exhale. The embers cool.")
+	else:
+		result.phase_d_text = str(phase_d.get("text", "You exhale. The embers cool."))
 	result.phase_d_duration_ms = int(phase_d.get("D", 2000))
 	result.phase_d_localization_key = str(phase_d.get("localization_key", "BE_PHASE_D"))
 
@@ -255,15 +284,10 @@ func trigger_burden_event(
 
 
 func _expand_template(
-	_template_str: String, count: String, noun: String, variant: Dictionary
+	template_str: String, count: String, noun: String, variant: Dictionary
 ) -> String:
-	var loc_key: String = str(variant.get("localization_key", ""))
-	if not loc_key.is_empty():
-		return tr(loc_key)
-
-	# Fallback to manual expansion if no localization key (not ideal but safe)
-	var count_str: String = tr(count)
-	var noun_str: String = tr(noun)
-	var out: String = tr(_template_str).replace("{count}", count_str)
-	out = out.replace("{collective_noun}", noun_str)
+	if variant.has("text") and variant["text"] is String and not variant["text"].is_empty():
+		return variant["text"]
+	var out: String = template_str.replace("{count}", count)
+	out = out.replace("{collective_noun}", noun)
 	return out
