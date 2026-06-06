@@ -105,6 +105,13 @@ func test_ap_regeneration() -> void:
 
 #region combat_end_tests
 func test_combat_victory() -> void:
+	var results: Dictionary = {"victory": false, "emitted": false}
+	_turn_manager.combat_ended.connect(
+		func(v: bool) -> void:
+			results.victory = v
+			results.emitted = true
+	)
+
 	_turn_manager.start_combat(_player, [_enemy1, _enemy2])
 
 	var e1_ent: Entity = _enemy1.get("entity") as Entity
@@ -117,10 +124,18 @@ func test_combat_victory() -> void:
 	_turn_manager._process_state_loop()
 
 	assert_int(_turn_manager.current_state).is_equal(TurnManager.CombatState.COMBAT_END)
-	await assert_signal(_turn_manager).is_emitted("combat_ended", [true])
+	assert_bool(results.emitted).is_true()
+	assert_bool(results.victory).is_true()
 
 
 func test_combat_defeat() -> void:
+	var results: Dictionary = {"victory": true, "emitted": false}
+	_turn_manager.combat_ended.connect(
+		func(v: bool) -> void:
+			results.victory = v
+			results.emitted = true
+	)
+
 	_turn_manager.start_combat(_player, [_enemy1, _enemy2])
 
 	var p_ent: Entity = _player.get("entity") as Entity
@@ -130,5 +145,6 @@ func test_combat_defeat() -> void:
 	_turn_manager._process_state_loop()
 
 	assert_int(_turn_manager.current_state).is_equal(TurnManager.CombatState.COMBAT_END)
-	await assert_signal(_turn_manager).is_emitted("combat_ended", [false])
+	assert_bool(results.emitted).is_true()
+	assert_bool(results.victory).is_false()
 #endregion
