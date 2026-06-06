@@ -41,7 +41,7 @@ func apply_config(config: Dictionary) -> void:
 	_variants_repeat = phase_b.get("variants_repeat", [])
 
 	# Try to fetch templates from DialogueManager first
-	var dm := AutoloadHelper.get_autoload("DialogueManager")
+	var dm: Variant = AutoloadHelper.get_autoload("DialogueManager")
 	if dm:
 		var t_first: Dictionary = dm.call("get_dialogue", "BE_B_TEMPLATE_FIRST")
 		if not t_first.is_empty():
