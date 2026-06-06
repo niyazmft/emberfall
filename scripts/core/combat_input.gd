@@ -156,7 +156,10 @@ func _execute_attack() -> void:
 		target_ent.call("apply_damage", damage)
 
 	# Consume AP
-	player_ent.set("ap", int(player_ent.get("ap")) - cost)
+	var new_ap: int = DeterministicMath.clampi(
+		int(player_ent.get("ap")) - cost, 0, GameConstants.AP_MAX
+	)
+	player_ent.set("ap", new_ap)
 
 	attack_executed.emit(target, damage)
 	_stop_targeting()
