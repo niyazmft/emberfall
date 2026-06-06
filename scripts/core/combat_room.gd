@@ -26,13 +26,44 @@ var _turn_manager: TurnManager
 func _ready() -> void:
 	_grid_system = AutoloadHelper.grid_system()
 
-	if test_mode:
+	var run_manager := AutoloadHelper.run_manager()
+	if run_manager:
+		run_manager.room_entered.connect(_on_room_entered)
+		# If we are already in a room, trigger it manually
+		if run_manager.current_state == _RunManager.RunState.ROOM:
+			_on_room_entered(run_manager.room_index, run_manager._get_current_room_data())
+	elif test_mode:
 		_spawn_test_encounter()
 
+	_setup_camera()
+
+
+func _on_room_entered(_room_index: int, room_data: Dictionary) -> void:
+	# Clear existing entities if any
+	for child in entity_container.get_children():
+		child.queue_free()
+
+	_enemies_node = Node2D.new()
+	_enemies_node.name = "Enemies"
+	entity_container.add_child(_enemies_node)
+
+	# Configure grid
+	RoomLoader.configure_grid(room_data)
+
+	# Spawn entities
+	_player = RoomLoader.spawn_entities(room_data, entity_container, _enemies_node)
+
+	# Setup combat systems
+	if _combat_input:
+		_combat_input.queue_free()
 	_combat_input = CombatInput.new(_player, _enemies_node, grid_renderer)
 	add_child(_combat_input)
 
+	if _turn_manager:
+		_turn_manager.queue_free()
 	_setup_turn_manager()
+
+	# Center camera
 	_setup_camera()
 
 
