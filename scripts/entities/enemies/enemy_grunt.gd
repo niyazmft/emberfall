@@ -9,7 +9,7 @@ func _setup_entity() -> void:
 		cur_x = entity.x
 		cur_y = entity.y
 
-	entity = Entity.new("Grunt", cur_x, cur_y, 30, 8, 4)
+	entity = Entity.new("UNIT_GRUNT", cur_x, cur_y, 30, 8, 4)
 	entity.is_player = false
 	entity.spd = 4
 
