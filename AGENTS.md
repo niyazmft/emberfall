@@ -380,6 +380,7 @@ Not "be careful" — say exactly what to write or avoid.
 ```
 
 **Rules:**
+
 - One entry per distinct learning. Don't combine unrelated findings.
 - Date must be `YYYY-MM-DD`.
 - Title is a single line, ≤ 80 chars, no trailing punctuation.
@@ -459,6 +460,7 @@ will be treated as `P2 / XL / Backlog` and deprioritized at sprint planning.
 | `P2` | Nice-to-have | Pure polish, optional features, future enhancements. Cut first if scope creeps. |
 
 **Heuristics:**
+
 - "Can the game run / build / test without this?" → yes ⇒ not P0.
 - "Is this on the critical path of a current phase?" → yes ⇒ P0.
 - "Is it pure polish / cosmetic / optional?" → yes ⇒ P2.
@@ -475,6 +477,7 @@ will be treated as `P2 / XL / Backlog` and deprioritized at sprint planning.
 | `XL` | ~2+ weeks | Cross-cutting, high risk, multi-system | Procedural generation, full content system, engine integration |
 
 **Heuristics:**
+
 - Touches 1–2 files, no new abstractions ⇒ `S` or `XS`.
 - Touches 1 system + tests ⇒ `M`.
 - Touches 2+ systems or needs a new autoload ⇒ `L`.
@@ -524,6 +527,7 @@ gh project item-edit --id "$P_ID" --project-id "$PRJ" \
 | Status | Backlog: `f75ad846` · Ready: `61e4505c` · In progress: `47fc9ee4` · In review: `df73e18b` · Done: `98236657` |
 
 If option IDs change (project field reconfigured), re-fetch with:
+
 ```bash
 gh project field-list 1 --owner niyazmft --format json
 ```

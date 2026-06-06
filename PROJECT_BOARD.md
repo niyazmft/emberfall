@@ -130,6 +130,7 @@ Every task in the phase tables below should have a **Priority** and **Blocked By
 **Date Completed:** 2026-06-06
 
 **Definition of Done - all met:**
+
 1. ✅ Start a new game
 2. ✅ Enter a combat room with different layouts
 3. ✅ See 3 types of enemies (Grunt, Archer, Tank)
