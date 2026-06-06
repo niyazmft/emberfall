@@ -20,6 +20,22 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
+[node name="TopInfo" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="TurnLabel" type="Label" parent="MarginContainer/TopInfo"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Your Turn"
+horizontal_alignment = 1
+
+[node name="RoundLabel" type="Label" parent="MarginContainer/TopInfo"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Round 1"
+horizontal_alignment = 1
+
 [node name="BottomChrome" type="VBoxContainer" parent="MarginContainer"]
 layout_mode = 2
 size_flags_vertical = 8
@@ -27,12 +43,53 @@ alignment = 2
 
 [node name="StatusIcons" type="HBoxContainer" parent="MarginContainer/BottomChrome"]
 layout_mode = 2
+theme_override_constants/separation = 10
 alignment = 1
 
-[node name="Icon1" type="ColorRect" parent="MarginContainer/BottomChrome/StatusIcons"]
-custom_minimum_size = Vector2(24, 24)
+[node name="HPBar" type="ProgressBar" parent="MarginContainer/BottomChrome/StatusIcons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 16)
 layout_mode = 2
-color = Color(0, 1, 0, 1)
+size_flags_vertical = 4
+value = 50.0
+show_percentage = false
+
+[node name="HPLabel" type="Label" parent="MarginContainer/BottomChrome/StatusIcons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0 / 0"
+
+[node name="APBar" type="ProgressBar" parent="MarginContainer/BottomChrome/StatusIcons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 16)
+layout_mode = 2
+size_flags_vertical = 4
+value = 50.0
+show_percentage = false
+
+[node name="APLabel" type="Label" parent="MarginContainer/BottomChrome/StatusIcons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0 / 0"
+
+[node name="ActionButtons" type="HBoxContainer" parent="MarginContainer/BottomChrome"]
+layout_mode = 2
+alignment = 1
+
+[node name="MoveButton" type="Button" parent="MarginContainer/BottomChrome/ActionButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Move"
+
+[node name="AttackButton" type="Button" parent="MarginContainer/BottomChrome/ActionButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Attack"
+
+[node name="EndTurnButton" type="Button" parent="MarginContainer/BottomChrome/ActionButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "End Turn"
 
 [node name="Prompts" type="Label" parent="MarginContainer/BottomChrome"]
 layout_mode = 2
