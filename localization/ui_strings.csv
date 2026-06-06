@@ -17,3 +17,17 @@ menu.title.continue,Continue,Fortsetzen,Continuar,Continuer
 menu.title.new_game,New Game,Neues Spiel,Nuevo Juego,Nouveau Jeu
 menu.title.settings,Settings,Einstellungen,Ajustes,Paramètres
 menu.title.quit,Quit,Beenden,Salir,Quitter
+TUTORIAL_MOVE_TITLE,Movement,Bewegung,Movimiento,Mouvement
+TUTORIAL_MOVE_BODY,Use WASD or Arrow Keys to move across the grid.,Nutze WASD oder Pfeiltasten um dich zu bewegen.,Usa WASD o las flechas para moverte.,Utilisez WASD ou les flèches pour vous déplacer.
+TUTORIAL_AP_TITLE,Action Points (AP),Aktionspunkte (AP),Puntos de Acción (AP),Points d'Action (PA)
+TUTORIAL_AP_BODY,Each action costs AP. You regen 2 AP per turn.,Jede Aktion kostet AP. Du regenerierst 2 AP pro Zug.,Cada acción cuesta AP. Recuperas 2 AP por turno.,Chaque action coûte des PA. Vous récupérez 2 PA par tour.
+TUTORIAL_COVER_TITLE,Cover System,Deckungssystem,Sistema de Cobertura,Système de Couverture
+TUTORIAL_COVER_BODY,Staying behind cover reduces damage taken.,Hinter Deckung zu bleiben reduziert erlittenen Schaden.,Quedarse tras una cobertura reduce el daño recibido.,Rester à couvert réduit les dégâts subis.
+TUTORIAL_ATTACK_TITLE,Attacking,Angreifen,Atacar,Attaquer
+TUTORIAL_ATTACK_BODY,Select an adjacent enemy to attack.,Wähle einen benachbarten Gegner zum Angreifen aus.,Selecciona un enemigo adyacente para atacar.,Sélectionnez un ennemi adjacent pour attaquer.
+TUTORIAL_ELEVATION_TITLE,Elevation,Höhenunterschied,Elevación,Élévation
+TUTORIAL_ELEVATION_BODY,Attacking from high ground grants a damage bonus.,Angriffe von oben geben einen Schadensbonus.,Atacar desde terreno elevado otorga un bono de daño.,Attaquer depuis une position élevée octroie un bonus de dégâts.
+TUTORIAL_ELEMENTAL_TITLE,Elements,Elemente,Elementos,Éléments
+TUTORIAL_ELEMENTAL_BODY,Combine elements like Fire and Oil for extra effects.,Kombiniere Elemente wie Feuer und Öl für zusätzliche Effekte.,Combina elementos como Fuego y Aceite para efectos extra.,Combinez des éléments comme le Feu et l'Huile pour des effets supplémentaires.
+TUTORIAL_MORAL_TITLE,Moral Choice,Moralische Entscheidung,Elección Moral,Choix Moral
+TUTORIAL_MORAL_BODY,Spare or Execute defeated enemies. Your choice matters.,Verschone oder exekutiere besiegte Gegner. Deine Wahl zählt.,Perdona o ejecuta a los enemigos derrotados. Tu elección importa.,Épargnez ou exécutez les ennemis vaincus. Votre choix compte.
