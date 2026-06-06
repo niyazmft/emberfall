@@ -1,0 +1,76 @@
+[gd_scene load_steps=2 format=3 uid="uid://moralchoice001"]
+
+[ext_resource type="Script" path="res://scripts/ui/moral_choice_ui.gd" id="1_moral_ui"]
+
+[node name="MoralChoiceUI" type="CanvasLayer"]
+layer = 10
+script = ExtResource("1_moral_ui")
+
+[node name="ChoicePanel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(400, 250)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -125.0
+offset_right = 200.0
+offset_bottom = 125.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Margin" type="MarginContainer" parent="ChoicePanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="VBox" type="VBoxContainer" parent="ChoicePanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="EnemyNameLabel" type="Label" parent="ChoicePanel/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Enemy is dying..."
+horizontal_alignment = 1
+
+[node name="MoralPreview" type="Label" parent="ChoicePanel/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Spare: -1 | Execute: +1"
+horizontal_alignment = 1
+
+[node name="Spacer" type="Control" parent="ChoicePanel/Margin/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="TimeoutBar" type="ProgressBar" parent="ChoicePanel/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+max_value = 5.0
+value = 5.0
+show_percentage = false
+
+[node name="ButtonRow" type="HBoxContainer" parent="ChoicePanel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="SpareButton" type="Button" parent="ChoicePanel/Margin/VBox/ButtonRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+text = "Spare (Cost: 1 AP)"
+
+[node name="ExecuteButton" type="Button" parent="ChoicePanel/Margin/VBox/ButtonRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+text = "Execute"
