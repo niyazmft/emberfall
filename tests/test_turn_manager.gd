@@ -85,18 +85,20 @@ func test_turn_progression() -> void:
 
 #region ap_economy_tests
 func test_ap_regeneration() -> void:
-	var p_ent: Entity = _player.get("entity") as Entity
+	var p_ent: Entity = _player.entity
 	p_ent.ap = GameConstants.AP_REGEN
 
 	_turn_manager.start_combat(_player, [_enemy1, _enemy2])
 	# Player turn starts
 	# AP should regen by GameConstants.AP_REGEN (2)
-	var expected: int = min(GameConstants.AP_MAX, GameConstants.AP_REGEN + GameConstants.AP_REGEN)
+	var expected: int = DeterministicMath.clampi(
+		GameConstants.AP_REGEN + GameConstants.AP_REGEN, 0, GameConstants.AP_MAX
+	)
 	assert_int(p_ent.ap).is_equal(expected)
 
 	_turn_manager.end_player_turn()
 	# Round 2 starts, Player turn starts again
-	expected = min(GameConstants.AP_MAX, expected + GameConstants.AP_REGEN)
+	expected = DeterministicMath.clampi(expected + GameConstants.AP_REGEN, 0, GameConstants.AP_MAX)
 	assert_int(p_ent.ap).is_equal(expected)
 
 
@@ -114,8 +116,8 @@ func test_combat_victory() -> void:
 
 	_turn_manager.start_combat(_player, [_enemy1, _enemy2])
 
-	var e1_ent: Entity = _enemy1.get("entity") as Entity
-	var e2_ent: Entity = _enemy2.get("entity") as Entity
+	var e1_ent: Entity = _enemy1.entity
+	var e2_ent: Entity = _enemy2.entity
 	e1_ent.hp = 0
 	e2_ent.hp = 0
 
@@ -138,7 +140,7 @@ func test_combat_defeat() -> void:
 
 	_turn_manager.start_combat(_player, [_enemy1, _enemy2])
 
-	var p_ent: Entity = _player.get("entity") as Entity
+	var p_ent: Entity = _player.entity
 	p_ent.hp = 0
 
 	_turn_manager.current_state = TurnManager.CombatState.CHECK_END_CONDITIONS
@@ -147,4 +149,5 @@ func test_combat_defeat() -> void:
 	assert_int(_turn_manager.current_state).is_equal(TurnManager.CombatState.COMBAT_END)
 	assert_bool(results.emitted).is_true()
 	assert_bool(results.victory).is_false()
+
 #endregion
