@@ -198,7 +198,7 @@ func trigger_burden_event(
 		_numbness_localization_key if result.numbness_cap_reached else ""
 	)
 
-	var dm := AutoloadHelper.get_autoload("DialogueManager")
+	var dm: Variant = AutoloadHelper.get_autoload("DialogueManager")
 
 	## --- Phase A (Stillness) ---
 	result.phase_a_duration_ms = int(_phase_timing.get("A", 10000))
