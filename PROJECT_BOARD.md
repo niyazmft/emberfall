@@ -247,7 +247,7 @@ Narrative, dialogue, localization.
 | Dialogue Box UI | #152 | ⚠️ Blocked | P1 | #151 |
 | Narrative Data Systems | #153 | ⏳ Ready | P2 | None |
 | Localization Expansion | #154 | ⏳ Ready | P2 | None |
-| Quest / Mission System | #155 | ✅ Done | P2 | None |
+| Quest / Mission System | #155 | 🔄 In review | P2 | None |
 | Narrative Content Expansion | #156 | 📋 Backlog | P2 | #153, #155 |
 
 **Critical path:** #151 → #152 (dialogue before UI).

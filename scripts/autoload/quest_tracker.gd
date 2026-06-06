@@ -21,22 +21,25 @@ func _ready() -> void:
 
 func _load_quests() -> void:
 	if FileAccess.file_exists(QUEST_CONFIG_PATH):
-		var file := FileAccess.open(QUEST_CONFIG_PATH, FileAccess.READ)
-		if file:
-			var text: String = file.get_as_text()
+		var fileAccess: FileAccess = FileAccess.open(QUEST_CONFIG_PATH, FileAccess.READ)
+		if fileAccess != null:
+			var text: String = fileAccess.get_as_text()
 			var parsed: Variant = JSON.parse_string(text)
-			if parsed is Dictionary and parsed.has("quests"):
-				var quest_list: Array = parsed["quests"] as Array
-				for q_any: Variant in quest_list:
-					if q_any is Dictionary:
-						var q: Dictionary = q_any as Dictionary
-						_quests[q["id"]] = q
-			file.close()
+			if parsed is Dictionary:
+				var parsedDict: Dictionary = parsed as Dictionary
+				if parsedDict.has("quests") and parsedDict["quests"] is Array:
+					var questList: Array = parsedDict["quests"] as Array
+					for qAny: Variant in questList:
+						if qAny is Dictionary:
+							var quest: Dictionary = qAny as Dictionary
+							var questId: String = quest["id"]
+							_quests[questId] = quest
+			fileAccess.close()
 
 	# For now, activate all quests from the config.
 	# In a fuller system, quests might be assigned by RunManager or Biome definitions.
-	for quest_id: String in _quests:
-		_start_quest(quest_id)
+	for questId: String in _quests:
+		_start_quest(questId)
 
 
 func _connect_signals() -> void:
@@ -48,87 +51,93 @@ func _connect_signals() -> void:
 		bus.run_started.connect(_on_run_started)
 
 
-func _start_quest(quest_id: String) -> void:
-	if not _quests.has(quest_id):
+func _start_quest(questId: String) -> void:
+	if not _quests.has(questId):
 		return
-	var q_def: Dictionary = _quests[quest_id]
-	_active_quests[quest_id] = {
+	var qDef: Dictionary = _quests[questId]
+	_active_quests[questId] = {
 		"current": 0,
-		"goal": int(q_def.get("goal", 1)),
+		"goal": int(qDef.get("goal", 1)),
 		"completed": false,
-		"scope": q_def.get("scope", "run")
+		"scope": qDef.get("scope", "run")
 	}
 	quests_updated.emit()
 
 
-func _on_spare_or_execute(_entity: Entity, was_spared: bool) -> void:
-	if was_spared:
+func _on_spare_or_execute(entity: Entity, wasSpared: bool) -> void:
+	if wasSpared:
 		_advance_quest_by_event("spare_or_execute")
 
 
-func _on_biome_echo_triggered(_biome_index: int) -> void:
+func _on_biome_echo_triggered(biomeIndex: int) -> void:
 	_advance_quest_by_event("biome_echo_triggered")
 
 
-func _advance_quest_by_event(event_type: String) -> void:
-	for quest_id: String in _active_quests:
-		var q_def: Dictionary = _quests[quest_id]
-		if q_def.get("event") == event_type:
-			_advance_quest(quest_id, 1)
+func _advance_quest_by_event(eventType: String) -> void:
+	for questId: String in _active_quests:
+		var qDef: Dictionary = _quests[questId]
+		if qDef.get("event") == eventType:
+			_advance_quest(questId, 1)
 
 
-func _advance_quest(quest_id: String, amount: int) -> void:
-	var q: Dictionary = _active_quests[quest_id]
+func _advance_quest(questId: String, amount: int) -> void:
+	var q: Dictionary = _active_quests[questId]
 	if q["completed"]:
 		return
 
-	q["current"] = clampi(q["current"] + amount, 0, q["goal"])
-	quest_progressed.emit(quest_id, q["current"], q["goal"])
+	q["current"] = DeterministicMath.clampi(q["current"] + amount, 0, q["goal"])
+	quest_progressed.emit(questId, q["current"], q["goal"])
 
 	if q["current"] >= q["goal"]:
 		q["completed"] = true
-		quest_completed.emit(quest_id)
+		quest_completed.emit(questId)
 
 
-func _on_room_entered(_room_index: int, _room_data: Dictionary) -> void:
+func _on_room_entered(roomIndex: int, roomData: Dictionary) -> void:
 	# Reset room-scoped quests
 	var changed: bool = false
-	for quest_id: String in _active_quests:
-		var q: Dictionary = _active_quests[quest_id]
+	for questId: String in _active_quests:
+		var q: Dictionary = _active_quests[questId]
 		if q["scope"] == "room":
 			q["current"] = 0
 			q["completed"] = false
-			quest_progressed.emit(quest_id, 0, q["goal"])
+			quest_progressed.emit(questId, 0, q["goal"])
 			changed = true
 	if changed:
 		quests_updated.emit()
 
 
-func _on_run_started(_seed: int) -> void:
+func _on_run_started(runSeed: int) -> void:
 	# Reset all quests on run start
-	for quest_id: String in _active_quests:
-		var q: Dictionary = _active_quests[quest_id]
+	for questId: String in _active_quests:
+		var q: Dictionary = _active_quests[questId]
 		q["current"] = 0
 		q["completed"] = false
-		quest_progressed.emit(quest_id, 0, q["goal"])
+		quest_progressed.emit(questId, 0, q["goal"])
 	quests_updated.emit()
 
 
 ## Returns an Array of Dictionaries containing active quest data.
 func get_active_quests() -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
-	for quest_id: String in _active_quests:
-		var q_state: Dictionary = _active_quests[quest_id]
-		var q_def: Dictionary = _quests[quest_id]
+	for questId: String in _active_quests:
+		var qState: Dictionary = _active_quests[questId]
+		var qDef: Dictionary = _quests[questId]
 
 		var q: Dictionary = {
-			"id": quest_id,
-			"name": tr(q_def.get("name_key", "")),
-			"description": tr(q_def.get("description_key", "")),
-			"current": q_state["current"],
-			"goal": q_state["goal"],
-			"completed": q_state["completed"],
-			"scope": q_state["scope"]
+			"id": questId,
+			"name": tr(qDef.get("name_key", "")),
+			"description": tr(qDef.get("description_key", "")),
+			"current": qState["current"],
+			"goal": qState["goal"],
+			"completed": qState["completed"],
+			"scope": qDef.get("scope", "run")
 		}
 		result.append(q)
 	return result
+
+
+## Public helper for testing purposes.
+func add_quest_for_test(questData: Dictionary) -> void:
+	if questData.has("id"):
+		_quests[questData["id"]] = questData

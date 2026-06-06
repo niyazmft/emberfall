@@ -80,19 +80,20 @@ func setup(player_entity: Entity, turn_manager: TurnManager, combat_input: Comba
 func _update_quest_list() -> void:
 	# Clear existing quest entries (except the title label)
 	for child: Node in quest_container.get_children():
-		if child.name != "QuestLabel":
-			child.queue_free()
+		if child is Label and child.name.begins_with("Quest_"):
+			quest_container.remove_child(child)
+			child.free()
 
 	var qt: _QuestTracker = AutoloadHelper.quest_tracker()
 	if not qt:
 		return
 
-	var active_quests: Array[Dictionary] = qt.get_active_quests()
-	for q: Dictionary in active_quests:
+	var activeQuests: Array[Dictionary] = qt.get_active_quests()
+	for quest: Dictionary in activeQuests:
 		var label: Label = Label.new()
-		label.name = "Quest_" + q["id"]
+		label.name = "Quest_" + quest["id"]
 		label.add_theme_font_size_override("font_size", 12)
-		_update_quest_label(label, q)
+		_update_quest_label(label, quest)
 		quest_container.add_child(label)
 
 
@@ -105,15 +106,15 @@ func _update_quest_label(label: Label, q: Dictionary) -> void:
 		label.modulate = Color.WHITE
 
 
-func _on_quest_progressed(quest_id: String, _current: int, _goal: int) -> void:
-	var label: Label = quest_container.get_node_or_null("Quest_" + quest_id) as Label
+func _on_quest_progressed(questId: String, _current: int, _goal: int) -> void:
+	var label: Label = quest_container.get_node_or_null("Quest_" + questId) as Label
 	if label:
 		var qt: _QuestTracker = AutoloadHelper.quest_tracker()
 		if qt:
-			var active_quests: Array[Dictionary] = qt.get_active_quests()
-			for q: Dictionary in active_quests:
-				if q["id"] == quest_id:
-					_update_quest_label(label, q)
+			var activeQuests: Array[Dictionary] = qt.get_active_quests()
+			for quest: Dictionary in activeQuests:
+				if quest["id"] == questId:
+					_update_quest_label(label, quest)
 					break
 
 
