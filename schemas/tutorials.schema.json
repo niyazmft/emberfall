@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Tutorial Data Schema",
+  "type": "object",
+  "properties": {
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "trigger": {
+            "enum": ["room_start", "after_movement", "near_cover", "enemy_in_range", "near_elevation", "elemental_hazard", "enemy_dying"]
+          },
+          "text_key": { "type": "string" },
+          "highlight_target": { "type": "string" },
+          "input_lock": {
+            "enum": ["none", "movement_only", "attack_only"]
+          },
+          "completion_condition": {
+            "enum": ["player_moved", "acknowledge", "attack_executed", "moral_choice_made"]
+          }
+        },
+        "required": ["id", "trigger", "text_key", "completion_condition"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["steps"]
+}

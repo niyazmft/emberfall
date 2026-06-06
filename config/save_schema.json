@@ -26,17 +26,17 @@
         "type": "Dictionary<string, bool>",
         "default": {},
         "description": "Key-value flags for Legacy Archive triggers (e.g., 'legacy_once' = true)."
-      },
-      "narrative_unlocks": {
-        "type": "Dictionary<string, bool>",
-        "default": {},
-        "description": "Key-value flags for narrative unlocks (Bios, Codex, Legacy Archive)."
       }
     },
     "moral_flag_lifetime": {
       "type": "int",
       "default": 0,
       "description": "Highest moral_flag ever reached across all runs (achievement / unlock gating)."
+    },
+    "tutorial_complete": {
+      "type": "bool",
+      "default": false,
+      "description": "Flag indicating if the player has completed the initial tutorial sequence."
     }
   },
   "run_state": {
