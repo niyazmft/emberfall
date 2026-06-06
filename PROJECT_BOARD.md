@@ -104,7 +104,7 @@ This document serves as the project board tracking all development tasks across 
 |------|-------|--------|----------|--------------|-------------------|
 | 4.6 Combat HUD | #134 | ⚠️ Blocked | MEDIUM | 4.1, 4.3 | 4.7, 4.8 |
 | 4.7 Settings Menu | #136 | ⏳ Ready | MEDIUM | None | 4.6, 4.8 |
-| 4.8 Moral Choice UI | #137 | ⚠️ Blocked | MEDIUM | 4.1, 4.3 | 4.6, 4.7 |
+| 4.8 Moral Choice UI | #137 | ✅ Done | MEDIUM | 4.1, 4.3 | 4.6, 4.7 |
 
 **Sprint 4 Goal:** Game feels polished and complete  
 **Definition of Done:** HUD shows stats, settings work, moral choices visible
