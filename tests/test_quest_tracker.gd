@@ -18,7 +18,10 @@ func after() -> void:
 func test_quest_loading() -> void:
 	var active: Array[Dictionary] = _tracker.get_active_quests()
 	assert_array(active).is_not_empty()
-	assert_str(active[0]["id"] as String).is_equal(active[0]["id"] as String)
+func test_quest_loading() -> void:
+	var active: Array[Dictionary] = _tracker.get_active_quests()
+	assert_array(active).is_not_empty()
+	assert_str(active[0]["id"] as String).is_not_empty()
 
 
 func test_quest_progress_spare() -> void:
