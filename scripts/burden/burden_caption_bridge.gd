@@ -87,13 +87,23 @@ func schedule_transition_caption_explicit(transition_key: String) -> void:
 	if data.is_empty():
 		push_warning("BurdenCaptionBridge: unknown caption transition key '%s'" % transition_key)
 		return
-	var text: String = str(data.get("text", ""))
+
+	var loc_key: String = str(data.get("localization_key", ""))
+	var text: String = ""
+	var dm := AutoloadHelper.get_autoload("DialogueManager")
+	if dm and dm.call("has_dialogue", loc_key):
+		var d: Dictionary = dm.call("get_dialogue", loc_key)
+		text = d.get("text", "")
+
+	if text.is_empty():
+		text = str(data.get("text", ""))
+
 	if text.is_empty():
 		return
+
 	var offset_sec: float = float(data.get("offset_sec", 0.0))
 	var duration_sec: float = float(data.get("duration_sec", 2.0))
 	var curve_str: String = str(data.get("curve", "LINEAR"))
-	var loc_key: String = str(data.get("localization_key", ""))
 	var curve: int = _curve_from_string(curve_str)
 	if cm.has_method("schedule"):
 		cm.call("schedule", text, 1, offset_sec, duration_sec, curve, loc_key)
@@ -105,18 +115,24 @@ func schedule_burden_event_captions(result: BurdenEventResult) -> void:
 	var cm := get_caption_node()
 	if cm == null:
 		return
+
+	var dm := AutoloadHelper.get_autoload("DialogueManager")
+
 	## Phase A: stillness caption (BURDEN channel, per DON-222 requirement)
 	if not result.phase_a_localization_key.is_empty() and cm.has_method("schedule"):
 		## Per DON-222: Phase A caption fires at the exact moment control is seized.
-		cm.call(
-			"schedule",
-			"[The world stills]",
-			1,
-			0.0,
-			result.phase_a_duration_ms / 1000.0,
-			0,
-			result.phase_a_localization_key + "_CAP"
-		)  ## Channel.BURDEN = 1
+		var text := "[The world stills]"
+		var loc_key := result.phase_a_localization_key + "_CAP"
+
+		# Try specialized caption key first, then fallback to transition key from config if possible
+		if dm:
+			if dm.call("has_dialogue", "BE_CAP_0_TO_1"):
+				text = dm.call("get_dialogue", "BE_CAP_0_TO_1").get("text", text)
+				loc_key = "BE_CAP_0_TO_1"
+			elif dm.call("has_dialogue", loc_key):
+				text = dm.call("get_dialogue", loc_key).get("text", text)
+
+		cm.call("schedule", text, 1, 0.0, result.phase_a_duration_ms / 1000.0, 0, loc_key)  ## Channel.BURDEN = 1
 
 	## Numbness cap caption
 	if result.numbness_cap_reached and cm.has_method("schedule"):
@@ -184,13 +200,24 @@ func set_bd_climb_enabled(enabled: bool) -> void:
 
 ## Returns the current BD-CLIMB width caption strings from config.
 func get_bd_climb_width_captions() -> Dictionary:
+	var expanding := {"text": "[The walls widen]", "localization_key": "BE_CAP_CLIMB_EXPAND"}
+	var converging := {
+		"text": "[Everything converges]", "localization_key": "BE_CAP_CLIMB_CONVERGE"
+	}
+
+	var dm := AutoloadHelper.get_autoload("DialogueManager")
+	if dm:
+		if dm.call("has_dialogue", "BE_CAP_CLIMB_EXPAND"):
+			expanding["text"] = dm.call("get_dialogue", "BE_CAP_CLIMB_EXPAND").get(
+				"text", expanding["text"]
+			)
+		if dm.call("has_dialogue", "BE_CAP_CLIMB_CONVERGE"):
+			converging["text"] = dm.call("get_dialogue", "BE_CAP_CLIMB_CONVERGE").get(
+				"text", converging["text"]
+			)
+
 	return _bd_climb_config.get(
-		"width_captions",
-		{
-			"expanding": {"text": "[The walls widen]", "localization_key": "BE_CAP_CLIMB_EXPAND"},
-			"converging":
-			{"text": "[Everything converges]", "localization_key": "BE_CAP_CLIMB_CONVERGE"}
-		}
+		"width_captions", {"expanding": expanding, "converging": converging}
 	)
 
 
