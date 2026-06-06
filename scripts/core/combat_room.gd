@@ -69,6 +69,8 @@ func _on_room_entered(_room_index: int, room_data: Dictionary) -> void:
 	# Setup HUD
 	_setup_hud()
 
+	_setup_burden_shader()
+
 
 func _setup_hud() -> void:
 	var combat_hud: Control = $UIOverlay/CombatHUD
@@ -193,6 +195,16 @@ func _try_move_player(dx: int, dy: int) -> void:
 		entity.set_facing(dx, dy)
 		# Deduct AP
 		entity.ap -= cost
+
+
+func _setup_burden_shader() -> void:
+	var bsm: _BurdenShaderManager = (
+		AutoloadHelper.get_autoload("BurdenShaderManager") as _BurdenShaderManager
+	)
+	if bsm:
+		var burden_rect: ColorRect = get_node_or_null("BurdenLayer/BurdenRect") as ColorRect
+		if burden_rect:
+			bsm.register_pp_rect(burden_rect)
 
 
 func _on_combat_ended(victory: bool) -> void:
