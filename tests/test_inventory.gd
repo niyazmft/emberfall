@@ -21,9 +21,9 @@ func test_item_loading() -> void:
 
 func test_inventory_add_remove() -> void:
 	# Ensure ConfigLoader is ready for testing
-	var configLoader: _ConfigLoader = AutoloadHelper.config_loader()
-	if configLoader != null and not configLoader.isLoaded():
-		configLoader._loadConfig()
+	var configLoader = AutoloadHelper.get_singleton("ConfigLoader")
+	if configLoader != null and not configLoader.is_loaded():
+		configLoader.ensure_loaded()
 
 	var inv: Node = AutoloadHelper.get_autoload("InventoryManager")
 	# Clear inventory
@@ -46,9 +46,9 @@ func test_inventory_add_remove() -> void:
 
 
 func test_equipment() -> void:
-	var configLoader: _ConfigLoader = AutoloadHelper.config_loader()
-	if configLoader != null and not configLoader.isLoaded():
-		configLoader._loadConfig()
+	var configLoader = AutoloadHelper.get_singleton("ConfigLoader")
+	if configLoader != null and not configLoader.is_loaded():
+		configLoader.ensure_loaded()
 	var inv: Node = AutoloadHelper.get_autoload("InventoryManager")
 	inv._initialize_from_config()
 
@@ -75,9 +75,9 @@ func test_equipment() -> void:
 
 
 func test_equipment_type_restriction() -> void:
-	var configLoader: _ConfigLoader = AutoloadHelper.config_loader()
-	if configLoader != null and not configLoader.isLoaded():
-		configLoader._loadConfig()
+	var configLoader = AutoloadHelper.get_singleton("ConfigLoader")
+	if configLoader != null and not configLoader.is_loaded():
+		configLoader.ensure_loaded()
 	var inv: Node = AutoloadHelper.get_autoload("InventoryManager")
 	inv._initialize_from_config()
 
