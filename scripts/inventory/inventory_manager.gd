@@ -71,11 +71,6 @@ func add_item(item_id: String, quantity: int = 1) -> bool:
 
 ## Removes an item from the inventory.
 func remove_item(item_id: String, quantity: int = 1) -> bool:
-	if quantity <= 0:
-		return false
-	if item_id.is_empty():
-		return false
-	
 	var remaining: int = quantity
 	var indices_to_remove: Array[int] = []
 
@@ -98,6 +93,7 @@ func remove_item(item_id: String, quantity: int = 1) -> bool:
 		return remaining == 0
 	return false
 
+
 ## Equips an item into a slot.
 func equip_item(item_id: String, slot: String) -> bool:
 	if not equipment.has(slot):
@@ -109,7 +105,7 @@ func equip_item(item_id: String, slot: String) -> bool:
 		return false
 
 	# Validate item type for slot
-	var allowed_types: Array[String] = slot_definitions.get(slot, []) as Array[String]
+	var allowed_types: Array = slot_definitions.get(slot, [])
 	var type_str := _item_type_to_string(item_data.type)
 	if not type_str in allowed_types:
 		return false
