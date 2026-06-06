@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Tutorial Data Schema",
+  "type": "object",
+  "properties": {
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "trigger": { "type": "string" },
+          "text_key": { "type": "string" },
+          "highlight_target": { "type": "string" },
+          "input_lock": { "type": "string" },
+          "completion_condition": { "type": "string" }
+        },
+        "required": ["id", "trigger", "text_key", "completion_condition"]
+      }
+    }
+  },
+  "required": ["steps"]
+}
