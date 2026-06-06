@@ -88,6 +88,11 @@ static func localization_manager() -> Node:
 	return get_autoload("LocalizationManager")
 
 
+## Returns the SafeZoneManager autoload, or null.
+static func safe_zone_manager() -> _SafeZoneManager:
+	return get_autoload("SafeZoneManager") as _SafeZoneManager
+
+
 # ── Derived Helpers ───────────────────────────────────────────────────────────
 
 
