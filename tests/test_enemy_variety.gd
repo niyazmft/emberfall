@@ -14,7 +14,7 @@ func test_enemy_grunt_variety() -> void:
 	grunt._grid_system = _grid
 	add_child(grunt)
 
-	assert_that(grunt.entity.entity_name).is_equal("Grunt")
+	assert_that(grunt.entity.entity_name).is_equal("UNIT_GRUNT")
 	assert_that(grunt.entity.hp_max).is_equal(30)
 	assert_that(grunt.entity.off).is_equal(8)
 	assert_that(grunt.entity.def_).is_equal(4)
@@ -31,7 +31,7 @@ func test_enemy_archer_variety() -> void:
 	archer._grid_system = _grid
 	add_child(archer)
 
-	assert_that(archer.entity.entity_name).is_equal("Archer")
+	assert_that(archer.entity.entity_name).is_equal("UNIT_ARCHER")
 	assert_that(archer.entity.hp_max).is_equal(25)
 	assert_that(archer.entity.off).is_equal(6)
 	assert_that(archer.entity.def_).is_equal(2)
@@ -48,7 +48,7 @@ func test_enemy_tank_variety() -> void:
 	tank._grid_system = _grid
 	add_child(tank)
 
-	assert_that(tank.entity.entity_name).is_equal("Tank")
+	assert_that(tank.entity.entity_name).is_equal("UNIT_TANK")
 	assert_that(tank.entity.hp_max).is_equal(60)
 	assert_that(tank.entity.off).is_equal(15)
 	assert_that(tank.entity.def_).is_equal(8)

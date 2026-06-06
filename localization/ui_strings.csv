@@ -1,22 +1,19 @@
-keys,en,de,es,fr
-BE_MWT_0,[A low rumble spreads beneath you],[Ein tiefes Grollen breitet sich unter dir aus],[Un rugido profundo se extiende bajo tus pies],[Un grondement sourd se propage sous vos pieds]
-BE_MWT_1,[Machinery churns in the walls],[Maschinen arbeiten in den Wänden],[La maquinaria se agita en las paredes],[Les machines s'activent dans les murs]
-BE_MWT_2,[Pressure builds],[Druck baut sich auf],[La presión aumenta],[La pression monte]
-BE_MWT_3,[The breaking point nears],[Der Belastungspunkt nähert sich],[El punto de ruptura se acerca],[Le point de rupture approche]
-BE_CAP_0_TO_1,[The world stills],[Die Welt steht still],[El mundo se detiene],[Le monde se fige]
-BE_CAP_1_TO_2,[Machinery grinds],[Maschinen knirschen],[La maquinaria cruje],[Les machines grincent]
-BE_CAP_2_TO_3,[The weight gathers],[Die Last sammelt sich],[La carga se acumula],[Le poids s'accumule]
-BE_CAP_3_TO_2,[The pressure recedes],[Der Druck weicht zurück],[La presión retrocede],[La pression diminue]
-BE_CAP_2_TO_1,[The memory loosens],[Die Erinnerung lockert sich],[El recuerdo se afloja],[Le souvenir se relâche]
-BE_CAP_1_TO_0,[The embers cool],[Die Glut kühlt ab],[Las brasas se enfrían],[Les braises refroidissent]
-BE_CAP_3_TO_0_NORMAL,[The burden fades slowly],[Die Last schwindet langsam],[La carga se desvanece lentamente],[Le fardeau s'efface lentement]
-BE_CAP_3_TO_0_EMERGENCY,[The burden drops],[Die Last fällt ab],[La carga cae],[Le fardeau tombe]
-BE_PHASE_A_CAP,[The world stills],[Die Welt steht still],[El mundo se detiene],[Le monde se fige]
-BE_CAP_NUMBNESS,[The burden is silent],[Die Last ist still],[La carga está en silencio],[Le fardeau est silencieux]
-menu.title.continue,Continue,Fortsetzen,Continuar,Continuer
-menu.title.new_game,New Game,Neues Spiel,Nuevo Juego,Nouveau Jeu
-menu.title.settings,Settings,Einstellungen,Ajustes,Paramètres
-menu.title.quit,Quit,Beenden,Salir,Quitter
-BIOME_NAME_SANCTUM,Sanctum,Sanctum,Sanctum,Sanctum
-BIOME_NAME_CRUCIBLE,Crucible,Schmelztiegel,Crisol,Creuset
-BIOME_NAME_BIOME_3,The Void,Die Leere,El Vacío,Le Vide
+keys,en,de,es,fr,ja,ko,zh-Hans
+BE_MWT_0,[A low rumble spreads beneath you],[Ein tiefes Grollen breitet sich unter dir aus],[Un rugido profundo se extiende bajo tus pies],[Un grondement sourd se propage sous vos pieds],[足元に低い地響きが広がる],[발밑에서 낮은 울림이 퍼집니다],[低沉的轰鸣在脚下蔓延]
+BE_MWT_1,[Machinery churns in the walls],[Maschinen arbeiten in den Wänden],[La maquinaria se agita en las paredes],[Les machines s'activent dans les murs],[壁の中で機械が攪拌する],[벽 안에서 기계가 돌아갑니다],[墙内的机械在搅动]
+BE_MWT_2,[Pressure builds],[Druck baut sich auf],[La presión aumenta],[La pression monte],[圧力が掛かる],[압력이 가해집니다],[压力增加]
+BE_MWT_3,[The breaking point nears],[Der Belastungspunkt nähert sich],[El punto de ruptura se acerca],[Le point de rupture approche],[限界点が近づく],[한계점이 다가옵니다],[临界点近了]
+BE_CAP_0_TO_1,[The world stills],[Die Welt steht still],[El mundo se detiene],[Le monde se fige],[世界が静止する],[세계가 정지합니다],[世界静止了]
+BE_CAP_1_TO_2,[Machinery grinds],[Maschinen knirschen],[La maquinaria cruje],[Les machines grincent],[機械が軋む],[기계가 갈립니다],[机械在磨碎]
+BE_CAP_2_TO_3,[The weight gathers],[Die Last sammelt sich],[La carga se acumula],[Le poids s'accumule],[重みが集まる],[무게가 모입니다],[重压聚集]
+BE_CAP_3_TO_2,[The pressure recedes],[Der Druck weicht zurück],[La presión retrocede],[La pression diminue],[圧力が遠のく],[압력이 물러갑니다],[压力退去]
+BE_CAP_2_TO_1,[The memory loosens],[Die Erinnerung lockert sich],[El recuerdo se afloja],[Le souvenir se relâche],[記憶が緩む],[기억이 풀립니다],[记忆松动]
+BE_CAP_1_TO_0,[The embers cool],[Die Glut kühlt ab],[Las brasas se enfrían],[Les braises refroidissent],[残り火が冷える],[잔불이 식습니다],[余烬冷却]
+BE_CAP_3_TO_0_NORMAL,[The burden fades slowly],[Die Last schwindet langsam],[La carga se desvanece lentamente],[Le fardeau s'efface lentement],[重荷がゆっくりと消えていく],[무거운 짐이 천천히 사라집니다],[负担缓慢消退]
+BE_CAP_3_TO_0_EMERGENCY,[The burden drops],[Die Last fällt ab],[La carga cae],[Le fardeau tombe],[重荷が落ちる],[무거운 짐이 떨어집니다],[负担落下]
+BE_PHASE_A_CAP,[The world stills],[Die Welt steht still],[El mundo se detiene],[Le monde se fige],[世界が静止する],[세계가 정지합니다],[世界静止了]
+BE_CAP_NUMBNESS,[The burden is silent],[Die Last ist still],[La carga está en silencio],[Le fardeau est silencieux],[重荷は沈黙している],[무거운 짐은 침묵합니다],[负担是沉寂的]
+menu.title.continue,Continue,Fortsetzen,Continuar,Continuer,再開,계속하기,继续
+menu.title.new_game,New Game,Neues Spiel,Nuevo Juego,Nouveau Jeu,新規ゲーム,새 게임,新游戏
+menu.title.settings,Settings,Einstellungen,Ajustes,Paramètres,設定,설정,设置
+menu.title.quit,Quit,Beenden,Salir,Quitter,終了,종료,退出
