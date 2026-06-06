@@ -26,7 +26,7 @@ func _ready() -> void:
 	add_to_group("player")
 	# Auto-create Entity data block if not assigned in inspector.
 	if entity == null:
-		entity = Entity.new("UNIT_KEEPER", 0, 0, 40, 12, 6, 0, 1, 0)
+		entity = Entity.new("Keeper", 0, 0, 40, 12, 6, 0, 1, 0)
 		entity.is_player = true
 
 	# Find or create ApparitionRenderer child.
