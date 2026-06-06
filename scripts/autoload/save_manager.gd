@@ -21,8 +21,7 @@ class_name _SaveManager
 ##     "echo_flags": {
 ##       "burden_noun_index":      int,   ← rotated deterministically per seed
 ##       "burden_trigger_history": int,   ← cumulative burden-event trigger count
-##       "legacy_flags":           {},    ← Dictionary<string, bool>
-##       "narrative_unlocks":      {}     ← Dictionary<string, bool>
+##       "legacy_flags":           {}     ← Dictionary<string, bool>
 ##     },
 ##     "moral_flag_lifetime": int         ← highest moral_flag ever reached
 ##   },
@@ -89,17 +88,6 @@ func _ready() -> void:
 func save_game(state: Dictionary) -> Error:
 	var save_data: Dictionary = state.duplicate(true)
 	save_data["version"] = SAVE_VERSION
-
-	# Inject narrative unlocks from CodexManager into memory_state
-	var cm: _CodexManager = AutoloadHelper.codex_manager()
-	if cm:
-		if not save_data.has("memory_state"):
-			save_data["memory_state"] = {}
-		var mem: Dictionary = save_data["memory_state"]
-		if not mem.has("echo_flags"):
-			mem["echo_flags"] = {}
-		var flags: Dictionary = mem["echo_flags"]
-		flags["narrative_unlocks"] = cm.get_save_data()
 
 	var json_text: String = JSON.stringify(save_data, "\t")
 

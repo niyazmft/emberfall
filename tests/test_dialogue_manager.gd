@@ -1,43 +1,46 @@
-extends SceneTree
-
-
-func _init() -> void:
-	var dm_script: GDScript = load("res://scripts/autoload/dialogue_manager.gd") as GDScript
-	var dm: Node = dm_script.new() as Node
-	dm._ready()  # Manually trigger loading
-
-	print("Testing DialogueManager...")
+# GdUnitGeneratedTest
+extends GdUnitTestSuite
+@warning_ignore("unused_parameter")
+@warning_ignore("return_value_discarded")
+# Test suite for DialogueManager
+# Verification of loading, parsing, and data retrieval.
+func test_dialogue_loading() -> void:
+	var dm: _DialogueManager = DialogueManager as _DialogueManager
 
 	# Test loading
-	if dm.call("has_dialogue", "BE_B_FIRST_A") as bool:
-		print("PASSED: Found BE_B_FIRST_A")
-		var d: Dictionary = dm.call("get_dialogue", "BE_B_FIRST_A") as Dictionary
-		if (d.get("text") as String).begins_with("Three keepers"):
-			print("PASSED: Text matches for BE_B_FIRST_A")
-		else:
-			print("FAILED: Text mismatch for BE_B_FIRST_A: ", d.get("text"))
-	else:
-		print("FAILED: BE_B_FIRST_A not found")
+	assert_bool(dm.hasDialogue("BE_B_FIRST_A")).is_true()
+	var d: Dictionary = dm.getDialogue("BE_B_FIRST_A")
+	assert_str(d.get("text") as String).starts_with("Three keepers")
 
-	if dm.call("has_dialogue", "BE_PHASE_C") as bool:
-		print("PASSED: Found BE_PHASE_C")
-	else:
-		print("FAILED: BE_PHASE_C not found")
+	assert_bool(dm.hasDialogue("BE_PHASE_C")).is_true()
 
-	# Test non-existent
-	if not dm.call("has_dialogue", "NON_EXISTENT") as bool:
-		print("PASSED: NON_EXISTENT not found as expected")
-	else:
-		print("FAILED: NON_EXISTENT found??")
 
-	# Test duplicate (should be separate dict)
-	var d1: Dictionary = dm.call("get_dialogue", "BE_PHASE_D") as Dictionary
+func test_non_existent_dialogue() -> void:
+	var dm: _DialogueManager = DialogueManager as _DialogueManager
+	assert_bool(dm.hasDialogue("NON_EXISTENT")).is_false()
+	assert_dict(dm.getDialogue("NON_EXISTENT")).is_empty()
+
+
+func test_dialogue_deep_copy() -> void:
+	var dm: _DialogueManager = DialogueManager as _DialogueManager
+
+	# Test deep copy (should be separate dict)
+	var d1: Dictionary = dm.getDialogue("BE_PHASE_D")
 	d1["text"] = "MODIFIED"
-	var d2: Dictionary = dm.call("get_dialogue", "BE_PHASE_D") as Dictionary
-	if d2.get("text") as String != "MODIFIED":
-		print("PASSED: Dialogue entries are duplicated correctly")
-	else:
-		print("FAILED: Dialogue entries are not duplicated (reference leak)")
 
-	print("DialogueManager tests complete.")
-	quit()
+	var d2: Dictionary = dm.getDialogue("BE_PHASE_D")
+	assert_str(d2.get("text") as String).is_not_equal("MODIFIED")
+	assert_str(d2.get("text") as String).is_equal("You exhale. The embers cool.")
+
+
+func test_nested_metadata_deep_copy() -> void:
+	var dm: _DialogueManager = DialogueManager as _DialogueManager
+
+	if dm.hasDialogue("BE_B_FIRST_A"):
+		var d1: Dictionary = dm.getDialogue("BE_B_FIRST_A")
+		var metadata: Dictionary = d1.get("metadata") as Dictionary
+		metadata["title"] = "CORRUPTED"
+
+		var d2: Dictionary = dm.getDialogue("BE_B_FIRST_A")
+		var metadata2: Dictionary = d2.get("metadata") as Dictionary
+		assert_str(metadata2.get("title") as String).is_equal("The Holding")

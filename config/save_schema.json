@@ -26,11 +26,6 @@
         "type": "Dictionary<string, bool>",
         "default": {},
         "description": "Key-value flags for Legacy Archive triggers (e.g., 'legacy_once' = true)."
-      },
-      "narrative_unlocks": {
-        "type": "Dictionary<string, bool>",
-        "default": {},
-        "description": "Key-value flags for narrative unlocks (Bios, Codex, Legacy Archive)."
       }
     },
     "moral_flag_lifetime": {

@@ -7,66 +7,66 @@ extends Node
 class_name _DialogueManager
 
 # ── Constants ─────────────────────────────────────────────────────────────
-const DIALOGUE_DATA_DIR := "res://data/dialogue/"
+const dialogueDataDir: String = "res://data/dialogue/"
 
 # ── Properties ────────────────────────────────────────────────────────────
-var init_time_ms: int = 0
+var initTimeMs: int = 0
 var _registry: Dictionary = {}
 
 # ── Lifecycle ────────────────────────────────────────────────────────────────
 
 
 func _ready() -> void:
-	var start_time: int = Time.get_ticks_msec()
-	_load_dialogue_data()
-	init_time_ms = int(Time.get_ticks_msec() - start_time)
-	_print_debug("Initialized in %dms, loaded %d entries" % [init_time_ms, _registry.size()])
+	var startTime: int = Time.get_ticks_msec()
+	_loadDialogueData()
+	initTimeMs = int(Time.get_ticks_msec() - startTime)
+	_printDebug("Initialized in %dms, loaded %d entries" % [initTimeMs, _registry.size()])
 
 
 # ── Public API ─────────────────────────────────────────────────────────────
 
 
 ## Retrieve a dialogue entry by its unique ID.
-func get_dialogue(id: String) -> Dictionary:
+func getDialogue(id: String) -> Dictionary:
 	if _registry.has(id):
-		return _registry[id].duplicate()
-	_print_debug("Dialogue ID not found: %s" % id)
+		return (_registry[id] as Dictionary).duplicate(true)
+	_printDebug("Dialogue ID not found: %s" % id)
 	return {}
 
 
 ## Check if a dialogue entry exists.
-func has_dialogue(id: String) -> bool:
+func hasDialogue(id: String) -> bool:
 	return _registry.has(id)
 
 
 # ── Internal ────────────────────────────────────────────────────────────────
 
 
-func _load_dialogue_data() -> void:
-	var dir := DirAccess.open(DIALOGUE_DATA_DIR)
+func _loadDialogueData() -> void:
+	var dir: DirAccess = DirAccess.open(dialogueDataDir)
 	if not dir:
 		push_warning(
-			"DialogueManager: Could not open dialogue data directory: %s" % DIALOGUE_DATA_DIR
+			"DialogueManager: Could not open dialogue data directory: %s" % dialogueDataDir
 		)
 		return
 
 	dir.list_dir_begin()
-	var file_name: String = dir.get_next()
-	while file_name != "":
-		if not dir.current_is_dir() and file_name.ends_with(".json"):
-			_parse_dialogue_file(DIALOGUE_DATA_DIR + file_name)
-		file_name = dir.get_next()
+	var fileName: String = dir.get_next()
+	while fileName != "":
+		if not dir.current_is_dir() and fileName.ends_with(".json"):
+			_parseDialogueFile(dialogueDataDir + fileName)
+		fileName = dir.get_next()
 	dir.list_dir_end()
 
 
-func _parse_dialogue_file(filepath: String) -> void:
-	var file := FileAccess.open(filepath, FileAccess.READ)
+func _parseDialogueFile(filepath: String) -> void:
+	var file: FileAccess = FileAccess.open(filepath, FileAccess.READ)
 	if not file:
 		push_error("DialogueManager: Failed to open file: %s" % filepath)
 		return
 
-	var json_text := file.get_as_text()
-	var parsed: Variant = JSON.parse_string(json_text)
+	var jsonText: String = file.get_as_text()
+	var parsed: Variant = JSON.parse_string(jsonText)
 
 	if parsed is Dictionary:
 		for id: String in parsed:
@@ -84,6 +84,6 @@ func _parse_dialogue_file(filepath: String) -> void:
 		push_error("DialogueManager: Failed to parse JSON in %s" % filepath)
 
 
-func _print_debug(msg: String) -> void:
+func _printDebug(msg: String) -> void:
 	if OS.is_debug_build():
 		print("DialogueManager: %s" % msg)

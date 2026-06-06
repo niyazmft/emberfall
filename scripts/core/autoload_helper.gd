@@ -58,11 +58,6 @@ static func run_manager() -> _RunManager:
 	return get_autoload("RunManager") as _RunManager
 
 
-## Returns the CodexManager autoload, or null.
-static func codex_manager() -> _CodexManager:
-	return get_autoload("CodexManager") as _CodexManager
-
-
 ## Returns the EventBus autoload, or null.
 static func event_bus() -> _EventBus:
 	return get_autoload("EventBus") as _EventBus
