@@ -8,6 +8,7 @@ class_name _ConfigLoader
 const CONFIG_PATH := "res://config/game_config.json"
 const ITEMS_PATH := "res://config/items.json"
 const EQUIPMENT_PATH := "res://config/entity_equipment.json"
+const ENEMIES_PATH := "res://config/enemies.json"
 
 # Fallback defaults (sensible so the game runs even if config is missing)
 const DEFAULTS: Dictionary = {
@@ -46,7 +47,9 @@ const DEFAULTS: Dictionary = {
 }
 
 var _configData: Dictionary = {}
-var _loadedFiles: Dictionary = {CONFIG_PATH: false, ITEMS_PATH: false, EQUIPMENT_PATH: false}
+var _loadedFiles: Dictionary = {
+	CONFIG_PATH: false, ITEMS_PATH: false, EQUIPMENT_PATH: false, ENEMIES_PATH: false
+}
 
 
 func _ready() -> void:
@@ -61,6 +64,7 @@ func _loadConfig() -> void:
 	_loadJsonToConfig(CONFIG_PATH)
 	_loadJsonToConfig(ITEMS_PATH)
 	_loadJsonToConfig(EQUIPMENT_PATH)
+	_loadJsonToConfig(ENEMIES_PATH)
 
 
 func _loadJsonToConfig(filePath: String) -> void:

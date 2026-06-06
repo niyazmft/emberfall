@@ -73,6 +73,11 @@ static func grid_system() -> _GridSystem:
 	return get_autoload("GridSystem") as _GridSystem
 
 
+## Returns the InventoryManager autoload, or null.
+static func inventory_manager() -> Node:
+	return get_autoload("InventoryManager")
+
+
 ## Returns the SettingsManager autoload, or null.
 ## NOTE: Returns Node instead of _SettingsManager to prevent engine Parse Errors
 ## and circularities in headless Godot environments.

@@ -1,0 +1,18 @@
+{
+  "min_rolls": 1,
+  "max_rolls": 2,
+  "entries": [
+    {
+      "item_id": "lucky_pendant",
+      "weight": 20
+    },
+    {
+      "item_id": "healing_salve",
+      "weight": 40
+    },
+    {
+      "item_id": null,
+      "weight": 40
+    }
+  ]
+}

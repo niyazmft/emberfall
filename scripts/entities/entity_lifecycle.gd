@@ -194,6 +194,7 @@ func execute_entity(target: Entity) -> void:
 		return
 	_change_state(target, Entity.State.DEAD)
 	_dying_turns.erase(target.get_instance_id())
+	_trigger_loot_drop(target)
 	spare_or_execute.emit(target, false)
 
 
@@ -274,6 +275,7 @@ func _resolve_dying_timers() -> void:
 			if ent.alive() and ent.state == Entity.State.DYING:
 				## Expired without player choice → DEAD
 				_change_state(ent, Entity.State.DEAD)
+				_trigger_loot_drop(ent)
 		_dying_turns.erase(id)
 
 
@@ -294,6 +296,34 @@ func _resolve_stunned_timers() -> void:
 
 
 # ── Helpers ──────────────────────────────────────────────────────────────
+
+
+func _trigger_loot_drop(entity: Entity) -> void:
+	if entity.is_player:
+		return
+
+	var config_loader: _ConfigLoader = AutoloadHelper.config_loader()
+	if config_loader == null:
+		return
+
+	var enemies_config: Dictionary = config_loader.getValue("enemies", "", {})
+	# We need the archetype_id. If entity_name matches it (case-insensitive) we can use it.
+	var archetype_id: String = entity.entity_name.to_lower()
+	if not enemies_config.has(archetype_id):
+		return
+
+	var loot_table_id: String = enemies_config[archetype_id].get("loot_table_id", "")
+	if loot_table_id.is_empty():
+		return
+
+	var table: LootTable = LootTable.load_loot_table(loot_table_id)
+	if table:
+		var dropped_items: Array[String] = table.roll_loot()
+		var inventory_manager: Node = AutoloadHelper.inventory_manager()
+		if inventory_manager:
+			for item_id: String in dropped_items:
+				inventory_manager.call("add_item", item_id, 1)
+				print("Loot dropped: %s from %s" % [item_id, archetype_id])
 
 
 func _change_state(entity: Entity, new_state: Entity.State) -> void:
