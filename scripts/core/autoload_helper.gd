@@ -58,11 +58,6 @@ static func run_manager() -> _RunManager:
 	return get_autoload("RunManager") as _RunManager
 
 
-## Returns the CodexManager autoload, or null.
-static func codex_manager() -> _CodexManager:
-	return get_autoload("CodexManager") as _CodexManager
-
-
 ## Returns the EventBus autoload, or null.
 static func event_bus() -> _EventBus:
 	return get_autoload("EventBus") as _EventBus
@@ -71,6 +66,11 @@ static func event_bus() -> _EventBus:
 ## Returns the SaveManager autoload, or null.
 static func save_manager() -> _SaveManager:
 	return get_autoload("SaveManager") as _SaveManager
+
+
+## Returns the TutorialManager autoload, or null.
+static func tutorial_manager() -> _TutorialManager:
+	return get_autoload("TutorialManager") as _TutorialManager
 
 
 ## Returns the GridSystem autoload, or null.
