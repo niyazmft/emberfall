@@ -6,38 +6,38 @@ class_name _TutorialManager
 
 const TUTORIAL_DATA_PATH := "res://data/tutorials.json"
 
-signal tutorial_step_started(step_id: String, text_key: String, target: String)
-signal tutorial_step_completed(step_id: String)
-signal tutorial_finished
-signal input_lock_changed(lock_state: String)
+signal tutorialStepStarted(stepId: String, textKey: String, target: String)
+signal tutorialStepCompleted(stepId: String)
+signal tutorialFinished
+signal inputLockChanged(lockState: String)
 
-var tutorial_enabled: bool = true
-var tutorial_complete: bool = false
-var current_step_index: int = -1
-var tutorial_steps: Array = []
-var active_input_lock: String = "none":
-	set(p_value):
-		if active_input_lock != p_value:
-			active_input_lock = p_value
-			input_lock_changed.emit(active_input_lock)
+var tutorialEnabled: bool = true
+var tutorialComplete: bool = false
+var currentStepIndex: int = -1
+var tutorialSteps: Array = []
+var activeInputLock: String = "none":
+	set(pValue):
+		if activeInputLock != pValue:
+			activeInputLock = pValue
+			inputLockChanged.emit(activeInputLock)
 
-var init_time_ms: int = 0
-var _last_action: String = ""
+var initTimeMs: int = 0
+var _lastAction: String = ""
 
 
 func _ready() -> void:
-	var start_time: int = Time.get_ticks_msec()
-	_load_tutorial_data()
-	_check_persistence()
-	_connect_signals()
-	init_time_ms = Time.get_ticks_msec() - start_time
-	_print_debug("Initialized in %d ms" % init_time_ms)
+	var startTime: int = Time.get_ticks_msec()
+	_loadTutorialData()
+	_checkPersistence()
+	_connectSignals()
+	initTimeMs = Time.get_ticks_msec() - startTime
+	_printDebug("Initialized in %d ms" % initTimeMs)
 
 
-func _load_tutorial_data() -> void:
+func _loadTutorialData() -> void:
 	if not FileAccess.file_exists(TUTORIAL_DATA_PATH):
 		push_error("TutorialManager: Tutorial data file not found at %s" % TUTORIAL_DATA_PATH)
-		tutorial_enabled = false
+		tutorialEnabled = false
 		return
 
 	var file := FileAccess.open(TUTORIAL_DATA_PATH, FileAccess.READ)
@@ -45,112 +45,112 @@ func _load_tutorial_data() -> void:
 		var text := file.get_as_text()
 		var parsed: Variant = JSON.parse_string(text)
 		if parsed is Dictionary and parsed.has("steps"):
-			tutorial_steps = parsed["steps"] as Array
-			_print_debug("Loaded %d tutorial steps" % tutorial_steps.size())
+			tutorialSteps = parsed["steps"] as Array
+			_printDebug("Loaded %d tutorial steps" % tutorialSteps.size())
 		else:
 			push_error("TutorialManager: Invalid tutorial data format")
-			tutorial_enabled = false
+			tutorialEnabled = false
 		file.close()
 
 
-func _check_persistence() -> void:
-	var save_manager: _SaveManager = AutoloadHelper.save_manager()
-	if save_manager:
-		var save_data := save_manager.load_game()
-		if save_data.has("memory_state") and save_data["memory_state"].has("tutorial_complete"):
-			tutorial_complete = save_data["memory_state"]["tutorial_complete"]
-			if tutorial_complete:
-				tutorial_enabled = false
-				_print_debug("Tutorial already completed according to save data")
+func _checkPersistence() -> void:
+	var saveManager: _SaveManager = AutoloadHelper.save_manager()
+	if saveManager:
+		var saveData := saveManager.load_game()
+		if saveData.has("memory_state") and saveData["memory_state"].has("tutorial_complete"):
+			tutorialComplete = saveData["memory_state"]["tutorial_complete"]
+			if tutorialComplete:
+				tutorialEnabled = false
+				_printDebug("Tutorial already completed according to save data")
 
 
-func _connect_signals() -> void:
+func _connectSignals() -> void:
 	var eb: _EventBus = AutoloadHelper.event_bus()
 	if eb:
-		eb.room_entered.connect(_on_room_entered)
-		eb.entity_state_changed.connect(_on_entity_state_changed)
-		eb.spare_or_execute.connect(_on_spare_or_execute)
+		eb.room_entered.connect(_onRoomEntered)
+		eb.entity_state_changed.connect(_onEntityStateChanged)
+		eb.spare_or_execute.connect(_onSpareOrExecute)
 
 
-func start_tutorial() -> void:
-	if not tutorial_enabled or tutorial_complete:
+func startTutorial() -> void:
+	if not tutorialEnabled or tutorialComplete:
 		return
 
-	_print_debug("Starting tutorial")
-	current_step_index = 0
-	_trigger_current_step()
+	_printDebug("Starting tutorial")
+	currentStepIndex = 0
+	_triggerCurrentStep()
 
 
-func _trigger_current_step() -> void:
-	if current_step_index < 0 or current_step_index >= tutorial_steps.size():
-		_finish_tutorial()
+func _triggerCurrentStep() -> void:
+	if currentStepIndex < 0 or currentStepIndex >= tutorialSteps.size():
+		_finishTutorial()
 		return
 
-	var step: Dictionary = tutorial_steps[current_step_index]
-	_print_debug("Triggering tutorial step: %s" % step["id"])
-	active_input_lock = step.get("input_lock", "none")
-	tutorial_step_started.emit(step["id"], step["text_key"], step.get("highlight_target", ""))
+	var step: Dictionary = tutorialSteps[currentStepIndex]
+	_printDebug("Triggering tutorial step: %s" % step["id"])
+	activeInputLock = step.get("input_lock", "none")
+	tutorialStepStarted.emit(step["id"], step["text_key"], step.get("highlight_target", ""))
 
 
-func complete_step(step_id: String) -> void:
-	if current_step_index < 0 or current_step_index >= tutorial_steps.size():
+func completeStep(stepId: String) -> void:
+	if currentStepIndex < 0 or currentStepIndex >= tutorialSteps.size():
 		return
 
-	var current_step: Dictionary = tutorial_steps[current_step_index]
-	if current_step["id"] == step_id:
-		_print_debug("Completed tutorial step: %s" % step_id)
-		tutorial_step_completed.emit(step_id)
-		active_input_lock = "none"
-		current_step_index += 1
-		_evaluate_next_steps()
+	var currentStep: Dictionary = tutorialSteps[currentStepIndex]
+	if currentStep["id"] == stepId:
+		_printDebug("Completed tutorial step: %s" % stepId)
+		tutorialStepCompleted.emit(stepId)
+		activeInputLock = "none"
+		currentStepIndex += 1
+		_evaluateNextSteps()
 
 
-func _evaluate_next_steps() -> void:
-	if current_step_index >= tutorial_steps.size():
-		_finish_tutorial()
+func _evaluateNextSteps() -> void:
+	if currentStepIndex >= tutorialSteps.size():
+		_finishTutorial()
 		return
 
-	var next_step: Dictionary = tutorial_steps[current_step_index]
-	var trigger: String = next_step.get("trigger", "")
+	var nextStep: Dictionary = tutorialSteps[currentStepIndex]
+	var trigger: String = nextStep.get("trigger", "")
 
-	if trigger == "after_movement" and _last_action == "player_moved":
-		_trigger_current_step()
+	if trigger == "after_movement" and _lastAction == "player_moved":
+		_triggerCurrentStep()
 	elif trigger == "" or trigger == "room_start":
-		_trigger_current_step()
+		_triggerCurrentStep()
 	# If trigger is a specific event, we wait for it.
 
 
-func _finish_tutorial() -> void:
-	_print_debug("Tutorial finished")
-	tutorial_complete = true
-	tutorial_enabled = false
-	active_input_lock = "none"
-	tutorial_finished.emit()
-	_persist_completion()
+func _finishTutorial() -> void:
+	_printDebug("Tutorial finished")
+	tutorialComplete = true
+	tutorialEnabled = false
+	activeInputLock = "none"
+	tutorialFinished.emit()
+	_persistCompletion()
 
 
-func _persist_completion() -> void:
-	var save_manager: _SaveManager = AutoloadHelper.save_manager()
-	if save_manager:
-		var save_data := save_manager.load_game()
-		if not save_data.has("memory_state"):
-			save_data["memory_state"] = {}
-		save_data["memory_state"]["tutorial_complete"] = true
-		save_manager.save_game(save_data)
-		_print_debug("Persisted tutorial completion state")
+func _persistCompletion() -> void:
+	var saveManager: _SaveManager = AutoloadHelper.save_manager()
+	if saveManager:
+		var saveData := saveManager.load_game()
+		if not saveData.has("memory_state"):
+			saveData["memory_state"] = {}
+		saveData["memory_state"]["tutorial_complete"] = true
+		saveManager.save_game(saveData)
+		_printDebug("Persisted tutorial completion state")
 
 
 # ── Public Queries ─────────────────────────────────────────────────────────
 
 
-func is_input_locked(action: String) -> bool:
-	if active_input_lock == "none":
+func isInputLocked(action: String) -> bool:
+	if activeInputLock == "none":
 		return false
 
-	if active_input_lock == "movement_only":
+	if activeInputLock == "movement_only":
 		return not action.begins_with("move_")
 
-	if active_input_lock == "attack_only":
+	if activeInputLock == "attack_only":
 		return action != "combat_confirm" and action != "combat_mode"
 
 	return false
@@ -159,85 +159,86 @@ func is_input_locked(action: String) -> bool:
 # ── Public Notification API ────────────────────────────────────────────────
 
 
-func notify_player_moved() -> void:
-	_last_action = "player_moved"
-	_check_condition("player_moved")
-	_check_trigger("after_movement")
+func notifyPlayerMoved() -> void:
+	_lastAction = "player_moved"
+	if not _checkCondition("player_moved"):
+		_checkTrigger("after_movement")
 
 
-func notify_attack_executed() -> void:
-	_last_action = "attack_executed"
-	_check_condition("attack_executed")
+func notifyAttackExecuted() -> void:
+	_lastAction = "attack_executed"
+	_checkCondition("attack_executed")
 
 
-func notify_near_cover() -> void:
-	_check_trigger("near_cover")
+func notifyNearCover() -> void:
+	_checkTrigger("near_cover")
 
 
-func notify_near_elevation() -> void:
-	_check_trigger("near_elevation")
+func notifyNearElevation() -> void:
+	_checkTrigger("near_elevation")
 
 
-func notify_elemental_hazard() -> void:
-	_check_trigger("elemental_hazard")
+func notifyElementalHazard() -> void:
+	_checkTrigger("elemental_hazard")
 
 
-func notify_enemy_in_range() -> void:
-	_check_trigger("enemy_in_range")
+func notifyEnemyInRange() -> void:
+	_checkTrigger("enemy_in_range")
 
 
-func acknowledge_step() -> void:
-	_check_condition("acknowledge")
+func acknowledgeStep() -> void:
+	_checkCondition("acknowledge")
 
 
 # ── Internal Logic ─────────────────────────────────────────────────────────
 
 
-func _check_trigger(trigger_name: String) -> void:
-	if not tutorial_enabled or tutorial_complete:
+func _checkTrigger(triggerName: String) -> void:
+	if not tutorialEnabled or tutorialComplete:
 		return
 
-	if current_step_index >= 0 and current_step_index < tutorial_steps.size():
-		var step: Dictionary = tutorial_steps[current_step_index]
-		if step.get("trigger") == trigger_name:
-			_trigger_current_step()
+	if currentStepIndex >= 0 and currentStepIndex < tutorialSteps.size():
+		var step: Dictionary = tutorialSteps[currentStepIndex]
+		if step.get("trigger") == triggerName:
+			_triggerCurrentStep()
 
 
-func _check_condition(condition_name: String) -> void:
-	if not tutorial_enabled or tutorial_complete:
-		return
+func _checkCondition(conditionName: String) -> bool:
+	if not tutorialEnabled or tutorialComplete:
+		return false
 
-	if current_step_index >= 0 and current_step_index < tutorial_steps.size():
-		var step: Dictionary = tutorial_steps[current_step_index]
-		if step.get("completion_condition") == condition_name:
-			complete_step(step["id"])
+	if currentStepIndex >= 0 and currentStepIndex < tutorialSteps.size():
+		var step: Dictionary = tutorialSteps[currentStepIndex]
+		if step.get("completion_condition") == conditionName:
+			var oldIndex: int = currentStepIndex
+			completeStep(step["id"])
+			return currentStepIndex != oldIndex
+	return false
 
 
 # ── Signal Handlers ────────────────────────────────────────────────────────
 
 
-func _on_room_entered(_p_room_index: int, _p_room_data: Dictionary) -> void:
-	if tutorial_enabled and not tutorial_complete and current_step_index == -1:
-		current_step_index = 0
-		_check_trigger("room_start")
+func _onRoomEntered(_pRoomIndex: int, _pRoomData: Dictionary) -> void:
+	if tutorialEnabled and not tutorialComplete and currentStepIndex == -1:
+		currentStepIndex = 0
+		_checkTrigger("room_start")
 
 
-func _on_entity_state_changed(
-	entity: Entity, _old_state: Entity.State, new_state: Entity.State
-) -> void:
-	if not tutorial_enabled:
+func _onEntityStateChanged(entity: Entity, _oldState: Entity.State, newState: Entity.State) -> void:
+	if not tutorialEnabled:
 		return
 
-	if new_state == Entity.State.DYING and not entity.is_player:
-		_check_trigger("enemy_dying")
+	if newState == Entity.State.DYING and not entity.is_player:
+		_checkTrigger("enemy_dying")
 
 
-func _on_spare_or_execute(_entity: Entity, _was_spared: bool) -> void:
-	if not tutorial_enabled:
+func _onSpareOrExecute(_entity: Entity, _wasSpared: bool) -> void:
+	if not tutorialEnabled:
 		return
-	_check_condition("moral_choice_made")
+	_checkCondition("moral_choice_made")
 
 
-func _print_debug(msg: String) -> void:
+func _printDebug(msg: String) -> void:
 	if OS.is_debug_build():
 		print("TutorialManager: %s" % msg)
