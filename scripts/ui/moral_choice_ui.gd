@@ -39,24 +39,32 @@ func _process(delta: float) -> void:
 
 
 func _on_entity_state_changed(entity: Entity, _old_state: int, new_state: int) -> void:
-	# Entity.State.DYING = 2
-	if new_state == 2 and not entity.is_player:
+	if new_state == Entity.State.DYING and not entity.is_player:
 		_choice_queue.append(entity)
 		if not _is_showing:
 			_show_next_in_queue()
 
 
 func _show_next_in_queue() -> void:
-	if _choice_queue.is_empty():
+	while not _choice_queue.is_empty():
+		var entity: Entity = _choice_queue.pop_front()
+		# Entity is a Resource, so we only check is_instance_valid.
+		# Node-specific checks like is_inside_tree() do not apply.
+		if is_instance_valid(entity):
+			_is_showing = true
+			show_choice(entity)
+			return
+
+	_is_showing = false
+	panel.visible = false
+
+
+func show_choice(enemy: Entity) -> void:
+	if enemy == null:
 		_is_showing = false
 		panel.visible = false
 		return
 
-	_is_showing = true
-	show_choice(_choice_queue.pop_front())
-
-
-func show_choice(enemy: Entity) -> void:
 	_target_entity = enemy
 	panel.visible = true
 
@@ -69,7 +77,7 @@ func show_choice(enemy: Entity) -> void:
 	spare_button.text = "Spare (Cost: 1 AP)"
 	execute_button.text = "Execute"
 
-	var player := _get_player_entity()
+	var player: Entity = _get_player_entity()
 	if player:
 		spare_button.disabled = player.ap < 1
 	else:
@@ -84,24 +92,43 @@ func show_choice(enemy: Entity) -> void:
 
 
 func _on_spare_pressed() -> void:
-	var player := _get_player_entity()
+	var player: Entity = _get_player_entity()
 	var lifecycle: Node = AutoloadHelper.entity_lifecycle()
-	if player and player.ap >= 1 and lifecycle:
+
+	if (
+		player
+		and player.ap >= 1
+		and lifecycle
+		and is_instance_valid(_target_entity)
+		and _target_entity.state == Entity.State.DYING
+	):
 		lifecycle.call("spare_entity", player, _target_entity)
 		choice_made.emit(true)
 		_hide_choice()
+	else:
+		push_warning("MoralChoiceUI: Spare action validation failed")
 
 
 func _on_execute_pressed() -> void:
 	var lifecycle: Node = AutoloadHelper.entity_lifecycle()
-	if lifecycle:
+	if (
+		lifecycle
+		and is_instance_valid(_target_entity)
+		and _target_entity.state == Entity.State.DYING
+	):
 		lifecycle.call("execute_entity", _target_entity)
 		choice_made.emit(false)
 		_hide_choice()
+	else:
+		push_warning("MoralChoiceUI: Execute action validation failed")
 
 
 func _auto_execute() -> void:
-	if _target_entity and _target_entity.state == 2:  # Entity.State.DYING
+	if (
+		_target_entity
+		and is_instance_valid(_target_entity)
+		and _target_entity.state == Entity.State.DYING
+	):
 		var lifecycle: Node = AutoloadHelper.entity_lifecycle()
 		if lifecycle:
 			lifecycle.call("execute_entity", _target_entity)
@@ -113,7 +140,7 @@ func _hide_choice() -> void:
 	panel.visible = false
 	_target_entity = null
 	# Short delay before next one to avoid instant pop-up
-	var timer := get_tree().create_timer(0.2)
+	var timer: SceneTreeTimer = get_tree().create_timer(0.2)
 	timer.timeout.connect(_show_next_in_queue)
 
 

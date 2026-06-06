@@ -2,7 +2,7 @@
 
 **Project:** Emberfall Tactical Combat Game  
 **Repository:** <https://github.com/niyazmft/emberfall>  
-**Last Updated:** 2026-06-03  
+**Last Updated:** 2026-06-04
 **Current Phase:** Phase 4 (Minimum Viable Gameplay)  
 
 ---
@@ -229,8 +229,9 @@ Waiting for Phase 4 completion before planning
 | 2026-06-03 | Created board with Phase 1-4 tasks |
 | | Phase 1-3 marked complete |
 | | Phase 4 tasks with dependencies mapped |
+| 2026-06-04 | Task 4.8 (Moral Choice UI) marked ✅ Done |
 
 ---
 
-*Last Updated: 2026-06-03*  
+*Last Updated: 2026-06-04*
 *Next Review: After Sprint 1 completion (Week 2)*

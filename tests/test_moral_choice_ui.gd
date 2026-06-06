@@ -24,7 +24,7 @@ func before_test() -> void:
 
 
 func after_test() -> void:
-	_ui.queue_free()
+	auto_free(_ui)
 	_player = null
 	_enemy = null
 	_lifecycle.player_entity = null
@@ -37,7 +37,7 @@ func test_ui_visibility_on_dying_state() -> void:
 
 	# Transition enemy to DYING
 	_lifecycle.apply_damage(_player, _enemy, 20)
-	assert_int(_enemy.state).is_equal(2)  # Entity.State.DYING
+	assert_int(_enemy.state).is_equal(Entity.State.DYING)
 
 	# Wait for signal processing (MoralChoiceUI connects to entity_state_changed)
 	await get_tree().process_frame
@@ -55,7 +55,7 @@ func test_spare_action() -> void:
 	# Simulate Spare press
 	_ui.spare_button.pressed.emit()
 
-	assert_int(_enemy.state).is_equal(4)  # Entity.State.GHOST
+	assert_int(_enemy.state).is_equal(Entity.State.GHOST)
 	assert_int(_player.ap).is_equal(initial_ap - 1)
 	assert_bool(_ui.panel.visible).is_false()
 
@@ -67,7 +67,7 @@ func test_execute_action() -> void:
 	# Simulate Execute press
 	_ui.execute_button.pressed.emit()
 
-	assert_int(_enemy.state).is_equal(3)  # Entity.State.DEAD
+	assert_int(_enemy.state).is_equal(Entity.State.DEAD)
 	assert_bool(_ui.panel.visible).is_false()
 
 
@@ -89,12 +89,13 @@ func test_auto_execute_on_timeout() -> void:
 	# Wait for _process to handle timeout
 	await get_tree().create_timer(0.05).timeout
 
-	assert_int(_enemy.state).is_equal(3)  # Entity.State.DEAD
+	assert_int(_enemy.state).is_equal(Entity.State.DEAD)
 	assert_bool(_ui.panel.visible).is_false()
 
 
 func test_queue_system() -> void:
-	var enemy2 := Entity.new("Enemy2", 2, 2, 20, 5, 5)
+	var enemy2: Entity = Entity.new("Enemy2", 2, 2, 20, 5, 5)
+	auto_free(enemy2)
 
 	# Both die
 	_lifecycle.apply_damage(_player, _enemy, 20)
