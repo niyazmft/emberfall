@@ -58,14 +58,7 @@ func _apply_saved_locale() -> void:
 
 
 func set_locale(p_locale: String) -> void:
-	# Validate locale against supported translations
-	var supported_locales: Array[String] = ["en", "de", "es", "fr"]
-	var validated_locale: String = p_locale if p_locale in supported_locales else "en"
-
-	if validated_locale != p_locale:
-		push_warning("LocalizationManager: Locale '%s' not supported, falling back to 'en'" % p_locale)
-
-	TranslationServer.set_locale(validated_locale)
+	TranslationServer.set_locale(p_locale)
 
 	var settings: Dictionary = {}
 	if FileAccess.file_exists(SETTINGS_PATH):
@@ -78,7 +71,7 @@ func set_locale(p_locale: String) -> void:
 			if loaded is Dictionary:
 				settings = loaded
 
-	settings["locale"] = validated_locale
+	settings["locale"] = p_locale
 
 	var file: FileAccess = FileAccess.open_encrypted_with_pass(
 		SETTINGS_PATH, FileAccess.WRITE, _get_secure_salt()
@@ -86,7 +79,7 @@ func set_locale(p_locale: String) -> void:
 	if file:
 		file.store_var(settings)
 		file.close()
-		_print_debug("Locale changed to: %s and saved" % validated_locale)
+		_print_debug("Locale changed to: %s and saved" % p_locale)
 	else:
 		push_error("LocalizationManager: Failed to save locale setting to %s" % SETTINGS_PATH)
 

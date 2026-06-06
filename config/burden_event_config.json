@@ -111,7 +111,7 @@
   },
   "localization": {
     "context": "The apparition is the voice of the world itself, mourning deaths the player has caused. Second-person present during the event; third-person past in Legacy Archive.",
-    "target_languages": ["en", "de", "es", "fr"],
+    "target_languages": ["en", "ja", "fr", "de", "es", "ko", "zh-Hans"],
     "note": "Avoid idioms that do not translate literally. Abstract metaphors of carrying, holding, and silence travel better."
   }
 }
