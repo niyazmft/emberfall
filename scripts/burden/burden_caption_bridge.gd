@@ -90,7 +90,7 @@ func schedule_transition_caption_explicit(transition_key: String) -> void:
 
 	var loc_key: String = str(data.get("localization_key", ""))
 	var text: String = ""
-	var dm := AutoloadHelper.get_autoload("DialogueManager")
+	var dm: Node = AutoloadHelper.get_autoload("DialogueManager")
 	if dm and dm.call("has_dialogue", loc_key):
 		var d: Dictionary = dm.call("get_dialogue", loc_key)
 		text = d.get("text", "")
