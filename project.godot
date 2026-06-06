@@ -56,6 +56,7 @@ FocusManager="*res://ui/framework/focus_manager.gd"
 SettingsManager="*res://scripts/autoload/settings_manager.gd"
 SaveManager="*res://scripts/autoload/save_manager.gd"
 InventoryManager="*res://scripts/inventory/inventory_manager.gd"
+TutorialManager="*res://scripts/autoload/tutorial_manager.gd"
 InputRouter="*res://scripts/autoload/input_router.gd"
 
 [internationalization]

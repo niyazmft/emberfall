@@ -68,6 +68,11 @@ static func save_manager() -> _SaveManager:
 	return get_autoload("SaveManager") as _SaveManager
 
 
+## Returns the TutorialManager autoload, or null.
+static func tutorial_manager() -> _TutorialManager:
+	return get_autoload("TutorialManager") as _TutorialManager
+
+
 ## Returns the GridSystem autoload, or null.
 static func grid_system() -> _GridSystem:
 	return get_autoload("GridSystem") as _GridSystem
