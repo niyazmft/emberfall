@@ -71,6 +71,11 @@ func add_item(item_id: String, quantity: int = 1) -> bool:
 
 ## Removes an item from the inventory.
 func remove_item(item_id: String, quantity: int = 1) -> bool:
+	if quantity <= 0:
+		return false
+	if item_id.is_empty():
+		return false
+	
 	var remaining: int = quantity
 	var indices_to_remove: Array[int] = []
 
@@ -92,7 +97,6 @@ func remove_item(item_id: String, quantity: int = 1) -> bool:
 		inventory_changed.emit()
 		return remaining == 0
 	return false
-
 
 ## Equips an item into a slot.
 func equip_item(item_id: String, slot: String) -> bool:
