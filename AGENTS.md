@@ -322,16 +322,113 @@ GitHub Actions (`.github/workflows/ci.yml`) runs **exactly the same checks** as 
 
 ## Learnings from .Jules/
 
-### Performance (bolt.md)
+The `.Jules/` directory is the **cumulative knowledge base** for this project.
+It contains past discoveries, optimizations, gotchas, and patterns that every
+agent should consult before starting work — and every agent is **required**
+to contribute to it as new learnings emerge.
+
+### ⚠️ REQUIRED: Update `.Jules/` When You Learn Something New
+
+**Every agent working on this repo MUST append new learnings to `.Jules/` files**
+when they encounter non-obvious findings. This is not optional — it is the
+primary mechanism by which knowledge is preserved between agent sessions.
+
+#### When to add a learning
+
+Add a new entry whenever you:
+
+- **Discover a non-obvious performance issue** (e.g. unexpected O(N²), GC churn)
+- **Hit a Godot-specific quirk or workaround** (e.g. resource UID rules, autoload order)
+- **Encounter a CI / git-hook gotcha** (e.g. a tool that fails on a particular file type)
+- **Make a recurring mistake** (e.g. forget strict typing on a new script)
+- **Optimize something significantly** (e.g. cut a hot loop from 20ms → 2ms)
+- **Find a code pattern that doesn't work in this project** (e.g. dynamic dispatch)
+
+#### When NOT to add a learning
+
+- Generic GDScript knowledge that's already in the Godot docs
+- Standard project conventions (already in `AGENTS.md`)
+- One-off typos or trivial fixes
+
+#### File organization
+
+Create or append to the file that best matches the topic:
+
+| File | Topic |
+|------|-------|
+| `.Jules/bolt.md` | Performance, hot paths, optimization |
+| `.Jules/palette.md` | UI, UX, accessibility, theming |
+| `.Jules/integrations.md` | (create if needed) External tools, CI, git hooks |
+| `.Jules/gotchas.md` | (create if needed) Godot-specific quirks, autoload issues |
+| `.Jules/<topic>.md` | Create a new file if the topic is distinct |
+
+If a file doesn't exist for your topic, **create it** with the same format
+shown below. Don't shoehorn content into unrelated files.
+
+#### Required format
+
+Each entry MUST follow this exact format (markdown linter is active):
+
+```markdown
+## YYYY-MM-DD - Brief descriptive title
+
+**Learning:** One paragraph explaining the *what* and *why*. What did you discover?
+What was the surprising behavior? What is the underlying cause?
+
+**Action:** One paragraph explaining the *what to do next time*. Concrete, actionable.
+Not "be careful" — say exactly what to write or avoid.
+```
+
+**Rules:**
+- One entry per distinct learning. Don't combine unrelated findings.
+- Date must be `YYYY-MM-DD`.
+- Title is a single line, ≤ 80 chars, no trailing punctuation.
+- Append to the bottom of the file (chronological order is loose but newer = later).
+- No code blocks in the Learning/Action prose — keep it scannable.
+- Run `markdownlint .Jules/<file>.md --fix` after editing.
+
+#### Example entry
+
+```markdown
+## 2026-06-06 - Always prealloc Array capacity for grid iterations
+
+**Learning:** Iterating `_tiles` 144 times per frame and calling `.append()` without
+preallocating capacity caused ~40% of frame time in Godot 4.6.3 due to array
+reallocation. Preallocating with `_visible := []; _visible.resize(144)` cut frame
+time from 8ms to 5ms with no behavior change.
+
+**Action:** When building any per-frame array from a known-size source (grid, enemy
+list, status effect list), call `.resize(n)` once before the loop instead of
+relying on `.append()` growth.
+```
+
+#### When to add the learning
+
+Update `.Jules/` as part of your **task-completion workflow**, not after every commit:
+
+1. **Before opening your PR** — review what you learned this task
+2. **If you found something non-obvious** — add an entry
+3. **If the PR reviewer flags a pattern** — that counts too
+4. **If you had to ask "why does this work this way?"** — that's a learning
+
+The Human Director reviews `.Jules/` at sprint boundaries. Stale or noisy
+entries get pruned; high-signal entries stay.
+
+### Existing Learnings Reference
+
+**Performance (`.Jules/bolt.md`):**
 
 - **GridSystem optimization:** Reduced O(N²) inner loops by inlining and direct array access
 - **Type casting:** Cast `_tiles` to `TacTileData` in hot loops for 10x speedup
 - **CI compliance:** All new scripts require strict typing
 
-### UI Accessibility (palette.md)
+**UI Accessibility (`.Jules/palette.md`):**
 
 - **Focus management:** Use `grab_focus.call_deferred()` on primary buttons
 - Applies to: `main_menu.gd`, `pause_menu.gd`, `settings_menu.gd`
+
+**Before starting any task:** Read the relevant `.Jules/*.md` file first.
+Then check `git log --oneline .Jules/` for the most recent additions.
 
 ---
 
@@ -342,6 +439,94 @@ When picking up or completing a task, agents **MUST** keep the local tracker up 
 1. **Check the Board**: Always consult `PROJECT_BOARD.md` for current sprint goals and active tasks.
 2. **Update Status**: When starting or finishing a task, you must update the task's status in `PROJECT_BOARD.md` (e.g., from ⏳ "Ready" to 🔄 "In Progress", or to ✅ "Done").
 3. **Hybrid Tracking**: Ensure you also create or reference the matching GitHub Issue as per global rules. The user manages the visual GitHub Project board, but `PROJECT_BOARD.md` is the primary map for AI agents.
+4. **Add Learnings to `.Jules/`**: If you discovered anything non-obvious during the task (performance gotcha, Godot quirk, CI issue), append a dated entry to the appropriate `.Jules/*.md` file. See the **"Learnings from .Jules/"** section below for the required format. This is required, not optional.
+
+### GitHub Issue Creation — Required Fields
+
+**Every agent that opens a GitHub issue MUST set Priority, Size, and Status
+in the GitHub Project board before submitting.** Issues missing these fields
+will be treated as `P2 / XL / Backlog` and deprioritized at sprint planning.
+
+**Project ID:** `PVT_kwHOAI5hvc4BZpb5`
+**Project URL:** <https://github.com/users/niyazmft/projects/1>
+
+#### Priority (`P0` / `P1` / `P2`)
+
+| Value | Meaning | Use when… |
+|-------|---------|-----------|
+| `P0` | Critical path | The issue blocks other work, sits on a phase's critical path, or is required for the game to function. Ship ASAP. |
+| `P1` | Important | Valuable but not blocking. Quality-of-life, polish, content variety. Project can ship without it. |
+| `P2` | Nice-to-have | Pure polish, optional features, future enhancements. Cut first if scope creeps. |
+
+**Heuristics:**
+- "Can the game run / build / test without this?" → yes ⇒ not P0.
+- "Is this on the critical path of a current phase?" → yes ⇒ P0.
+- "Is it pure polish / cosmetic / optional?" → yes ⇒ P2.
+- Default to P1 if unsure.
+
+#### Size (`XS` / `S` / `M` / `L` / `XL`)
+
+| Size | Effort (calibrated) | Scope | Examples |
+|------|---------------------|-------|----------|
+| `XS` | ~0.5 day | Single file, <50 lines, no tests | Version label, config tweak, single constant |
+| `S`  | ~1–2 days | Single feature, 1–2 files, light tests | Data file, simple UI element, single-system bugfix |
+| `M`  | ~3–5 days | Multiple files, needs tests | Autoload, UI scene with logic, single-system feature |
+| `L`  | ~1–2 weeks | Complex feature, multiple systems | Full system with UI + backend, content pipeline |
+| `XL` | ~2+ weeks | Cross-cutting, high risk, multi-system | Procedural generation, full content system, engine integration |
+
+**Heuristics:**
+- Touches 1–2 files, no new abstractions ⇒ `S` or `XS`.
+- Touches 1 system + tests ⇒ `M`.
+- Touches 2+ systems or needs a new autoload ⇒ `L`.
+- Touches 3+ systems, new pipelines, or has uncertainty ⇒ `XL`.
+- Default to `M` if unsure.
+
+#### Status (`Backlog` / `Ready` / `In progress` / `In review` / `Done`)
+
+| Status | Meaning |
+|--------|---------|
+| `Backlog` | Blocked by another open issue. Document the blocker in the issue body and `PROJECT_BOARD.md`. |
+| `Ready` | Unblocked. No open dependencies. Can be picked up this sprint. |
+| `In progress` | Currently being worked on. |
+| `In review` | PR is open and awaiting review. |
+| `Done` | PR merged and issue closed. |
+
+**Rule:** If you create an issue with no dependencies, set it to `Ready` immediately.
+If it has dependencies, set it to `Backlog` and reference the blocking issue.
+
+#### Setting Fields via CLI
+
+```bash
+PRJ="PVT_kwHOAI5hvc4BZpb5"
+
+# Priority (replace P_ID with the new issue's project item ID)
+gh project item-edit --id "$P_ID" --project-id "$PRJ" \
+  --field-id PVTSSF_lAHOAI5hvc4BZpb5zhUmpZI \
+  --single-select-option-id <P0|P1|P2 option id>
+
+# Size
+gh project item-edit --id "$P_ID" --project-id "$PRJ" \
+  --field-id PVTSSF_lAHOAI5hvc4BZpb5zhUmpZM \
+  --single-select-option-id <XS|S|M|L|XL option id>
+
+# Status
+gh project item-edit --id "$P_ID" --project-id "$PRJ" \
+  --field-id PVTSSF_lAHOAI5hvc4BZpb5zhUmpS0 \
+  --single-select-option-id <Ready|Backlog option id>
+```
+
+**Cached option IDs** (Emberfall project):
+
+| Field | Options |
+|-------|---------|
+| Priority | P0: `79628723` · P1: `0a877460` · P2: `da944a9c` |
+| Size | XS: `6c6483d2` · S: `f784b110` · M: `7515a9f1` · L: `817d0097` · XL: `db339eb2` |
+| Status | Backlog: `f75ad846` · Ready: `61e4505c` · In progress: `47fc9ee4` · In review: `df73e18b` · Done: `98236657` |
+
+If option IDs change (project field reconfigured), re-fetch with:
+```bash
+gh project field-list 1 --owner niyazmft --format json
+```
 
 ---
 
