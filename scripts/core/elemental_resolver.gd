@@ -78,16 +78,22 @@ static func compute_tile_damage_multiplier(
 	var has_oil: bool = _has_element(active, ElementalTypes.ElementType.OIL)
 	var has_wind: bool = _has_element(active, ElementalTypes.ElementType.WIND)
 	var has_water: bool = _has_element(active, ElementalTypes.ElementType.WATER)
+	var has_poison: bool = _has_element(active, ElementalTypes.ElementType.POISON_GAS)
+	var has_water_pool: bool = _has_element(active, ElementalTypes.ElementType.WATER_POOL)
 
-	# Priority 1: Water extinguishes Fire → 0.5× (extinguish overrides amplification)
-	if has_water and has_fire:
+	# Priority 1: Water/Pool extinguishes Fire → 0.5×
+	if (has_water or has_water_pool) and has_fire:
 		return _config_float("WATER_FIRE_MODIFIER", 0.5)
 
-	# Priority 2: Wind fans Fire → 1.5×
+	# Priority 2: Fire ignites Poison Gas → 1.5× (Explosion)
+	if has_fire and has_poison:
+		return _config_float("FIRE_POISON_EXPLODE_MOD", 1.5)
+
+	# Priority 3: Wind fans Fire → 1.5×
 	if has_wind and has_fire:
 		return _config_float("WIND_FIRE_MODIFIER", 1.5)
 
-	# Priority 3: Fire burns Oil → 2.0×
+	# Priority 4: Fire burns Oil → 2.0×
 	if has_fire and has_oil:
 		return _config_float("FIRE_OIL_MODIFIER", 2.0)
 
@@ -102,6 +108,8 @@ static func calculate_movement_speed_multiplier(
 	effects: Array[ElementalTypes.TileEffect], current_turn: int
 ) -> float:
 	var active: Array[ElementalTypes.TileEffect] = _filter_active(effects, current_turn)
+	if _has_element(active, ElementalTypes.ElementType.ICE):
+		return _config_float("ICE_SLIP_SPEED_MULT", 0.6)
 	if _has_element(active, ElementalTypes.ElementType.OIL):
 		return _config_float("OIL_SLIP_SPEED_MULT", 0.8)
 	return 1.0
@@ -172,7 +180,7 @@ static func process_turn_tick(
 		var current: ElementalTypes.TileEffect = working[i]
 
 		match current.element:
-			ElementalTypes.ElementType.WATER:
+			ElementalTypes.ElementType.WATER, ElementalTypes.ElementType.WATER_POOL:
 				# Water looks for ANY Fire in the working set (leftmost first)
 				var fire_idx := _find_leftmost_element(working, ElementalTypes.ElementType.FIRE)
 				if fire_idx != -1 and fire_idx != i:
@@ -192,7 +200,7 @@ static func process_turn_tick(
 						i = 0
 					extinguished = true
 
-			ElementalTypes.ElementType.WIND:
+			ElementalTypes.ElementType.WIND, ElementalTypes.ElementType.WIND_CURRENT:
 				# Wind looks for ANY Fire to fan (leftmost first)
 				var fire_idx := _find_leftmost_element(working, ElementalTypes.ElementType.FIRE)
 				if fire_idx != -1 and fire_idx != i:
@@ -212,6 +220,16 @@ static func process_turn_tick(
 						if _in_bounds(cand, grid_bounds) and cand not in actual_water_tiles:
 							spread_positions.append(cand)
 
+				# Wind spreads Poison Gas
+				var poison_idx := _find_leftmost_element(
+					working, ElementalTypes.ElementType.POISON_GAS
+				)
+				if poison_idx != -1 and poison_idx != i:
+					var candidates: Array[Vector2i] = _adjacent_cardinal(tile_pos)
+					for cand: Vector2i in candidates:
+						if _in_bounds(cand, grid_bounds):
+							spread_positions.append(cand)
+
 			ElementalTypes.ElementType.FIRE:
 				# Fire looks for ANY Oil to burn off (leftmost first)
 				var oil_idx := _find_leftmost_element(working, ElementalTypes.ElementType.OIL)
@@ -222,6 +240,43 @@ static func process_turn_tick(
 						i -= 1
 					# Refresh fire duration after consuming oil
 					working[i].duration = _config_int("FIRE_OIL_DURATION_TURNS", 1)
+					working[i].applied_turn = current_turn
+
+				# Fire ignites Poison Gas
+				var poison_idx := _find_leftmost_element(
+					working, ElementalTypes.ElementType.POISON_GAS
+				)
+				if poison_idx != -1 and poison_idx != i:
+					working.remove_at(poison_idx)
+					if poison_idx < i:
+						i -= 1
+					# Explosion consumes gas and maintains fire
+					working[i].duration = _config_int("FIRE_DURATION_TURNS", 1)
+					working[i].applied_turn = current_turn
+
+				# Fire melts Ice
+				var ice_idx := _find_leftmost_element(working, ElementalTypes.ElementType.ICE)
+				if ice_idx != -1 and ice_idx != i:
+					working.remove_at(ice_idx)
+					if ice_idx < i:
+						i -= 1
+					# Ice melts into Water Pool (temporary)
+					var water_effect: ElementalTypes.TileEffect = ElementalTypes.TileEffect.new(
+						ElementalTypes.ElementType.WATER_POOL, 2, current_turn, tile_pos
+					)
+					working.append(water_effect)
+
+			ElementalTypes.ElementType.ICE:
+				# Ice freezes Water Pool
+				var pool_idx := _find_leftmost_element(
+					working, ElementalTypes.ElementType.WATER_POOL
+				)
+				if pool_idx != -1 and pool_idx != i:
+					working.remove_at(pool_idx)
+					if pool_idx < i:
+						i -= 1
+					# Water Pool becomes Ice
+					working[i].duration = _config_int("ICE_WATER_FREEZE_DURATION", 2)
 					working[i].applied_turn = current_turn
 
 		i += 1
