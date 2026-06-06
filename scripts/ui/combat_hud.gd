@@ -58,7 +58,7 @@ func setup(player_entity: Entity, turn_manager: TurnManager, combat_input: Comba
 			_turn_manager.turn_started.connect(_on_turn_started)
 		if not _turn_manager.round_started.is_connected(_on_round_started):
 			_turn_manager.round_started.connect(_on_round_started)
-		round_label.text = "Round %d" % _turn_manager.round_number
+		round_label.text = tr("HUD_ROUND") % _turn_manager.round_number
 
 	if _combat_input:
 		if not _combat_input.targeting_started.is_connected(_on_targeting_started):
@@ -91,24 +91,24 @@ func _on_ap_changed(_new_ap: int, _old_ap: int) -> void:
 
 func _on_turn_started(entity: Entity, is_player: bool) -> void:
 	if is_player:
-		turn_label.text = "Your Turn"
+		turn_label.text = tr("HUD_TURN_PLAYER")
 		turn_label.modulate = Color.GREEN
 		_enable_action_buttons(true)
-		log_action("PLAYER TURN")
+		log_action(tr("HUD_TURN_PLAYER").to_upper())
 	else:
-		turn_label.text = "Enemy Turn: %s" % entity.entity_name
+		turn_label.text = tr("HUD_TURN_ENEMY") % tr(entity.entity_name)
 		turn_label.modulate = Color.RED
 		_enable_action_buttons(false)
-		log_action("ENEMY TURN: %s" % entity.entity_name)
+		log_action((tr("HUD_TURN_ENEMY") % tr(entity.entity_name)).to_upper())
 
 
 func _on_round_started(round_number: int) -> void:
-	round_label.text = "Round %d" % round_number
-	log_action("ROUND %d" % round_number)
+	round_label.text = tr("HUD_ROUND") % round_number
+	log_action((tr("HUD_ROUND") % round_number).to_upper())
 
 
 func _on_targeting_started() -> void:
-	log_action("SELECT TARGET")
+	log_action(tr("HUD_SELECT_TARGET"))
 
 
 func _on_attack_executed(target: Node2D, damage: int) -> void:
@@ -116,13 +116,13 @@ func _on_attack_executed(target: Node2D, damage: int) -> void:
 	if target.has_method("get_entity_name"):
 		target_name = target.call("get_entity_name")
 	elif target.get("entity"):
-		target_name = target.get("entity").entity_name
+		target_name = tr(target.get("entity").entity_name)
 
-	log_action("Dealt %d damage to %s" % [damage, target_name])
+	log_action(tr("HUD_DEALT_DAMAGE") % [damage, target_name])
 
 
 func _on_move_pressed() -> void:
-	log_action("USE WASD TO MOVE")
+	log_action(tr("HUD_MOVE_HINT"))
 
 
 func _on_attack_pressed() -> void:
