@@ -64,7 +64,10 @@ Default to **M** if unsure.
 | **Done** | PR merged and issue closed. |
 
 **Rule:** If an issue has no dependencies, set it to `Ready` immediately.
-If it has dependencies, set it to `Backlog` and reference the blocker.
+If it has **open** dependencies (blocker issue is not yet closed/done),
+set it to `Backlog` and reference the blocker. Closed/done blockers do
+not prevent `Ready` — leave the historical `Blocked By` reference for
+context, but do not let a closed dependency keep a task out of `Ready`.
 
 ### Mapping to Phase Tables
 
@@ -160,16 +163,16 @@ Visual, audio, and animation assets needed for game feel.
 
 | Task | Issue | Status | Priority | Blocked By |
 |------|-------|--------|----------|------------|
-| Asset Directory Structure | #194 | ⏳ Ready | HIGH | None |
-| Audio Bus & SFX Nodes | #190 | ⏳ Ready | HIGH | None |
-| Camera Screen Shake | #185 | ⏳ Ready | MEDIUM | None |
-| Hit Flash Feedback | #189 | ⏳ Ready | MEDIUM | None |
-| Damage Numbers | #188 | ⏳ Ready | MEDIUM | None |
-| HP/AP Health Bars | #186 | ⏳ Ready | MEDIUM | None |
-| Turn Banner / Phase UI | #192 | ⏳ Ready | MEDIUM | None |
-| Scene Transitions | #191 | ⏳ Ready | LOW | None |
-| Burden Shader Resolve Pass | #187 | ⏳ Ready | LOW | None |
-| Hotbar Dynamic Icons | #193 | ⏳ Ready | LOW | None |
+| Asset Directory Structure | #194 | ⏳ Ready | P0 | None |
+| Audio Bus & SFX Nodes | #190 | ⏳ Ready | P0 | None |
+| Camera Screen Shake | #185 | ⏳ Ready | P1 | None |
+| Hit Flash Feedback | #189 | ⏳ Ready | P1 | None |
+| Damage Numbers | #188 | ⏳ Ready | P1 | None |
+| HP/AP Health Bars | #186 | ⏳ Ready | P1 | None |
+| Turn Banner / Phase UI | #192 | ⏳ Ready | P1 | None |
+| Scene Transitions | #191 | ⏳ Ready | P2 | None |
+| Burden Shader Resolve Pass | #187 | ⏳ Ready | P2 | None |
+| Hotbar Dynamic Icons | #193 | ⏳ Ready | P2 | None |
 
 **Can parallelize:** Most are independent. Group 1 (shake, hit flash, damage
 numbers, health bars) forms a "combat feedback" subset that can ship together.
@@ -182,13 +185,13 @@ Player-facing features for clarity, accessibility, and onboarding.
 
 | Task | Issue | Status | Priority | Blocked By |
 |------|-------|--------|----------|------------|
-| Tutorial Manager autoload | #175 | ⏳ Ready | HIGH | None |
-| Tutorial Overlay UI | #176 | ⚠️ Blocked | HIGH | #175 |
-| Combat HUD Polish | #177 | ⏳ Ready | MEDIUM | #184 (done) |
-| Visual Feedback Suite | #178 | ⏳ Ready | MEDIUM | #185, #188, #189 |
-| Combat Clarity (telegraphs) | #179 | ⏳ Ready | MEDIUM | None |
-| Accessibility Expansion | #180 | ⏳ Ready | MEDIUM | None |
-| Polish Features | #181 | ⏳ Ready | LOW | None |
+| Tutorial Manager autoload | #175 | ⏳ Ready | P0 | None |
+| Tutorial Overlay UI | #176 | ⚠️ Blocked | P0 | #175 |
+| Combat HUD Polish | #177 | ⏳ Ready | P1 | #184 (done) |
+| Visual Feedback Suite | #178 | 📋 Backlog | P1 | #185, #188, #189 |
+| Combat Clarity (telegraphs) | #179 | ⏳ Ready | P1 | None |
+| Accessibility Expansion | #180 | ⏳ Ready | P1 | None |
+| Polish Features | #181 | ⏳ Ready | P2 | None |
 
 **Critical path:** #175 → #176 (tutorial must come before overlay).
 
@@ -200,17 +203,17 @@ Backend systems for progression, abilities, and content variety.
 
 | Task | Issue | Status | Priority | Blocked By |
 |------|-------|--------|----------|------------|
-| XP / Leveling | #164 | ⏳ Ready | HIGH | None |
-| Ability Base Class | #165 | ⏳ Ready | HIGH | #164 |
-| Ability Hotbar | #166 | ⚠️ Blocked | HIGH | #165 |
-| Inventory Backend | #167 | ⏳ Ready | MEDIUM | None |
-| Inventory UI | #168 | ⚠️ Blocked | MEDIUM | #167 |
-| Data-Driven Enemies | #169 | ⏳ Ready | MEDIUM | None |
-| Enemy Archer Scene | #170 | ⏳ Ready | MEDIUM | #149 (done) |
-| Enemy Tank Scene | #171 | ⏳ Ready | MEDIUM | #149 (done) |
-| Status Effect System | #172 | ⏳ Ready | MEDIUM | None |
-| Run Scaling | #173 | ⏳ Ready | LOW | #164 |
-| Advanced Economy | #174 | ⏳ Ready | LOW | #167 |
+| XP / Leveling | #164 | ⏳ Ready | P0 | None |
+| Ability Base Class | #165 | 📋 Backlog | P0 | #164 |
+| Ability Hotbar | #166 | ⚠️ Blocked | P0 | #165 |
+| Inventory Backend | #167 | ⏳ Ready | P1 | None |
+| Inventory UI | #168 | ⚠️ Blocked | P1 | #167 |
+| Data-Driven Enemies | #169 | ⏳ Ready | P1 | None |
+| Enemy Archer Scene | #170 | ⏳ Ready | P1 | #149 (done) |
+| Enemy Tank Scene | #171 | ⏳ Ready | P1 | #149 (done) |
+| Status Effect System | #172 | ⏳ Ready | P1 | None |
+| Run Scaling | #173 | 📋 Backlog | P2 | #164 |
+| Advanced Economy | #174 | 📋 Backlog | P2 | #167 |
 
 **Critical path:** #164 (XP) → #165 (Abilities) → #166 (Hotbar).
 
@@ -222,13 +225,13 @@ Procedural level generation, room variety, and biomes.
 
 | Task | Issue | Status | Priority | Blocked By |
 |------|-------|--------|----------|------------|
-| Biome Definitions JSON | #159 | ⏳ Ready | HIGH | None |
-| Room Layout JSON Library | #157 | ⏳ Ready | HIGH | #159 |
-| Room Loading Wiring | #158 | ⚠️ Blocked | HIGH | #133 (done), #157 |
-| Room Generation Pipeline | #160 | ⚠️ Blocked | HIGH | #158 |
-| Advanced Grid Features | #162 | ⏳ Ready | MEDIUM | None |
-| Boss Rooms | #161 | ⏳ Ready | MEDIUM | #160 |
-| Advanced Level Features | #163 | ⏳ Ready | LOW | #160 |
+| Biome Definitions JSON | #159 | ⏳ Ready | P0 | None |
+| Room Layout JSON Library | #157 | 📋 Backlog | P0 | #159 |
+| Room Loading Wiring | #158 | ⚠️ Blocked | P0 | #133 (done), #157 |
+| Room Generation Pipeline | #160 | ⚠️ Blocked | P0 | #158 |
+| Advanced Grid Features | #162 | ⏳ Ready | P1 | None |
+| Boss Rooms | #161 | 📋 Backlog | P1 | #160 |
+| Advanced Level Features | #163 | 📋 Backlog | P2 | #160 |
 
 **Critical path:** #159 → #157 → #158 → #160 → #161 (full procedural loop).
 
@@ -240,12 +243,12 @@ Narrative, dialogue, localization.
 
 | Task | Issue | Status | Priority | Blocked By |
 |------|-------|--------|----------|------------|
-| Dialogue Manager Backend | #151 | ⏳ Ready | MEDIUM | None |
-| Dialogue Box UI | #152 | ⚠️ Blocked | MEDIUM | #151 |
-| Narrative Data Systems | #153 | ⏳ Ready | LOW | None |
-| Localization Expansion | #154 | ⏳ Ready | LOW | None |
-| Quest / Mission System | #155 | ⏳ Ready | LOW | None |
-| Narrative Content Expansion | #156 | ⏳ Ready | LOW | #153, #155 |
+| Dialogue Manager Backend | #151 | ⏳ Ready | P1 | None |
+| Dialogue Box UI | #152 | ⚠️ Blocked | P1 | #151 |
+| Narrative Data Systems | #153 | ⏳ Ready | P2 | None |
+| Localization Expansion | #154 | ⏳ Ready | P2 | None |
+| Quest / Mission System | #155 | ⏳ Ready | P2 | None |
+| Narrative Content Expansion | #156 | 📋 Backlog | P2 | #153, #155 |
 
 **Critical path:** #151 → #152 (dialogue before UI).
 

@@ -48,7 +48,9 @@ emberfall/
 ├── config/                    # JSON configurations
 └── .Jules/                    # Learning memory
     ├── bolt.md                # Performance learnings
-    └── palette.md             # UI/UX learnings
+    ├── palette.md             # UI/UX learnings
+    ├── integrations.md        # External tools, CI, git hooks (create as needed)
+    └── gotchas.md             # Godot quirks, autoload issues (create as needed)
 ```
 
 ---
@@ -516,6 +518,7 @@ gh project item-edit --id "$P_ID" --project-id "$PRJ" \
 gh project item-edit --id "$P_ID" --project-id "$PRJ" \
   --field-id PVTSSF_lAHOAI5hvc4BZpb5zhUmpS0 \
   --single-select-option-id <Backlog|Ready|In progress|In review|Done option id>
+```
 
 **Cached option IDs** (Emberfall project):
 
@@ -587,5 +590,5 @@ gh project field-list 1 --owner niyazmft --format json
 - **Tests:** `tests/` directory
 - **Jules Protocol:** `docs/JULES_PROTOCOL.md`
 - **Jules QA Checklist:** `docs/JULES_QA_CHECKLIST.md`
-- **Learnings:** `.Jules/bolt.md`, `.Jules/palette.md`
+- **Learnings:** `.Jules/bolt.md`, `.Jules/palette.md` (create `integrations.md` and `gotchas.md` as new topics emerge)
 - **Config:** `config/game_config.json`
