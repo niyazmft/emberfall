@@ -28,6 +28,12 @@ func test_set_locale() -> void:
 	var actual_de: String = tr(key_de)
 	assert_that(actual_de).is_equal(expected_de)
 
+	lm.set_locale("es")
+	var key_es: String = "menu.title.continue"
+	var expected_es: String = "Continuar"
+	var actual_es: String = tr(key_es)
+	assert_that(actual_es).is_equal(expected_es)
+
 	lm.set_locale("fr")
 	var key_fr: String = "menu.title.quit"
 	var expected_fr: String = "Quitter"
