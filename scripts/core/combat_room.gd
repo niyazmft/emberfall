@@ -197,6 +197,34 @@ func _try_move_player(dx: int, dy: int) -> void:
 
 func _on_combat_ended(victory: bool) -> void:
 	if victory:
-		print("Victory!")
+		_show_victory_modal()
 	else:
-		print("Defeat!")
+		_show_defeat_modal()
+
+
+func _show_victory_modal() -> void:
+	var scene: PackedScene = load("res://scenes/ui/victory_modal.tscn")
+	if scene:
+		var modal: Control = scene.instantiate() as Control
+		ui_overlay.add_child(modal)
+		if modal.has_method("setup"):
+			# Collect summary data (placeholder values for now)
+			var summary := {
+				"turns": _turn_manager.round_number, # Close enough for now
+				"kills": 3, # Placeholder
+				"shards": 10 # Placeholder
+			}
+			modal.call("setup", summary)
+
+
+func _show_defeat_modal() -> void:
+	var scene: PackedScene = load("res://scenes/ui/defeat_modal.tscn")
+	if scene:
+		var modal: Control = scene.instantiate() as Control
+		ui_overlay.add_child(modal)
+		if modal.has_method("setup"):
+			var summary := {
+				"turns": _turn_manager.round_number,
+				"rooms": 1 # Placeholder
+			}
+			modal.call("setup", summary)

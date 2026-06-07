@@ -37,6 +37,7 @@ func _ready() -> void:
 		_grid_renderer = _find_grid_renderer(get_tree().root)
 
 	_setup_greybox()
+	_setup_status_bar()
 
 	if entity:
 		_connect_entity_signals()
@@ -50,6 +51,10 @@ func _process(delta: float) -> void:
 		global_position = global_position.lerp(_target_position, weight)
 	else:
 		global_position = _target_position
+
+	if has_node("EntityStatusBar"):
+		var sb: Control = get_node("EntityStatusBar")
+		sb.global_position = global_position + Vector2(0, -40)
 
 
 func _find_grid_renderer(node: Node) -> GridRenderer:
@@ -182,6 +187,18 @@ func grid_to_world(x: int, y: int, elevation: int) -> Vector2:
 	if _grid_renderer:
 		return _grid_renderer.grid_to_world(x, y, elevation)
 	return Vector2.ZERO
+
+
+func _setup_status_bar() -> void:
+	if not has_node("EntityStatusBar"):
+		var sb_scene: PackedScene = load("res://scenes/ui/entity_status_bar.tscn")
+		if sb_scene:
+			var sb: Control = sb_scene.instantiate() as Control
+			sb.name = "EntityStatusBar"
+			sb.top_level = true
+			add_child(sb)
+			if entity and sb.has_method("setup"):
+				sb.call("setup", entity)
 
 
 func _setup_greybox() -> void:
