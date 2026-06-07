@@ -93,6 +93,7 @@ enum State { IDLE, STUNNED, DYING, DEAD, GHOST }
 
 # ── Identity ────────────────────────────────────────────────────────
 @export var entity_name: String = "Unnamed"
+@export var archetype_id: String = ""
 @export var is_player: bool = false
 
 

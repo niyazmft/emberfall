@@ -41,7 +41,6 @@ limits/message_queue/max_size=4096
 EventBus="*res://scripts/autoload/event_bus.gd"
 SafeZoneManager="*res://scripts/autoload/safe_zone_manager.gd"
 ConfigLoader="*res://scripts/autoload/config_loader.gd"
-DialogueManager="*res://scripts/autoload/dialogue_manager.gd"
 BurdenManager="*res://scripts/autoload/burden_manager.gd"
 CaptionManager="*res://scripts/autoload/caption_manager.gd"
 AudioMiddleware="*res://scripts/autoload/audio_middleware.gd"
@@ -58,12 +57,6 @@ SettingsManager="*res://scripts/autoload/settings_manager.gd"
 SaveManager="*res://scripts/autoload/save_manager.gd"
 InventoryManager="*res://scripts/inventory/inventory_manager.gd"
 InputRouter="*res://scripts/autoload/input_router.gd"
-TutorialManager="*res://scripts/autoload/tutorial_manager.gd"
-SFXEmitter="*res://scripts/autoload/sfx_emitter.gd"
-
-[audio]
-
-main_bus_layout="res://default_bus_layout.tres"
 
 [internationalization]
 

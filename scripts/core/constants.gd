@@ -23,8 +23,6 @@ const ELEVATION_BONUS_TIER_1: float = 0.15
 const ELEVATION_BONUS_TIER_2: float = 0.25
 const LIGHT_COVER_PENALTY: float = 0.15
 const HEAVY_COVER_PENALTY: float = 0.30
-const PARTIAL_COVER_PENALTY: float = 0.20
-const DESTRUCTIBLE_COVER_PENALTY: float = 0.10
 const POSITION_MODIFIER_MIN: float = 0.5
 const POSITION_MODIFIER_MAX: float = 1.5
 

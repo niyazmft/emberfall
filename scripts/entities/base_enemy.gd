@@ -2,6 +2,7 @@ class_name BaseEnemy
 extends Node2D
 ## Enemy scene root with configurable AI behavior
 
+@export var archetype_id: String = ""
 @export var entity: Entity
 @export var ai_controller: Node  ## Will integrate with behavior tree
 @export var visual_proxy: EntityVisualProxy
@@ -16,6 +17,9 @@ func _ready() -> void:
 	add_to_group("enemies")
 	if _grid_system == null:
 		_grid_system = AutoloadHelper.grid_system()
+
+	# In Godot, properties are set BEFORE _ready().
+	# So archetype_id should already be what was set in _init() or in the inspector.
 	_setup_entity()
 	_setup_ai()
 	_setup_visual_proxy()
@@ -38,10 +42,70 @@ func _setup_entity() -> void:
 		entity = Entity.new("Enemy", 0, 0, 30, 8, 4)
 		entity.is_player = false
 
+	_load_stats_from_config()
+
+
+func _load_stats_from_config() -> void:
+	if archetype_id.is_empty():
+		# Try to determine archetype from class name or other hints if empty
+		# Use polymorphic check if available, otherwise default to "grunt"
+		if has_method("get_archetype_id"):
+			archetype_id = call("get_archetype_id")
+		else:
+			# Fallback to grunt if still empty
+			archetype_id = "grunt"
+
+	var config_loader: _ConfigLoader = AutoloadHelper.config_loader()
+	if config_loader == null:
+		return
+
+	var enemies_config: Dictionary = config_loader.getValue("enemies", "", {})
+	if enemies_config.has(archetype_id):
+		var data: Dictionary = enemies_config[archetype_id]
+		# Use data-driven name if present, otherwise fallback to existing name or capitalized ID
+		if data.has("name"):
+			entity.entity_name = data["name"]
+		elif (
+			entity.entity_name == "Unnamed"
+			or entity.entity_name == "Enemy"
+			or entity.entity_name == "Grunt"
+		):
+			# "Grunt" is the default in some constructors, but we want the specific archetype name
+			entity.entity_name = archetype_id.capitalize()
+
+		entity.archetype_id = archetype_id
+		entity.hp_max = int(data.get("hp_max", 30))
+		entity.hp = entity.hp_max
+		entity.off = int(data.get("off", 8))
+		entity.def_ = int(data.get("def_", 4))
+		entity.spd = int(data.get("spd", 4))
+	else:
+		push_warning(
+			(
+				"BaseEnemy: Archetype ID '%s' not found in config for node '%s'. Using defaults."
+				% [archetype_id, name]
+			)
+		)
+
 
 func _setup_ai() -> void:
-	# Virtual method for subclasses to override
-	pass
+	# If archetype defines behavior, try to apply it
+	var config_loader: _ConfigLoader = AutoloadHelper.config_loader()
+	var behavior_str: String = ""
+	if config_loader:
+		var enemies_config: Dictionary = config_loader.getValue("enemies", "", {})
+		if enemies_config.has(archetype_id):
+			behavior_str = enemies_config[archetype_id].get("ai_behavior", "")
+
+	if ai_controller and ai_controller is EnemyAIController:
+		var controller: EnemyAIController = ai_controller as EnemyAIController
+		match behavior_str.to_upper():
+			"GRUNT":
+				controller.behavior = EnemyAIController.BehaviorType.GRUNT
+			"ARCHER":
+				controller.behavior = EnemyAIController.BehaviorType.ARCHER
+			"TANK":
+				controller.behavior = EnemyAIController.BehaviorType.TANK
 
 
 func _setup_visual_proxy() -> void:
