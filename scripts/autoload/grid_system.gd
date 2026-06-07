@@ -186,18 +186,19 @@ func can_move(from_x: int, from_y: int, to_x: int, to_y: int) -> bool:
 	var to_tile: TacTileData = _tiles[to_y * GRID_SIZE + to_x] as TacTileData
 	if from_tile == null or to_tile == null:
 		return false
-	if (to_tile.cover_flags & 32) != 0:  # FLAG_BLOCKED_MOVE
+	if (to_tile.cover_flags & TacTileData.FLAG_BLOCKED_MOVE) != 0:
 		return false
-	# Elevation flags: FLAG_ELEVATION_0 (4), FLAG_ELEVATION_1 (8), FLAG_ELEVATION_2 (16)
+	# Elevation flags
 	var from_elev: int = 0
-	if (from_tile.cover_flags & 8) != 0:
+	if (from_tile.cover_flags & TacTileData.FLAG_ELEVATION_1) != 0:
 		from_elev = 1
-	elif (from_tile.cover_flags & 16) != 0:
+	elif (from_tile.cover_flags & TacTileData.FLAG_ELEVATION_2) != 0:
 		from_elev = 2
+
 	var to_elev: int = 0
-	if (to_tile.cover_flags & 8) != 0:
+	if (to_tile.cover_flags & TacTileData.FLAG_ELEVATION_1) != 0:
 		to_elev = 1
-	elif (to_tile.cover_flags & 16) != 0:
+	elif (to_tile.cover_flags & TacTileData.FLAG_ELEVATION_2) != 0:
 		to_elev = 2
 	return abs(from_elev - to_elev) <= MAX_ELEVATION_DELTA
 
@@ -334,7 +335,30 @@ func get_movement_cost(to_x: int, to_y: int) -> int:
 	var cost: int = SLIP_MOVEMENT_BASE_COST
 	if has_oil_tile(to_x, to_y):
 		cost = ceili(float(SLIP_MOVEMENT_BASE_COST) / SLIP_SPEED_FACTOR)
+
+	# New hazards: ICE slip
+	if has_element_tile(to_x, to_y, ElementalTypes.ElementType.ICE):
+		var ice_slip: float = AutoloadHelper.config_float("ICE_SLIP_SPEED_MULT", 0.6)
+		cost = max(cost, ceili(float(SLIP_MOVEMENT_BASE_COST) / ice_slip))
+
+	# New hazards: WIND_CURRENT additive cost
+	if has_element_tile(to_x, to_y, ElementalTypes.ElementType.WIND_CURRENT):
+		cost += AutoloadHelper.config_int("WIND_CURRENT_AP_COST_MOD", 1)
+
 	return cost
+
+
+func has_element_tile(x: int, y: int, element: ElementalTypes.ElementType) -> bool:
+	if not is_in_bounds(x, y):
+		return false
+	var idx: int = index(x, y)
+	if not _elemental_overlay.has(idx):
+		return false
+	var effects: Array = _elemental_overlay[idx]
+	for eff: Variant in effects:
+		if eff.get("element", ElementalTypes.ElementType.NONE) == element:
+			return true
+	return false
 
 
 ## Clear all dynamic elemental overlays (call on room unload / run reset).
@@ -362,7 +386,7 @@ func has_los(observer_x: int, observer_y: int, target_x: int, target_y: int) -> 
 			return true
 		if x != observer_x or y != observer_y:
 			var tile: TacTileData = _tiles[y * GRID_SIZE + x] as TacTileData
-			if tile != null and (tile.cover_flags & 64) != 0:
+			if tile != null and (tile.cover_flags & TacTileData.FLAG_BLOCKED_VISION) != 0:
 				return false
 		var e2: int = 2 * err
 		if e2 > -dy:

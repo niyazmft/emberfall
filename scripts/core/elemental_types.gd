@@ -5,7 +5,9 @@ class_name ElementalTypes
 ## All values are config-driven with sensible defaults.
 
 # ── Element Enumeration ───────────────────────────────────────────────
-enum ElementType { NONE, FIRE, WATER, WIND, OIL }  ## No active element  ## Fire: spreads, extinguished by water, amplified by oil  ## Water: extinguishes fire, blocks fire spread  ## Wind: fans fire (1.5×), spreads it to adjacent tiles  ## Oil: amplifies fire to 2.0×, causes slip terrain (0.8× speed)
+enum ElementType {
+	NONE, FIRE, WATER, WIND, OIL, POISON_GAS, ICE, WIND_CURRENT, WATER_POOL, SPIKE_TRAP
+}
 
 
 # ── Tile Effect Record ────────────────────────────────────────────────
