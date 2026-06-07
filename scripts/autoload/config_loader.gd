@@ -16,6 +16,9 @@ const BIOMES_PATH := "res://config/biomes.json"
 const SECRET_ROOM_CONDITIONS_PATH := "res://config/secret_room_conditions.json"
 const PROPS_PATH := "res://data/props.json"
 const AMBIENT_NARRATOR_PATH := "res://data/ambient_narrator.json"
+const CURRENCY_PATH := "res://config/currency.json"
+const WEAPONS_PATH := "res://config/weapons.json"
+const RECIPES_PATH := "res://config/recipes.json"
 
 # Fallback defaults (sensible so the game runs even if config is missing)
 const DEFAULTS: Dictionary = {
@@ -66,6 +69,9 @@ var _loadedFiles: Dictionary = {
 	SECRET_ROOM_CONDITIONS_PATH: false,
 	PROPS_PATH: false,
 	AMBIENT_NARRATOR_PATH: false,
+	CURRENCY_PATH: false,
+	WEAPONS_PATH: false,
+	RECIPES_PATH: false,
 }
 
 
@@ -92,6 +98,33 @@ func _loadConfig() -> void:
 
 
 func _loadJsonToConfig(filePath: String) -> void:
+	_loadJsonToConfig(CONFIG_PATH, "config")
+	_loadJsonToConfig(ITEMS_PATH, "items")
+	_loadJsonToConfig(EQUIPMENT_PATH, "equipment")
+	_loadJsonToConfig(ENEMIES_PATH, "enemies")
+	_loadJsonToConfig(SKILLS_PATH, "skills")
+	_loadJsonToConfig(HOTBAR_BINDINGS_PATH, "hotbar_bindings")
+	_loadJsonToConfig(STATUS_EFFECTS_PATH, "status_effects")
+	_loadJsonToConfig(ACCESSIBILITY_PATH, "accessibility")
+	_loadJsonToConfig(REWARDS_PATH, "rewards")
+	_loadJsonToConfig(UNLOCKS_PATH, "unlocks")
+	_loadJsonToConfig(ENCOUNTER_SCALER_PATH, "encounter_scaler")
+	_loadJsonToConfig(PROGRESSION_PATH, "progression")
+	_loadJsonToConfig(XP_ECONOMY_PATH, "xp_economy")
+	_loadJsonToConfig(CURRENCY_PATH, "currency")
+	_loadJsonToConfig(WEAPONS_PATH, "weapons")
+	_loadJsonToConfig(RECIPES_PATH, "recipes")
+
+	var actual_biomes_path := BIOMES_PATH
+	if _configData.has("config") and _configData["config"].has("run_manager"):
+		actual_biomes_path = _configData["config"]["run_manager"].get(
+			"BIOMES_CONFIG_PATH", BIOMES_PATH
+		)
+
+	_loadJsonToConfig(actual_biomes_path, "biomes")
+
+
+func _loadJsonToConfig(filePath: String, p_namespace: String = "") -> void:
 	if FileAccess.file_exists(filePath):
 		var fileHandle: FileAccess = FileAccess.open(filePath, FileAccess.READ)
 		if fileHandle:
@@ -132,6 +165,43 @@ func getValue(sectionOrKey: String, key: String = "", fallback: Variant = null) 
 	if DEFAULTS.has(sectionOrKey):
 		return DEFAULTS[sectionOrKey]
 	return fallback
+	else:
+		# One-arg mode: direct key lookup in namespaced or flattened namespace
+		if _configData.has(sectionOrKey):
+			var data: Variant = _configData[sectionOrKey]
+			# If the key points to a sub-dictionary with the same name, return that sub-dictionary
+			# to maintain backward compatibility with JSONs like {"items": {"items": {...}}}
+			if data is Dictionary and data.has(sectionOrKey):
+				return data[sectionOrKey]
+			return data
+
+		# Backward compatibility: scan sub-sections for key if not found in root
+		if (
+			sectionOrKey != "items"
+			and sectionOrKey != "enemies"
+			and sectionOrKey != "equipment"
+			and sectionOrKey != "progression"
+			and sectionOrKey != "xp_economy"
+			and sectionOrKey != "accessibility"
+			and sectionOrKey != "config"
+			and sectionOrKey != "biomes"
+			and sectionOrKey != "skills"
+			and sectionOrKey != "hotbar_bindings"
+			and sectionOrKey != "status_effects"
+			and sectionOrKey != "rewards"
+			and sectionOrKey != "unlocks"
+			and sectionOrKey != "encounter_scaler"
+			and sectionOrKey != "currency"
+			and sectionOrKey != "weapons"
+			and sectionOrKey != "recipes"
+		):
+			for section: Variant in _configData.values():
+				if section is Dictionary and section.has(sectionOrKey):
+					return section[sectionOrKey]
+
+		if DEFAULTS.has(sectionOrKey):
+			return DEFAULTS[sectionOrKey]
+		return fallback
 
 
 ## Convenience typed getters for hot-path values.
