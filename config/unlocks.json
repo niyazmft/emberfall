@@ -1,0 +1,20 @@
+{
+  "unlocks": {
+    "unlock_ap_max_1": {
+      "id": "unlock_ap_max_1",
+      "name_key": "UNLOCK_AP_MAX_1_NAME",
+      "description_key": "UNLOCK_AP_MAX_1_DESC",
+      "cost": 100,
+      "effect_id": "AP_MAX",
+      "effect_value": 1.0
+    },
+    "unlock_hp_max_1": {
+      "id": "unlock_hp_max_1",
+      "name_key": "UNLOCK_HP_MAX_1_NAME",
+      "description_key": "UNLOCK_HP_MAX_1_DESC",
+      "cost": 50,
+      "effect_id": "HP_MAX",
+      "effect_value": 10.0
+    }
+  }
+}

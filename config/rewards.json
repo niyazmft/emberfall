@@ -1,0 +1,28 @@
+{
+  "rewards": [
+    {
+      "id": "reward_small_xp",
+      "name_key": "REWARD_SMALL_XP_NAME",
+      "description_key": "REWARD_SMALL_XP_DESC",
+      "type": "XP",
+      "value": 50,
+      "conditions": { "min_room_index": 0 }
+    },
+    {
+      "id": "reward_med_xp",
+      "name_key": "REWARD_MED_XP_NAME",
+      "description_key": "REWARD_MED_XP_DESC",
+      "type": "XP",
+      "value": 150,
+      "conditions": { "min_room_index": 5 }
+    },
+    {
+      "id": "reward_echo_shards",
+      "name_key": "REWARD_ECHO_SHARDS_NAME",
+      "description_key": "REWARD_ECHO_SHARDS_DESC",
+      "type": "CURRENCY",
+      "value": 10,
+      "conditions": { "min_room_index": 0 }
+    }
+  ]
+}
