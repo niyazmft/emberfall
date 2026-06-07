@@ -8,36 +8,19 @@ enum BehaviorType { GRUNT, ARCHER, TANK }
 @export var behavior: BehaviorType = BehaviorType.GRUNT
 @export var enemy_entity: Entity
 @export var grid_system: _GridSystem
-@export var gridRenderer: GridRenderer
 
 ## Internal reference to player
-var _playerNode: Node2D
-var _intentVisualizer: IntentVisualizer
+var _player_node: Node2D
 
 
 func _ready() -> void:
 	if grid_system == null:
 		grid_system = AutoloadHelper.grid_system()
 
-	if gridRenderer == null:
-		var tree: SceneTree = get_tree()
-		if tree and tree.root:
-			var node: Node = tree.root.find_child("GridRenderer", true, false)
-			if node is GridRenderer:
-				gridRenderer = node as GridRenderer
 
-	if gridRenderer:
-		_intentVisualizer = IntentVisualizer.new(gridRenderer)
-		add_child(_intentVisualizer)
-	else:
-		push_error(
-			"EnemyAIController: gridRenderer not found! Intent visualization will be disabled."
-		)
-
-
-func decide_action(pEntity: Entity = null) -> Dictionary:
-	if pEntity:
-		enemy_entity = pEntity
+func decide_action(p_entity: Entity = null) -> Dictionary:
+	if p_entity:
+		enemy_entity = p_entity
 
 	if enemy_entity == null:
 		return {"type": "wait"}
@@ -46,87 +29,87 @@ func decide_action(pEntity: Entity = null) -> Dictionary:
 	if tree == null:
 		return {"type": "wait"}
 
-	var firstPlayer: Node = tree.get_first_node_in_group("player")
-	if firstPlayer is Node2D:
-		_playerNode = firstPlayer as Node2D
-
-	if _playerNode == null or not _playerNode.has_method("alive") or not _playerNode.call("alive"):
+	_player_node = tree.get_first_node_in_group("player") as Node2D
+	if (
+		_player_node == null
+		or not _player_node.has_method("alive")
+		or not _player_node.call("alive")
+	):
 		return {"type": "wait"}
 
-	var playerEntRef: Variant = _playerNode.get("entity")
-	if not playerEntRef is Entity:
+	var player_entity: Entity = _player_node.get("entity") as Entity
+	if player_entity == null:
 		return {"type": "wait"}
-	var playerEntity: Entity = playerEntRef as Entity
 
-	var playerPos: Vector2i = playerEntity.grid_position()
-	var enemyPos: Vector2i = enemy_entity.grid_position()
-	var dist: int = _grid_distance(enemyPos, playerPos)
+	var player_pos: Vector2i = player_entity.grid_position()
+	var enemy_pos: Vector2i = enemy_entity.grid_position()
+	var dist: int = _grid_distance(enemy_pos, player_pos)
 
-	var behaviorAction: Dictionary = {"type": "wait"}
 	match behavior:
 		BehaviorType.GRUNT:
-			behaviorAction = _grunt_behavior(enemyPos, playerPos, dist)
+			return _grunt_behavior(enemy_pos, player_pos, dist)
 		BehaviorType.ARCHER:
-			behaviorAction = _archer_behavior(enemyPos, playerPos, dist)
+			return _archer_behavior(enemy_pos, player_pos, dist)
 		BehaviorType.TANK:
-			behaviorAction = _tank_behavior(enemyPos, playerPos, dist)
+			return _tank_behavior(enemy_pos, player_pos, dist)
 
-	if _intentVisualizer:
-		_intentVisualizer.visualizeIntent(enemy_entity, behaviorAction)
-	return behaviorAction
+	return {"type": "wait"}
 
 
-func _grunt_behavior(enemyPos: Vector2i, playerPos: Vector2i, dist: int) -> Dictionary:
-	var action: Dictionary = {"type": "wait"}
+func _grunt_behavior(enemy_pos: Vector2i, player_pos: Vector2i, dist: int) -> Dictionary:
 	# Rush player, attack when adjacent
 	if dist <= 1:
-		action = {"type": "attack", "target": _playerNode}
-	else:
-		var nextTile: Vector2i = _get_next_tile_towards(playerPos)
-		if nextTile != enemyPos:
-			action = {"type": "move", "target_x": nextTile.x, "target_y": nextTile.y}
+		return {"type": "attack", "target": _player_node}
 
-	return action
+	var next_tile: Vector2i = _get_next_tile_towards(player_pos)
+	if next_tile != enemy_pos:
+		return {"type": "move", "target_x": next_tile.x, "target_y": next_tile.y}
+
+	return {"type": "wait"}
 
 
-func _archer_behavior(enemyPos: Vector2i, playerPos: Vector2i, dist: int) -> Dictionary:
-	var action: Dictionary = {"type": "wait"}
+func _archer_behavior(enemy_pos: Vector2i, player_pos: Vector2i, dist: int) -> Dictionary:
 	# Maintain 2-3 tile distance
 	if dist < 2:
 		# Too close, move away
-		var nextTile: Vector2i = _get_next_tile_towards(playerPos, true)
-		if nextTile != enemyPos:
-			action = {"type": "move", "target_x": nextTile.x, "target_y": nextTile.y}
+		var next_tile: Vector2i = _get_next_tile_towards(player_pos, true)
+		if next_tile != enemy_pos:
+			return {"type": "move", "target_x": next_tile.x, "target_y": next_tile.y}
 	elif dist > 3:
 		# Too far, move towards
-		var nextTile: Vector2i = _get_next_tile_towards(playerPos)
-		if nextTile != enemyPos:
-			action = {"type": "move", "target_x": nextTile.x, "target_y": nextTile.y}
+		var next_tile: Vector2i = _get_next_tile_towards(player_pos)
+		if next_tile != enemy_pos:
+			return {"type": "move", "target_x": next_tile.x, "target_y": next_tile.y}
 	else:
 		# In range 2-3, attack
-		action = {"type": "attack", "target": _playerNode}
+		return {"type": "attack", "target": _player_node}
 
-	return action
+	return {"type": "wait"}
 
 
-func _tank_behavior(enemyPos: Vector2i, playerPos: Vector2i, dist: int) -> Dictionary:
+func _tank_behavior(enemy_pos: Vector2i, player_pos: Vector2i, dist: int) -> Dictionary:
 	# Slow advance, heavy damage
-	return _grunt_behavior(enemyPos, playerPos, dist)
+	# For Tank, we might want to only move if we have full AP or something,
+	# but for now it's same as grunt.
+	return _grunt_behavior(enemy_pos, player_pos, dist)
 
 
-func _get_next_tile_towards(targetPos: Vector2i, away: bool = false) -> Vector2i:
+func _get_next_tile_towards(target_pos: Vector2i, away: bool = false) -> Vector2i:
 	if enemy_entity == null or grid_system == null:
 		return Vector2i(enemy_entity.x, enemy_entity.y) if enemy_entity else Vector2i.ZERO
 
-	var currentPos: Vector2i = enemy_entity.grid_position()
-	var bestTile: Vector2i = currentPos
-	var minDist: int = 0
-	if not away:
-		minDist = GameConstants.GRID_W * 2 + 1
+	var current_pos: Vector2i = enemy_entity.grid_position()
+	var best_tile: Vector2i = current_pos
+	var min_dist: int
+	if away:
+		min_dist = -1
 	else:
-		minDist = -1
+		# Sentinel larger than any possible grid distance so any valid
+		# neighbour is considered when the ideal tile is occupied.
+		min_dist = GameConstants.GRID_W * 2 + 1
 
-	var occupiedCoords: Array[Vector2i] = _get_occupied_coords()
+	# Get all entities once to avoid repeated group lookups in the loop
+	var occupied_coords: Array[Vector2i] = _get_occupied_coords()
 
 	# Check all 8 neighbors
 	for dx: int in range(-1, 2):
@@ -134,28 +117,29 @@ func _get_next_tile_towards(targetPos: Vector2i, away: bool = false) -> Vector2i
 			if dx == 0 and dy == 0:
 				continue
 
-			var nx: int = currentPos.x + dx
-			var ny: int = currentPos.y + dy
-			var nPos: Vector2i = Vector2i(nx, ny)
+			var nx: int = current_pos.x + dx
+			var ny: int = current_pos.y + dy
+			var n_pos: Vector2i = Vector2i(nx, ny)
 
+			# Skip out-of-bounds tiles to avoid crash in can_move
 			if nx < 0 or nx >= GameConstants.GRID_W or ny < 0 or ny >= GameConstants.GRID_H:
 				continue
 
-			if grid_system.can_move(currentPos.x, currentPos.y, nx, ny):
-				if nPos in occupiedCoords:
+			if grid_system.can_move(current_pos.x, current_pos.y, nx, ny):
+				if n_pos in occupied_coords:
 					continue
 
-				var d: int = _grid_distance(nPos, targetPos)
+				var d: int = _grid_distance(n_pos, target_pos)
 				if away:
-					if d > minDist:
-						minDist = d
-						bestTile = nPos
+					if d > min_dist:
+						min_dist = d
+						best_tile = n_pos
 				else:
-					if d < minDist:
-						minDist = d
-						bestTile = nPos
+					if d < min_dist:
+						min_dist = d
+						best_tile = n_pos
 
-	return bestTile
+	return best_tile
 
 
 func _get_occupied_coords() -> Array[Vector2i]:
@@ -165,22 +149,22 @@ func _get_occupied_coords() -> Array[Vector2i]:
 	if tree == null:
 		return occupied
 
-	var firstPlayer: Node = tree.get_first_node_in_group("player")
-	if firstPlayer is Node2D:
-		var pent: Variant = firstPlayer.get("entity")
-		if pent is Entity:
-			var pEnt: Entity = pent as Entity
-			occupied.append(Vector2i(pEnt.x, pEnt.y))
+	# Player
+	var player: Node2D = tree.get_first_node_in_group("player") as Node2D
+	if player:
+		var pent: Entity = player.get("entity") as Entity
+		if pent:
+			occupied.append(Vector2i(pent.x, pent.y))
 
-	for enemyNodeLocal: Node in tree.get_nodes_in_group("enemies"):
-		if enemyNodeLocal == get_parent():  # Skip self
+	# Enemies
+	for enemy: Node in tree.get_nodes_in_group("enemies"):
+		if enemy == get_parent():  # Skip self
 			continue
-		if enemyNodeLocal is Node2D:
-			var eEntRef: Variant = enemyNodeLocal.get("entity")
-			if eEntRef is Entity:
-				var eEnt: Entity = eEntRef as Entity
-				if eEnt.alive():
-					occupied.append(Vector2i(eEnt.x, eEnt.y))
+		var e_node: Node2D = enemy as Node2D
+		if e_node:
+			var e_ent: Entity = e_node.get("entity") as Entity
+			if e_ent and e_ent.alive():
+				occupied.append(Vector2i(e_ent.x, e_ent.y))
 
 	return occupied
 

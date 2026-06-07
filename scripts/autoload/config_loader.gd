@@ -10,9 +10,12 @@ const ITEMS_PATH := "res://config/items.json"
 const EQUIPMENT_PATH := "res://config/entity_equipment.json"
 const ENEMIES_PATH := "res://config/enemies.json"
 const SKILLS_PATH := "res://config/skills.json"
-const HOTBAR_BINDINGS_PATH := "res://config/hotbar_bindings.json"
+const STATUS_EFFECTS_PATH := "res://config/status_effects.json"
 const ACCESSIBILITY_PATH := "res://config/accessibility.json"
-const GRID_VISUALS_PATH := "res://config/grid_visuals.json"
+const REWARDS_PATH := "res://config/rewards.json"
+const UNLOCKS_PATH := "res://config/unlocks.json"
+const ENCOUNTER_SCALER_PATH := "res://config/encounter_scaler.json"
+const HUD_CONFIG_PATH := "res://config/hud_config.json"
 
 # Fallback defaults (sensible so the game runs even if config is missing)
 const DEFAULTS: Dictionary = {
@@ -57,9 +60,12 @@ var _loadedFiles: Dictionary = {
 	EQUIPMENT_PATH: false,
 	ENEMIES_PATH: false,
 	SKILLS_PATH: false,
-	HOTBAR_BINDINGS_PATH: false,
+	STATUS_EFFECTS_PATH: false,
 	ACCESSIBILITY_PATH: false,
-	GRID_VISUALS_PATH: false,
+	REWARDS_PATH: false,
+	UNLOCKS_PATH: false,
+	ENCOUNTER_SCALER_PATH: false,
+	HUD_CONFIG_PATH: false,
 }
 
 
@@ -77,10 +83,12 @@ func _loadConfig() -> void:
 	_loadJsonToConfig(EQUIPMENT_PATH)
 	_loadJsonToConfig(ENEMIES_PATH)
 	_loadJsonToConfig(SKILLS_PATH)
-	_loadJsonToConfig(HOTBAR_BINDINGS_PATH)
+	_loadJsonToConfig(STATUS_EFFECTS_PATH)
 	_loadJsonToConfig(ACCESSIBILITY_PATH)
-	_loadJsonToConfig(GRID_VISUALS_PATH)
-	_validateGridVisuals()
+	_loadJsonToConfig(REWARDS_PATH)
+	_loadJsonToConfig(UNLOCKS_PATH)
+	_loadJsonToConfig(ENCOUNTER_SCALER_PATH)
+	_loadJsonToConfig(HUD_CONFIG_PATH)
 
 
 func _loadJsonToConfig(filePath: String) -> void:
@@ -155,31 +163,3 @@ func isLoaded() -> bool:
 		if not _loadedFiles[path]:
 			return false
 	return true
-
-
-func _validateGridVisuals() -> void:
-	if not _configData.has("highlights"):
-		return
-
-	var rawHighlights: Variant = _configData["highlights"]
-	if not rawHighlights is Dictionary:
-		return
-	var highlightsDict: Dictionary = rawHighlights as Dictionary
-
-	for key: Variant in highlightsDict.keys():
-		var styleRef: Variant = highlightsDict[key]
-		if styleRef is Dictionary:
-			var style: Dictionary = styleRef as Dictionary
-			if style.has("pulse"):
-				var pulseRef: Variant = style["pulse"]
-				if pulseRef is Dictionary:
-					var pulse: Dictionary = pulseRef as Dictionary
-					var minA: float = float(pulse.get("min_alpha", 0.0))
-					var maxA: float = float(pulse.get("max_alpha", 1.0))
-					if minA > maxA:
-						push_error(
-							(
-								"ConfigLoader: Grid visual style '%s' has min_alpha (%.2f) > max_alpha (%.2f)!"
-								% [str(key), minA, maxA]
-							)
-						)
