@@ -6,39 +6,39 @@ extends Node
 ##
 ## Usage from GDScript console or another script:
 ##   var mgr: QAManager = QAManager.instance()
-##   mgr.run_scenario("res://addons/qa_agent/scenarios/test_main_menu.gd")
-##   mgr.start_exploratory("Explore the main menu and settings", 30)
+##   mgr.runScenario("res://addons/qa_agent/scenarios/test_main_menu.gd")
+##   mgr.startExploratory("Explore the main menu and settings", 30)
 ##
 ## Configuration (set before running):
-##   mgr.api_base = "https://api.openai.com/v1"
-##   mgr.api_key = "sk-..."
+##   mgr.apiBase = "https://api.openai.com/v1"
+##   mgr.apiKey = "sk-..."
 ##   mgr.model = "gpt-4o"
 
 const CONFIG_PATH: String = "user://qa_agent_config.json"
 
 ## Cloud API configuration.
-var api_base: String = ""
-var api_key: String = ""
+var apiBase: String = ""
+var apiKey: String = ""
 var model: String = "gpt-4o"
 
 ## Vision capture settings.
-var vision_max_width: int = 1024
-var vision_format: String = "jpeg"
-var vision_quality: int = 85
-var vision_save_local: bool = false
+var visionMaxWidth: int = 1024
+var visionFormat: String = "jpeg"
+var visionQuality: int = 85
+var visionSaveLocal: bool = false
 
 ## Default wait between AI turns in exploratory mode (ms).
-var default_step_delay_ms: int = 500
+var defaultStepDelayMs: int = 500
 
 ## Singleton reference.
 static var _instance: QAManager = null
 
-var _active_runner: Node = null
+var _activeRunner: Node = null
 
 
 func _ready() -> void:
 	_instance = self
-	_load_config()
+	_loadConfig()
 
 
 static func instance() -> QAManager:
@@ -47,63 +47,63 @@ static func instance() -> QAManager:
 
 ## Run a single scenario script (scenario-driven regression test).
 ## Returns a QATestReporter after the scenario completes.
-func run_scenario(scenario_path: String) -> QATestReporter:
-	var script: GDScript = load(scenario_path) as GDScript
+func runScenario(scenarioPath: String) -> QATestReporter:
+	var script: GDScript = load(scenarioPath) as GDScript
 	if script == null:
 		var reporter := QATestReporter.new("load_failed")
-		reporter.log_error("Failed to load scenario: " + scenario_path)
+		reporter.logError("Failed to load scenario: " + scenarioPath)
 		reporter.finish(QATestReporter.Status.FAILED)
 		return reporter
 
 	var runner := QAScenarioRunner.new()
 	runner.setup(self)
 	add_child(runner)
-	_active_runner = runner
+	_activeRunner = runner
 
 	var reporter: QATestReporter = await runner.run(script)
-	_active_runner = null
+	_activeRunner = null
 	runner.queue_free()
 	return reporter
 
 
 ## Start an exploratory agent session with a high-level directive.
 ## The agent will take screenshots, ask the AI for next actions, and execute them
-## in a loop for `max_steps` iterations or until `max_duration_sec` elapses.
-func start_exploratory(
+## in a loop for `maxSteps` iterations or until `maxDurationSec` elapses.
+func startExploratory(
 	directive: String,
-	max_steps: int = 20,
-	max_duration_sec: float = 120.0
+	maxSteps: int = 20,
+	maxDurationSec: float = 120.0
 ) -> QATestReporter:
 	var agent := QAExploratoryAgent.new()
-	agent.setup(self, directive, max_steps, max_duration_sec)
+	agent.setup(self, directive, maxSteps, maxDurationSec)
 	add_child(agent)
-	_active_runner = agent
+	_activeRunner = agent
 
 	var reporter: QATestReporter = await agent.run()
-	_active_runner = null
+	_activeRunner = null
 	agent.queue_free()
 	return reporter
 
 
 ## Cancel any active scenario or exploratory run.
-func cancel_active() -> void:
-	if _active_runner != null and _active_runner.has_method("cancel"):
-		_active_runner.call("cancel")
-	_active_runner = null
+func cancelActive() -> void:
+	if _activeRunner != null and _activeRunner.has_method("cancel"):
+		_activeRunner.call("cancel")
+	_activeRunner = null
 
 
 ## Save current configuration to user://qa_agent_config.json.
-func save_config() -> void:
+func saveConfig() -> void:
 	var json := JSON.new()
 	var data: Dictionary = {
-		"api_base": api_base,
-		"api_key": api_key,
+		"apiBase": apiBase,
+		"apiKey": apiKey,
 		"model": model,
-		"vision_max_width": vision_max_width,
-		"vision_format": vision_format,
-		"vision_quality": vision_quality,
-		"vision_save_local": vision_save_local,
-		"default_step_delay_ms": default_step_delay_ms
+		"visionMaxWidth": visionMaxWidth,
+		"visionFormat": visionFormat,
+		"visionQuality": visionQuality,
+		"visionSaveLocal": visionSaveLocal,
+		"defaultStepDelayMs": defaultStepDelayMs
 	}
 	var f := FileAccess.open(CONFIG_PATH, FileAccess.WRITE)
 	if f != null:
@@ -111,7 +111,7 @@ func save_config() -> void:
 		f.close()
 
 
-func _load_config() -> void:
+func _loadConfig() -> void:
 	if not FileAccess.file_exists(CONFIG_PATH):
 		return
 	var f := FileAccess.open(CONFIG_PATH, FileAccess.READ)
@@ -122,12 +122,15 @@ func _load_config() -> void:
 	var json := JSON.new()
 	if json.parse(text) != OK:
 		return
+	if not json.data is Dictionary:
+		push_warning("QAManager: config file does not contain a JSON object")
+		return
 	var data: Dictionary = json.data as Dictionary
-	api_base = str(data.get("api_base", api_base))
-	api_key = str(data.get("api_key", api_key))
+	apiBase = str(data.get("apiBase", apiBase))
+	apiKey = str(data.get("apiKey", apiKey))
 	model = str(data.get("model", model))
-	vision_max_width = int(data.get("vision_max_width", vision_max_width))
-	vision_format = str(data.get("vision_format", vision_format))
-	vision_quality = int(data.get("vision_quality", vision_quality))
-	vision_save_local = bool(data.get("vision_save_local", vision_save_local))
-	default_step_delay_ms = int(data.get("default_step_delay_ms", default_step_delay_ms))
+	visionMaxWidth = int(data.get("visionMaxWidth", visionMaxWidth))
+	visionFormat = str(data.get("visionFormat", visionFormat))
+	visionQuality = int(data.get("visionQuality", visionQuality))
+	visionSaveLocal = bool(data.get("visionSaveLocal", visionSaveLocal))
+	defaultStepDelayMs = int(data.get("defaultStepDelayMs", defaultStepDelayMs))

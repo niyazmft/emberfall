@@ -31,10 +31,10 @@ func setup(manager: QAManager) -> void:
 	_manager = manager
 	_executor = QAActionExecutor.new()
 	_capture = QAVisionCapture.new()
-	_capture.max_width = manager.vision_max_width
-	_capture.format = manager.vision_format
-	_capture.quality = manager.vision_quality
-	_capture.save_local = manager.vision_save_local
+	_capture.maxWidth = manager.visionMaxWidth
+	_capture.format = manager.visionFormat
+	_capture.quality = manager.visionQuality
+	_capture.saveLocal = manager.visionSaveLocal
 
 
 func set_validate_with_ai(enabled: bool) -> void:
@@ -51,14 +51,14 @@ func run(scenario_script: GDScript) -> QATestReporter:
 	_reporter = QATestReporter.new(scenario_name)
 
 	if _validate_with_ai:
-		_client = QAAIClient.new(_manager.api_base, _manager.api_key)
+		_client = QAAIClient.new(_manager.apiBase, _manager.apiKey)
 		_client.model = _manager.model
 
-	var steps: Array = []
+	var steps: Array[Dictionary] = []
 	if instance.has_method("get_steps"):
-		steps = instance.call("get_steps") as Array
+		steps = instance.call("get_steps") as Array[Dictionary]
 	else:
-		_reporter.log_error("Scenario missing get_steps()")
+		_reporter.logError("Scenario missing get_steps()")
 		_reporter.finish(QATestReporter.Status.FAILED)
 		return _reporter
 
@@ -71,19 +71,20 @@ func run(scenario_script: GDScript) -> QATestReporter:
 		var step: Dictionary = step_dict as Dictionary
 		var step_name: String = str(step.get("name", "unnamed"))
 		var action: Dictionary = step.get("action", {}) as Dictionary
-		var wait_ms: int = int(step.get("wait_ms", _manager.default_step_delay_ms))
+		var wait_ms: int = int(step.get("wait_ms", _manager.defaultStepDelayMs))
 
 		var result: Dictionary = await _executor.execute(action)
-		_reporter.record_step(step_name, result.get("success", false), result)
+		_reporter.recordStep(step_name, result.get("success", false), result)
 
 		if wait_ms > 0:
 			await _delay_ms(wait_ms)
 
 	if instance.has_method("get_assertions"):
-		var assertions: Array = instance.call("get_assertions") as Array
+		var assertions: Array[Dictionary] = instance.call("get_assertions") as Array[Dictionary]
 		for assertion_dict: Variant in assertions:
 			if _cancelled:
-				break
+				_reporter.finish(QATestReporter.Status.SKIPPED)
+				return _reporter
 			if not assertion_dict is Dictionary:
 				continue
 			var assertion: Dictionary = assertion_dict as Dictionary
@@ -104,13 +105,16 @@ func _run_assertion(assertion: Dictionary) -> void:
 	var expected: String = str(assertion.get("expected", ""))
 
 	if _validate_with_ai and _client != null:
-		var b64: String = _capture.capture_base64()
-		var response: Dictionary = await _client.send_vision_prompt(b64, prompt)
-		var content: String = QAAIClient.extract_content(response)
-		var passed: bool = content.findn(expected) >= 0
-		_reporter.record_assertion(assertion_name, passed, content, b64)
+		var b64: String = _capture.captureBase64()
+		var response: Dictionary = await _client.sendVisionPrompt(b64, prompt, _capture.format)
+		var content: String = QAAIClient.extractContent(response).strip_edges().to_lower()
+		var expected_lower: String = expected.strip_edges().to_lower()
+		var regex := RegEx.new()
+		regex.compile("\\b" + RegEx.escape(expected_lower) + "\\b")
+		var passed: bool = regex.search(content) != null
+		_reporter.recordAssertion(assertion_name, passed, content, b64)
 	else:
-		_reporter.record_assertion(assertion_name, true, "AI validation disabled")
+		_reporter.recordAssertion(assertion_name, true, "AI validation disabled")
 
 
 func _delay_ms(ms: int) -> void:

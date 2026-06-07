@@ -2,7 +2,7 @@ class_name QAExploratoryAgent
 extends Node
 ## Autonomous exploratory QA agent.
 ## Runs a Vision-Language-Action loop: capture screenshot → send to AI →
-## parse action JSON → execute → repeat until max_steps or max_duration.
+## parse action JSON → execute → repeat until maxSteps or maxDurationSec.
 ##
 ## The AI is given a system prompt describing the game, available actions, and
 ## the current directive. It should return a JSON object like:
@@ -14,8 +14,8 @@ extends Node
 
 var _manager: QAManager = null
 var _directive: String = ""
-var _max_steps: int = 20
-var _max_duration_sec: float = 120.0
+var _maxSteps: int = 20
+var _maxDurationSec: float = 120.0
 
 var _executor: QAActionExecutor = null
 var _capture: QAVisionCapture = null
@@ -27,20 +27,20 @@ var _cancelled: bool = false
 func setup(
 	manager: QAManager,
 	directive: String,
-	max_steps: int,
-	max_duration_sec: float
+	maxSteps: int,
+	maxDurationSec: float
 ) -> void:
 	_manager = manager
 	_directive = directive
-	_max_steps = max_steps
-	_max_duration_sec = max_duration_sec
+	_maxSteps = maxSteps
+	_maxDurationSec = maxDurationSec
 	_executor = QAActionExecutor.new()
 	_capture = QAVisionCapture.new()
-	_capture.max_width = manager.vision_max_width
-	_capture.format = manager.vision_format
-	_capture.quality = manager.vision_quality
-	_capture.save_local = manager.vision_save_local
-	_client = QAAIClient.new(manager.api_base, manager.api_key)
+	_capture.maxWidth = manager.visionMaxWidth
+	_capture.format = manager.visionFormat
+	_capture.quality = manager.visionQuality
+	_capture.saveLocal = manager.visionSaveLocal
+	_client = QAAIClient.new(manager.apiBase, manager.apiKey)
 	_client.model = manager.model
 
 
@@ -49,27 +49,30 @@ func run() -> QATestReporter:
 	_reporter = QATestReporter.new("exploratory_" + _directive)
 	var start_ms: int = Time.get_ticks_msec()
 
-	for step_i: int in range(_max_steps):
+	for step_i: int in range(_maxSteps):
 		if _cancelled:
 			_reporter.finish(QATestReporter.Status.SKIPPED)
 			return _reporter
 
 		var elapsed_sec: float = float(Time.get_ticks_msec() - start_ms) / 1000.0
-		if elapsed_sec >= _max_duration_sec:
-			_reporter.log_error("Max duration reached")
+		if elapsed_sec >= _maxDurationSec:
+			_reporter.logError("Max duration reached")
+			_reporter.status = QATestReporter.Status.FAILED
 			break
 
-		var b64: String = _capture.capture_base64()
+		var b64: String = _capture.captureBase64()
 		if b64.is_empty():
-			_reporter.log_error("Screenshot capture failed")
+			_reporter.logError("Screenshot capture failed")
+			_reporter.status = QATestReporter.Status.FAILED
 			break
 
 		var system_prompt: String = _build_system_prompt(step_i, elapsed_sec)
-		var response: Dictionary = await _client.send_vision_prompt(b64, system_prompt)
-		var content: String = QAAIClient.extract_content(response)
+		var response: Dictionary = await _client.sendVisionPrompt(b64, system_prompt, _capture.format)
+		var content: String = QAAIClient.extractContent(response)
 
 		if content.is_empty():
-			_reporter.log_error("Empty AI response at step " + str(step_i))
+			_reporter.logError("Empty AI response at step " + str(step_i))
+			_reporter.status = QATestReporter.Status.FAILED
 			break
 
 		var parsed: Dictionary = _parse_ai_response(content)
@@ -78,14 +81,15 @@ func run() -> QATestReporter:
 		var assertion: String = str(parsed.get("assertion", ""))
 
 		if not thought.is_empty():
-			_reporter.record_step("thought_step_" + str(step_i), true, {"thought": thought})
+			_reporter.recordStep("thought_step_" + str(step_i), true, {"thought": thought})
 
 		if action.is_empty() or not action.has("type"):
-			_reporter.log_error("No action parsed at step " + str(step_i))
+			_reporter.logError("No action parsed at step " + str(step_i))
+			_reporter.status = QATestReporter.Status.FAILED
 			break
 
 		var exec_result: Dictionary = await _executor.execute(action)
-		_reporter.record_step(
+		_reporter.recordStep(
 			"action_step_" + str(step_i),
 			exec_result.get("success", false),
 			{"action": action, "result": exec_result},
@@ -98,17 +102,17 @@ func run() -> QATestReporter:
 				+ "Respond with ONLY 'PASS' or 'FAIL' and a one-sentence reason.\n\n"
 				+ "Assertion: " + assertion
 			)
-			var assert_response: Dictionary = await _client.send_text_prompt(assertion_prompt)
-			var assert_content: String = QAAIClient.extract_content(assert_response)
-			var passed: bool = assert_content.findn("PASS") >= 0
-			_reporter.record_assertion(
+			var assert_response: Dictionary = await _client.sendTextPrompt(assertion_prompt)
+			var assert_content: String = QAAIClient.extractContent(assert_response).strip_edges().to_upper()
+			var passed: bool = assert_content == "PASS" or assert_content.begins_with("PASS ")
+			_reporter.recordAssertion(
 				"assertion_step_" + str(step_i),
 				passed,
 				assert_content,
 				b64
 			)
 
-		await _delay_ms(_manager.default_step_delay_ms)
+		await _delay_ms(_manager.defaultStepDelayMs)
 
 	if _reporter.status != QATestReporter.Status.FAILED:
 		_reporter.finish(QATestReporter.Status.PASSED)
@@ -125,7 +129,7 @@ func _build_system_prompt(step_index: int, elapsed_sec: float) -> String:
 		+ "You are given a screenshot of the current game state. "
 		+ "Your job is to decide the next action to progress toward the test goal.\n\n"
 		+ "DIRECTIVE: " + _directive + "\n"
-		+ "STEP: " + str(step_index + 1) + "/" + str(_max_steps) + "\n"
+		+ "STEP: " + str(step_index + 1) + "/" + str(_maxSteps) + "\n"
 		+ "ELAPSED: " + str(int(elapsed_sec)) + "s\n\n"
 		+ "Available actions:\n"
 		+ "- input_click: {\"type\": \"input_click\", \"x\": int, \"y\": int, [\"button\": int]}\n"

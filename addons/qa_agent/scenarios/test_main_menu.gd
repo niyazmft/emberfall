@@ -2,10 +2,10 @@ extends Resource
 ## Example scenario-driven QA test: verify main menu → settings → back flow.
 ##
 ## Usage:
-##   var reporter := await QAManager.instance().run_scenario(
+##   var reporter := await QAManager.instance().runScenario(
 ##       "res://addons/qa_agent/scenarios/test_main_menu.gd"
 ##   )
-##   reporter.print_summary()
+##   reporter.printSummary()
 
 func get_name() -> String:
 	return "test_main_menu_flow"
@@ -37,7 +37,7 @@ func get_assertions() -> Array[Dictionary]:
 			"name": "menu_visible_after_back",
 			"prompt": (
 				"You are looking at the Emberfall main menu. "
-				+ "Is the main title screen visible with buttons like 'Start', 'Settings', 'Quit'? "
+				+ "Is the main title screen visible with buttons like 'New Run', 'Settings', 'Quit'? "
 				+ "Answer YES or NO."
 			),
 			"expected": "YES"

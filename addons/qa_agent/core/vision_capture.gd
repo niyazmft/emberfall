@@ -5,13 +5,13 @@ extends RefCounted
 ##
 ## Usage:
 ##   var capture: QAVisionCapture = QAVisionCapture.new()
-##   var b64: String = capture.capture_base64()
+##   var b64: String = capture.captureBase64()
 
 const DEFAULT_QUALITY: int = 85
 const DEFAULT_MAX_WIDTH: int = 1024
 
 ## If true, screenshots are saved to user://qa_screenshots/ for local debugging.
-var save_local: bool = false
+var saveLocal: bool = false
 
 ## Encode format: "png" (lossless, larger) or "jpeg" (smaller).
 var format: String = "jpeg"
@@ -20,17 +20,17 @@ var format: String = "jpeg"
 var quality: int = DEFAULT_QUALITY
 
 ## Max width in pixels; height is scaled proportionally. Set to 0 to disable.
-var max_width: int = DEFAULT_MAX_WIDTH
+var maxWidth: int = DEFAULT_MAX_WIDTH
 
 
-func capture_base64() -> String:
-	var image: Image = _capture_viewport()
+func captureBase64() -> String:
+	var image: Image = _captureViewport()
 	if image == null:
 		return ""
-	if max_width > 0 and image.get_width() > max_width:
-		var ratio: float = float(max_width) / float(image.get_width())
+	if maxWidth > 0 and image.get_width() > maxWidth:
+		var ratio: float = float(maxWidth) / float(image.get_width())
 		var new_h: int = max(1, int(float(image.get_height()) * ratio))
-		image.resize(max_width, new_h, Image.INTERPOLATE_LANCZOS)
+		image.resize(maxWidth, new_h, Image.INTERPOLATE_LANCZOS)
 
 	var buffer: PackedByteArray
 	if format == "png":
@@ -38,23 +38,25 @@ func capture_base64() -> String:
 	else:
 		buffer = image.save_jpg_to_buffer(quality)
 
-	if save_local:
-		_save_to_disk(buffer)
+	if saveLocal:
+		_saveToDisk(buffer)
 
 	return Marshalls.raw_to_base64(buffer)
 
 
-func _capture_viewport() -> Image:
+func _captureViewport() -> Image:
 	var tree: SceneTree = Engine.get_main_loop() as SceneTree
 	if tree == null:
+		push_error("QAVisionCapture: SceneTree is null, cannot capture viewport")
 		return null
 	var viewport: Viewport = tree.root.get_viewport()
 	if viewport == null:
+		push_error("QAVisionCapture: Viewport is null, cannot capture image")
 		return null
 	return viewport.get_texture().get_image()
 
 
-func _save_to_disk(buffer: PackedByteArray) -> void:
+func _saveToDisk(buffer: PackedByteArray) -> void:
 	var dir: String = "user://qa_screenshots/"
 	var err: Error = DirAccess.make_dir_recursive_absolute(dir)
 	if err != OK and err != ERR_ALREADY_EXISTS:

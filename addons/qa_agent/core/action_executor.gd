@@ -206,22 +206,30 @@ func _execute_api(action: Dictionary) -> Dictionary:
 func _api_move_entity(action: Dictionary) -> Dictionary:
 	var x: int = int(action.get("x", -1))
 	var y: int = int(action.get("y", -1))
+	var from_x: int = int(action.get("from_x", -1))
+	var from_y: int = int(action.get("from_y", -1))
 	var entity_id: String = str(action.get("entity_id", ""))
 	if x < 0 or y < 0:
-		return {"success": false, "error": "Invalid coordinates"}
+		return {"success": false, "error": "Invalid target coordinates"}
 
 	var gs: _GridSystem = AutoloadHelper.grid_system()
 	if gs == null:
 		return {"success": false, "error": "GridSystem not available"}
 	if not gs.is_in_bounds(x, y):
-		return {"success": false, "error": "Out of bounds"}
+		return {"success": false, "error": "Target out of bounds"}
 
-	## Note: This is a direct API call that bypasses normal gameplay input.
-	## In a real integration, the caller would need to resolve entity_id
-	## to an actual Entity instance and call the appropriate lifecycle method.
-	## Here we return success to indicate the grid can accept the move.
+	if from_x >= 0 and from_y >= 0:
+		if not gs.is_in_bounds(from_x, from_y):
+			return {"success": false, "error": "Source out of bounds"}
+		return {
+			"success": gs.can_move(from_x, from_y, x, y),
+			"target_tile": {"x": x, "y": y},
+			"entity_id": entity_id
+		}
+
 	return {
-		"success": gs.can_move(0, 0, x, y),
+		"success": true,
+		"validated_only": true,
 		"target_tile": {"x": x, "y": y},
 		"entity_id": entity_id
 	}
