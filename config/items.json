@@ -43,37 +43,6 @@
       },
       "stackLimit": 1,
       "description": "A small charm that seems to bring good luck."
-    },
-    "iron_scrap": {
-      "id": "iron_scrap",
-      "name": "Iron Scrap",
-      "type": "CONSUMABLE",
-      "rarity": "COMMON",
-      "stats": {},
-      "stackLimit": 99,
-      "description": "Raw material for crafting."
-    },
-    "iron_sword": {
-      "id": "iron_sword",
-      "name": "Iron Sword",
-      "type": "WEAPON",
-      "rarity": "UNCOMMON",
-      "stats": {
-        "off": 8
-      },
-      "stackLimit": 1,
-      "description": "A sturdy sword made of iron."
-    },
-    "wooden_bow": {
-      "id": "wooden_bow",
-      "name": "Wooden Bow",
-      "type": "WEAPON",
-      "rarity": "COMMON",
-      "stats": {
-        "off": 4
-      },
-      "stackLimit": 1,
-      "description": "A simple bow for ranged attacks."
     }
   }
 }

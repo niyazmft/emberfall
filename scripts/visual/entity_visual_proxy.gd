@@ -5,6 +5,8 @@ extends Node2D
 ## Bridges Entity data to visual representation.
 ## Handles: positioning, elevation, facing direction, state effects.
 
+const STATUS_BAR_VERTICAL_OFFSET: float = -40.0
+
 @export var entity: Entity:
 	set(p_value):
 		if entity != p_value:
@@ -41,6 +43,7 @@ func _ready() -> void:
 		_grid_renderer = _find_grid_renderer(get_tree().root)
 
 	_setup_greybox()
+	_setup_status_bar()
 
 	_setupStatusBar()
 
@@ -69,6 +72,10 @@ func _process(delta: float) -> void:
 		global_position = global_position.lerp(_target_position, weight)
 	else:
 		global_position = _target_position
+
+	if has_node("EntityStatusBar"):
+		var status_bar_node: Control = get_node("EntityStatusBar")
+		status_bar_node.global_position = global_position + Vector2(0, STATUS_BAR_VERTICAL_OFFSET)
 
 
 func _find_grid_renderer(node: Node) -> GridRenderer:
@@ -288,6 +295,16 @@ func _spawnDamageNumber(p_damage: int, p_damageType: String) -> void:
 	tween.tween_property(label, "position", label.position + Vector2(0, -20), duration)
 	tween.parallel().tween_property(label, "modulate:a", 0.0, duration)
 	tween.tween_callback(label.queue_free)
+func _setup_status_bar() -> void:
+	if not has_node("EntityStatusBar"):
+		var status_bar_scene: PackedScene = load("res://scenes/ui/entity_status_bar.tscn")
+		if status_bar_scene:
+			var status_bar: EntityStatusBar = status_bar_scene.instantiate() as EntityStatusBar
+			status_bar.name = "EntityStatusBar"
+			status_bar.top_level = true
+			add_child(status_bar)
+			if entity:
+				status_bar.setup(entity)
 
 
 func _setup_greybox() -> void:
