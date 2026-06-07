@@ -32,8 +32,6 @@ body:
         - Windows
         - Linux
         - macOS
-        - Web (HTML5)
-        - Android (Termux)
     validations:
       required: true
 
