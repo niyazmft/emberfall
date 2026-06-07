@@ -1,0 +1,20 @@
+{
+  "version": "1.0.0",
+  "triggers": {
+    "ROOM_ENTER_FIRST": {
+      "text": "The air is thick with the scent of ozone and cooling metal.",
+      "localization_key": "AMBIENT_ROOM_ENTER_FIRST",
+      "duration_sec": 5.0
+    },
+    "NEAR_VOID": {
+      "text": "A cold draft rises from the depths, carrying no sound.",
+      "localization_key": "AMBIENT_NEAR_VOID",
+      "duration_sec": 4.0
+    },
+    "REMNANT_SIGHTED": {
+      "text": "Flickers of light dance in the shadows, memories of what was.",
+      "localization_key": "AMBIENT_REMNANT_SIGHTED",
+      "duration_sec": 4.5
+    }
+  }
+}
