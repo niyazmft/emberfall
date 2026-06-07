@@ -9,6 +9,8 @@ const GRID_RESOLUTION: float = 1.0  ## 1 tile = 1 metre (abstract)
 # ── AP Economy ──────────────────────────────────────────────────────
 const AP_MAX: int = 6
 const AP_REGEN: int = 2
+const ABILITY_MIN_COST: int = 3
+const ABILITY_MAX_COST: int = 5
 
 # ── Damage Formula ──────────────────────────────────────────────────
 const D_BASE: int = 10

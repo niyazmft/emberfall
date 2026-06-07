@@ -3,7 +3,9 @@
   "ap_economy": {
     "AP_MAX": 6,
     "AP_REGEN": 2,
-    "AP_START_PLAYER_PHASE": "min(AP_MAX, AP_CARRIED_OVER + AP_REGEN)"
+    "AP_START_PLAYER_PHASE": "min(AP_MAX, AP_CARRIED_OVER + AP_REGEN)",
+    "ability_min": 3,
+    "ability_max": 5
   },
   "combat": {
     "D_BASE": 10,

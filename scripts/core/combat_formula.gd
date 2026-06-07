@@ -173,9 +173,9 @@ static func action_cost(action_type: String) -> int:
 		"attack_ranged_3":
 			return 4
 		"ability_min":
-			return 3
+			return AutoloadHelper.config_int("ability_min", GameConstants.ABILITY_MIN_COST)
 		"ability_max":
-			return 5
+			return AutoloadHelper.config_int("ability_max", GameConstants.ABILITY_MAX_COST)
 		"interact":
 			return 1
 		"end_turn":
