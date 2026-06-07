@@ -30,7 +30,9 @@ func _ready() -> void:
 		_intentVisualizer = IntentVisualizer.new(gridRenderer)
 		add_child(_intentVisualizer)
 	else:
-		push_error("EnemyAIController: gridRenderer not found! Intent visualization will be disabled.")
+		push_error(
+			"EnemyAIController: gridRenderer not found! Intent visualization will be disabled."
+		)
 
 
 func decide_action(pEntity: Entity = null) -> Dictionary:
@@ -48,11 +50,7 @@ func decide_action(pEntity: Entity = null) -> Dictionary:
 	if firstPlayer is Node2D:
 		_playerNode = firstPlayer as Node2D
 
-	if (
-		_playerNode == null
-		or not _playerNode.has_method("alive")
-		or not _playerNode.call("alive")
-	):
+	if _playerNode == null or not _playerNode.has_method("alive") or not _playerNode.call("alive"):
 		return {"type": "wait"}
 
 	var playerEntRef: Variant = _playerNode.get("entity")
@@ -114,9 +112,6 @@ func _archer_behavior(enemyPos: Vector2i, playerPos: Vector2i, dist: int) -> Dic
 func _tank_behavior(enemyPos: Vector2i, playerPos: Vector2i, dist: int) -> Dictionary:
 	# Slow advance, heavy damage
 	return _grunt_behavior(enemyPos, playerPos, dist)
-func _tank_behavior(_enemy_pos: Vector2i, _player_pos: Vector2i, _dist: int) -> Dictionary:
-	# Delegate to specialized TankAI resolver
-	return TankAI.decide_action(enemy_entity, _player_node, grid_system, self)
 
 
 func _get_next_tile_towards(targetPos: Vector2i, away: bool = false) -> Vector2i:

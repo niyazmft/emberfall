@@ -23,7 +23,9 @@ func visualizeIntent(enemy: Entity, action: Dictionary) -> void:
 			var targetX: int = int(action.get("target_x", enemy.x))
 			var targetY: int = int(action.get("target_y", enemy.y))
 			_gridRenderer.highlight_tile_styled(targetX, targetY, "telegraph")
-			_gridRenderer.draw_telegraph_arrow(Vector2i(enemy.x, enemy.y), Vector2i(targetX, targetY))
+			_gridRenderer.draw_telegraph_arrow(
+				Vector2i(enemy.x, enemy.y), Vector2i(targetX, targetY)
+			)
 
 		"attack":
 			var targetNodeRef: Variant = action.get("target")
@@ -33,7 +35,9 @@ func visualizeIntent(enemy: Entity, action: Dictionary) -> void:
 				if targetEntRef is Entity:
 					var targetEnt: Entity = targetEntRef as Entity
 					_gridRenderer.highlight_tile_styled(targetEnt.x, targetEnt.y, "telegraph")
-					_gridRenderer.draw_telegraph_arrow(Vector2i(enemy.x, enemy.y), Vector2i(targetEnt.x, targetEnt.y))
+					_gridRenderer.draw_telegraph_arrow(
+						Vector2i(enemy.x, enemy.y), Vector2i(targetEnt.x, targetEnt.y)
+					)
 
 
 ## Clear all visualized intents.

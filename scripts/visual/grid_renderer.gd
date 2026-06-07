@@ -20,8 +20,8 @@ const COLOR_OIL: Color = Color(0.0, 0.0, 0.55)  # Dark Blue
 var _grid_system: _GridSystem
 var _config_loader: _ConfigLoader
 var _tile_sprites: Array[Sprite2D] = []
-var _highlights: Dictionary = {}  # Vector2i -> Sprite2D
-var _highlight_styles: Dictionary = {}  # Vector2i -> Dictionary
+var _highlights: Dictionary[Vector2i, Sprite2D] = {}
+var _highlight_styles: Dictionary[Vector2i, Dictionary] = {}
 var _telegraph_lines: Array[Node2D] = []
 var _diamond_tex: Texture2D
 
@@ -42,26 +42,21 @@ func _process(delta: float) -> void:
 
 
 func _update_animations() -> void:
-	for key: Variant in _highlights.keys():
-		if key is Vector2i:
-			var vKey: Vector2i = key as Vector2i
-			var spriteRef: Variant = _highlights[vKey]
-			if spriteRef is Sprite2D:
-				var sprite: Sprite2D = spriteRef as Sprite2D
-				var styleRef: Variant = _highlight_styles.get(vKey, {})
-				if styleRef is Dictionary:
-					var style: Dictionary = styleRef as Dictionary
-					var pulseRef: Variant = style.get("pulse", {})
-					if pulseRef is Dictionary:
-						var pulse: Dictionary = pulseRef as Dictionary
-						if pulse.get("enabled", false):
-							var speed: float = float(pulse.get("speed", 2.0))
-							var minA: float = float(pulse.get("min_alpha", 0.4))
-							var maxA: float = float(pulse.get("max_alpha", 0.8))
+	for vKey: Vector2i in _highlights.keys():
+		var sprite: Sprite2D = _highlights[vKey]
+		var style: Dictionary = _highlight_styles.get(vKey, {})
+		if style.is_empty():
+			continue
 
-							# Sine wave for alpha pulsing: maps [-1, 1] to [minA, maxA]
-							var t: float = (sin(_time * speed) + 1.0) / 2.0
-							sprite.modulate.a = lerp(minA, maxA, t)
+		var pulse: Dictionary = style.get("pulse", {})
+		if not pulse.is_empty() and pulse.get("enabled", false):
+			var speed: float = float(pulse.get("speed", 2.0))
+			var minA: float = float(pulse.get("min_alpha", 0.4))
+			var maxA: float = float(pulse.get("max_alpha", 0.8))
+
+			# Sine wave for alpha pulsing: maps [-1, 1] to [minA, maxA]
+			var t: float = (sin(_time * speed) + 1.0) / 2.0
+			sprite.modulate.a = lerp(minA, maxA, t)
 
 
 ## Render all 144 tiles from the GridSystem.
@@ -237,9 +232,9 @@ func _apply_highlight(x: int, y: int, color: Color, style: Dictionary) -> void:
 
 ## Public API: Clear all active highlights.
 func clear_highlights() -> void:
-	for sprite: Variant in _highlights.values():
-		if is_instance_valid(sprite as Node):
-			(sprite as Node).queue_free()
+	for sprite: Sprite2D in _highlights.values():
+		if is_instance_valid(sprite):
+			sprite.queue_free()
 	_highlights.clear()
 	_highlight_styles.clear()
 
@@ -247,19 +242,15 @@ func clear_highlights() -> void:
 ## Public API: Clear highlights of a specific style.
 func clear_highlights_styled(style_key: String) -> void:
 	var keysToRemove: Array[Vector2i] = []
-	for key: Variant in _highlight_styles.keys():
-		if key is Vector2i:
-			var vKey: Vector2i = key as Vector2i
-			var styleRef: Variant = _highlight_styles[vKey]
-			if styleRef is Dictionary:
-				var style: Dictionary = styleRef as Dictionary
-				if style.get("_style_key") == style_key:
-					keysToRemove.append(vKey)
+	for vKey: Vector2i in _highlight_styles.keys():
+		var style: Dictionary = _highlight_styles[vKey]
+		if style.get("_style_key") == style_key:
+			keysToRemove.append(vKey)
 
 	for keyToRemove: Vector2i in keysToRemove:
-		var spriteRef: Variant = _highlights[keyToRemove]
-		if is_instance_valid(spriteRef as Node):
-			(spriteRef as Node).queue_free()
+		var sprite: Sprite2D = _highlights[keyToRemove]
+		if is_instance_valid(sprite):
+			sprite.queue_free()
 		_highlights.erase(keyToRemove)
 		_highlight_styles.erase(keyToRemove)
 
@@ -326,7 +317,12 @@ func clear_telegraphs() -> void:
 
 
 func _is_in_bounds(pos: Vector2i) -> bool:
-	return pos.x >= 0 and pos.x < _grid_system.GRID_SIZE and pos.y >= 0 and pos.y < _grid_system.GRID_SIZE
+	return (
+		pos.x >= 0
+		and pos.x < _grid_system.GRID_SIZE
+		and pos.y >= 0
+		and pos.y < _grid_system.GRID_SIZE
+	)
 
 
 ## Procedural diamond texture generation for greyboxing.

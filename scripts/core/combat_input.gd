@@ -18,7 +18,7 @@ var _grid_renderer: GridRenderer
 var _grid_system: Node
 var _valid_targets: Array[Node2D] = []
 var _target_index: int = -1
-var _gamepad_bindings: Dictionary = {}
+var _gamepad_bindings: Dictionary[String, String] = {}
 
 
 func _init(player: Node2D, enemies_node: Node2D, grid_renderer: GridRenderer) -> void:
@@ -31,7 +31,9 @@ func _init(player: Node2D, enemies_node: Node2D, grid_renderer: GridRenderer) ->
 	if config_loader:
 		var data: Variant = config_loader.getValue("gamepad_bindings", "", {})
 		if data is Dictionary:
-			_gamepad_bindings = data as Dictionary
+			# Explicitly cast to typed dictionary
+			for key: String in (data as Dictionary).keys():
+				_gamepad_bindings[key] = str(data[key])
 
 
 func handle_input(event: InputEvent) -> bool:
@@ -162,9 +164,7 @@ func _execute_attack() -> void:
 						cover_tiles.append(tile.coords)
 
 	# Calculate and apply damage
-	var damage: int = CombatFormula.compute_damage_from_entities(
-		playerEnt, targetEnt, cover_tiles
-	)
+	var damage: int = CombatFormula.compute_damage_from_entities(playerEnt, targetEnt, cover_tiles)
 
 	var lifecycle: Node = AutoloadHelper.entity_lifecycle()
 	if lifecycle:
@@ -173,9 +173,7 @@ func _execute_attack() -> void:
 		targetEnt.apply_damage(damage)
 
 	# Consume AP
-	var newAp: int = DeterministicMath.clampi(
-		playerEnt.ap - cost, 0, GameConstants.AP_MAX
-	)
+	var newAp: int = DeterministicMath.clampi(playerEnt.ap - cost, 0, GameConstants.AP_MAX)
 	playerEnt.ap = newAp
 
 	attack_executed.emit(target, damage)
@@ -194,8 +192,6 @@ func _is_binding_pressed(event: InputEvent, action_name: String) -> bool:
 
 		var button_index: int = int(suffix)
 		return (
-			event is InputEventJoypadButton
-			and event.button_index == button_index
-			and event.pressed
+			event is InputEventJoypadButton and event.button_index == button_index and event.pressed
 		)
 	return false
