@@ -39,30 +39,16 @@ func apply_config(config: Dictionary) -> void:
 	var phase_b: Dictionary = phases.get("B", {})
 	_variants_first = phase_b.get("variants_first", [])
 	_variants_repeat = phase_b.get("variants_repeat", [])
-
-	# Try to fetch templates from DialogueManager first
-	var dm: Node = AutoloadHelper.get_autoload("DialogueManager")
-	if dm:
-		var t_first: Dictionary = dm.call("getDialogue", "BE_B_TEMPLATE_FIRST")
-		if not t_first.is_empty():
-			_template_first = t_first.get("text", "")
-
-		var t_repeat: Dictionary = dm.call("getDialogue", "BE_B_TEMPLATE_REPEAT")
-		if not t_repeat.is_empty():
-			_template_repeat = t_repeat.get("text", "")
-
-	if _template_first.is_empty():
-		_template_first = (
-			phase_b
-			. get(
-				"template_first",
-				"{count} {collective_noun} of their own small truths. You hold them now. That is the burden."
-			)
+	_template_first = (
+		phase_b
+		. get(
+			"template_first",
+			"{count} {collective_noun} of their own small truths. You hold them now. That is the burden."
 		)
-	if _template_repeat.is_empty():
-		_template_repeat = phase_b.get(
-			"template_repeat", "{count} {collective_noun}. The burden holds."
-		)
+	)
+	_template_repeat = phase_b.get(
+		"template_repeat", "{count} {collective_noun}. The burden holds."
+	)
 	_count_first = phase_b.get("count_first", "Three")
 	_count_repeat = phase_b.get("count_repeat", "More")
 

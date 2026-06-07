@@ -1,0 +1,12 @@
+{
+  "entities": {
+    "keeper": {
+      "slots": {
+        "weapon": ["WEAPON"],
+        "armor": ["ARMOR"],
+        "accessory_1": ["ACCESSORY"],
+        "accessory_2": ["ACCESSORY"]
+      }
+    }
+  }
+}
