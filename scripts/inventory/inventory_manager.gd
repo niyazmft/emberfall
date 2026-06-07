@@ -191,22 +191,3 @@ func load_snapshot(snapshot: Dictionary) -> void:
 	inventory_changed.emit()
 	for slot: String in equipment:
 		equipment_changed.emit(slot, equipment[slot])
-
-
-## Returns the total count of a specific item in the inventory.
-func get_item_count(item_id: String) -> int:
-	var count: int = 0
-	for entry: Dictionary in inventory:
-		if entry["item_id"] == item_id:
-			count += int(entry["quantity"])
-	return count
-
-
-## Returns true if the inventory contains all the specified items.
-## [param ingredients] is a Dictionary { item_id: required_quantity }
-func has_items(ingredients: Dictionary) -> bool:
-	for item_id: String in ingredients:
-		var required: int = int(ingredients[item_id])
-		if get_item_count(item_id) < required:
-			return false
-	return true
