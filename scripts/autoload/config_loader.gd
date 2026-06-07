@@ -58,6 +58,7 @@ var _loadedFiles: Dictionary = {
 	PROGRESSION_PATH: false,
 	XP_ECONOMY_PATH: false
 	ACCESSIBILITY_PATH: false
+	CONFIG_PATH: false, ITEMS_PATH: false, EQUIPMENT_PATH: false, ENEMIES_PATH: false
 }
 
 

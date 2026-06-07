@@ -1,20 +1,20 @@
 keys,en,de,es,fr
-BE_MWT_0,"[A low rumble spreads beneath you]","[Ein tiefes Grollen breitet sich unter dir aus]","[Un rugido profundo se extiende bajo tus pies]","[Un grondement sourd se propage sous vos pieds]"
-BE_MWT_1,"[Machinery churns in the walls]","[Maschinen arbeiten in den Wänden]","[La maquinaria se agita en las paredes]","[Les machines s'activent dans les murs]"
-BE_MWT_2,"[Pressure builds]","[Druck baut sich auf]","[La presión aumenta]","[La pression monte]"
-BE_MWT_3,"[The breaking point nears]","[Der Belastungspunkt nähert sich]","[El punto de ruptura se acerca]","[Le point de rupture approche]"
-BE_CAP_0_TO_1,"[The world stills]","[Die Welt steht still]","[El mundo se detiene]","[Le monde se fige]"
-BE_CAP_1_TO_2,"[Machinery grinds]","[Maschinen knirschen]","[La maquinaria cruje]","[Les machines grincent]"
-BE_CAP_2_TO_3,"[The weight gathers]","[Die Last sammelt sich]","[La carga se acumula]","[Le poids s'accumule]"
-BE_CAP_3_TO_2,"[The pressure recedes]","[Der Druck weicht zurück]","[La presión retrocede]","[La pression diminue]"
-BE_CAP_2_TO_1,"[The memory loosens]","[Die Erinnerung lockert sich]","[El recuerdo se afloja]","[Le souvenir se relâche]"
-BE_CAP_1_TO_0,"[The embers cool]","[Die Glut kühlt ab]","[Las brasas se enfrían]","[Les braises refroidissent]"
-BE_CAP_3_TO_0_NORMAL,"[The burden fades slowly]","[Die Last schwindet langsam]","[La carga se desvanece lentamente]","[Le fardeau s'efface lentement]"
-BE_CAP_3_TO_0_EMERGENCY,"[The burden drops]","[Die Last fällt ab]","[La carga cae]","[Le fardeau tombe]"
-BE_PHASE_A_CAP,"[The world stills]","[Die Welt steht still]","[El mundo se detiene]","[Le monde se fige]"
-BE_CAP_NUMBNESS,"[The burden is silent]","[Die Last ist still]","[La carga está en silencio]","[Le fardeau est silencieux]"
+BE_MWT_0,[A low rumble spreads beneath you],[Ein tiefes Grollen breitet sich unter dir aus],[Un rugido profundo se extiende bajo tus pies],[Un grondement sourd se propage sous vos pieds]
+BE_MWT_1,[Machinery churns in the walls],[Maschinen arbeiten in den Wänden],[La maquinaria se agita en las paredes],[Les machines s'activent dans les murs]
+BE_MWT_2,[Pressure builds],[Druck baut sich auf],[La presión aumenta],[La pression monte]
+BE_MWT_3,[The breaking point nears],[Der Belastungspunkt nähert sich],[El punto de ruptura se acerca],[Le point de rupture approche]
+BE_CAP_0_TO_1,[The world stills],[Die Welt steht still],[El mundo se detiene],[Le monde se fige]
+BE_CAP_1_TO_2,[Machinery grinds],[Maschinen knirschen],[La maquinaria cruje],[Les machines grincent]
+BE_CAP_2_TO_3,[The weight gathers],[Die Last sammelt sich],[La carga se acumula],[Le poids s'accumule]
+BE_CAP_3_TO_2,[The pressure recedes],[Der Druck weicht zurück],[La presión retrocede],[La pression diminue]
+BE_CAP_2_TO_1,[The memory loosens],[Die Erinnerung lockert sich],[El recuerdo se afloja],[Le souvenir se relâche]
+BE_CAP_1_TO_0,[The embers cool],[Die Glut kühlt ab],[Las brasas se enfrían],[Les braises refroidissent]
+BE_CAP_3_TO_0_NORMAL,[The burden fades slowly],[Die Last schwindet langsam],[La carga se desvanece lentamente],[Le fardeau s'efface lentement]
+BE_CAP_3_TO_0_EMERGENCY,[The burden drops],[Die Last fällt ab],[La carga cae],[Le fardeau tombe]
+BE_PHASE_A_CAP,[The world stills],[Die Welt steht still],[El mundo se detiene],[Le monde se fige]
+BE_CAP_NUMBNESS,[The burden is silent],[Die Last ist still],[La carga está en silencio],[Le fardeau est silencieux]
 menu.title.continue,Continue,Fortsetzen,Continuar,Continuer
-menu.title.new_game,"New Game","Neues Spiel","Nuevo Juego","Nouveau Jeu"
+menu.title.new_game,New Game,Neues Spiel,Nuevo Juego,Nouveau Jeu
 menu.title.settings,Settings,Einstellungen,Ajustes,Paramètres
 menu.title.quit,Quit,Beenden,Salir,Quitter
 MSG_LEVEL_UP,LEVEL UP!,LEVEL UP!,¡SUBIDA DE NIVEL!,NIVEAU SUPÉRIEUR !
@@ -35,3 +35,39 @@ CS_RUN_START_SEG_1,"The embers glow faintly in the dark.","Die Glut leuchtet sch
 CS_RUN_START_SEG_2,"You are the Keeper of what remains.","Du bist der Hüter dessen, was bleibt.","Eres el Guardián de lo que queda.","Vous êtes le Gardien de ce qui reste."
 CS_BIOME_TRANS_1_TITLE,"The Iron Descent","Der eiserne Abstieg","El Descenso de Hierro","La Descente de Fer"
 CS_BIOME_TRANS_1_SEG_1,"The metal groans as you descend deeper.","Das Metall stöhnt, während du tiefer absteigst.","El metal gime mientras desciendes más profundo.","Le métal gémit à mesure que vous descendez plus profondément."
+room_biome1_01,Room 1-01,Raum 1-01,Sala 1-01,Salle 1-01
+room_biome1_02,Room 1-02,Raum 1-02,Sala 1-02,Salle 1-02
+room_biome1_03,Room 1-03,Raum 1-03,Sala 1-03,Salle 1-03
+room_biome1_04,Room 1-04,Raum 1-04,Sala 1-04,Salle 1-04
+room_biome1_05,Room 1-05,Raum 1-05,Sala 1-05,Salle 1-05
+room_biome1_06,Room 1-06,Raum 1-06,Sala 1-06,Salle 1-06
+room_biome1_07,Room 1-07,Raum 1-07,Sala 1-07,Salle 1-07
+room_biome1_08,Room 1-08,Raum 1-08,Sala 1-08,Salle 1-08
+room_biome1_09,Room 1-09,Raum 1-09,Sala 1-09,Salle 1-09
+room_biome1_10,Room 1-10,Raum 1-10,Sala 1-10,Salle 1-10
+room_biome1_11,Room 1-11,Raum 1-11,Sala 1-11,Salle 1-11
+room_biome1_12,Room 1-12,Raum 1-12,Sala 1-12,Salle 1-12
+room_biome2_01,Room 2-01,Raum 2-01,Sala 2-01,Salle 2-01
+room_biome2_02,Room 2-02,Raum 2-02,Sala 2-02,Salle 2-02
+room_biome2_03,Room 2-03,Raum 2-03,Sala 2-03,Salle 2-03
+room_biome2_04,Room 2-04,Raum 2-04,Sala 2-04,Salle 2-04
+room_biome2_05,Room 2-05,Raum 2-05,Sala 2-05,Salle 2-05
+room_biome2_06,Room 2-06,Raum 2-06,Sala 2-06,Salle 2-06
+room_biome2_07,Room 2-07,Raum 2-07,Sala 2-07,Salle 2-07
+room_biome2_08,Room 2-08,Raum 2-08,Sala 2-08,Salle 2-08
+room_biome2_09,Room 2-09,Raum 2-09,Sala 2-09,Salle 2-09
+room_biome2_10,Room 2-10,Raum 2-10,Sala 2-10,Salle 2-10
+room_biome2_11,Room 2-11,Raum 2-11,Sala 2-11,Salle 2-11
+room_biome2_12,Room 2-12,Raum 2-12,Sala 2-12,Salle 2-12
+room_biome3_01,Room 3-01,Raum 3-01,Sala 3-01,Salle 3-01
+room_biome3_02,Room 3-02,Raum 3-02,Sala 3-02,Salle 3-02
+room_biome3_03,Room 3-03,Raum 3-03,Sala 3-03,Salle 3-03
+room_biome3_04,Room 3-04,Raum 3-04,Sala 3-04,Salle 3-04
+room_biome3_05,Room 3-05,Raum 3-05,Sala 3-05,Salle 3-05
+room_biome3_06,Room 3-06,Raum 3-06,Sala 3-06,Salle 3-06
+room_biome3_07,Room 3-07,Raum 3-07,Sala 3-07,Salle 3-07
+room_biome3_08,Room 3-08,Raum 3-08,Sala 3-08,Salle 3-08
+room_biome3_09,Room 3-09,Raum 3-09,Sala 3-09,Salle 3-09
+room_biome3_10,Room 3-10,Raum 3-10,Sala 3-10,Salle 3-10
+room_biome3_11,Room 3-11,Raum 3-11,Sala 3-11,Salle 3-11
+room_biome3_12,Room 3-12,Raum 3-12,Sala 3-12,Salle 3-12

@@ -19,10 +19,6 @@ signal back_pressed
 
 @onready var _shake_slider: HSlider = %ShakeSlider
 @onready var _cvd_option: OptionButton = %CVDOption
-@onready var _text_scale_slider: HSlider = %TextScaleSlider
-@onready var _slow_mode_slider: HSlider = %SlowModeSlider
-@onready var _high_contrast_check: CheckBox = %HighContrastCheck
-@onready var _dyslexia_font_check: CheckBox = %DyslexiaFontCheck
 
 @onready var _input_hints_option: OptionButton = %InputHintsOption
 @onready var _remap_panel: Control = %RemapPanel
@@ -92,10 +88,6 @@ func _load_ui_from_settings() -> void:
 	var access_cfg: Dictionary = s.get("accessibility", {}) as Dictionary
 	_shake_slider.value = access_cfg.get("screen_shake", 1.0)
 	_cvd_option.selected = access_cfg.get("cvd_sim", 0)
-	_text_scale_slider.value = access_cfg.get("text_scale", 1.0)
-	_slow_mode_slider.value = access_cfg.get("slow_mode", 1.0)
-	_high_contrast_check.button_pressed = access_cfg.get("high_contrast", false)
-	_dyslexia_font_check.button_pressed = access_cfg.get("dyslexia_font", false)
 
 	# Controls
 	var controls_cfg: Dictionary = s.get("controls", {}) as Dictionary
@@ -114,10 +106,6 @@ func _connect_signals() -> void:
 
 	_shake_slider.value_changed.connect(_on_accessibility_changed.bind("screen_shake"))
 	_cvd_option.item_selected.connect(_on_accessibility_changed.bind("cvd_sim"))
-	_text_scale_slider.value_changed.connect(_on_accessibility_changed.bind("text_scale"))
-	_slow_mode_slider.value_changed.connect(_on_accessibility_changed.bind("slow_mode"))
-	_high_contrast_check.toggled.connect(_on_accessibility_changed.bind("high_contrast"))
-	_dyslexia_font_check.toggled.connect(_on_accessibility_changed.bind("dyslexia_font"))
 
 	_input_hints_option.item_selected.connect(_on_controls_changed.bind("input_hints"))
 
