@@ -4,8 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Godot 4.6.3](https://img.shields.io/badge/Godot-4.6.3-478cbf?logo=godot-engine&logoColor=white)](https://godotengine.org/)
 
-A deterministic, grid-based tactics engine built entirely in **Godot 4.6.3**, with a
-focus on performance for Android via Termux.
+A deterministic, grid-based tactics engine built entirely in **Godot 4.6.3**, developed exclusively for **Windows, Linux, and macOS** desktop platforms.
 
 > **Unique angle:** Project Emberfall is constructed and maintained by a workforce
 > of specialized AI agents, demonstrating a novel approach to automated game
@@ -19,7 +18,7 @@ focus on performance for Android via Termux.
 
 ## Features
 
-- **Engine:** Godot 4.6.3 (Stable), optimized for Android via Termux
+- **Engine:** Godot 4.6.3 (Stable), targeting Windows, Linux, and macOS
 - **Deterministic Combat:** 100% deterministic math, identical outcomes on all platforms
 - **Grid-Based Tactics:** Flexible 12×12 grid with elevation and cover
 - **Elemental System:** Fire/Oil/Wind/Water interactions with combo effects
