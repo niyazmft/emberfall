@@ -16,7 +16,8 @@ var _combat_input: Node
 
 
 func before_test() -> void:
-	_player = Keeper.new()
+	_player = Node2D.new()
+	_player.set_script(load("res://scripts/entities/keeper.gd"))
 	var player_ent: Entity = Entity.new("Player", PLAYER_X, PLAYER_Y, 40, 10, 5)
 	player_ent.is_player = true
 	player_ent.ap = 6
@@ -24,9 +25,11 @@ func before_test() -> void:
 
 	_enemies_node = Node2D.new()
 
-	_grid_renderer = GridRenderer.new()
+	_grid_renderer = Node2D.new()
+	_grid_renderer.set_script(load("res://scripts/visual/grid_renderer.gd"))
 
-	_combat_input = CombatInput.new(_player, _enemies_node, _grid_renderer)
+	var ci_script: GDScript = load("res://scripts/core/combat_input.gd") as GDScript
+	_combat_input = ci_script.new(_player, _enemies_node, _grid_renderer)
 	add_child(_combat_input)
 
 
@@ -146,7 +149,8 @@ func test_insufficient_ap() -> void:
 
 
 func _create_mock_enemy(p_name: String, gx: int, gy: int) -> Node2D:
-	var enemy := BaseEnemy.new()
+	var enemy := Node2D.new()
+	enemy.set_script(load("res://scripts/entities/base_enemy.gd"))
 	var ent: Entity = Entity.new(p_name, gx, gy, 20, 5, 5)
 	enemy.set("entity", ent)
 	return enemy

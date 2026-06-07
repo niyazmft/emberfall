@@ -11,6 +11,7 @@ const EQUIPMENT_PATH := "res://config/entity_equipment.json"
 const ENEMIES_PATH := "res://config/enemies.json"
 const SKILLS_PATH := "res://config/skills.json"
 const HOTBAR_BINDINGS_PATH := "res://config/hotbar_bindings.json"
+const STATUS_EFFECTS_PATH := "res://config/status_effects.json"
 const ACCESSIBILITY_PATH := "res://config/accessibility.json"
 const REWARDS_PATH := "res://config/rewards.json"
 const UNLOCKS_PATH := "res://config/unlocks.json"
@@ -19,7 +20,6 @@ const PROGRESSION_PATH := "res://config/progression.json"
 const XP_ECONOMY_PATH := "res://config/xp_economy.json"
 const BIOMES_PATH := "res://config/biomes.json"
 const ELITE_MODIFIERS_PATH := "res://config/elite_modifiers.json"
-const GRID_VISUALS_PATH := "res://config/grid_visuals.json"
 
 # Fallback defaults (sensible so the game runs even if config is missing)
 const DEFAULTS: Dictionary = {
@@ -65,6 +65,7 @@ var _loadedFiles: Dictionary = {
 	ENEMIES_PATH: false,
 	SKILLS_PATH: false,
 	HOTBAR_BINDINGS_PATH: false,
+	STATUS_EFFECTS_PATH: false,
 	ACCESSIBILITY_PATH: false,
 	REWARDS_PATH: false,
 	UNLOCKS_PATH: false,
@@ -73,7 +74,6 @@ var _loadedFiles: Dictionary = {
 	XP_ECONOMY_PATH: false,
 	BIOMES_PATH: false,
 	ELITE_MODIFIERS_PATH: false,
-	GRID_VISUALS_PATH: false,
 }
 
 
@@ -111,27 +111,23 @@ func _loadConfig() -> void:
 
 
 func _loadJsonToConfig(filePath: String, p_namespace: String = "") -> void:
-	_loadJsonToConfig(CONFIG_PATH)
-	_loadJsonToConfig(ITEMS_PATH)
-	_loadJsonToConfig(EQUIPMENT_PATH)
-	_loadJsonToConfig(ENEMIES_PATH)
-	_loadJsonToConfig(SKILLS_PATH)
-	_loadJsonToConfig(HOTBAR_BINDINGS_PATH)
-	_loadJsonToConfig(ACCESSIBILITY_PATH)
-	_loadJsonToConfig(GRID_VISUALS_PATH)
-	_validateGridVisuals()
-
-
-func _loadJsonToConfig(filePath: String) -> void:
 	if FileAccess.file_exists(filePath):
 		var fileHandle: FileAccess = FileAccess.open(filePath, FileAccess.READ)
 		if fileHandle:
 			var fileText: String = fileHandle.get_as_text()
 			var parsedJson: Variant = JSON.parse_string(fileText)
 			if parsedJson is Dictionary:
-				_configData.merge(parsedJson, true)
+				if p_namespace.is_empty():
+					_configData.merge(parsedJson, true)
+				else:
+					_configData[p_namespace] = parsedJson
 				_loadedFiles[filePath] = true
-				print("ConfigLoader: loaded config from %s" % filePath)
+				print(
+					(
+						"ConfigLoader: loaded config from %s into namespace '%s'"
+						% [filePath, p_namespace]
+					)
+				)
 			else:
 				push_warning("ConfigLoader: config file %s was not a valid JSON object." % filePath)
 			fileHandle.close()
@@ -144,10 +140,25 @@ func _loadJsonToConfig(filePath: String) -> void:
 func getValue(sectionOrKey: String, key: String = "", fallback: Variant = null) -> Variant:
 	if not key.is_empty():
 		# Two-arg mode: section + key
+		var section: Dictionary = {}
 		if _configData.has(sectionOrKey) and _configData[sectionOrKey] is Dictionary:
-			var section: Dictionary = _configData[sectionOrKey]
+			section = _configData[sectionOrKey]
+		else:
+			# Scan sub-sections for sectionOrKey (needed for namespaced files)
+			for s: Variant in _configData.values():
+				if s is Dictionary and s.has(sectionOrKey) and s[sectionOrKey] is Dictionary:
+					section = s[sectionOrKey]
+					break
+
+		if not section.is_empty():
+			# If the section also contains a dictionary with the same name, dive into it
+			# to maintain backward compatibility with JSONs like {"items": {"items": {...}}}
+			if section.has(sectionOrKey) and section[sectionOrKey] is Dictionary:
+				section = section[sectionOrKey]
+
 			if section.has(key):
 				return section[key]
+
 		# Try flattened default
 		if DEFAULTS.has(key):
 			return DEFAULTS[key]
@@ -188,17 +199,6 @@ func getValue(sectionOrKey: String, key: String = "", fallback: Variant = null) 
 			return DEFAULTS[sectionOrKey]
 		return fallback
 
-	# One-arg mode: direct key lookup in flattened namespace
-	if _configData.has(sectionOrKey):
-		return _configData[sectionOrKey]
-	# Scan sub-sections for key
-	for section: Variant in _configData.values():
-		if section is Dictionary and section.has(sectionOrKey):
-			return section[sectionOrKey]
-	if DEFAULTS.has(sectionOrKey):
-		return DEFAULTS[sectionOrKey]
-	return fallback
-
 
 ## Convenience typed getters for hot-path values.
 func getInt(key: String, fallback: int = 0) -> int:
@@ -229,31 +229,3 @@ func isLoaded() -> bool:
 		if not _loadedFiles[path]:
 			return false
 	return true
-
-
-func _validateGridVisuals() -> void:
-	if not _configData.has("highlights"):
-		return
-
-	var rawHighlights: Variant = _configData["highlights"]
-	if not rawHighlights is Dictionary:
-		return
-	var highlightsDict: Dictionary = rawHighlights as Dictionary
-
-	for key: Variant in highlightsDict.keys():
-		var styleRef: Variant = highlightsDict[key]
-		if styleRef is Dictionary:
-			var style: Dictionary = styleRef as Dictionary
-			if style.has("pulse"):
-				var pulseRef: Variant = style["pulse"]
-				if pulseRef is Dictionary:
-					var pulse: Dictionary = pulseRef as Dictionary
-					var minA: float = float(pulse.get("min_alpha", 0.0))
-					var maxA: float = float(pulse.get("max_alpha", 1.0))
-					if minA > maxA:
-						push_error(
-							(
-								"ConfigLoader: Grid visual style '%s' has min_alpha (%.2f) > max_alpha (%.2f)!"
-								% [str(key), minA, maxA]
-							)
-						)
