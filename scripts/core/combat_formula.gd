@@ -50,11 +50,11 @@ static func compute_damage_with_effects(
 
 	var damage_dealt_mult: float = 1.0
 	for effect: StatusEffect in attacker.status_effects:
-		damage_dealt_mult *= effect.combat_formula_modifier.get("damage_dealt_mult", 1.0)
+		damage_dealt_mult *= effect.combatFormulaModifier.get("damage_dealt_mult", 1.0)
 
 	var damage_taken_mult: float = 1.0
 	for effect: StatusEffect in defender.status_effects:
-		damage_taken_mult *= effect.combat_formula_modifier.get("damage_taken_mult", 1.0)
+		damage_taken_mult *= effect.combatFormulaModifier.get("damage_taken_mult", 1.0)
 
 	var base_dmg: int = compute_damage(
 		attacker.off, defender.def_, pos_mod, elemental_modifier, memory_synergy

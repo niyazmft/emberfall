@@ -94,7 +94,7 @@ func _load_status_effect_templates() -> void:
 	var config: Dictionary = config_loader.getValue("status_effects", "", {})
 	for effect_id: String in config:
 		var effect_data: Dictionary = config[effect_id]
-		_status_effect_templates[effect_id] = StatusEffect.from_dict(effect_data)
+		_status_effect_templates[effect_id] = StatusEffect.fromDict(effect_data)
 
 
 func apply_status_effect(
@@ -110,14 +110,16 @@ func apply_status_effect(
 	# If entity already has the effect, refresh it (simple implementation)
 	var existing: StatusEffect = entity.get_status_effect(effect_id)
 	if existing:
-		existing.remaining_duration = (
+		existing.remainingDuration = (
 			duration if duration >= 0 else _status_effect_templates[effect_id].duration
 		)
-		existing.base_potency = potency
+		existing.basePotency = potency
+		# Recompute caches since basePotency might be used in formulas (though currently not in stat getters)
+		entity._recompute_effect_caches()
 		return
 
 	var template: StatusEffect = _status_effect_templates[effect_id]
-	var instance: StatusEffect = template.create_instance(duration, potency)
+	var instance: StatusEffect = template.createInstance(duration, potency)
 	entity.add_status_effect(instance)
 
 
@@ -315,8 +317,8 @@ func _process_entity_status_effects(entity: Entity) -> void:
 		_apply_periodic_effect(entity, effect)
 
 		# Decrement duration
-		effect.remaining_duration -= 1
-		if effect.remaining_duration <= 0:
+		effect.remainingDuration -= 1
+		if effect.remainingDuration <= 0:
 			effects_to_remove.append(effect)
 
 	for effect: StatusEffect in effects_to_remove:
@@ -339,9 +341,9 @@ func _apply_periodic_effect(entity: Entity, effect: StatusEffect) -> void:
 
 func _evaluate_potency(entity: Entity, effect: StatusEffect) -> int:
 	# Simple expression evaluation for potency formulas
-	var expr := Expression.new()
+	var expr: Expression = Expression.new()
 	var error: int = expr.parse(
-		effect.potency_formula, ["base_potency", "target_hp_max", "target_hp"]
+		effect.potencyFormula, ["base_potency", "target_hp_max", "target_hp"]
 	)
 	if error != OK:
 		push_warning(
@@ -350,9 +352,9 @@ func _evaluate_potency(entity: Entity, effect: StatusEffect) -> int:
 				% [effect.id, expr.get_error_text()]
 			)
 		)
-		return effect.base_potency
+		return effect.basePotency
 
-	var result: Variant = expr.execute([effect.base_potency, entity.hp_max, entity.hp], null, true)
+	var result: Variant = expr.execute([effect.basePotency, entity.hp_max, entity.hp], null, true)
 	if expr.has_execute_failed():
 		push_warning(
 			(
@@ -360,7 +362,7 @@ func _evaluate_potency(entity: Entity, effect: StatusEffect) -> int:
 				% [effect.id, expr.get_error_text()]
 			)
 		)
-		return effect.base_potency
+		return effect.basePotency
 
 	return int(result)
 

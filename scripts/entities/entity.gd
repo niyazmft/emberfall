@@ -18,6 +18,9 @@ signal status_effect_removed(effect: StatusEffect)
 
 # ── Status Effects ──────────────────────────────────────────────────
 var status_effects: Array[StatusEffect] = []
+var _cached_off_bonus: int = 0
+var _cached_def_bonus: int = 0
+var _cached_spd_mult: float = 1.0
 
 # ── Grid Position ───────────────────────────────────────────────────
 @export var x: int = 0:
@@ -65,28 +68,21 @@ var status_effects: Array[StatusEffect] = []
 
 @export var off: int = 0:
 	get:
-		var bonus: int = 0
-		for effect: StatusEffect in status_effects:
-			bonus += effect.combat_formula_modifier.get("off_bonus", 0)
-		return DeterministicMath.clampi(off + bonus, 0, GameConstants.STAT_OFF_BOUND)
+		return DeterministicMath.clampi(off + _cached_off_bonus, 0, GameConstants.STAT_OFF_BOUND)
 	set(p_value):
 		off = DeterministicMath.clampi(p_value, 0, GameConstants.STAT_OFF_BOUND)
 
 @export var def_: int = 0:
 	get:
-		var bonus: int = 0
-		for effect: StatusEffect in status_effects:
-			bonus += effect.combat_formula_modifier.get("def_bonus", 0)
-		return DeterministicMath.clampi(def_ + bonus, 0, GameConstants.STAT_DEF_BOUND)
+		return DeterministicMath.clampi(def_ + _cached_def_bonus, 0, GameConstants.STAT_DEF_BOUND)
 	set(p_value):
 		def_ = DeterministicMath.clampi(p_value, 0, GameConstants.STAT_DEF_BOUND)
 
 @export var spd: int = 1:
 	get:
-		var mult: float = 1.0
-		for effect: StatusEffect in status_effects:
-			mult *= effect.combat_formula_modifier.get("spd_mult", 1.0)
-		return DeterministicMath.clampi(int(float(spd) * mult), 1, GameConstants.STAT_SPD_BOUND)
+		return DeterministicMath.clampi(
+			int(float(spd) * _cached_spd_mult), 1, GameConstants.STAT_SPD_BOUND
+		)
 	set(p_value):
 		spd = DeterministicMath.clampi(p_value, 1, GameConstants.STAT_SPD_BOUND)
 
@@ -180,6 +176,7 @@ func heal(amount: int) -> void:
 # ── Status Effect Mutators ──────────────────────────────────────────
 func add_status_effect(effect: StatusEffect) -> void:
 	status_effects.append(effect)
+	_recompute_effect_caches()
 	status_effect_added.emit(effect)
 
 
@@ -187,7 +184,19 @@ func remove_status_effect(effect: StatusEffect) -> void:
 	var idx: int = status_effects.find(effect)
 	if idx != -1:
 		status_effects.remove_at(idx)
+		_recompute_effect_caches()
 		status_effect_removed.emit(effect)
+
+
+func _recompute_effect_caches() -> void:
+	_cached_off_bonus = 0
+	_cached_def_bonus = 0
+	_cached_spd_mult = 1.0
+
+	for effect: StatusEffect in status_effects:
+		_cached_off_bonus += effect.combatFormulaModifier.get("off_bonus", 0)
+		_cached_def_bonus += effect.combatFormulaModifier.get("def_bonus", 0)
+		_cached_spd_mult *= effect.combatFormulaModifier.get("spd_mult", 1.0)
 
 
 func has_status_effect(effect_id: String) -> bool:
