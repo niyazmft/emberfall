@@ -68,12 +68,3 @@ biome.1.elev.2,[You overlook the rusted expanse],[Du übersiehst die verrostete 
 narrative.room.entry,[The room hums with energy],[Der Raum summt vor Energie],[La habitación zumba con energía],[La pièce bourdonne d'énergie]
 narrative.secret.spared_all,[Your mercy has opened a new path],[Deine Gnade hat einen neuen Weg eröffnet],[Tu misericordia ha abierto un nuevo camino],[Votre miséricorde a ouvert une nouvelle voie]
 narrative.secret.no_damage,[Flawless execution reveals the hidden],[Makellose Ausführung offenbart das Verborgene],[La ejecución impecable revela lo oculto],[Une exécution sans faille révèle le caché]
-CURRENCY_ECHO_SHARDS_NAME,Echo Shards,Echoscherben,Fragmentos de Eco,Éclats d'Écho
-CURRENCY_ECHO_SHARDS_DESC,A mysterious currency that persists across runs.,Eine mysteriöse Währung.,Una moneda misteriosa.,Une monnaie mystérieuse.
-ITEM_IRON_SCRAP_NAME,Iron Scrap,Eisenschrott,Chatarra de Hierro,Ferraille
-ITEM_IRON_SCRAP_DESC,Raw material for crafting.,Rohmaterial für das Handwerk.,Material básico para artesanía.,Matière première pour l'artisanat.
-ITEM_IRON_SWORD_NAME,Iron Sword,Eisenschwert,Espada de Hierro,Épée en Fer
-ITEM_IRON_SWORD_DESC,A sturdy sword made of iron.,Ein stabiles Eisenschwert.,Una espada de hierro resistente.,Une épée en fer robuste.
-ITEM_WOODEN_BOW_NAME,Wooden Bow,Holzbogen,Arco de Madera,Arc en Bois
-ITEM_WOODEN_BOW_DESC,A simple bow for ranged attacks.,Ein einfacher Bogen.,Un arco simple.,Un arc simple.
-RECIPE_IRON_SWORD_NAME,Craft Iron Sword,Eisenschwert schmieden,Forjar Espada de Hierro,Forger une Épée en Fer
