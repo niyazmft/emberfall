@@ -2,11 +2,11 @@ extends Control
 ## VictoryModal
 ## Displayed when the player wins a combat encounter.
 
+var _summary_data: Dictionary = {}
+
 @onready var title_label: Label = %TitleLabel
 @onready var summary_container: VBoxContainer = %SummaryContainer
 @onready var continue_button: Button = %ContinueButton
-
-var _summary_data: Dictionary = {}
 
 
 func _ready() -> void:

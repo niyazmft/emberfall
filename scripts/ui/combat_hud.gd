@@ -2,6 +2,10 @@ extends Control
 ## CombatHUD (DON-196)
 ## Manages HUD layout and bottom chrome reflow.
 
+var _player_entity: Entity
+var _turn_manager: TurnManager
+var _combat_input: CombatInput
+
 @onready var margin_container: MarginContainer = $MarginContainer
 @onready var bottom_chrome: VBoxContainer = $MarginContainer/BottomChrome
 @onready var hotbar: Control = $MarginContainer/BottomChrome/Hotbar
@@ -23,10 +27,6 @@ extends Control
 # Turn/Round Indicators
 @onready var turn_label: Label = %TurnLabel
 @onready var round_label: Label = %RoundLabel
-
-var _player_entity: Entity
-var _turn_manager: TurnManager
-var _combat_input: CombatInput
 
 
 func _ready() -> void:
@@ -74,7 +74,11 @@ func update_player_stats(entity: Entity) -> void:
 	hp_label.text = "%d / %d" % [entity.hp, entity.hp_max]
 
 	var config: Node = AutoloadHelper.config_loader()
-	var ap_max: int = config.getValue("ap_bar", "segment_count", GameConstants.AP_MAX) if config else GameConstants.AP_MAX
+	var ap_max: int = (
+		config.getValue("ap_bar", "segment_count", GameConstants.AP_MAX)
+		if config
+		else GameConstants.AP_MAX
+	)
 	ap_bar.max_value = ap_max
 	ap_bar.value = entity.ap
 	ap_label.text = "%d / %d" % [entity.ap, ap_max]

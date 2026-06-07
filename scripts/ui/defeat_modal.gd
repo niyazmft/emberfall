@@ -2,11 +2,11 @@ extends Control
 ## DefeatModal
 ## Displayed when the player loses a combat encounter.
 
+var _summary_data: Dictionary = {}
+
 @onready var title_label: Label = %TitleLabel
 @onready var summary_container: VBoxContainer = %SummaryContainer
 @onready var retry_button: Button = %RetryButton
-
-var _summary_data: Dictionary = {}
 
 
 func _ready() -> void:

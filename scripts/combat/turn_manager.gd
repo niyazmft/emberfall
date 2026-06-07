@@ -85,13 +85,15 @@ func _process_current_state() -> void:
 				current_state = CombatState.COMBAT_END
 				combat_ended.emit(false)
 				var eb_ce: _EventBus = AutoloadHelper.event_bus()
-				if eb_ce: eb_ce.combat_ended.emit(false)
+				if eb_ce:
+					eb_ce.combat_ended.emit(false)
 				return
 
 			round_number += 1
 			round_started.emit(round_number)
 			var eb_rs: _EventBus = AutoloadHelper.event_bus()
-			if eb_rs: eb_rs.round_started.emit(round_number)
+			if eb_rs:
+				eb_rs.round_started.emit(round_number)
 			current_turn_index = 0
 			_start_next_turn_logic()
 
@@ -101,7 +103,8 @@ func _process_current_state() -> void:
 			var entity: Entity = actor.get("entity") as Entity
 			turn_started.emit(entity, true)
 			var eb_pt: _EventBus = AutoloadHelper.event_bus()
-			if eb_pt: eb_pt.turn_started.emit(entity, true)
+			if eb_pt:
+				eb_pt.turn_started.emit(entity, true)
 
 		CombatState.ENEMY_TURN:
 			_regen_current_actor_ap()
@@ -109,7 +112,8 @@ func _process_current_state() -> void:
 			var entity: Entity = enemy.get("entity") as Entity
 			turn_started.emit(entity, false)
 			var eb_et: _EventBus = AutoloadHelper.event_bus()
-			if eb_et: eb_et.turn_started.emit(entity, false)
+			if eb_et:
+				eb_et.turn_started.emit(entity, false)
 			_execute_enemy_turn(enemy)
 
 		CombatState.CHECK_END_CONDITIONS:
@@ -218,13 +222,15 @@ func _is_combat_over() -> bool:
 	if not player_alive:
 		_change_state(CombatState.COMBAT_END)
 		combat_ended.emit(false)
-		if eb: eb.combat_ended.emit(false)
+		if eb:
+			eb.combat_ended.emit(false)
 		return true
 
 	if not enemies_alive:
 		_change_state(CombatState.COMBAT_END)
 		combat_ended.emit(true)
-		if eb: eb.combat_ended.emit(true)
+		if eb:
+			eb.combat_ended.emit(true)
 		return true
 
 	return false

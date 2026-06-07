@@ -210,9 +210,9 @@ func _show_victory_modal() -> void:
 		if modal.has_method("setup"):
 			# Collect summary data (placeholder values for now)
 			var summary := {
-				"turns": _turn_manager.round_number, # Close enough for now
-				"kills": 3, # Placeholder
-				"shards": 10 # Placeholder
+				"turns": _turn_manager.round_number,
+				"kills": 3,
+				"shards": 10,
 			}
 			modal.call("setup", summary)
 
@@ -225,6 +225,6 @@ func _show_defeat_modal() -> void:
 		if modal.has_method("setup"):
 			var summary := {
 				"turns": _turn_manager.round_number,
-				"rooms": 1 # Placeholder
+				"rooms": 1,
 			}
 			modal.call("setup", summary)
