@@ -6,14 +6,30 @@
   "properties": {
     "tooltips": {
       "type": "object",
-      "additionalProperties": { "type": "string" }
+      "properties": {
+        "hp_bar": { "type": "string" },
+        "ap_bar": { "type": "string" },
+        "move_button": { "type": "string" },
+        "attack_button": { "type": "string" },
+        "end_turn_button": { "type": "string" }
+      },
+      "required": ["hp_bar", "ap_bar", "move_button", "attack_button", "end_turn_button"],
+      "additionalProperties": false
     },
     "combat_log": {
       "type": "object",
       "properties": {
         "templates": {
           "type": "object",
-          "additionalProperties": { "type": "string" }
+          "properties": {
+            "player_turn": { "type": "string" },
+            "enemy_turn": { "type": "string" },
+            "round_start": { "type": "string" },
+            "select_target": { "type": "string" },
+            "damage_dealt": { "type": "string" }
+          },
+          "required": ["player_turn", "enemy_turn", "round_start", "select_target", "damage_dealt"],
+          "additionalProperties": false
         }
       },
       "required": ["templates"]
