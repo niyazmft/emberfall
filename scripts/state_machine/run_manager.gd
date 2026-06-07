@@ -28,6 +28,7 @@ var total_rooms: int = 0
 var room_queue: Array[Dictionary] = []
 var room_index: int = -1
 var memory_state_loaded: bool = false
+var _transition_layer: Node = null
 
 # Context flags for guards
 var _combat_resolved: bool = false
@@ -273,12 +274,38 @@ func cmd_return_to_sanctum() -> void:
 	transition_to(RunState.SANCTUM)
 
 
+## Register the TransitionLayer singleton.
+func set_transition_layer(p_layer: Node) -> void:
+	_transition_layer = p_layer
+
+
+## Initiates a screen fade-out (to black).
+func fade_out(duration: float = 0.5) -> Signal:
+	if _transition_layer and _transition_layer.has_method("fade_out"):
+		return _transition_layer.call("fade_out", duration)
+	if is_inside_tree():
+		return get_tree().process_frame
+	return self.tree_entered  # Fallback valid signal
+
+
+## Initiates a screen fade-in (from black).
+func fade_in(duration: float = 0.5) -> Signal:
+	if _transition_layer and _transition_layer.has_method("fade_in"):
+		return _transition_layer.call("fade_in", duration)
+	if is_inside_tree():
+		return get_tree().process_frame
+	return self.tree_entered  # Fallback valid signal
+
+
 # ---------------------------------------------------------------------------
 # State Entry / Update / Guards / Actions
 # ---------------------------------------------------------------------------
 
 
 func _enter_sanctum(_ctx: Dictionary) -> void:
+	# Fade-in screen when returning to sanctum/title
+	fade_in(0.5)
+
 	memory_state_loaded = false
 	_combat_resolved = false
 	_player_hp_zero = false
@@ -323,6 +350,9 @@ func _enter_room(_ctx: Dictionary) -> void:
 
 	# Emit event for UI / encounter spawner
 	room_entered.emit(room_index, room_data)
+
+	# Trigger screen fade-in for smooth room entry
+	fade_in(0.5)
 
 
 func _update_room(_delta: float, _elapsed: float) -> void:

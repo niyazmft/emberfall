@@ -37,3 +37,19 @@ func test_heavy_cover() -> void:
 	assert_that(tile.has_cover()).is_true()
 	assert_that(tile.is_light_cover()).is_false()
 	assert_that(tile.is_heavy_cover()).is_true()
+
+
+func test_partial_cover() -> void:
+	var tile := TacTileData.new()
+	tile.cover = TacTileData.CoverType.PARTIAL
+	tile.recompute_flags()
+	assert_that(tile.has_cover()).is_true()
+	assert_that(tile.is_partial_cover()).is_true()
+
+
+func test_destructible_cover() -> void:
+	var tile := TacTileData.new()
+	tile.cover = TacTileData.CoverType.DESTRUCTIBLE
+	tile.recompute_flags()
+	assert_that(tile.has_cover()).is_true()
+	assert_that(tile.is_destructible_cover()).is_true()

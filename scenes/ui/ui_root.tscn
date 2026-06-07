@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://d8m4n7k8p9q2r" path="res://scenes/ui/main_menu.tscn" id="2_m7n8p"]
 [ext_resource type="PackedScene" uid="uid://e1m4n7k8p9q2r" path="res://scenes/ui/pause_menu.tscn" id="3_p7n8r"]
 [ext_resource type="PackedScene" uid="uid://c7p9q4r5s6t1u" path="res://scenes/ui/settings_panel.tscn" id="4_s7p8q"]
+[ext_resource type="PackedScene" path="res://scenes/ui/transition_layer.tscn" id="5_tlayer"]
 [ext_resource type="PackedScene" uid="uid://c6u8n5m4p7k8" path="res://scenes/ui/inventory.tscn" id="5_inv"]
 
 [node name="UIRoot" type="CanvasLayer"]
@@ -25,6 +26,9 @@ layout_mode = 2
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
+
+[node name="TransitionLayer" parent="." instance=ExtResource("5_tlayer")]
+unique_name_in_owner = true
 
 [node name="SettingsPanel" parent="SafeZoneContainer" instance=ExtResource("4_s7p8q")]
 unique_name_in_owner = true

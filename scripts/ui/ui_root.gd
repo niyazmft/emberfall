@@ -7,6 +7,7 @@ extends CanvasLayer
 @onready var _main_menu: Control = %MainMenu
 @onready var _pause_menu: Control = %PauseMenu
 @onready var _settings_panel: Control = %SettingsPanel
+@onready var _transition_layer: TransitionLayer = %TransitionLayer
 @onready var _inventory: Control = %Inventory
 
 

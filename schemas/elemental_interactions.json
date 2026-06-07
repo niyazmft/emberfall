@@ -1,0 +1,65 @@
+{
+  "version": "1.0.0",
+  "interactions": [
+    {
+      "elements": ["FIRE", "OIL"],
+      "reaction": "AMPLIFY",
+      "modifier": "FIRE_OIL_MODIFIER",
+      "narrative": "LOG_ELEM_FIRE_OIL"
+    },
+    {
+      "elements": ["WATER", "FIRE"],
+      "reaction": "EXTINGUISH",
+      "modifier": "WATER_FIRE_MODIFIER",
+      "narrative": "LOG_ELEM_WATER_FIRE"
+    },
+    {
+      "elements": ["WIND", "FIRE"],
+      "reaction": "SPREAD",
+      "modifier": "WIND_FIRE_MODIFIER",
+      "narrative": "LOG_ELEM_WIND_FIRE"
+    },
+    {
+      "elements": ["ICE", "WATER_POOL"],
+      "reaction": "FREEZE",
+      "modifier": "ICE_WATER_FREEZE_MOD",
+      "narrative": "LOG_ELEM_ICE_WATER"
+    },
+    {
+      "elements": ["POISON_GAS", "FIRE"],
+      "reaction": "IGNITE",
+      "modifier": "FIRE_POISON_EXPLODE_MOD",
+      "narrative": "LOG_ELEM_POISON_FIRE"
+    },
+    {
+      "elements": ["WIND_CURRENT", "FIRE"],
+      "reaction": "SPREAD",
+      "modifier": "WIND_FIRE_MODIFIER",
+      "narrative": "LOG_ELEM_WIND_FIRE"
+    },
+    {
+      "elements": ["WATER_POOL", "FIRE"],
+      "reaction": "EXTINGUISH",
+      "modifier": "WATER_FIRE_MODIFIER",
+      "narrative": "LOG_ELEM_WATER_FIRE"
+    },
+    {
+      "elements": ["WIND_CURRENT", "POISON_GAS"],
+      "reaction": "SPREAD",
+      "modifier": "POISON_DAMAGE_PER_TURN",
+      "narrative": "LOG_ELEM_POISON_SPREAD"
+    },
+    {
+      "elements": ["WIND", "POISON_GAS"],
+      "reaction": "SPREAD",
+      "modifier": "POISON_DAMAGE_PER_TURN",
+      "narrative": "LOG_ELEM_POISON_SPREAD"
+    },
+    {
+      "elements": ["FIRE", "ICE"],
+      "reaction": "MELT",
+      "modifier": "WATER_FIRE_MODIFIER",
+      "narrative": "LOG_ELEM_FIRE_ICE"
+    }
+  ]
+}
