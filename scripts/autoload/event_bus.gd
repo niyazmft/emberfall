@@ -43,17 +43,6 @@ signal burden_active_changed(active: bool)
 ## result is a BurdenEventResult instance (widened to Object to avoid coupling).
 signal burden_event_triggered(result: Object)
 
-# ── Combat ───────────────────────────────────────────────────────────────────
-
-## Fired when combat phase begins in a room.
-signal combat_started
-
-## Fired when a turn starts for an entity.
-signal turn_started(entity: Entity, is_player: bool)
-
-## Fired when combat ends.
-signal combat_ended(victory: bool)
-
 # ── RunManager ───────────────────────────────────────────────────────────────
 
 ## Fired when a new run begins.

@@ -70,17 +70,6 @@ static func damage_floor(raw: float) -> int:
 	return maxi(floored, 1)
 
 
-# ── Randomness (Visual/Non-Critical) ──────────────────────────────
-static var _visual_rng: RandomNumberGenerator = null
-
-
-static func randf_range(min_val: float, max_val: float) -> float:
-	if _visual_rng == null:
-		_visual_rng = RandomNumberGenerator.new()
-		_visual_rng.seed = GameConstants.GOLDEN_SEED
-	return _visual_rng.randf_range(min_val, max_val)
-
-
 # ── AP Overflow Guard ─────────────────────────────────────────────
 static func ap_start(ap_carried: int, ap_regen: int, ap_max: int) -> int:
 	## §3.1: AP_START_OF_PLAYER_PHASE = min(AP_MAX, AP_CARRIED_OVER + AP_REGEN)

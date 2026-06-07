@@ -76,3 +76,15 @@ func trigger_damage_effect() -> void:
 
 	entity.set("hp", 5)  # Damage from 10 to 5
 	assert_that(app_mock.get("damage_triggered")).is_true()
+
+	# 8. Verify Hit Flash Weight
+	# The weight starts at 1.0 on hit.
+	# Since it's a tween, we might need to check immediately or wait a frame.
+	var hit_weight: float = proxy.get("_hit_flash_weight")
+	assert_that(hit_weight > 0.0).is_true()
+
+	# Verify shader parameter on base_sprite
+	var material: ShaderMaterial = base_sprite.material as ShaderMaterial
+	assert_that(material).is_not_null()
+	var shader_weight: float = material.get_shader_parameter("u_hit_flash")
+	assert_that(shader_weight).is_equal(hit_weight)
