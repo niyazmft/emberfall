@@ -17,3 +17,7 @@ menu.title.continue,Continue,Fortsetzen,Continuar,Continuer
 menu.title.new_game,New Game,Neues Spiel,Nuevo Juego,Nouveau Jeu
 menu.title.settings,Settings,Einstellungen,Ajustes,Paramètres
 menu.title.quit,Quit,Beenden,Salir,Quitter
+SETTINGS_TEXT_SCALE,Text Scale,Textskalierung,Escala de texto,Échelle du texte
+SETTINGS_SLOW_MODE,Slow Mode,Langsamer Modus,Modo lento,Mode lent
+SETTINGS_HIGH_CONTRAST,High Contrast,Hoher Kontrast,Alto contraste,Contraste élevé
+SETTINGS_DYSLEXIA_FONT,Dyslexia Font,Dyslexie-Schriftart,Fuente para dislexia,Police dyslexie
