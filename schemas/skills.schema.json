@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Skill Table Schema",
+  "type": "object",
+  "required": ["skills"],
+  "properties": {
+    "skills": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["id", "name_key", "description_key", "ap_cost", "cooldown", "target_type", "effect_payload"],
+        "properties": {
+          "id": { "type": "string" },
+          "name_key": { "type": "string" },
+          "description_key": { "type": "string" },
+          "ap_cost": { "type": "integer", "minimum": 0 },
+          "cooldown": { "type": "integer", "minimum": 0 },
+          "target_type": {
+            "type": "string",
+            "enum": ["SELF", "SINGLE_ENEMY", "SINGLE_ALLY", "AREA_ENEMY", "AREA_ALLY", "ALL"]
+          },
+          "effect_payload": { "type": "object" }
+        }
+      }
+    }
+  }
+}
