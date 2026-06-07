@@ -15,6 +15,8 @@ signal hp_changed(new_hp: int, old_hp: int)
 signal ap_changed(new_ap: int, old_ap: int)
 signal status_effect_added(effect: StatusEffect)
 signal status_effect_removed(effect: StatusEffect)
+signal level_changed(entity: Entity, new_level: int, old_level: int)
+signal experience_changed(entity: Entity, new_xp: int, old_xp: int)
 
 # ── Status Effects ──────────────────────────────────────────────────
 var status_effects: Array[StatusEffect] = []
@@ -107,6 +109,21 @@ enum State { IDLE, STUNNED, DYING, DEAD, GHOST }
 			state = p_value
 			state_changed.emit(state)
 
+# ── Progression ─────────────────────────────────────────────────────
+@export var level: int = 1:
+	set(p_value):
+		var old_level: int = level
+		level = DeterministicMath.clampi(p_value, 1, 99)
+		if level != old_level:
+			level_changed.emit(self, level, old_level)
+
+@export var experience: int = 0:
+	set(p_value):
+		var old_xp: int = experience
+		experience = DeterministicMath.clampi(p_value, 0, 999999)
+		if experience != old_xp:
+			experience_changed.emit(self, experience, old_xp)
+
 # ── Identity ────────────────────────────────────────────────────────
 @export var entity_name: String = "Unnamed"
 @export var archetype_id: String = ""
@@ -148,6 +165,10 @@ func can_act() -> bool:
 
 func grid_position() -> Vector2i:
 	return Vector2i(x, y)
+
+
+func get_effective_max_level() -> int:
+	return 99
 
 
 # ── Mutators ────────────────────────────────────────────────────────

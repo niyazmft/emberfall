@@ -1,0 +1,10 @@
+{
+  "level_thresholds": [100, 250, 500, 1000, 2000],
+  "stat_growth": {
+    "2": { "hp_max": 10, "off": 2, "def": 1, "spd": 0 },
+    "3": { "hp_max": 10, "off": 2, "def": 1, "spd": 1 },
+    "4": { "hp_max": 15, "off": 3, "def": 2, "spd": 0 },
+    "5": { "hp_max": 15, "off": 3, "def": 2, "spd": 1 },
+    "6": { "hp_max": 20, "off": 4, "def": 3, "spd": 1 }
+  }
+}
