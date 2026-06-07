@@ -313,18 +313,13 @@ func _enter_room(_ctx: Dictionary) -> void:
 
 	var room_data: Dictionary = _get_current_room_data()
 	var room_id: String = room_data.get("room_id", "room_standard_01")
-	var biome_idx: int = int(room_data.get("biome", 0))
-	var biome_subpath := "biome%d" % (biome_idx + 1)
 
 	# Load room definition and augment room_data
-	var room_def := RoomLoader.load_room_data(room_id, biome_subpath)
+	var room_def := RoomLoader.load_room_data(room_id)
 	if not room_def.is_empty():
 		for key: String in room_def:
 			if not room_data.has(key):
 				room_data[key] = room_def[key]
-
-	# Apply procedural augmentation (topology + encounters)
-	RoomLoader.augment_room_procedurally(room_data)
 
 	# Emit event for UI / encounter spawner
 	room_entered.emit(room_index, room_data)
@@ -469,29 +464,11 @@ func _action_start_run(_ctx: Dictionary) -> void:
 func _action_generate_rooms(_ctx: Dictionary) -> void:
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.seed = run_seed
-
-	var config_loader := AutoloadHelper.config_loader()
-	var biomes_data: Dictionary = {}
-	if config_loader:
-		biomes_data = config_loader.getValue("biomes", "", {}) as Dictionary
-
 	for b: int in range(biome_count):
 		var count: int = rng.randi_range(rooms_per_biome_min, rooms_per_biome_max)
-
-		var biome_key := "biome%d" % (b + 1)
-		var biome_info: Dictionary = biomes_data.get(biome_key, {}) as Dictionary
-
-		var room_templates: Array = biome_info.get("room_templates", []) as Array
-
 		for r: int in range(count):
 			var current_room_idx: int = room_queue.size()
-			var room_id := ""
-
-			if not room_templates.is_empty():
-				room_id = room_templates[rng.randi_range(0, room_templates.size() - 1)]
-			else:
-				room_id = "room_standard_0%d" % (rng.randi_range(1, 5))
-
+			var room_id := "room_standard_0%d" % (rng.randi_range(1, 5))
 			(
 				room_queue
 				. append(
