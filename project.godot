@@ -58,6 +58,8 @@ SaveManager="*res://scripts/autoload/save_manager.gd"
 InventoryManager="*res://scripts/inventory/inventory_manager.gd"
 InputRouter="*res://scripts/autoload/input_router.gd"
 DialogueManager="*res://scripts/autoload/dialogue_manager.gd"
+AmbientNarrator="*res://scripts/autoload/ambient_narrator.gd"
+CutscenePlayer="*res://scripts/cutscene/cutscene_player.gd"
 
 [internationalization]
 
@@ -69,7 +71,7 @@ locale/fallback="en"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/gdUnit4/plugin.cfg")
+enabled=PackedStringArray("res://addons/gdUnit4/plugin.cfg", "res://addons/qa_agent/plugin.cfg")
 
 [input]
 
