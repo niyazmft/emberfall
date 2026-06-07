@@ -11,6 +11,7 @@ const EQUIPMENT_PATH := "res://config/entity_equipment.json"
 const ENEMIES_PATH := "res://config/enemies.json"
 const PROGRESSION_PATH := "res://config/progression.json"
 const XP_ECONOMY_PATH := "res://config/xp_economy.json"
+const ACCESSIBILITY_PATH := "res://config/accessibility.json"
 
 # Fallback defaults (sensible so the game runs even if config is missing)
 const DEFAULTS: Dictionary = {
@@ -56,6 +57,7 @@ var _loadedFiles: Dictionary = {
 	ENEMIES_PATH: false,
 	PROGRESSION_PATH: false,
 	XP_ECONOMY_PATH: false
+	ACCESSIBILITY_PATH: false
 }
 
 
