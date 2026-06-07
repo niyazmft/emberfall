@@ -25,14 +25,7 @@
       "spd": 2,
       "ai_behavior": "TANK",
       "biome_affinity": "ANY",
-      "loot_table_id": "tank_loot",
-      "taunt_radius": 3,
-      "shield_block_cooldown": 3,
-      "flanking_protection_weights": {
-        "front": 1.0,
-        "side": 0.5,
-        "back": 0.1
-      }
+      "loot_table_id": "tank_loot"
     },
     "mage": {
       "hp_max": 20,

@@ -13,16 +13,6 @@ signal facing_changed(fx: int, fy: int)
 signal state_changed(state: State)
 signal hp_changed(new_hp: int, old_hp: int)
 signal ap_changed(new_ap: int, old_ap: int)
-signal status_effect_added(effect: StatusEffect)
-signal status_effect_removed(effect: StatusEffect)
-signal level_changed(entity: Entity, new_level: int, old_level: int)
-signal experience_changed(entity: Entity, new_xp: int, old_xp: int)
-
-# ── Status Effects ──────────────────────────────────────────────────
-var status_effects: Array[StatusEffect] = []
-var _cached_off_bonus: int = 0
-var _cached_def_bonus: int = 0
-var _cached_spd_mult: float = 1.0
 
 # ── Grid Position ───────────────────────────────────────────────────
 @export var x: int = 0:
@@ -69,22 +59,14 @@ var _cached_spd_mult: float = 1.0
 			hp_changed.emit(hp, old_hp)
 
 @export var off: int = 0:
-	get:
-		return DeterministicMath.clampi(off + _cached_off_bonus, 0, GameConstants.STAT_OFF_BOUND)
 	set(p_value):
 		off = DeterministicMath.clampi(p_value, 0, GameConstants.STAT_OFF_BOUND)
 
 @export var def_: int = 0:
-	get:
-		return DeterministicMath.clampi(def_ + _cached_def_bonus, 0, GameConstants.STAT_DEF_BOUND)
 	set(p_value):
 		def_ = DeterministicMath.clampi(p_value, 0, GameConstants.STAT_DEF_BOUND)
 
 @export var spd: int = 1:
-	get:
-		return DeterministicMath.clampi(
-			int(float(spd) * _cached_spd_mult), 1, GameConstants.STAT_SPD_BOUND
-		)
 	set(p_value):
 		spd = DeterministicMath.clampi(p_value, 1, GameConstants.STAT_SPD_BOUND)
 
@@ -108,21 +90,6 @@ enum State { IDLE, STUNNED, DYING, DEAD, GHOST }
 		if state != p_value:
 			state = p_value
 			state_changed.emit(state)
-
-# ── Progression ─────────────────────────────────────────────────────
-@export var level: int = 1:
-	set(p_value):
-		var old_level: int = level
-		level = DeterministicMath.clampi(p_value, 1, 99)
-		if level != old_level:
-			level_changed.emit(self, level, old_level)
-
-@export var experience: int = 0:
-	set(p_value):
-		var old_xp: int = experience
-		experience = DeterministicMath.clampi(p_value, 0, 999999)
-		if experience != old_xp:
-			experience_changed.emit(self, experience, old_xp)
 
 # ── Identity ────────────────────────────────────────────────────────
 @export var entity_name: String = "Unnamed"
@@ -167,10 +134,6 @@ func grid_position() -> Vector2i:
 	return Vector2i(x, y)
 
 
-func get_effective_max_level() -> int:
-	return 99
-
-
 # ── Mutators ────────────────────────────────────────────────────────
 func set_facing(dx: int, dy: int) -> void:
 	facing_x = dx
@@ -192,43 +155,3 @@ func apply_damage(dmg: int) -> void:
 
 func heal(amount: int) -> void:
 	hp = DeterministicMath.clampi(hp + amount, 0, hp_max)
-
-
-# ── Status Effect Mutators ──────────────────────────────────────────
-func add_status_effect(effect: StatusEffect) -> void:
-	status_effects.append(effect)
-	_recompute_effect_caches()
-	status_effect_added.emit(effect)
-
-
-func remove_status_effect(effect: StatusEffect) -> void:
-	var idx: int = status_effects.find(effect)
-	if idx != -1:
-		status_effects.remove_at(idx)
-		_recompute_effect_caches()
-		status_effect_removed.emit(effect)
-
-
-func _recompute_effect_caches() -> void:
-	_cached_off_bonus = 0
-	_cached_def_bonus = 0
-	_cached_spd_mult = 1.0
-
-	for effect: StatusEffect in status_effects:
-		_cached_off_bonus += effect.combatFormulaModifier.get("off_bonus", 0)
-		_cached_def_bonus += effect.combatFormulaModifier.get("def_bonus", 0)
-		_cached_spd_mult *= effect.combatFormulaModifier.get("spd_mult", 1.0)
-
-
-func has_status_effect(effect_id: String) -> bool:
-	for effect: StatusEffect in status_effects:
-		if effect.id == effect_id:
-			return true
-	return false
-
-
-func get_status_effect(effect_id: String) -> StatusEffect:
-	for effect: StatusEffect in status_effects:
-		if effect.id == effect_id:
-			return effect
-	return null
