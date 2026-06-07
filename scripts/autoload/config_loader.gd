@@ -11,7 +11,14 @@ const EQUIPMENT_PATH := "res://config/entity_equipment.json"
 const ENEMIES_PATH := "res://config/enemies.json"
 const SKILLS_PATH := "res://config/skills.json"
 const HOTBAR_BINDINGS_PATH := "res://config/hotbar_bindings.json"
+const STATUS_EFFECTS_PATH := "res://config/status_effects.json"
 const ACCESSIBILITY_PATH := "res://config/accessibility.json"
+const REWARDS_PATH := "res://config/rewards.json"
+const UNLOCKS_PATH := "res://config/unlocks.json"
+const ENCOUNTER_SCALER_PATH := "res://config/encounter_scaler.json"
+const PROGRESSION_PATH := "res://config/progression.json"
+const XP_ECONOMY_PATH := "res://config/xp_economy.json"
+const BIOMES_PATH := "res://config/biomes.json"
 
 # Fallback defaults (sensible so the game runs even if config is missing)
 const DEFAULTS: Dictionary = {
@@ -57,7 +64,14 @@ var _loadedFiles: Dictionary = {
 	ENEMIES_PATH: false,
 	SKILLS_PATH: false,
 	HOTBAR_BINDINGS_PATH: false,
+	STATUS_EFFECTS_PATH: false,
 	ACCESSIBILITY_PATH: false,
+	REWARDS_PATH: false,
+	UNLOCKS_PATH: false,
+	ENCOUNTER_SCALER_PATH: false,
+	PROGRESSION_PATH: false,
+	XP_ECONOMY_PATH: false,
+	BIOMES_PATH: false,
 }
 
 
@@ -70,25 +84,47 @@ func _loadConfig() -> void:
 	for path: String in _loadedFiles:
 		_loadedFiles[path] = false
 
-	_loadJsonToConfig(CONFIG_PATH)
-	_loadJsonToConfig(ITEMS_PATH)
-	_loadJsonToConfig(EQUIPMENT_PATH)
-	_loadJsonToConfig(ENEMIES_PATH)
-	_loadJsonToConfig(SKILLS_PATH)
-	_loadJsonToConfig(HOTBAR_BINDINGS_PATH)
-	_loadJsonToConfig(ACCESSIBILITY_PATH)
+	_loadJsonToConfig(CONFIG_PATH, "config")
+	_loadJsonToConfig(ITEMS_PATH, "items")
+	_loadJsonToConfig(EQUIPMENT_PATH, "equipment")
+	_loadJsonToConfig(ENEMIES_PATH, "enemies")
+	_loadJsonToConfig(SKILLS_PATH, "skills")
+	_loadJsonToConfig(HOTBAR_BINDINGS_PATH, "hotbar_bindings")
+	_loadJsonToConfig(STATUS_EFFECTS_PATH, "status_effects")
+	_loadJsonToConfig(ACCESSIBILITY_PATH, "accessibility")
+	_loadJsonToConfig(REWARDS_PATH, "rewards")
+	_loadJsonToConfig(UNLOCKS_PATH, "unlocks")
+	_loadJsonToConfig(ENCOUNTER_SCALER_PATH, "encounter_scaler")
+	_loadJsonToConfig(PROGRESSION_PATH, "progression")
+	_loadJsonToConfig(XP_ECONOMY_PATH, "xp_economy")
+
+	var actual_biomes_path := BIOMES_PATH
+	if _configData.has("config") and _configData["config"].has("run_manager"):
+		actual_biomes_path = _configData["config"]["run_manager"].get(
+			"BIOMES_CONFIG_PATH", BIOMES_PATH
+		)
+
+	_loadJsonToConfig(actual_biomes_path, "biomes")
 
 
-func _loadJsonToConfig(filePath: String) -> void:
+func _loadJsonToConfig(filePath: String, p_namespace: String = "") -> void:
 	if FileAccess.file_exists(filePath):
 		var fileHandle: FileAccess = FileAccess.open(filePath, FileAccess.READ)
 		if fileHandle:
 			var fileText: String = fileHandle.get_as_text()
 			var parsedJson: Variant = JSON.parse_string(fileText)
 			if parsedJson is Dictionary:
-				_configData.merge(parsedJson, true)
+				if p_namespace.is_empty():
+					_configData.merge(parsedJson, true)
+				else:
+					_configData[p_namespace] = parsedJson
 				_loadedFiles[filePath] = true
-				print("ConfigLoader: loaded config from %s" % filePath)
+				print(
+					(
+						"ConfigLoader: loaded config from %s into namespace '%s'"
+						% [filePath, p_namespace]
+					)
+				)
 			else:
 				push_warning("ConfigLoader: config file %s was not a valid JSON object." % filePath)
 			fileHandle.close()
@@ -101,25 +137,63 @@ func _loadJsonToConfig(filePath: String) -> void:
 func getValue(sectionOrKey: String, key: String = "", fallback: Variant = null) -> Variant:
 	if not key.is_empty():
 		# Two-arg mode: section + key
+		var section: Dictionary = {}
 		if _configData.has(sectionOrKey) and _configData[sectionOrKey] is Dictionary:
-			var section: Dictionary = _configData[sectionOrKey]
+			section = _configData[sectionOrKey]
+		else:
+			# Scan sub-sections for sectionOrKey (needed for namespaced files)
+			for s: Variant in _configData.values():
+				if s is Dictionary and s.has(sectionOrKey) and s[sectionOrKey] is Dictionary:
+					section = s[sectionOrKey]
+					break
+
+		if not section.is_empty():
+			# If the section also contains a dictionary with the same name, dive into it
+			# to maintain backward compatibility with JSONs like {"items": {"items": {...}}}
+			if section.has(sectionOrKey) and section[sectionOrKey] is Dictionary:
+				section = section[sectionOrKey]
+
 			if section.has(key):
 				return section[key]
+
 		# Try flattened default
 		if DEFAULTS.has(key):
 			return DEFAULTS[key]
 		return fallback
+	else:
+		# One-arg mode: direct key lookup in namespaced or flattened namespace
+		if _configData.has(sectionOrKey):
+			var data: Variant = _configData[sectionOrKey]
+			# If the key points to a sub-dictionary with the same name, return that sub-dictionary
+			# to maintain backward compatibility with JSONs like {"items": {"items": {...}}}
+			if data is Dictionary and data.has(sectionOrKey):
+				return data[sectionOrKey]
+			return data
 
-	# One-arg mode: direct key lookup in flattened namespace
-	if _configData.has(sectionOrKey):
-		return _configData[sectionOrKey]
-	# Scan sub-sections for key
-	for section: Variant in _configData.values():
-		if section is Dictionary and section.has(sectionOrKey):
-			return section[sectionOrKey]
-	if DEFAULTS.has(sectionOrKey):
-		return DEFAULTS[sectionOrKey]
-	return fallback
+		# Backward compatibility: scan sub-sections for key if not found in root
+		if (
+			sectionOrKey != "items"
+			and sectionOrKey != "enemies"
+			and sectionOrKey != "equipment"
+			and sectionOrKey != "progression"
+			and sectionOrKey != "xp_economy"
+			and sectionOrKey != "accessibility"
+			and sectionOrKey != "config"
+			and sectionOrKey != "biomes"
+			and sectionOrKey != "skills"
+			and sectionOrKey != "hotbar_bindings"
+			and sectionOrKey != "status_effects"
+			and sectionOrKey != "rewards"
+			and sectionOrKey != "unlocks"
+			and sectionOrKey != "encounter_scaler"
+		):
+			for section: Variant in _configData.values():
+				if section is Dictionary and section.has(sectionOrKey):
+					return section[sectionOrKey]
+
+		if DEFAULTS.has(sectionOrKey):
+			return DEFAULTS[sectionOrKey]
+		return fallback
 
 
 ## Convenience typed getters for hot-path values.
