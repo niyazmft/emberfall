@@ -21,7 +21,7 @@ func _ready() -> void:
 
 
 ## Updates the hotbar with a list of abilities.
-func set_abilities(abilities: Array) -> void:
+func set_abilities(abilities: Array[Dictionary]) -> void:
 	clear_hotbar()
 	var slotCount: int = slots_container.get_child_count()
 
@@ -50,7 +50,7 @@ func select_slot(index: int) -> void:
 
 
 func _on_viewport_resized() -> void:
-	var viewport_width := get_viewport().get_visible_rect().size.x
+	var viewport_width: float = get_viewport().get_visible_rect().size.x
 
 	if viewport_width < 360.0:
 		left_arrow.show()
