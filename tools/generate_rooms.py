@@ -22,7 +22,14 @@ def generate_room(room_id, biome_name):
     encounters = []
 
     occupied = set()
-    player_start = {"x": random.randint(0, 2), "y": random.randint(0, 11)}
+
+    # Find valid player start
+    player_start = {"x": 0, "y": 0}
+    for _ in range(100):
+        x, y = random.randint(0, 2), random.randint(0, 11)
+        if not layout["blocked"][y * 12 + x]:
+            player_start = {"x": x, "y": y}
+            break
     occupied.add((player_start["x"], player_start["y"]))
 
     for _ in range(num_encounters):
@@ -30,9 +37,9 @@ def generate_room(room_id, biome_name):
         count = random.randint(1, 3)
         positions = []
         for _ in range(count):
-            for _ in range(20): # Try to find free spot
+            for _ in range(100): # Try to find free spot
                 x, y = random.randint(5, 11), random.randint(0, 11)
-                if (x, y) not in occupied:
+                if (x, y) not in occupied and not layout["blocked"][y * 12 + x]:
                     positions.append({"x": x, "y": y})
                     occupied.add((x, y))
                     break
@@ -54,6 +61,7 @@ def generate_room(room_id, biome_name):
 
 def main():
     biomes = ["biome1", "biome2", "biome3"]
+    total_count = 0
     for i, biome in enumerate(biomes):
         target_dir = f"config/rooms/{biome}"
         os.makedirs(target_dir, exist_ok=True)
@@ -62,7 +70,8 @@ def main():
             room_data = generate_room(room_id, biome)
             with open(os.path.join(target_dir, f"{room_id}.json"), "w") as f:
                 json.dump(room_data, f, indent=2)
-    print("Generated 36 room files.")
+            total_count += 1
+    print(f"Generated {total_count} room files.")
 
 if __name__ == "__main__":
     main()

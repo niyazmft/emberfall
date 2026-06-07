@@ -1,20 +1,20 @@
 keys,en,de,es,fr
-BE_MWT_0,"[A low rumble spreads beneath you]","[Ein tiefes Grollen breitet sich unter dir aus]","[Un rugido profundo se extiende bajo tus pies]","[Un grondement sourd se propage sous vos pieds]"
-BE_MWT_1,"[Machinery churns in the walls]","[Maschinen arbeiten in den Wänden]","[La maquinaria se agita en las paredes]","[Les machines s'activent dans les murs]"
-BE_MWT_2,"[Pressure builds]","[Druck baut sich auf]","[La presión aumenta]","[La pression monte]"
-BE_MWT_3,"[The breaking point nears]","[Der Belastungspunkt nähert sich]","[El punto de ruptura se acerca]","[Le point de rupture approche]"
-BE_CAP_0_TO_1,"[The world stills]","[Die Welt steht still]","[El mundo se detiene]","[Le monde se fige]"
-BE_CAP_1_TO_2,"[Machinery grinds]","[Maschinen knirschen]","[La maquinaria cruje]","[Les machines grincent]"
-BE_CAP_2_TO_3,"[The weight gathers]","[Die Last sammelt sich]","[La carga se acumula]","[Le poids s'accumule]"
-BE_CAP_3_TO_2,"[The pressure recedes]","[Der Druck weicht zurück]","[La presión retrocede]","[La pression diminue]"
-BE_CAP_2_TO_1,"[The memory loosens]","[Die Erinnerung lockert sich]","[El recuerdo se afloja]","[Le souvenir se relâche]"
-BE_CAP_1_TO_0,"[The embers cool]","[Die Glut kühlt ab]","[Las brasas se enfrían]","[Les braises refroidissent]"
-BE_CAP_3_TO_0_NORMAL,"[The burden fades slowly]","[Die Last schwindet langsam]","[La carga se desvanece lentamente]","[Le fardeau s'efface lentement]"
-BE_CAP_3_TO_0_EMERGENCY,"[The burden drops]","[Die Last fällt ab]","[La carga cae]","[Le fardeau tombe]"
-BE_PHASE_A_CAP,"[The world stills]","[Die Welt steht still]","[El mundo se detiene]","[Le monde se fige]"
-BE_CAP_NUMBNESS,"[The burden is silent]","[Die Last ist still]","[La carga está en silencio]","[Le fardeau est silencieux]"
+BE_MWT_0,[A low rumble spreads beneath you],[Ein tiefes Grollen breitet sich unter dir aus],[Un rugido profundo se extiende bajo tus pies],[Un grondement sourd se propage sous vos pieds]
+BE_MWT_1,[Machinery churns in the walls],[Maschinen arbeiten in den Wänden],[La maquinaria se agita en las paredes],[Les machines s'activent dans les murs]
+BE_MWT_2,[Pressure builds],[Druck baut sich auf],[La presión aumenta],[La pression monte]
+BE_MWT_3,[The breaking point nears],[Der Belastungspunkt nähert sich],[El punto de ruptura se acerca],[Le point de rupture approche]
+BE_CAP_0_TO_1,[The world stills],[Die Welt steht still],[El mundo se detiene],[Le monde se fige]
+BE_CAP_1_TO_2,[Machinery grinds],[Maschinen knirschen],[La maquinaria cruje],[Les machines grincent]
+BE_CAP_2_TO_3,[The weight gathers],[Die Last sammelt sich],[La carga se acumula],[Le poids s'accumule]
+BE_CAP_3_TO_2,[The pressure recedes],[Der Druck weicht zurück],[La presión retrocede],[La pression diminue]
+BE_CAP_2_TO_1,[The memory loosens],[Die Erinnerung lockert sich],[El recuerdo se afloja],[Le souvenir se relâche]
+BE_CAP_1_TO_0,[The embers cool],[Die Glut kühlt ab],[Las brasas se enfrían],[Les braises refroidissent]
+BE_CAP_3_TO_0_NORMAL,[The burden fades slowly],[Die Last schwindet langsam],[La carga se desvanece lentamente],[Le fardeau s'efface lentement]
+BE_CAP_3_TO_0_EMERGENCY,[The burden drops],[Die Last fällt ab],[La carga cae],[Le fardeau tombe]
+BE_PHASE_A_CAP,[The world stills],[Die Welt steht still],[El mundo se detiene],[Le monde se fige]
+BE_CAP_NUMBNESS,[The burden is silent],[Die Last ist still],[La carga está en silencio],[Le fardeau est silencieux]
 menu.title.continue,Continue,Fortsetzen,Continuar,Continuer
-menu.title.new_game,"New Game","Neues Spiel","Nuevo Juego","Nouveau Jeu"
+menu.title.new_game,New Game,Neues Spiel,Nuevo Juego,Nouveau Jeu
 menu.title.settings,Settings,Einstellungen,Ajustes,Paramètres
 menu.title.quit,Quit,Beenden,Salir,Quitter
 room_biome1_01,Room 1-01,Raum 1-01,Sala 1-01,Salle 1-01
@@ -53,19 +53,3 @@ room_biome3_09,Room 3-09,Raum 3-09,Sala 3-09,Salle 3-09
 room_biome3_10,Room 3-10,Raum 3-10,Sala 3-10,Salle 3-10
 room_biome3_11,Room 3-11,Raum 3-11,Sala 3-11,Salle 3-11
 room_biome3_12,Room 3-12,Raum 3-12,Sala 3-12,Salle 3-12
-SETTINGS_TEXT_SCALE,Text Scale,Textskalierung,Escala de texto,Échelle du texte
-SETTINGS_SLOW_MODE,Slow Mode,Langsamer Modus,Modo lento,Mode lent
-SETTINGS_HIGH_CONTRAST,High Contrast,Hoher Kontrast,Alto contraste,Contraste élevé
-SETTINGS_DYSLEXIA_FONT,Dyslexia Font,Dyslexie-Schriftart,Fuente para dislexia,Police dyslexie
-BE_B_FIRST_D,"Three witnesses to the fading light. Their vigil is over; yours continues.","Drei Zeugen des schwindenden Lichts. Ihre Mahnwache ist vorbei; Deine geht weiter.","Tres testigos de la luz que se desvanece. Su vigilia ha terminado; la tuya continúa.","Trois témoins de la lumière déclinante. Leur veille est terminée ; la vôtre continue."
-BE_B_FIRST_E,"Three threads unspun from the great tapestry. You gather the loose ends.","Drei Fäden, die aus dem großen Wandteppich gesponnen wurden. Du sammelst die losen Enden.","Tres hilos deshilachados del gran tapiz. Recoges los cabos sueltos.","Trois fils dévidés de la grande tapisserie. Vous rassemblez les bouts de ficelle."
-BE_B_REPEAT_R3,"More vessels emptied. The weight deepens.","Mehr Gefäße geleert. Die Last vertieft sich.","Más vasijas vaciadas. El peso se profundiza.","Plus de récipients vidés. Le poids s'alourdit."
-BE_B_REPEAT_R4,"More carriers stilled. The silence grows.","Mehr Träger beruhigt. Die Stille wächst.","Más portadores silenciados. El silencio crece.","Plus de porteurs immobilisés. Le silence grandit."
-AMBIENT_ROOM_ENTER_FIRST,"The air is thick with the scent of ozone and cooling metal.","Die Luft ist dick vom Geruch von Ozon und abkühlendem Metall.","El aire está cargado con el olor a ozono y metal enfriándose.","L'air est imprégné d'une odeur d'ozone et de métal qui refroidit."
-AMBIENT_NEAR_VOID,"A cold draft rises from the depths, carrying no sound.","Ein kalter Zug steigt aus der Tiefe auf und trägt keinen Ton.","Una corriente fría sube desde las profundidades, sin sonido.","Un courant d'air froid monte des profondeurs, sans aucun son."
-AMBIENT_REMNANT_SIGHTED,"Flickers of light dance in the shadows, memories of what was.","Lichtflimmern tanzt im Schatten, Erinnerungen an das, was war.","Destellos de luz bailan en las sombras, recuerdos de lo que fue.","Des lueurs dansent dans l'ombre, souvenirs de ce qui fut."
-CS_RUN_START_TITLE,"The Awakening",Das Erwachen,El Despertar,L'Éveil
-CS_RUN_START_SEG_1,"The embers glow faintly in the dark.","Die Glut leuchtet schwach im Dunkeln.","Las brasas brillan débilmente en la oscuridad.","Les braises rougeoient faiblement dans l'obscurité."
-CS_RUN_START_SEG_2,"You are the Keeper of what remains.","Du bist der Hüter dessen, was bleibt.","Eres el Guardián de lo que queda.","Vous êtes le Gardien de ce qui reste."
-CS_BIOME_TRANS_1_TITLE,"The Iron Descent","Der eiserne Abstieg","El Descenso de Hierro","La Descente de Fer"
-CS_BIOME_TRANS_1_SEG_1,"The metal groans as you descend deeper.","Das Metall stöhnt, während du tiefer absteigst.","El metal gime mientras desciendes más profundo.","Le métal gémit à mesure que vous descendez plus profondément."

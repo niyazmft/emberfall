@@ -36,12 +36,24 @@ def validate_room(json_path, schema):
         if "enemy_type" not in encounter or "positions" not in encounter:
             print(f"Invalid encounter: {encounter}")
             return False
-        if len(encounter["positions"]) != encounter.get("count", len(encounter["positions"])):
-             print(f"Encounter count mismatch: {encounter}")
-             # Not strictly failing if count is missing or mismatched in this simple validator,
-             # but schema says count is required for items in encounters.
-             # Actually, schema says positions is required, enemy_type is required. count is required?
-             # Let me re-read my schema.
+
+        count = encounter.get("count", len(encounter["positions"]))
+        if len(encounter["positions"]) != count:
+             print(f"Encounter count mismatch in {room['id']}: enemy {encounter['enemy_type']} says {count} but has {len(encounter['positions'])} positions")
+             return False
+
+        for pos in encounter["positions"]:
+            x, y = pos["x"], pos["y"]
+            idx = y * 12 + x
+            if room["layout"]["blocked"][idx]:
+                print(f"Encounter spawn on blocked tile in {room['id']}: {encounter['enemy_type']} at ({x}, {y})")
+                return False
+
+    # Check player start
+    ps = room["player_start"]
+    if room["layout"]["blocked"][ps["y"] * 12 + ps["x"]]:
+        print(f"Player start on blocked tile in {room['id']}: ({ps['x']}, {ps['y']})")
+        return False
 
     return True
 
