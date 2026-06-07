@@ -6,6 +6,7 @@ const HOTBAR_SCENE: String = "res://scenes/ui/hotbar.tscn"
 func test_hotbar_population() -> void:
 	var hotbar: Control = load(HOTBAR_SCENE).instantiate() as Control
 	add_child(hotbar)
+	auto_free(hotbar)
 
 	# Wait for _ready to finish (it calls _refresh_hotbar)
 	await get_tree().process_frame
@@ -33,5 +34,3 @@ func test_hotbar_population() -> void:
 
 	var slot2: Button = slots[2] as Button
 	assert_bool(slot2.visible).is_false()
-
-	hotbar.queue_free()
