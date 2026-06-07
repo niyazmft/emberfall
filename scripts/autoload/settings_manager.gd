@@ -27,6 +27,10 @@ const DEFAULT_SETTINGS: Dictionary = {
 	{
 		"screen_shake": 1.0,
 		"cvd_sim": 0,
+		"text_scale": 1.0,
+		"high_contrast": false,
+		"dyslexia_font": false,
+		"slow_mode": 1.0,
 	},
 	"controls": {"input_hints": 0, "bindings": {}}
 }
@@ -166,6 +170,13 @@ func apply_accessibility_settings() -> void:
 	var bsm: Node = AutoloadHelper.get_autoload("BurdenShaderManager")
 	if bsm != null:
 		bsm.call("set_cvd_mode", int(access_cfg.get("cvd_sim", 0)))
+
+	# Apply text scale
+	var text_scale: float = float(access_cfg.get("text_scale", 1.0))
+	get_window().content_scale_factor = text_scale
+
+	# Other accessibility settings are handled by their respective systems
+	# querying SettingsManager or listening to a potential signal.
 
 
 func _apply_bus_volume(bus_name: String, volume_linear: float, mute: bool) -> void:
