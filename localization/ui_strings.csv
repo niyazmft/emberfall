@@ -17,7 +17,3 @@ menu.title.continue,Continue,Fortsetzen,Continuar,Continuer
 menu.title.new_game,New Game,Neues Spiel,Nuevo Juego,Nouveau Jeu
 menu.title.settings,Settings,Einstellungen,Ajustes,Paramètres
 menu.title.quit,Quit,Beenden,Salir,Quitter
-QUEST_SPARE_ENEMIES_NAME,Spare Enemies,Feinde verschonen,Perdonar enemigos,Épargner des ennemis
-QUEST_SPARE_ENEMIES_DESC,Spare 2 enemies during your run.,Verschone 2 Feinde während deines Laufs.,Perdona a 2 enemigos durante tu partida.,Épargnez 2 ennemis pendant votre partie.
-QUEST_REACH_ECHO_GATE_NAME,Reach Echo Gate,Echo-Tor erreichen,Llegar a la puerta del eco,Atteindre la porte de l'écho
-QUEST_REACH_ECHO_GATE_DESC,Reach the echo gate at the end of a biome.,Erreiche das Echo-Tor am Ende eines Bioms.,Llega a la puerta del eco al final de un bioma.,Atteignez la porte de l'écho à la fin d'un biome.

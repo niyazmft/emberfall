@@ -21,15 +21,15 @@ var _turn_manager: TurnManager
 @onready var entity_container: Node2D = $EntityContainer
 @onready var ui_overlay: CanvasLayer = $UIOverlay
 @onready var camera: Camera2D = $Camera2D
-`@onready` var cameraShaker: CameraShaker = $Camera2D/CameraShaker
+@onready var camera_shaker: CameraShaker = $Camera2D/CameraShaker
 
 
 func _ready() -> void:
 	_grid_system = AutoloadHelper.grid_system()
 
-	var eventBus: _EventBus = AutoloadHelper.event_bus()
-	if eventBus:
-		eventBus.entity_state_changed.connect(_on_entity_state_changed)
+	var event_bus: _EventBus = AutoloadHelper.event_bus()
+	if event_bus:
+		event_bus.entity_state_changed.connect(_on_entity_state_changed)
 
 	var run_manager := AutoloadHelper.run_manager()
 	if run_manager:
