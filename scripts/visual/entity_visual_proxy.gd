@@ -23,11 +23,15 @@ extends Node2D
 
 var _target_position: Vector2
 var _grid_renderer: GridRenderer
+var _ftManager: FloatingTextManager
 
 
 func _ready() -> void:
 	var combat_room: Node = get_node_or_null("/root/CombatRoom")
 	if combat_room:
+		_ftManager = (
+			combat_room.find_child("FloatingTextManager", true, false) as FloatingTextManager
+		)
 		for child: Node in combat_room.get_children():
 			if child is GridRenderer:
 				_grid_renderer = child as GridRenderer
@@ -135,7 +139,19 @@ func _on_entity_state_changed(state: Entity.State) -> void:
 
 
 func _on_entity_hp_changed(new_hp: int, old_hp: int) -> void:
-	if new_hp < old_hp:
+	var delta: int = new_hp - old_hp
+	if delta == 0:
+		return
+
+	# Trigger floating text
+	if _ftManager:
+		# Spawn at center of the sprite
+		var spawnPos: Vector2 = global_position
+		if base_sprite:
+			spawnPos += base_sprite.offset
+		_ftManager.spawnText(delta, spawnPos)
+
+	if delta < 0:
 		var app: Node = null
 		if has_node("ApparitionRenderer"):
 			app = get_node("ApparitionRenderer")
