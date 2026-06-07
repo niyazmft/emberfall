@@ -165,8 +165,8 @@ func _end_current_turn() -> void:
 	var current_actor: Node2D = turn_order[current_turn_index]
 	var entity: Entity = current_actor.get("entity") as Entity
 
-	if is_instance_valid(_lifecycle) and entity != null:
-		_lifecycle.call("process_end_of_turn", entity)
+	if is_instance_valid(_lifecycle):
+		_lifecycle.call("process_end_of_turn")
 
 	if entity:
 		turn_ended.emit(entity)
