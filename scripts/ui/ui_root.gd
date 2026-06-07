@@ -8,6 +8,7 @@ extends CanvasLayer
 @onready var _pause_menu: Control = %PauseMenu
 @onready var _settings_panel: Control = %SettingsPanel
 @onready var _transition_layer: TransitionLayer = %TransitionLayer
+@onready var _inventory: Control = %Inventory
 
 
 func _ready() -> void:
@@ -22,12 +23,16 @@ func _ready() -> void:
 	_main_menu.show()
 	_pause_menu.hide()
 	_settings_panel.hide()
+	_inventory.hide()
 
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		if _settings_panel.visible:
 			_settings_panel._on_back_pressed()
+			get_viewport().set_input_as_handled()
+		elif _inventory.visible:
+			_inventory.toggle()
 			get_viewport().set_input_as_handled()
 		elif _main_menu.visible:
 			# Quit or show quit confirmation
@@ -36,6 +41,10 @@ func _input(event: InputEvent) -> void:
 			# Toggle Pause
 			_pause_menu.toggle_pause()
 			get_viewport().set_input_as_handled()
+
+	if event.is_action_pressed("toggle_inventory") and not _main_menu.visible:
+		_inventory.toggle()
+		get_viewport().set_input_as_handled()
 
 
 func _apply_safe_area() -> void:

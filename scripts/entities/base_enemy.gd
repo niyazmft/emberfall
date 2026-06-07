@@ -123,6 +123,14 @@ func _handle_attack(action: Dictionary) -> void:
 	# Calculate damage
 	var damage: int = CombatFormula.compute_damage_from_entities(entity, target_entity, cover_tiles)
 
+	# Play attack sound
+	var emitter: _SFXEmitter = AutoloadHelper.sfx_emitter()
+	if emitter:
+		var path: String = "res://assets/audio/sfx/attack_swing.wav"
+		if ResourceLoader.exists(path):
+			var sfx: AudioStream = load(path) as AudioStream
+			emitter.play_sfx_2d(sfx, global_position)
+
 	# Apply damage through lifecycle
 	var lifecycle: _EntityLifecycle = AutoloadHelper.entity_lifecycle()
 	if lifecycle:
