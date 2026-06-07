@@ -86,5 +86,5 @@ func trigger_damage_effect() -> void:
 	# Verify shader parameter on base_sprite
 	var material: ShaderMaterial = base_sprite.material as ShaderMaterial
 	assert_that(material).is_not_null()
-	var shader_weight: float = material.get_shader_parameter("u_hit_flash")
-	assert_that(shader_weight).is_equal(hit_weight)
+	var shaderWeight: float = material.get_shader_parameter("u_hit_flash")
+	assert_that(shaderWeight).is_equal(hitWeight)
