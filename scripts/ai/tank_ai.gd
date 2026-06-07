@@ -4,6 +4,7 @@ extends RefCounted
 ## TankAI behavior resolver.
 ## Manages Tank-specific logic including taunt radius and shield block.
 
+
 static func decide_action(
 	p_entity: Entity,
 	p_player_node: Node2D,
