@@ -10,8 +10,8 @@ func test_config_loads() -> void:
 	assert_that(bm._config_loaded).is_true()
 	assert_that(bm._event_engine._collective_nouns.size()).is_equal(8)
 	assert_that(bm._event_engine._numbness_cap).is_equal(5)
-	assert_that(bm._event_engine._variants_first.size()).is_equal(5)
-	assert_that(bm._event_engine._variants_repeat.size()).is_equal(4)
+	assert_that(bm._event_engine._variants_first.size()).is_equal(3)
+	assert_that(bm._event_engine._variants_repeat.size()).is_equal(2)
 
 
 # ── AC-2: Save schema round-trip ─────────────────────────────────────────
