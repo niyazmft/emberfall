@@ -1,5 +1,6 @@
 extends GdUnitTestSuite
 
+
 func test_elite_modifiers_stat_scaling() -> void:
 	var enemy_scene: BaseEnemy = auto_free(BaseEnemy.new())
 	enemy_scene.archetype_id = "grunt"
@@ -19,6 +20,7 @@ func test_elite_modifiers_stat_scaling() -> void:
 	assert_that(entity.spd).is_equal(2)
 	assert_that(entity.entity_name).is_equal("Bulwark Grunt")
 
+
 func test_boss_ai_delegation() -> void:
 	var enemy_scene: BaseEnemy = auto_free(BaseEnemy.new())
 	var ai_controller: EnemyAIController = auto_free(EnemyAIController.new())
@@ -36,10 +38,12 @@ func test_boss_ai_delegation() -> void:
 	enemy_scene._setup_ai()
 	assert_that(ai_controller.boss_behavior_name).is_equal("OVERGROWN_GUARDIAN")
 
+
 func test_room_loader_boss_spawning() -> void:
 	var room_data: Dictionary = {
 		"id": "test_boss_room",
-		"encounters": [
+		"encounters":
+		[
 			{
 				"enemy_type": "boss",
 				"archetype_override": "overgrown_guardian",

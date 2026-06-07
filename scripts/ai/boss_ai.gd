@@ -4,6 +4,7 @@ extends RefCounted
 ## BossAI behavior resolver.
 ## Manages specialized boss logic by resolving behavior names from config.
 
+
 static func decide_action(
 	p_behavior_name: String,
 	p_entity: Entity,
@@ -13,13 +14,18 @@ static func decide_action(
 ) -> Dictionary:
 	match p_behavior_name.to_upper():
 		"OVERGROWN_GUARDIAN":
-			return _overgrown_guardian_behavior(p_entity, p_player_node, p_grid_system, p_controller)
+			return _overgrown_guardian_behavior(
+				p_entity, p_player_node, p_grid_system, p_controller
+			)
 		_:
 			# Fallback to simple grunt behavior if behavior name not recognized
 			return p_controller._grunt_behavior(
 				p_entity.grid_position(),
 				(p_player_node.get("entity") as Entity).grid_position(),
-				p_controller._grid_distance(p_entity.grid_position(), (p_player_node.get("entity") as Entity).grid_position())
+				p_controller._grid_distance(
+					p_entity.grid_position(),
+					(p_player_node.get("entity") as Entity).grid_position()
+				)
 			)
 
 
