@@ -53,6 +53,11 @@ static func entity_lifecycle() -> _EntityLifecycle:
 	return get_autoload("EntityLifecycle") as _EntityLifecycle
 
 
+## Returns the LevelUpManager autoload, or null.
+static func level_up_manager() -> _LevelUpManager:
+	return get_autoload("LevelUpManager") as _LevelUpManager
+
+
 ## Returns the RunManager autoload, or null.
 static func run_manager() -> _RunManager:
 	return get_autoload("RunManager") as _RunManager
