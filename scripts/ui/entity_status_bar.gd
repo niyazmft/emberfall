@@ -11,9 +11,11 @@ var _pip_scene: PackedScene
 var _lerp_speed: float = 10.0
 var _target_hp: float = 0.0
 
+
 func _ready() -> void:
 	_load_config()
 	_setup_ap_pips()
+
 
 func _load_config() -> void:
 	var loader: _ConfigLoader = AutoloadHelper.config_loader()
@@ -22,15 +24,18 @@ func _load_config() -> void:
 		if feedback:
 			_lerp_speed = feedback.get("lerp_speed", 10.0)
 
+
 func _process(delta: float) -> void:
 	if abs(hpBar.value - _target_hp) > 0.1:
 		hpBar.value = lerpf(hpBar.value, _target_hp, _lerp_speed * delta)
 	else:
 		hpBar.value = _target_hp
 
+
 func updateHp(current: int, max_hp: int) -> void:
 	hpBar.max_value = max_hp
 	_target_hp = float(current)
+
 
 func updateAp(current: int, max_ap: int) -> void:
 	# Clear existing
@@ -42,6 +47,7 @@ func updateAp(current: int, max_ap: int) -> void:
 		pip.custom_minimum_size = Vector2(4, 8)
 		pip.color = Color.YELLOW if i < current else Color(0.2, 0.2, 0.2)
 		apContainer.add_child(pip)
+
 
 func _setup_ap_pips() -> void:
 	# Initial setup if needed

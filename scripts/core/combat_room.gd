@@ -88,8 +88,9 @@ func _setup_turn_banner() -> void:
 		ui_overlay.add_child(banner)
 
 		if _turn_manager:
-			_turn_manager.turn_started.connect(func(is_player_turn: bool) -> void:
-				banner.show_banner("PLAYER TURN" if is_player_turn else "ENEMY TURN")
+			_turn_manager.turn_started.connect(
+				func(is_player_turn: bool) -> void:
+					banner.show_banner("PLAYER TURN" if is_player_turn else "ENEMY TURN")
 			)
 
 

@@ -13,6 +13,7 @@ var _max_roll: float = 0.1
 
 var _rng := RandomNumberGenerator.new()
 
+
 func _ready() -> void:
 	_rng.randomize()
 	_load_config()
