@@ -68,6 +68,14 @@ func apply_damage(damage: int) -> void:
 	else:
 		entity.apply_damage(damage)
 
+	# Play damage sound
+	var emitter: _SFXEmitter = AutoloadHelper.sfx_emitter()
+	if emitter:
+		var path: String = "res://assets/audio/sfx/hit_impact.wav"
+		if ResourceLoader.exists(path):
+			var sfx: AudioStream = load(path) as AudioStream
+			emitter.play_sfx_2d(sfx, global_position)
+
 	if _apparition:
 		_apparition.trigger_recoil()
 
