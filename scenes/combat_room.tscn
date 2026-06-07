@@ -4,6 +4,7 @@
 [ext_resource type="Script" path="res://scripts/visual/grid_renderer.gd" id="2_grid_renderer"]
 [ext_resource type="PackedScene" uid="uid://g4s6t8m1p5n7y" path="res://scenes/ui/combat_hud.tscn" id="3_combat_hud"]
 [ext_resource type="PackedScene" uid="uid://toast001" path="res://scenes/ui/toast.tscn" id="4_toast"]
+[ext_resource type="PackedScene" uid="uid://ppburden001" path="res://scenes/ui/pp_burden_layer.tscn" id="5_pp_burden"]
 [ext_resource type="Script" path="res://scripts/ui/floating_text_manager.gd" id="5_floating_text_manager"]
 [ext_resource type="Script" path="res://scripts/core/camera_shaker.gd" id="5_shaker"]
 
@@ -32,6 +33,7 @@ y_sort_enabled = true
 
 [node name="ToastWidget" parent="UIOverlay" instance=ExtResource("4_toast")]
 
+[node name="BurdenLayer" parent="." instance=ExtResource("5_pp_burden")]
 [node name="FloatingTextManager" type="Control" parent="UIOverlay"]
 layout_mode = 3
 anchors_preset = 15
