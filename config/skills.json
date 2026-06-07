@@ -16,7 +16,7 @@
       "id": "quick_dash",
       "name_key": "SKILL_QUICK_DASH_NAME",
       "description_key": "SKILL_QUICK_DASH_DESC",
-      "ap_cost": 2,
+      "ap_cost": 3,
       "cooldown": 2,
       "target_type": "SELF",
       "effect_payload": {

@@ -54,7 +54,7 @@ var _loadedFiles: Dictionary = {
 	ITEMS_PATH: false,
 	EQUIPMENT_PATH: false,
 	ENEMIES_PATH: false,
-	SKILLS_PATH: false
+	SKILLS_PATH: false,
 	ACCESSIBILITY_PATH: false
 }
 
