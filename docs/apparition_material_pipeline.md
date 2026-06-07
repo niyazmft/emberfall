@@ -19,5 +19,5 @@
 
 ## Tier Variants
 
-- **Standard (Mobile ≤720p)**: Default mix, 9 sprites max.
+- **Standard (Low ≤720p)**: Default mix, 9 sprites max.
 - **EXACT_TINT (Desktop >720p)**: High-fidelity color matching.
