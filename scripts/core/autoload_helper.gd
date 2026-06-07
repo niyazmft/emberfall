@@ -76,6 +76,9 @@ static func grid_system() -> _GridSystem:
 ## Returns the InventoryManager autoload, or null.
 static func inventory_manager() -> Node:
 	return get_autoload("InventoryManager")
+## Returns the TutorialManager autoload, or null.
+static func tutorial_manager() -> _TutorialManager:
+	return get_autoload("TutorialManager") as _TutorialManager
 
 
 ## Returns the SettingsManager autoload, or null.
@@ -91,6 +94,11 @@ static func settings_manager() -> Node:
 ## may fail during early initialization.
 static func localization_manager() -> Node:
 	return get_autoload("LocalizationManager")
+
+
+## Returns the SafeZoneManager autoload, or null.
+static func safe_zone_manager() -> _SafeZoneManager:
+	return get_autoload("SafeZoneManager") as _SafeZoneManager
 
 
 # ── Derived Helpers ───────────────────────────────────────────────────────────
