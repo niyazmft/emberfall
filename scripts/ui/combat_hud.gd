@@ -46,8 +46,6 @@ func setup(player_entity: Entity, turn_manager: TurnManager, combat_input: Comba
 	_turn_manager = turn_manager
 	_combat_input = combat_input
 
-	_setup_hotbar_placeholders()
-
 	if _player_entity:
 		if not _player_entity.hp_changed.is_connected(_on_hp_changed):
 			_player_entity.hp_changed.connect(_on_hp_changed)
@@ -146,41 +144,6 @@ func _enable_action_buttons(enabled: bool) -> void:
 	move_button.disabled = !enabled
 	attack_button.disabled = !enabled
 	end_turn_button.disabled = !enabled
-
-
-func _setup_hotbar_placeholders() -> void:
-	if not hotbar:
-		return
-
-	var placeholders: Array[Dictionary] = [
-		{
-			"id": "strike",
-			"name": "Quick Strike",
-			"keybind": "1",
-			"cooldown_max": 0,
-			"cooldown_current": 0,
-			"ap_cost": 2
-		},
-		{
-			"id": "heavy_blow",
-			"name": "Heavy Blow",
-			"keybind": "2",
-			"cooldown_max": 3,
-			"cooldown_current": 0,
-			"ap_cost": 4
-		},
-		{
-			"id": "meditate",
-			"name": "Meditate",
-			"keybind": "3",
-			"cooldown_max": 5,
-			"cooldown_current": 5,
-			"ap_cost": 0
-		}
-	]
-
-	if hotbar.has_method("set_abilities"):
-		hotbar.call("set_abilities", placeholders)
 
 
 func _on_safe_area_changed(_rect: Rect2) -> void:

@@ -1,7 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://f3r5s7l0p4n6x"]
+[gd_scene load_steps=2 format=3 uid="uid://f3r5s7l0p4n6x"]
 
 [ext_resource type="Script" path="res://scripts/ui/hotbar.gd" id="1_script"]
-[ext_resource type="PackedScene" uid="uid://f2r5s7l0p4n6x" path="res://scenes/ui/ability_slot.tscn" id="2_slot"]
 
 [node name="Hotbar" type="Control"]
 custom_minimum_size = Vector2(0, 64)
@@ -34,33 +33,46 @@ size_flags_horizontal = 3
 horizontal_scroll_mode = 3
 vertical_scroll_mode = 0
 
-[node name="SlotsContainer" type="HBoxContainer" parent="HBoxContainer/ScrollContainer"]
-unique_name_in_owner = true
+[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 alignment = 1
 
-[node name="Slot1" parent="HBoxContainer/ScrollContainer/SlotsContainer" instance=ExtResource("2_slot")]
+[node name="Slot1" type="Button" parent="HBoxContainer/ScrollContainer/HBoxContainer"]
+custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
+text = "1"
 
-[node name="Slot2" parent="HBoxContainer/ScrollContainer/SlotsContainer" instance=ExtResource("2_slot")]
+[node name="Slot2" type="Button" parent="HBoxContainer/ScrollContainer/HBoxContainer"]
+custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
+text = "2"
 
-[node name="Slot3" parent="HBoxContainer/ScrollContainer/SlotsContainer" instance=ExtResource("2_slot")]
+[node name="Slot3" type="Button" parent="HBoxContainer/ScrollContainer/HBoxContainer"]
+custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
+text = "3"
 
-[node name="Slot4" parent="HBoxContainer/ScrollContainer/SlotsContainer" instance=ExtResource("2_slot")]
+[node name="Slot4" type="Button" parent="HBoxContainer/ScrollContainer/HBoxContainer"]
+custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
+text = "4"
 
-[node name="Slot5" parent="HBoxContainer/ScrollContainer/SlotsContainer" instance=ExtResource("2_slot")]
+[node name="Slot5" type="Button" parent="HBoxContainer/ScrollContainer/HBoxContainer"]
+custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
+text = "5"
 
-[node name="Slot6" parent="HBoxContainer/ScrollContainer/SlotsContainer" instance=ExtResource("2_slot")]
+[node name="Slot6" type="Button" parent="HBoxContainer/ScrollContainer/HBoxContainer"]
+custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
+text = "6"
 
-[node name="Slot7" parent="HBoxContainer/ScrollContainer/SlotsContainer" instance=ExtResource("2_slot")]
+[node name="Slot7" type="Button" parent="HBoxContainer/ScrollContainer/HBoxContainer"]
+custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
+text = "7"
 
 [node name="RightArrow" type="Button" parent="HBoxContainer"]
 custom_minimum_size = Vector2(44, 44)

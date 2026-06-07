@@ -3,18 +3,16 @@
 [ext_resource type="Script" path="res://scripts/entities/keeper.gd" id="1_keeper"]
 [ext_resource type="Script" path="res://scripts/entities/apparition_renderer.gd" id="2_apparition"]
 [ext_resource type="Script" path="res://scripts/visual/entity_visual_proxy.gd" id="3_visual_proxy"]
-[ext_resource type="PackedScene" uid="uid://entity_status_bar_001" path="res://scenes/ui/entity_status_bar.tscn" id="4_status_bar"]
 
 [node name="Keeper" type="Node2D" node_paths=PackedStringArray("visual_proxy")]
 script = ExtResource("1_keeper")
 visual_proxy = NodePath("EntityVisualProxy")
 
-[node name="EntityVisualProxy" type="Node2D" parent="." node_paths=PackedStringArray("base_sprite", "shadow_sprite", "height_indicator", "statusBar")]
+[node name="EntityVisualProxy" type="Node2D" parent="." node_paths=PackedStringArray("base_sprite", "shadow_sprite", "height_indicator")]
 script = ExtResource("3_visual_proxy")
 base_sprite = NodePath("BaseSprite")
 shadow_sprite = NodePath("ShadowSprite")
 height_indicator = NodePath("HeightIndicator")
-statusBar = NodePath("EntityStatusBar")
 
 [node name="BaseSprite" type="Sprite2D" parent="EntityVisualProxy"]
 
@@ -25,8 +23,6 @@ offset_left = -16.0
 offset_top = 2.0
 offset_right = 16.0
 offset_bottom = 6.0
-
-[node name="EntityStatusBar" parent="EntityVisualProxy" instance=ExtResource("4_status_bar")]
 
 [node name="ApparitionRenderer" type="Node2D" parent="."]
 script = ExtResource("2_apparition")
