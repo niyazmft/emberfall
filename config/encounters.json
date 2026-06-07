@@ -1,0 +1,24 @@
+{
+  "group_templates": {
+    "scout_party": ["grunt", "archer"],
+    "heavy_patrol": ["tank", "grunt", "grunt"],
+    "mage_coven": ["mage", "mage", "grunt"],
+    "mixed_force": ["tank", "archer", "mage"],
+    "vanguard": ["tank", "tank"]
+  },
+  "biome_compositions": {
+    "biome1": [
+      { "group_id": "scout_party", "weight": 0.7, "difficulty": 1 },
+      { "group_id": "heavy_patrol", "weight": 0.3, "difficulty": 2 }
+    ],
+    "biome2": [
+      { "group_id": "heavy_patrol", "weight": 0.4, "difficulty": 2 },
+      { "group_id": "mage_coven", "weight": 0.4, "difficulty": 3 },
+      { "group_id": "mixed_force", "weight": 0.2, "difficulty": 4 }
+    ],
+    "biome3": [
+      { "group_id": "mixed_force", "weight": 0.5, "difficulty": 4 },
+      { "group_id": "vanguard", "weight": 0.5, "difficulty": 5 }
+    ]
+  }
+}

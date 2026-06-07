@@ -80,56 +80,10 @@ func _record_kill(enemy_id: String, enemy_name: String) -> void:
 		n.record_sentient_kill(enemy_id, enemy_name)
 
 
-# ── Status Effects ───────────────────────────────────────────────────────
-
-## Map of status effect ID to StatusEffect template
-var _status_effect_templates: Dictionary = {}
-
-
-func _load_status_effect_templates() -> void:
-	var config_loader: _ConfigLoader = AutoloadHelper.config_loader()
-	if config_loader == null:
-		return
-
-	var config: Dictionary = config_loader.getValue("status_effects", "", {})
-	for effect_id: String in config:
-		var effect_data: Dictionary = config[effect_id]
-		_status_effect_templates[effect_id] = StatusEffect.fromDict(effect_data)
-
-
-func apply_status_effect(
-	entity: Entity, effect_id: String, duration: int = -1, potency: int = 0
-) -> void:
-	if _status_effect_templates.is_empty():
-		_load_status_effect_templates()
-
-	if not _status_effect_templates.has(effect_id):
-		push_warning("EntityLifecycle: Unknown status effect ID: %s" % effect_id)
-		return
-
-	# If entity already has the effect, refresh it (simple implementation)
-	var existing: StatusEffect = entity.get_status_effect(effect_id)
-	if existing:
-		existing.remainingDuration = (
-			duration if duration >= 0 else _status_effect_templates[effect_id].duration
-		)
-		existing.basePotency = potency
-		# Recompute caches since basePotency might be used in formulas (though currently not in stat getters)
-		entity._recompute_effect_caches()
-		return
-
-	var template: StatusEffect = _status_effect_templates[effect_id]
-	var instance: StatusEffect = template.createInstance(duration, potency)
-	entity.add_status_effect(instance)
-
-
-func remove_status_effect(entity: Entity, effect_id: String) -> void:
-	var effect: StatusEffect = entity.get_status_effect(effect_id)
-	if effect:
-		entity.remove_status_effect(effect)
-
-
 # ── Damage & State ───────────────────────────────────────────────────────
+
+
+## Canonical damage application. Updates defender HP and transitions state
 ## deterministically. If damage is lethal, targets enter DYING (not DEAD).
 func apply_damage(
 	attacker: Entity, defender: Entity, damage: int, damage_type: String = "PHYSICAL"
@@ -307,78 +261,9 @@ func reset_moral_queue() -> void:
 
 ## Call at end of every combat turn. Decrements state timers and resolves
 ## expired states deterministically.
-func process_end_of_turn(entity: Entity = null) -> void:
-	if entity:
-		_process_entity_status_effects(entity)
+func process_end_of_turn() -> void:
 	_resolve_dying_timers()
 	_resolve_stunned_timers()
-
-
-func _process_entity_status_effects(entity: Entity) -> void:
-	var effects_to_remove: Array[StatusEffect] = []
-
-	for effect: StatusEffect in entity.status_effects:
-		# Apply periodic effects (DoT)
-		_apply_periodic_effect(entity, effect)
-
-		# Decrement duration
-		effect.remainingDuration -= 1
-		if effect.remainingDuration <= 0:
-			effects_to_remove.append(effect)
-
-	for effect: StatusEffect in effects_to_remove:
-		entity.remove_status_effect(effect)
-
-
-func _apply_periodic_effect(entity: Entity, effect: StatusEffect) -> void:
-	match effect.id:
-		"BURNING", "POISONED", "BLEEDING":
-			var tick_rate: float = _config_float(
-				"status_effects", "DOT_TICK_RATE_" + effect.id, 1.0
-			)
-			var damage: int = _evaluate_potency(entity, effect)
-			var final_damage: int = DeterministicMath.damage_floor(float(damage) * tick_rate)
-			if final_damage > 0:
-				# Apply damage directly to bypass attacker requirement if needed,
-				# or pass null as attacker.
-				apply_damage(null, entity, final_damage)
-
-
-func _evaluate_potency(entity: Entity, effect: StatusEffect) -> int:
-	# Simple expression evaluation for potency formulas
-	var expr: Expression = Expression.new()
-	var error: int = expr.parse(
-		effect.potencyFormula, ["base_potency", "target_hp_max", "target_hp"]
-	)
-	if error != OK:
-		push_warning(
-			(
-				"EntityLifecycle: Failed to parse potency formula for %s: %s"
-				% [effect.id, expr.get_error_text()]
-			)
-		)
-		return effect.basePotency
-
-	var result: Variant = expr.execute([effect.basePotency, entity.hp_max, entity.hp], null, true)
-	if expr.has_execute_failed():
-		push_warning(
-			(
-				"EntityLifecycle: Failed to execute potency formula for %s: %s"
-				% [effect.id, expr.get_error_text()]
-			)
-		)
-		return effect.basePotency
-
-	return int(result)
-
-
-func _config_float(section: String, key: String, fallback: float) -> float:
-	var loader: _ConfigLoader = AutoloadHelper.config_loader()
-	if loader:
-		var val: Variant = loader.getValue(section, key, fallback)
-		if val is float or val is int:
-			return float(val)
-	return fallback
 
 
 func _resolve_dying_timers() -> void:

@@ -1,0 +1,10 @@
+{
+  "currencies": {
+    "echo_shards": {
+      "id": "echo_shards",
+      "name_key": "CURRENCY_ECHO_SHARDS_NAME",
+      "description_key": "CURRENCY_ECHO_SHARDS_DESC",
+      "icon_path": "res://assets/icons/echo_shard.png"
+    }
+  }
+}

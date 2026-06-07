@@ -4,9 +4,7 @@
   "player_profile": {
     "player_id": "string — stable opaque identifier",
     "total_runs": "int — cumulative run count",
-    "sanctum_unlocks": "Array[string] — persistent upgrade keys",
-    "echo_shards": "int — persistent meta-currency",
-    "meta_unlocks": "Array[string] — persistent meta-upgrade IDs"
+    "sanctum_unlocks": "Array[string] — persistent upgrade keys"
   },
   "memory_state": {
     "_description": "Echo / narrative memory that persists across runs (Gate 2-2).",

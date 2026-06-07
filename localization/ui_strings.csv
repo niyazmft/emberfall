@@ -17,6 +17,8 @@ menu.title.continue,Continue,Fortsetzen,Continuar,Continuer
 menu.title.new_game,New Game,Neues Spiel,Nuevo Juego,Nouveau Jeu
 menu.title.settings,Settings,Einstellungen,Ajustes,Paramètres
 menu.title.quit,Quit,Beenden,Salir,Quitter
+MSG_LEVEL_UP,LEVEL UP!,LEVEL UP!,¡SUBIDA DE NIVEL!,NIVEAU SUPÉRIEUR !
+MSG_XP_GAINED,+{0} XP,+{0} EP,+{0} PX,+{0} XP
 room_biome1_01,Room 1-01,Raum 1-01,Sala 1-01,Salle 1-01
 room_biome1_02,Room 1-02,Raum 1-02,Sala 1-02,Salle 1-02
 room_biome1_03,Room 1-03,Raum 1-03,Sala 1-03,Salle 1-03
@@ -32,7 +34,7 @@ room_biome1_12,Room 1-12,Raum 1-12,Sala 1-12,Salle 1-12
 room_biome2_01,Room 2-01,Raum 2-01,Sala 2-01,Salle 2-01
 room_biome2_02,Room 2-02,Raum 2-02,Sala 2-02,Salle 2-02
 room_biome2_03,Room 2-03,Raum 2-03,Sala 2-03,Salle 2-03
-room_biome2_04,Room 2-04,Raum 2-04,Sala 2-04,Salle 2-04
+room_biome2_04,Room 2-04,Raum 2-04,Sala 2-04,Sala 2-04
 room_biome2_05,Room 2-05,Raum 2-05,Sala 2-05,Salle 2-05
 room_biome2_06,Room 2-06,Raum 2-06,Sala 2-06,Salle 2-06
 room_biome2_07,Room 2-07,Raum 2-07,Sala 2-07,Salle 2-07
@@ -57,3 +59,12 @@ SKILL_STRIKE_EMBER_NAME,Strike Ember,Glutstreich,Golpe de Brasa,Frappe de Braise
 SKILL_STRIKE_EMBER_DESC,A fiery strike that deals damage.,Ein feuriger Schlag, der Schaden verursacht.,Un golpe ardiente que inflige daño.,Une frappe ardente qui inflige des dégâts.
 SKILL_QUICK_DASH_NAME,Quick Dash,Schneller Spurt,Carrera Rápida,Élan Rapide
 SKILL_QUICK_DASH_DESC,Dash forward to gain distance.,Spurte vorwärts, um Distanz zu gewinnen.,Corre hacia adelante para ganar distancia.,Élancez-vous pour gagner de la distance.
+CURRENCY_ECHO_SHARDS_NAME,Echo Shards,Echoscherben,Fragmentos de Eco,Éclats d'Écho
+CURRENCY_ECHO_SHARDS_DESC,A mysterious currency that persists across runs.,Eine mysteriöse Währung.,Una moneda misteriosa.,Une monnaie mystérieuse.
+ITEM_IRON_SCRAP_NAME,Iron Scrap,Eisenschrott,Chatarra de Hierro,Ferraille
+ITEM_IRON_SCRAP_DESC,Raw material for crafting.,Rohmaterial für das Handwerk.,Material básico para artesanía.,Matière première pour l'artisanat.
+ITEM_IRON_SWORD_NAME,Iron Sword,Eisenschwert,Espada de Hierro,Épée en Fer
+ITEM_IRON_SWORD_DESC,A sturdy sword made of iron.,Ein stabiles Eisenschwert.,Una espada de hierro resistente.,Une épée en fer robuste.
+ITEM_WOODEN_BOW_NAME,Wooden Bow,Holzbogen,Arco de Madera,Arc en Bois
+ITEM_WOODEN_BOW_DESC,A simple bow for ranged attacks.,Ein einfacher Bogen.,Un arco simple.,Un arc simple.
+RECIPE_IRON_SWORD_NAME,Craft Iron Sword,Eisenschwert schmieden,Forjar Espada de Hierro,Forger une Épée en Fer
