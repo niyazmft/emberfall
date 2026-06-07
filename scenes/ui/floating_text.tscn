@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://fltngtxt001"]
+
+[ext_resource type="Script" path="res://scripts/ui/floating_text.gd" id="1_fltng"]
+
+[node name="FloatingText" type="Label"]
+offset_right = 40.0
+offset_bottom = 23.0
+text = "0"
+script = ExtResource("1_fltng")
