@@ -1,0 +1,66 @@
+{
+  "status_effects": {
+    "BURNING": {
+      "id": "BURNING",
+      "name_key": "EFFECT_BURNING_NAME",
+      "description_key": "EFFECT_BURNING_DESC",
+      "duration": 3,
+      "potency_formula": "base_potency",
+      "elemental_origin": "FIRE",
+      "combat_formula_modifier": {}
+    },
+    "POISONED": {
+      "id": "POISONED",
+      "name_key": "EFFECT_POISONED_NAME",
+      "description_key": "EFFECT_POISONED_DESC",
+      "duration": 5,
+      "potency_formula": "base_potency",
+      "elemental_origin": "WATER",
+      "combat_formula_modifier": {
+        "off_bonus": -2
+      }
+    },
+    "SHIELDED": {
+      "id": "SHIELDED",
+      "name_key": "EFFECT_SHIELDED_NAME",
+      "description_key": "EFFECT_SHIELDED_DESC",
+      "duration": 2,
+      "potency_formula": "0",
+      "elemental_origin": "NONE",
+      "combat_formula_modifier": {
+        "damage_taken_mult": 0.5
+      }
+    },
+    "HASTE": {
+      "id": "HASTE",
+      "name_key": "EFFECT_HASTE_NAME",
+      "description_key": "EFFECT_HASTE_DESC",
+      "duration": 3,
+      "potency_formula": "0",
+      "elemental_origin": "WIND",
+      "combat_formula_modifier": {
+        "spd_mult": 1.5
+      }
+    },
+    "SLOW": {
+      "id": "SLOW",
+      "name_key": "EFFECT_SLOW_NAME",
+      "description_key": "EFFECT_SLOW_DESC",
+      "duration": 3,
+      "potency_formula": "0",
+      "elemental_origin": "OIL",
+      "combat_formula_modifier": {
+        "spd_mult": 0.7
+      }
+    },
+    "BLEEDING": {
+      "id": "BLEEDING",
+      "name_key": "EFFECT_BLEEDING_NAME",
+      "description_key": "EFFECT_BLEEDING_DESC",
+      "duration": 3,
+      "potency_formula": "base_potency + (target_hp_max * 0.05)",
+      "elemental_origin": "NONE",
+      "combat_formula_modifier": {}
+    }
+  }
+}

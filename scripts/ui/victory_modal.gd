@@ -12,15 +12,16 @@ var _summary_data: Dictionary = {}
 func _ready() -> void:
 	continue_button.pressed.connect(_on_continue_pressed)
 	_setup_from_config()
+	continue_button.text = tr("HUD_VICTORY_CONTINUE")
 
 
-func setup(summary_data: Dictionary) -> void:
-	_summary_data = summary_data
+func setup(p_summary_data: Dictionary) -> void:
+	_summary_data = p_summary_data
 	_update_summary_display()
 
 
 func _setup_from_config() -> void:
-	var config: Node = AutoloadHelper.config_loader()
+	var config: _ConfigLoader = AutoloadHelper.config_loader()
 	if not config:
 		return
 
@@ -31,10 +32,10 @@ func _setup_from_config() -> void:
 
 func _update_summary_display() -> void:
 	# Clear previous
-	for child in summary_container.get_children():
+	for child: Node in summary_container.get_children():
 		child.queue_free()
 
-	var config: Node = AutoloadHelper.config_loader()
+	var config: _ConfigLoader = AutoloadHelper.config_loader()
 	if not config:
 		return
 
@@ -42,28 +43,26 @@ func _update_summary_display() -> void:
 	var summary_keys: Array = victory_config.get("summary_keys", [])
 
 	# Mapping of keys to summary data values
-	var key_map := {
+	var key_map: Dictionary = {
 		"HUD_SUMMARY_TURNS": _summary_data.get("turns", 0),
 		"HUD_SUMMARY_KILLS": _summary_data.get("kills", 0),
 		"HUD_SUMMARY_SHARDS": _summary_data.get("shards", 0)
 	}
 
-	for key in summary_keys:
+	for key: String in summary_keys:
 		if key_map.has(key):
-			var lbl := Label.new()
-		for key in summary_keys:
-			if key_map.has(key):
-				var lbl := Label.new()
-				var translated: String = tr(key)
-				lbl.text = translated % key_map[key] if "%" in translated else translated
-				summary_container.add_child(lbl)
+			var lbl: Label = Label.new()
+			var template: String = tr(key)
+			if "%d" in template or "%s" in template:
+				lbl.text = template % key_map[key]
+			else:
+				lbl.text = template + ": " + str(key_map[key])
 			summary_container.add_child(lbl)
 
 
 func _on_continue_pressed() -> void:
 	# Transition back to run manager or next room
-	var rm := AutoloadHelper.run_manager()
+	var rm: _RunManager = AutoloadHelper.run_manager()
 	if rm:
-		# rm.transition_to_next_room() - hypothetical
-		pass
+		rm.cmd_next_room()
 	queue_free()

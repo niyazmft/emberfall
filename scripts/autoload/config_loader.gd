@@ -10,19 +10,12 @@ const ITEMS_PATH := "res://config/items.json"
 const EQUIPMENT_PATH := "res://config/entity_equipment.json"
 const ENEMIES_PATH := "res://config/enemies.json"
 const SKILLS_PATH := "res://config/skills.json"
-const HOTBAR_BINDINGS_PATH := "res://config/hotbar_bindings.json"
+const STATUS_EFFECTS_PATH := "res://config/status_effects.json"
 const ACCESSIBILITY_PATH := "res://config/accessibility.json"
 const REWARDS_PATH := "res://config/rewards.json"
 const UNLOCKS_PATH := "res://config/unlocks.json"
 const ENCOUNTER_SCALER_PATH := "res://config/encounter_scaler.json"
-const PROGRESSION_PATH := "res://config/progression.json"
-const XP_ECONOMY_PATH := "res://config/xp_economy.json"
-const BIOMES_PATH := "res://config/biomes.json"
 const HUD_CONFIG_PATH := "res://config/hud_config.json"
-const CURRENCY_PATH := "res://config/currency.json"
-const WEAPONS_PATH := "res://config/weapons.json"
-const RECIPES_PATH := "res://config/recipes.json"
-const GRID_VISUALS_PATH := "res://config/grid_visuals.json"
 
 # Fallback defaults (sensible so the game runs even if config is missing)
 const DEFAULTS: Dictionary = {
@@ -67,19 +60,12 @@ var _loadedFiles: Dictionary = {
 	EQUIPMENT_PATH: false,
 	ENEMIES_PATH: false,
 	SKILLS_PATH: false,
-	HOTBAR_BINDINGS_PATH: false,
+	STATUS_EFFECTS_PATH: false,
 	ACCESSIBILITY_PATH: false,
 	REWARDS_PATH: false,
 	UNLOCKS_PATH: false,
 	ENCOUNTER_SCALER_PATH: false,
-	PROGRESSION_PATH: false,
-	XP_ECONOMY_PATH: false,
-	BIOMES_PATH: false,
 	HUD_CONFIG_PATH: false,
-	CURRENCY_PATH: false,
-	WEAPONS_PATH: false,
-	RECIPES_PATH: false,
-	GRID_VISUALS_PATH: false,
 }
 
 
@@ -92,43 +78,17 @@ func _loadConfig() -> void:
 	for path: String in _loadedFiles:
 		_loadedFiles[path] = false
 
-	_loadJsonToConfig(CONFIG_PATH, "config")
-	_loadJsonToConfig(ITEMS_PATH, "items")
-	_loadJsonToConfig(EQUIPMENT_PATH, "equipment")
-	_loadJsonToConfig(ENEMIES_PATH, "enemies")
-	_loadJsonToConfig(SKILLS_PATH, "skills")
-	_loadJsonToConfig(HOTBAR_BINDINGS_PATH, "hotbar_bindings")
-	_loadJsonToConfig(STATUS_EFFECTS_PATH, "status_effects")
-	_loadJsonToConfig(ACCESSIBILITY_PATH, "accessibility")
-	_loadJsonToConfig(REWARDS_PATH, "rewards")
-	_loadJsonToConfig(UNLOCKS_PATH, "unlocks")
-	_loadJsonToConfig(ENCOUNTER_SCALER_PATH, "encounter_scaler")
-	_loadJsonToConfig(PROGRESSION_PATH, "progression")
-	_loadJsonToConfig(XP_ECONOMY_PATH, "xp_economy")
-	_loadJsonToConfig(HUD_CONFIG_PATH, "hud_config")
-	_loadJsonToConfig(CURRENCY_PATH, "currency")
-	_loadJsonToConfig(WEAPONS_PATH, "weapons")
-	_loadJsonToConfig(RECIPES_PATH, "recipes")
-
-	var actual_biomes_path := BIOMES_PATH
-	if _configData.has("config") and _configData["config"].has("run_manager"):
-		actual_biomes_path = _configData["config"]["run_manager"].get(
-			"BIOMES_CONFIG_PATH", BIOMES_PATH
-		)
-
-	_loadJsonToConfig(actual_biomes_path, "biomes")
-
-
-func _loadJsonToConfig(filePath: String, p_namespace: String = "") -> void:
 	_loadJsonToConfig(CONFIG_PATH)
 	_loadJsonToConfig(ITEMS_PATH)
 	_loadJsonToConfig(EQUIPMENT_PATH)
 	_loadJsonToConfig(ENEMIES_PATH)
 	_loadJsonToConfig(SKILLS_PATH)
-	_loadJsonToConfig(HOTBAR_BINDINGS_PATH)
+	_loadJsonToConfig(STATUS_EFFECTS_PATH)
 	_loadJsonToConfig(ACCESSIBILITY_PATH)
-	_loadJsonToConfig(GRID_VISUALS_PATH)
-	_validateGridVisuals()
+	_loadJsonToConfig(REWARDS_PATH)
+	_loadJsonToConfig(UNLOCKS_PATH)
+	_loadJsonToConfig(ENCOUNTER_SCALER_PATH)
+	_loadJsonToConfig(HUD_CONFIG_PATH)
 
 
 func _loadJsonToConfig(filePath: String) -> void:
@@ -160,44 +120,6 @@ func getValue(sectionOrKey: String, key: String = "", fallback: Variant = null) 
 		# Try flattened default
 		if DEFAULTS.has(key):
 			return DEFAULTS[key]
-		return fallback
-	else:
-		# One-arg mode: direct key lookup in namespaced or flattened namespace
-		if _configData.has(sectionOrKey):
-			var data: Variant = _configData[sectionOrKey]
-			# If the key points to a sub-dictionary with the same name, return that sub-dictionary
-			# to maintain backward compatibility with JSONs like {"items": {"items": {...}}}
-			if data is Dictionary and data.has(sectionOrKey):
-				return data[sectionOrKey]
-			return data
-
-		# Backward compatibility: scan sub-sections for key if not found in root
-		if (
-			sectionOrKey != "items"
-			and sectionOrKey != "enemies"
-			and sectionOrKey != "equipment"
-			and sectionOrKey != "progression"
-			and sectionOrKey != "xp_economy"
-			and sectionOrKey != "accessibility"
-			and sectionOrKey != "config"
-			and sectionOrKey != "biomes"
-			and sectionOrKey != "skills"
-			and sectionOrKey != "hotbar_bindings"
-			and sectionOrKey != "status_effects"
-			and sectionOrKey != "rewards"
-			and sectionOrKey != "unlocks"
-			and sectionOrKey != "encounter_scaler"
-			and sectionOrKey != "hud_config"
-			and sectionOrKey != "currency"
-			and sectionOrKey != "weapons"
-			and sectionOrKey != "recipes"
-		):
-			for section: Variant in _configData.values():
-				if section is Dictionary and section.has(sectionOrKey):
-					return section[sectionOrKey]
-
-		if DEFAULTS.has(sectionOrKey):
-			return DEFAULTS[sectionOrKey]
 		return fallback
 
 	# One-arg mode: direct key lookup in flattened namespace
@@ -241,31 +163,3 @@ func isLoaded() -> bool:
 		if not _loadedFiles[path]:
 			return false
 	return true
-
-
-func _validateGridVisuals() -> void:
-	if not _configData.has("highlights"):
-		return
-
-	var rawHighlights: Variant = _configData["highlights"]
-	if not rawHighlights is Dictionary:
-		return
-	var highlightsDict: Dictionary = rawHighlights as Dictionary
-
-	for key: Variant in highlightsDict.keys():
-		var styleRef: Variant = highlightsDict[key]
-		if styleRef is Dictionary:
-			var style: Dictionary = styleRef as Dictionary
-			if style.has("pulse"):
-				var pulseRef: Variant = style["pulse"]
-				if pulseRef is Dictionary:
-					var pulse: Dictionary = pulseRef as Dictionary
-					var minA: float = float(pulse.get("min_alpha", 0.0))
-					var maxA: float = float(pulse.get("max_alpha", 1.0))
-					if minA > maxA:
-						push_error(
-							(
-								"ConfigLoader: Grid visual style '%s' has min_alpha (%.2f) > max_alpha (%.2f)!"
-								% [str(key), minA, maxA]
-							)
-						)

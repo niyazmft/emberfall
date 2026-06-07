@@ -28,9 +28,9 @@ func _ready() -> void:
 		eb.turn_started.connect(_on_turn_started)
 
 
-func display_message(text: String, color: Color = Color.WHITE) -> void:
-	turn_label.text = text
-	turn_label.modulate = color
+func display_message(p_text: String, p_color: Color = Color.WHITE) -> void:
+	turn_label.text = p_text
+	turn_label.modulate = p_color
 
 	visible = true
 	var tween := create_tween().set_parallel(true)
@@ -62,31 +62,13 @@ func display_message(text: String, color: Color = Color.WHITE) -> void:
 
 
 func _on_combat_started(_room_index: int, _room_data: Dictionary) -> void:
-	display_message(
-		(
-			tr("HUD_COMBAT_START")
-			if TranslationServer.has_message("HUD_COMBAT_START")
-			else "COMBAT START"
-		),
-		Color.ORANGE
-	)
+	display_message(tr("HUD_COMBAT_START"), Color.ORANGE)
 
 
-func _on_turn_started(entity: Entity, is_player: bool) -> void:
-	if is_player:
-		display_message(
-			(
-				tr("HUD_PLAYER_TURN_BANNER")
-				if TranslationServer.has_message("HUD_PLAYER_TURN_BANNER")
-				else "PLAYER TURN"
-			),
-			Color.GREEN
-		)
+func _on_turn_started(p_entity: Entity, p_is_player: bool) -> void:
+	if p_is_player:
+		display_message(tr("HUD_PLAYER_TURN_BANNER"), Color.GREEN)
 	else:
-		var enemy_name: String = entity.entity_name if entity else "ENEMY"
-		var msg: String = (
-			tr("HUD_ENEMY_TURN_BANNER") % enemy_name
-			if TranslationServer.has_message("HUD_ENEMY_TURN_BANNER")
-			else enemy_name + " TURN"
-		)
+		var enemy_name: String = p_entity.entity_name if p_entity else "ENEMY"
+		var msg: String = tr("HUD_ENEMY_TURN_BANNER") % enemy_name
 		display_message(msg, Color.RED)

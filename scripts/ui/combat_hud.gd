@@ -131,7 +131,10 @@ func _on_attack_executed(target: Node2D, damage: int) -> void:
 
 func _on_move_pressed() -> void:
 	if _combat_input:
-		_combat_input.call("_on_move_pressed")
+		if _combat_input.has_method("on_move_pressed"):
+			_combat_input.call("on_move_pressed")
+		elif _combat_input.has_method("_on_move_pressed"):
+			_combat_input.call("_on_move_pressed")
 
 
 func _on_attack_pressed() -> void:
@@ -164,7 +167,7 @@ func _on_aspect_ratio_changed(_mode: SafeZoneManager.AspectMode) -> void:
 
 
 func _apply_safe_area() -> void:
-	var margins := SafeZoneManager.get_safe_margins()
+	var margins: Dictionary = SafeZoneManager.get_safe_margins()
 	margin_container.add_theme_constant_override("margin_left", margins.left)
 	margin_container.add_theme_constant_override("margin_top", margins.top)
 	margin_container.add_theme_constant_override("margin_right", margins.right)

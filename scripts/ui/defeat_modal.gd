@@ -12,15 +12,16 @@ var _summary_data: Dictionary = {}
 func _ready() -> void:
 	retry_button.pressed.connect(_on_retry_pressed)
 	_setup_from_config()
+	retry_button.text = tr("HUD_DEFEAT_RETRY")
 
 
-func setup(summary_data: Dictionary) -> void:
-	_summary_data = summary_data
+func setup(p_summary_data: Dictionary) -> void:
+	_summary_data = p_summary_data
 	_update_summary_display()
 
 
 func _setup_from_config() -> void:
-	var config: Node = AutoloadHelper.config_loader()
+	var config: _ConfigLoader = AutoloadHelper.config_loader()
 	if not config:
 		return
 
@@ -31,10 +32,10 @@ func _setup_from_config() -> void:
 
 func _update_summary_display() -> void:
 	# Clear previous
-	for child in summary_container.get_children():
+	for child: Node in summary_container.get_children():
 		child.queue_free()
 
-	var config: Node = AutoloadHelper.config_loader()
+	var config: _ConfigLoader = AutoloadHelper.config_loader()
 	if not config:
 		return
 
@@ -42,22 +43,25 @@ func _update_summary_display() -> void:
 	var summary_keys: Array = defeat_config.get("summary_keys", [])
 
 	# Mapping of keys to summary data values
-	var key_map := {
+	var key_map: Dictionary = {
 		"HUD_SUMMARY_TURNS": _summary_data.get("turns", 0),
 		"HUD_SUMMARY_ROOMS": _summary_data.get("rooms", 0)
 	}
 
-	for key in summary_keys:
+	for key: String in summary_keys:
 		if key_map.has(key):
-			var lbl := Label.new()
-			lbl.text = tr(key) % key_map[key]
+			var lbl: Label = Label.new()
+			var template: String = tr(key)
+			if "%d" in template or "%s" in template:
+				lbl.text = template % key_map[key]
+			else:
+				lbl.text = template + ": " + str(key_map[key])
 			summary_container.add_child(lbl)
 
 
 func _on_retry_pressed() -> void:
 	# Typically would reload main menu or restart run
-	var rm := AutoloadHelper.run_manager()
+	var rm: _RunManager = AutoloadHelper.run_manager()
 	if rm:
-		# rm.restart_run() - hypothetical
-		pass
+		rm.cmd_start_run(GameConstants.GOLDEN_SEED)
 	queue_free()
