@@ -17,3 +17,5 @@ menu.title.continue,Continue,Fortsetzen,Continuar,Continuer
 menu.title.new_game,New Game,Neues Spiel,Nuevo Juego,Nouveau Jeu
 menu.title.settings,Settings,Einstellungen,Ajustes,Paramètres
 menu.title.quit,Quit,Beenden,Salir,Quitter
+MSG_LEVEL_UP,LEVEL UP!,LEVEL UP!,¡SUBIDA DE NIVEL!,NIVEAU SUPÉRIEUR !
+MSG_XP_GAINED,+{0} XP,+{0} EP,+{0} PX,+{0} XP
