@@ -37,7 +37,7 @@ func _process(delta: float) -> void:
 
 
 ## Adds trauma to the camera, capped at 1.0.
-func add_trauma(amount: float) -> void:
+func addTrauma(amount: float) -> void:
 	trauma = min(trauma + amount, 1.0)
 
 
