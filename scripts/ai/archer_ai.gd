@@ -67,7 +67,10 @@ func decide_action(p_entity: Entity = null) -> Dictionary:
 			return {"type": "move", "target_x": next_tile.x, "target_y": next_tile.y}
 		else:
 			# If we can't move away, at least try to attack if in range
-			if dist >= 1 and grid_system.has_los(enemy_pos.x, enemy_pos.y, player_pos.x, player_pos.y):
+			if (
+				dist >= 1
+				and grid_system.has_los(enemy_pos.x, enemy_pos.y, player_pos.x, player_pos.y)
+			):
 				return {"type": "attack", "target": _player_node}
 
 	if dist < min_range:
