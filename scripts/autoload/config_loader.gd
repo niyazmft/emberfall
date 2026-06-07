@@ -10,13 +10,17 @@ const ITEMS_PATH := "res://config/items.json"
 const EQUIPMENT_PATH := "res://config/entity_equipment.json"
 const ENEMIES_PATH := "res://config/enemies.json"
 const SKILLS_PATH := "res://config/skills.json"
-const HOTBAR_BINDINGS_PATH := "res://config/hotbar_bindings.json"
+const STATUS_EFFECTS_PATH := "res://config/status_effects.json"
 const ACCESSIBILITY_PATH := "res://config/accessibility.json"
 const GRID_VISUALS_PATH := "res://config/grid_visuals.json"
 const BIOMES_PATH := "res://config/biomes.json"
 const SECRET_ROOM_CONDITIONS_PATH := "res://config/secret_room_conditions.json"
 const PROPS_PATH := "res://data/props.json"
 const AMBIENT_NARRATOR_PATH := "res://data/ambient_narrator.json"
+const REWARDS_PATH := "res://config/rewards.json"
+const UNLOCKS_PATH := "res://config/unlocks.json"
+const ENCOUNTER_SCALER_PATH := "res://config/encounter_scaler.json"
+const HUD_CONFIG_PATH := "res://config/hud_config.json"
 
 # Fallback defaults (sensible so the game runs even if config is missing)
 const DEFAULTS: Dictionary = {
@@ -61,13 +65,17 @@ var _loadedFiles: Dictionary = {
 	EQUIPMENT_PATH: false,
 	ENEMIES_PATH: false,
 	SKILLS_PATH: false,
-	HOTBAR_BINDINGS_PATH: false,
+	STATUS_EFFECTS_PATH: false,
 	ACCESSIBILITY_PATH: false,
 	GRID_VISUALS_PATH: false,
 	BIOMES_PATH: false,
 	SECRET_ROOM_CONDITIONS_PATH: false,
 	PROPS_PATH: false,
 	AMBIENT_NARRATOR_PATH: false,
+	REWARDS_PATH: false,
+	UNLOCKS_PATH: false,
+	ENCOUNTER_SCALER_PATH: false,
+	HUD_CONFIG_PATH: false,
 }
 
 
@@ -85,13 +93,17 @@ func _loadConfig() -> void:
 	_loadJsonToConfig(EQUIPMENT_PATH)
 	_loadJsonToConfig(ENEMIES_PATH)
 	_loadJsonToConfig(SKILLS_PATH)
-	_loadJsonToConfig(HOTBAR_BINDINGS_PATH)
+	_loadJsonToConfig(STATUS_EFFECTS_PATH)
 	_loadJsonToConfig(ACCESSIBILITY_PATH)
 	_loadJsonToConfig(GRID_VISUALS_PATH)
 	_loadJsonToConfig(BIOMES_PATH)
 	_loadJsonToConfig(SECRET_ROOM_CONDITIONS_PATH)
 	_loadJsonToConfig(PROPS_PATH)
 	_loadJsonToConfig(AMBIENT_NARRATOR_PATH)
+	_loadJsonToConfig(REWARDS_PATH)
+	_loadJsonToConfig(UNLOCKS_PATH)
+	_loadJsonToConfig(ENCOUNTER_SCALER_PATH)
+	_loadJsonToConfig(HUD_CONFIG_PATH)
 	_validateGridVisuals()
 
 
