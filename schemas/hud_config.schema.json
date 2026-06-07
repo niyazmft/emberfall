@@ -38,7 +38,7 @@
       "type": "object",
       "properties": {
         "segment_count": { "type": "integer", "minimum": 1 },
-        "pip_spacing": { "type": "number" }
+        "pip_spacing": { "type": "number", "minimum": 0 }
       },
       "required": ["segment_count"]
     },
