@@ -73,6 +73,9 @@ func _evaluate_conditions() -> void:
 func _unlock_secret(cond: Dictionary) -> void:
 	var spawn_tile_id: String = cond.get("spawn_tile_id", "")
 	var flavor_key: String = cond.get("flavor_key", "")
+	if spawn_tile_id.is_empty():
+		push_error("SecretRoomTrigger: Missing spawn_tile_id in secret condition")
+		return
 
 	print("SecretRoomTrigger: UNLOCKED secret with tile %s" % spawn_tile_id)
 
@@ -80,7 +83,6 @@ func _unlock_secret(cond: Dictionary) -> void:
 	var gs: _GridSystem = AutoloadHelper.grid_system()
 	if gs and gs.has_method("spawn_special_tile"):
 		gs.call("spawn_special_tile", spawn_tile_id)
-
 	# Narrative feedback
 	if not flavor_key.is_empty():
 		var an: _AmbientNarrator = AutoloadHelper.ambient_narrator()
