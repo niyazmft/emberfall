@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://b8y2r4l5n7p8q"]
+[gd_scene load_steps=2 format=3 uid="uid://entity_status_bar_001"]
 
-[ext_resource type="Script" path="res://scripts/ui/entity_status_bar.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/ui/entity_status_bar.gd" id="1_status_bar"]
 
 [node name="EntityStatusBar" type="Control"]
 layout_mode = 3

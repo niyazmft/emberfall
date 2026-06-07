@@ -5,8 +5,6 @@ extends Node2D
 ## Bridges Entity data to visual representation.
 ## Handles: positioning, elevation, facing direction, state effects.
 
-const STATUS_BAR_VERTICAL_OFFSET: float = -40.0
-
 @export var entity: Entity:
 	set(p_value):
 		if entity != p_value:
@@ -43,7 +41,6 @@ func _ready() -> void:
 		_grid_renderer = _find_grid_renderer(get_tree().root)
 
 	_setup_greybox()
-	_setup_status_bar()
 
 	_setupStatusBar()
 
@@ -51,9 +48,6 @@ func _ready() -> void:
 		_connect_entity_signals()
 		_sync_to_entity()
 		global_position = _target_position  # Snap initially
-
-
-var _status_bar: Control = null
 
 
 func _process(delta: float) -> void:
@@ -75,9 +69,6 @@ func _process(delta: float) -> void:
 		global_position = global_position.lerp(_target_position, weight)
 	else:
 		global_position = _target_position
-
-	if _status_bar:
-		_status_bar.global_position = global_position + Vector2(0, STATUS_BAR_VERTICAL_OFFSET)
 
 
 func _find_grid_renderer(node: Node) -> GridRenderer:
@@ -137,30 +128,30 @@ func _disconnect_entity_signals() -> void:
 		entity.ap_changed.disconnect(_onEntityApChanged)
 
 
-func _on_entity_position_changed(x: int, y: int) -> void:
+func _on_entity_position_changed(p_x: int, p_y: int) -> void:
 	if _grid_renderer and entity:
-		_target_position = _grid_renderer.grid_to_world(x, y, entity.elevation)
+		_target_position = _grid_renderer.grid_to_world(p_x, p_y, entity.elevation)
 
 
-func _on_entity_elevation_changed(elevation: int) -> void:
+func _on_entity_elevation_changed(p_elevation: int) -> void:
 	if _grid_renderer and entity:
-		_target_position = _grid_renderer.grid_to_world(entity.x, entity.y, elevation)
-	_update_elevation_visuals(elevation)
+		_target_position = _grid_renderer.grid_to_world(entity.x, entity.y, p_elevation)
+	_update_elevation_visuals(p_elevation)
 
 
-func _on_entity_facing_changed(fx: int, fy: int) -> void:
-	_update_facing_visuals(fx, fy)
+func _on_entity_facing_changed(p_fx: int, p_fy: int) -> void:
+	_update_facing_visuals(p_fx, p_fy)
 
 
-func _on_entity_state_changed(state: Entity.State) -> void:
-	_update_state_visuals(state)
+func _on_entity_state_changed(p_state: Entity.State) -> void:
+	_update_state_visuals(p_state)
 
 
-func _on_entity_hp_changed(new_hp: int, old_hp: int) -> void:
+func _on_entity_hp_changed(p_new_hp: int, p_old_hp: int) -> void:
 	if _status_bar:
-		_status_bar.updateHp(new_hp, entity.hp_max)
+		_status_bar.updateHp(p_new_hp, entity.hp_max)
 
-	if new_hp < old_hp:
+	if p_new_hp < p_old_hp:
 		var app: Node = null
 		if has_node("ApparitionRenderer"):
 			app = get_node("ApparitionRenderer")
@@ -171,26 +162,26 @@ func _on_entity_hp_changed(new_hp: int, old_hp: int) -> void:
 			app.call("trigger_damage_effect")
 
 
-func _on_entity_damage_taken(amount: int, damage_type: String) -> void:
-	_triggerHitEffects(amount, damage_type)
+func _on_entity_damage_taken(p_amount: int, p_damage_type: String) -> void:
+	_triggerHitEffects(p_amount, p_damage_type)
 
 
-func _onEntityApChanged(p_newAp: int, _p_oldAp: int) -> void:
+func _onEntityApChanged(p_new_ap: int, _p_old_ap: int) -> void:
 	if _status_bar:
-		_status_bar.updateAp(p_newAp, GameConstants.AP_MAX)
+		_status_bar.updateAp(p_new_ap, GameConstants.AP_MAX)
 
 
-func _update_elevation_visuals(elevation: int) -> void:
+func _update_elevation_visuals(p_elevation: int) -> void:
 	# Shadow offset: drop down as elevation increases to stay on ground.
 	# Elevation step is 16.0 in GridRenderer.
 	if shadow_sprite:
-		shadow_sprite.position.y = float(elevation) * 16.0
+		shadow_sprite.position.y = float(p_elevation) * 16.0
 
 	if height_indicator:
-		height_indicator.visible = elevation > 0
+		height_indicator.visible = p_elevation > 0
 		if height_indicator is ColorRect:
 			var cr: ColorRect = height_indicator as ColorRect
-			match elevation:
+			match p_elevation:
 				1:
 					cr.color = Color.RED
 				2:
@@ -199,23 +190,21 @@ func _update_elevation_visuals(elevation: int) -> void:
 					cr.color = Color.GRAY
 
 
-func _update_facing_visuals(facing_x: int, facing_y: int) -> void:
+func _update_facing_visuals(p_facing_x: int, _p_facing_y: int) -> void:
 	if base_sprite:
 		# Horizontal flip based on X
-		if facing_x < 0:
+		if p_facing_x < 0:
 			base_sprite.flip_h = true
-		elif facing_x > 0:
+		elif p_facing_x > 0:
 			base_sprite.flip_h = false
 
 		# Vertical orientation (facing_y) would typically swap textures or regions.
 		# For this greybox, we print a debug message to acknowledge 4-way support.
-		if facing_y != 0 and facing_x == 0:
-			# Logic for Up/Down visuals goes here.
-			pass
+		pass
 
 
-func _update_state_visuals(state: Entity.State) -> void:
-	match state:
+func _update_state_visuals(p_state: Entity.State) -> void:
+	match p_state:
 		Entity.State.DYING:
 			modulate = Color(1.0, 0.4, 0.4)
 		Entity.State.STUNNED:
@@ -226,9 +215,9 @@ func _update_state_visuals(state: Entity.State) -> void:
 			modulate = Color.WHITE
 
 
-func grid_to_world(x: int, y: int, elevation: int) -> Vector2:
+func grid_to_world(p_x: int, p_y: int, p_elevation: int) -> Vector2:
 	if _grid_renderer:
-		return _grid_renderer.grid_to_world(x, y, elevation)
+		return _grid_renderer.grid_to_world(p_x, p_y, p_elevation)
 	return Vector2.ZERO
 
 
@@ -243,7 +232,7 @@ func _setupStatusBar() -> void:
 			_status_bar.updateAp(entity.ap, GameConstants.AP_MAX)
 
 
-func _triggerHitEffects(damage: int, damageType: String = "PHYSICAL") -> void:
+func _triggerHitEffects(p_damage: int, p_damage_type: String = "PHYSICAL") -> void:
 	var loader: _ConfigLoader = AutoloadHelper.config_loader()
 
 	# Hit Flash
@@ -259,19 +248,19 @@ func _triggerHitEffects(damage: int, damageType: String = "PHYSICAL") -> void:
 		if hit_stop_config:
 			var tiers: Array = hit_stop_config.get("tiers", [])
 			for tier: Dictionary in tiers:
-				if damage >= tier.get("threshold", 0):
+				if p_damage >= tier.get("threshold", 0):
 					_hit_stop_remaining = tier.get("frames", 0)
 
 	# Screen Shake
 	var combat_room: CombatRoom = CombatRoom.instance
 	if combat_room and combat_room.camera and combat_room.camera.has_method("add_shake"):
-		combat_room.camera.call("add_shake", clampf(float(damage) / 20.0, 0.1, 0.5))
+		combat_room.camera.call("add_shake", clampf(float(p_damage) / 20.0, 0.1, 0.5))
 
 	# Floating Text
-	_spawnDamageNumber(damage, damageType)
+	_spawnDamageNumber(p_damage, p_damage_type)
 
 
-func _spawnDamageNumber(p_damage: int, p_damageType: String) -> void:
+func _spawnDamageNumber(p_damage: int, p_damage_type: String) -> void:
 	var loader: _ConfigLoader = AutoloadHelper.config_loader()
 	var color: Color = Color.WHITE
 	var duration: float = 0.5
@@ -279,8 +268,8 @@ func _spawnDamageNumber(p_damage: int, p_damageType: String) -> void:
 
 	if loader:
 		var floating_config: Dictionary = loader.getValue("floating_text", "", {})
-		if floating_config and floating_config.has(p_damageType):
-			var preset: Dictionary = floating_config[p_damageType]
+		if floating_config and floating_config.has(p_damage_type):
+			var preset: Dictionary = floating_config[p_damage_type]
 			color = Color(preset.get("color", "#FFFFFF"))
 			duration = float(preset.get("duration", 0.5))
 			var offset_arr: Variant = preset.get("offset", [0, -40])
@@ -297,20 +286,6 @@ func _spawnDamageNumber(p_damage: int, p_damageType: String) -> void:
 	tween.tween_property(label, "position", label.position + Vector2(0, -20), duration)
 	tween.parallel().tween_property(label, "modulate:a", 0.0, duration)
 	tween.tween_callback(label.queue_free)
-func _setup_status_bar() -> void:
-	var status_bar: EntityStatusBar = null
-	if not has_node("EntityStatusBar"):
-		var status_bar_scene: PackedScene = load("res://scenes/ui/entity_status_bar.tscn")
-		if status_bar_scene:
-			status_bar = status_bar_scene.instantiate() as EntityStatusBar
-			status_bar.name = "EntityStatusBar"
-			status_bar.top_level = true
-			add_child(status_bar)
-			if entity:
-				status_bar.setup(entity)
-	else:
-		status_bar = get_node("EntityStatusBar") as EntityStatusBar
-	_status_bar = status_bar
 
 
 func _setup_greybox() -> void:

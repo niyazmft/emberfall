@@ -2,10 +2,6 @@ extends Control
 ## CombatHUD (DON-196)
 ## Manages HUD layout and bottom chrome reflow.
 
-var _player_entity: Entity
-var _turn_manager: TurnManager
-var _combat_input: CombatInput
-
 @onready var margin_container: MarginContainer = $MarginContainer
 @onready var bottom_chrome: VBoxContainer = $MarginContainer/BottomChrome
 @onready var hotbar: Control = $MarginContainer/BottomChrome/Hotbar
@@ -28,13 +24,16 @@ var _combat_input: CombatInput
 @onready var turn_label: Label = %TurnLabel
 @onready var round_label: Label = %RoundLabel
 
+var _player_entity: Entity
+var _turn_manager: TurnManager
+var _combat_input: CombatInput
+
 
 func _ready() -> void:
 	SafeZoneManager.safe_area_changed.connect(_on_safe_area_changed)
 	SafeZoneManager.aspect_ratio_changed.connect(_on_aspect_ratio_changed)
 	_apply_safe_area()
 	_reflow_bottom_chrome()
-	_setup_tooltips()
 
 	# Connect button signals
 	move_button.pressed.connect(_on_move_pressed)
@@ -73,15 +72,9 @@ func update_player_stats(entity: Entity) -> void:
 	hp_bar.value = entity.hp
 	hp_label.text = "%d / %d" % [entity.hp, entity.hp_max]
 
-	var config: Node = AutoloadHelper.config_loader()
-	var ap_max: int = (
-		config.getValue("ap_bar", "segment_count", GameConstants.AP_MAX)
-		if config
-		else GameConstants.AP_MAX
-	)
-	ap_bar.max_value = ap_max
+	ap_bar.max_value = GameConstants.AP_MAX
 	ap_bar.value = entity.ap
-	ap_label.text = "%d / %d" % [entity.ap, ap_max]
+	ap_label.text = "%d / %d" % [entity.ap, GameConstants.AP_MAX]
 
 
 func log_action(message: String) -> void:
@@ -98,25 +91,24 @@ func _on_ap_changed(_new_ap: int, _old_ap: int) -> void:
 
 func _on_turn_started(entity: Entity, is_player: bool) -> void:
 	if is_player:
-		turn_label.text = tr("HUD_PLAYER_TURN")
+		turn_label.text = "Your Turn"
 		turn_label.modulate = Color.GREEN
 		_enable_action_buttons(true)
-		_log_from_config("player_turn")
+		log_action("PLAYER TURN")
 	else:
-		var enemy_name: String = entity.entity_name if entity else "Enemy"
-		turn_label.text = tr("HUD_ENEMY_TURN") % enemy_name
+		turn_label.text = "Enemy Turn: %s" % entity.entity_name
 		turn_label.modulate = Color.RED
 		_enable_action_buttons(false)
-		_log_from_config("enemy_turn", [enemy_name])
+		log_action("ENEMY TURN: %s" % entity.entity_name)
 
 
 func _on_round_started(round_number: int) -> void:
-	round_label.text = tr("HUD_ROUND_LABEL") % round_number
-	_log_from_config("round_start", [round_number])
+	round_label.text = "Round %d" % round_number
+	log_action("ROUND %d" % round_number)
 
 
 func _on_targeting_started() -> void:
-	_log_from_config("select_target")
+	log_action("SELECT TARGET")
 
 
 func _on_attack_executed(target: Node2D, damage: int) -> void:
@@ -126,15 +118,11 @@ func _on_attack_executed(target: Node2D, damage: int) -> void:
 	elif target.get("entity"):
 		target_name = target.get("entity").entity_name
 
-	_log_from_config("damage_dealt", [damage, target_name])
+	log_action("Dealt %d damage to %s" % [damage, target_name])
 
 
 func _on_move_pressed() -> void:
-	if _combat_input:
-		if _combat_input.has_method("on_move_pressed"):
-			_combat_input.call("on_move_pressed")
-		elif _combat_input.has_method("_on_move_pressed"):
-			_combat_input.call("_on_move_pressed")
+	log_action("USE WASD TO MOVE")
 
 
 func _on_attack_pressed() -> void:
@@ -167,43 +155,11 @@ func _on_aspect_ratio_changed(_mode: SafeZoneManager.AspectMode) -> void:
 
 
 func _apply_safe_area() -> void:
-	var margins: Dictionary = SafeZoneManager.get_safe_margins()
+	var margins := SafeZoneManager.get_safe_margins()
 	margin_container.add_theme_constant_override("margin_left", margins.left)
 	margin_container.add_theme_constant_override("margin_top", margins.top)
 	margin_container.add_theme_constant_override("margin_right", margins.right)
 	margin_container.add_theme_constant_override("margin_bottom", margins.bottom)
-
-
-func _setup_tooltips() -> void:
-	var config: Node = AutoloadHelper.config_loader()
-	if not config:
-		return
-
-	var tooltips: Dictionary = config.getValue("tooltips", "", {})
-	if tooltips.has("hp_bar"):
-		hp_bar.tooltip_text = tr(tooltips["hp_bar"])
-	if tooltips.has("ap_bar"):
-		ap_bar.tooltip_text = tr(tooltips["ap_bar"])
-	if tooltips.has("move_button"):
-		move_button.tooltip_text = tr(tooltips["move_button"])
-	if tooltips.has("attack_button"):
-		attack_button.tooltip_text = tr(tooltips["attack_button"])
-	if tooltips.has("end_turn_button"):
-		end_turn_button.tooltip_text = tr(tooltips["end_turn_button"])
-
-
-func _log_from_config(template_key: String, args: Array = []) -> void:
-	var config: Node = AutoloadHelper.config_loader()
-	if not config:
-		return
-
-	var templates: Dictionary = config.getValue("combat_log", "templates", {})
-	if templates.has(template_key):
-		var localized_template: String = tr(templates[template_key])
-		if not args.is_empty():
-			log_action(localized_template % args)
-		else:
-			log_action(localized_template)
 
 
 func _reflow_bottom_chrome() -> void:

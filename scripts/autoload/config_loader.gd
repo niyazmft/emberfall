@@ -16,13 +16,6 @@ const REWARDS_PATH := "res://config/rewards.json"
 const UNLOCKS_PATH := "res://config/unlocks.json"
 const ENCOUNTER_SCALER_PATH := "res://config/encounter_scaler.json"
 const FEEDBACK_PATH := "res://config/feedback_config.json"
-const PROGRESSION_PATH := "res://config/progression.json"
-const XP_ECONOMY_PATH := "res://config/xp_economy.json"
-const BIOMES_PATH := "res://config/biomes.json"
-const CURRENCY_PATH := "res://config/currency.json"
-const WEAPONS_PATH := "res://config/weapons.json"
-const RECIPES_PATH := "res://config/recipes.json"
-const HUD_CONFIG_PATH := "res://config/hud_config.json"
 
 # Fallback defaults (sensible so the game runs even if config is missing)
 const DEFAULTS: Dictionary = {
@@ -73,13 +66,6 @@ var _loadedFiles: Dictionary = {
 	UNLOCKS_PATH: false,
 	ENCOUNTER_SCALER_PATH: false,
 	FEEDBACK_PATH: false,
-	PROGRESSION_PATH: false,
-	XP_ECONOMY_PATH: false,
-	BIOMES_PATH: false,
-	CURRENCY_PATH: false,
-	WEAPONS_PATH: false,
-	RECIPES_PATH: false,
-	HUD_CONFIG_PATH: false,
 }
 
 
@@ -103,37 +89,6 @@ func _loadConfig() -> void:
 	_loadJsonToConfig(UNLOCKS_PATH)
 	_loadJsonToConfig(ENCOUNTER_SCALER_PATH)
 	_loadJsonToConfig(FEEDBACK_PATH)
-
-
-func _loadJsonToConfig(filePath: String) -> void:
-	_loadJsonToConfig(CONFIG_PATH, "config")
-	_loadJsonToConfig(ITEMS_PATH, "items")
-	_loadJsonToConfig(EQUIPMENT_PATH, "equipment")
-	_loadJsonToConfig(ENEMIES_PATH, "enemies")
-	_loadJsonToConfig(SKILLS_PATH, "skills")
-	_loadJsonToConfig(HOTBAR_BINDINGS_PATH, "hotbar_bindings")
-	_loadJsonToConfig(STATUS_EFFECTS_PATH, "status_effects")
-	_loadJsonToConfig(ACCESSIBILITY_PATH, "accessibility")
-	_loadJsonToConfig(REWARDS_PATH, "rewards")
-	_loadJsonToConfig(UNLOCKS_PATH, "unlocks")
-	_loadJsonToConfig(ENCOUNTER_SCALER_PATH, "encounter_scaler")
-	_loadJsonToConfig(PROGRESSION_PATH, "progression")
-	_loadJsonToConfig(XP_ECONOMY_PATH, "xp_economy")
-	_loadJsonToConfig(CURRENCY_PATH, "currency")
-	_loadJsonToConfig(WEAPONS_PATH, "weapons")
-	_loadJsonToConfig(RECIPES_PATH, "recipes")
-
-	var actual_biomes_path := BIOMES_PATH
-	if _configData.has("config") and _configData["config"].has("run_manager"):
-		actual_biomes_path = _configData["config"]["run_manager"].get(
-			"BIOMES_CONFIG_PATH", BIOMES_PATH
-		)
-
-	_loadJsonToConfig(actual_biomes_path, "biomes")
-
-
-func _loadJsonToConfig(filePath: String, p_namespace: String = "") -> void:
-	_loadJsonToConfig(HUD_CONFIG_PATH)
 
 
 func _loadJsonToConfig(filePath: String) -> void:
