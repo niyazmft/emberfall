@@ -14,10 +14,19 @@ const ENEMY_SCENES := {
 
 
 ## Load room JSON data by ID.
-static func load_room_data(room_id: String) -> Dictionary:
-	var path := ROOMS_PATH + room_id + ".json"
+static func load_room_data(room_id: String, biome_subpath: String = "") -> Dictionary:
+	var path := ROOMS_PATH
+	if not biome_subpath.is_empty():
+		path = path.path_join(biome_subpath)
+	path = path.path_join(room_id + ".json")
+
 	if not FileAccess.file_exists(path):
-		return {}
+		# Fallback to root for standard rooms
+		var fallback_path := ROOMS_PATH.path_join(room_id + ".json")
+		if FileAccess.file_exists(fallback_path):
+			path = fallback_path
+		else:
+			return {}
 	var f := FileAccess.open(path, FileAccess.READ)
 	if f == null:
 		push_error("Failed to open room file: " + path)
