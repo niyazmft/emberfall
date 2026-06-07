@@ -101,12 +101,7 @@ static func _create_empty_layout() -> Dictionary:
 	blocked.fill(false)
 	vision.resize(144)
 	vision.fill(false)
-	return {
-		"elevation": elevation,
-		"cover": cover,
-		"blocked": blocked,
-		"vision_blocked": vision
-	}
+	return {"elevation": elevation, "cover": cover, "blocked": blocked, "vision_blocked": vision}
 
 
 static func _ensure_layout_size(arr: Array, default_val: Variant) -> void:
@@ -130,15 +125,13 @@ static func _get_reserved_positions(room_data: Dictionary) -> Array[Vector2i]:
 				var positions: Array = enc.get("positions", [])
 				for pos_data: Variant in positions:
 					if pos_data is Dictionary:
-						reserved.append(Vector2i(int(pos_data.get("x", 0)), int(pos_data.get("y", 0))))
+						reserved.append(
+							Vector2i(int(pos_data.get("x", 0)), int(pos_data.get("y", 0)))
+						)
 	return reserved
 
 
 static func _add_hazard(room_data: Dictionary, x: int, y: int, type: String) -> void:
 	if not room_data.has("hazards"):
 		room_data["hazards"] = []
-	room_data["hazards"].append({
-		"x": x,
-		"y": y,
-		"type": type
-	})
+	room_data["hazards"].append({"x": x, "y": y, "type": type})

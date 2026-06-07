@@ -1,11 +1,9 @@
 extends GdUnitTestSuite
 
+
 func test_room_generator_augmentation() -> void:
 	var room_data: Dictionary = {
-		"id": "test_room",
-		"biome": 0, # Biome 1
-		"topology_seed": 12345,
-		"player_start": {"x": 1, "y": 1}
+		"id": "test_room", "biome": 0, "topology_seed": 12345, "player_start": {"x": 1, "y": 1}  # Biome 1
 	}
 
 	RoomGenerator.augment_room(room_data, "biome1", 12345)
@@ -27,6 +25,7 @@ func test_room_generator_augmentation() -> void:
 			break
 	assert_that(has_cover).is_true()
 
+
 func test_encounter_system_building() -> void:
 	var biome_id: String = "biome1"
 	var seed1: int = 111
@@ -41,6 +40,7 @@ func test_encounter_system_building() -> void:
 	assert_that(encounters1).is_equal(encounters2)
 	# Different seed should likely produce different result
 	assert_that(encounters1).is_not_equal(encounters3)
+
 
 func test_room_loader_integration() -> void:
 	var room_data: Dictionary = {

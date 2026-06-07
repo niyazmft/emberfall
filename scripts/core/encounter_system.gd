@@ -48,11 +48,7 @@ static func build_encounters(biome_id: String, encounter_seed: int) -> Array:
 		type_counts[type] += 1
 
 	for type: String in type_counts:
-		encounters.append({
-			"enemy_type": type,
-			"count": type_counts[type],
-			"positions": [] # Will be filled by the loader or a positioner
-		})
+		encounters.append({"enemy_type": type, "count": type_counts[type], "positions": []})  # Will be filled by the loader or a positioner
 
 	return encounters
 
