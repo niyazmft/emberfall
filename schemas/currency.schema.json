@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Currency Schema",
+  "type": "object",
+  "required": ["currencies"],
+  "properties": {
+    "currencies": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["id", "name_key", "description_key"],
+        "properties": {
+          "id": { "type": "string" },
+          "name_key": { "type": "string" },
+          "description_key": { "type": "string" },
+          "icon_path": { "type": "string" }
+        }
+      }
+    }
+  }
+}

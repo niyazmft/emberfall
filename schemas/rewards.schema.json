@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Rewards Schema",
+  "type": "object",
+  "required": ["rewards"],
+  "properties": {
+    "rewards": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name_key", "description_key", "type", "value"],
+        "properties": {
+          "id": { "type": "string" },
+          "name_key": { "type": "string" },
+          "description_key": { "type": "string" },
+          "type": {
+            "type": "string",
+            "enum": ["XP", "ITEM", "ABILITY", "CURRENCY"]
+          },
+          "value": {
+            "oneOf": [
+              { "type": "number" },
+              { "type": "string" },
+              { "type": "object" }
+            ]
+          },
+          "conditions": {
+            "type": "object",
+            "properties": {
+              "min_room_index": { "type": "integer" },
+              "required_moral_flag": { "type": "integer" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

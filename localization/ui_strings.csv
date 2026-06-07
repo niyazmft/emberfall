@@ -81,3 +81,12 @@ HUD_ROUND_LABEL,Round %d,,
 HUD_COMBAT_START,COMBAT START,,
 HUD_PLAYER_TURN_BANNER,PLAYER TURN,,
 HUD_ENEMY_TURN_BANNER,%s TURN,,
+CURRENCY_ECHO_SHARDS_NAME,Echo Shards,Echoscherben,Fragmentos de Eco,Éclats d'Écho
+CURRENCY_ECHO_SHARDS_DESC,A mysterious currency that persists across runs.,Eine mysteriöse Währung.,Una moneda misteriosa.,Une monnaie mystérieuse.
+ITEM_IRON_SCRAP_NAME,Iron Scrap,Eisenschrott,Chatarra de Hierro,Ferraille
+ITEM_IRON_SCRAP_DESC,Raw material for crafting.,Rohmaterial für das Handwerk.,Material básico para artesanía.,Matière première pour l'artisanat.
+ITEM_IRON_SWORD_NAME,Iron Sword,Eisenschwert,Espada de Hierro,Épée en Fer
+ITEM_IRON_SWORD_DESC,A sturdy sword made of iron.,Ein stabiles Eisenschwert.,Una espada de hierro resistente.,Une épée en fer robuste.
+ITEM_WOODEN_BOW_NAME,Wooden Bow,Holzbogen,Arco de Madera,Arc en Bois
+ITEM_WOODEN_BOW_DESC,A simple bow for ranged attacks.,Ein einfacher Bogen.,Un arco simple.,Un arc simple.
+RECIPE_IRON_SWORD_NAME,Craft Iron Sword,Eisenschwert schmieden,Forjar Espada de Hierro,Forger une Épée en Fer
