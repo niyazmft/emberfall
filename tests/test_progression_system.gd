@@ -4,6 +4,7 @@ extends GdUnitTestSuite
 var _player: Entity
 var _enemy: Entity
 var _level_up_manager: _LevelUpManager
+var _orig_player: Entity
 
 
 func before_test() -> void:
@@ -19,10 +20,13 @@ func before_test() -> void:
 
 	# Manually set the player entity in lifecycle so LevelUpManager can find it
 	if AutoloadHelper.entity_lifecycle():
+		_orig_player = AutoloadHelper.entity_lifecycle().player_entity
 		AutoloadHelper.entity_lifecycle().player_entity = _player
 
 
 func after_test() -> void:
+	if AutoloadHelper.entity_lifecycle():
+		AutoloadHelper.entity_lifecycle().player_entity = _orig_player
 	_level_up_manager.queue_free()
 
 

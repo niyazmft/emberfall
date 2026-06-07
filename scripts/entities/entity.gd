@@ -151,6 +151,10 @@ func grid_position() -> Vector2i:
 	return Vector2i(x, y)
 
 
+func get_effective_max_level() -> int:
+	return 99
+
+
 # ── Mutators ────────────────────────────────────────────────────────
 func set_facing(dx: int, dy: int) -> void:
 	facing_x = dx

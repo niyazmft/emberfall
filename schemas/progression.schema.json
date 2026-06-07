@@ -11,16 +11,19 @@
     },
     "stat_growth": {
       "type": "object",
-      "additionalProperties": {
-        "type": "object",
+      "patternProperties": {
+        "^[0-9]+$": {
+          "type": "object",
         "properties": {
           "hp_max": { "type": "integer", "minimum": 0 },
           "off": { "type": "integer", "minimum": 0 },
           "def": { "type": "integer", "minimum": 0 },
           "spd": { "type": "integer", "minimum": 0 }
         },
-        "required": ["hp_max", "off", "def", "spd"]
+          "required": ["hp_max", "off", "def", "spd"]
+        }
       },
+      "additionalProperties": false,
       "description": "Stat increases awarded when reaching a specific level. Key is the level reached (as string)."
     }
   },

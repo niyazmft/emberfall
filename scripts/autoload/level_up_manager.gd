@@ -19,16 +19,8 @@ func _ready() -> void:
 func _load_configs() -> void:
 	var config_loader: _ConfigLoader = AutoloadHelper.config_loader()
 	if config_loader:
-		_progression_config = {
-			"level_thresholds": config_loader.getValue("level_thresholds", "", []),
-			"stat_growth": config_loader.getValue("stat_growth", "", {})
-		}
-		_xp_economy_config = {
-			"enemy_xp": config_loader.getValue("enemy_xp", "", {}),
-			"spare_bonus_multiplier": config_loader.getValue("spare_bonus_multiplier", "", 1.5),
-			"biome_clear_bonus": config_loader.getValue("biome_clear_bonus", "", 100),
-			"hooks": config_loader.getValue("hooks", "", {})
-		}
+		_progression_config = config_loader.getValue("progression", "", {})
+		_xp_economy_config = config_loader.getValue("xp_economy", "", {})
 
 
 func _connect_signals() -> void:
@@ -63,7 +55,9 @@ func _check_level_up(entity: Entity) -> void:
 	var next_level_idx: int = current_level - 1  # Level 1 is index -1, Level 2 is index 0
 
 	while (
-		next_level_idx < thresholds.size() and entity.experience >= int(thresholds[next_level_idx])
+		next_level_idx < thresholds.size()
+		and entity.experience >= int(thresholds[next_level_idx])
+		and current_level < entity.get_effective_max_level()
 	):
 		current_level += 1
 		next_level_idx = current_level - 1
@@ -115,7 +109,9 @@ func _on_spare_or_execute(entity: Entity, was_spared: bool) -> void:
 		)
 	else:
 		if was_spared:
-			final_xp = int(base_xp * _xp_economy_config.get("spare_bonus_multiplier", 1.5))
+			final_xp = DeterministicMath.floori(
+				base_xp * _xp_economy_config.get("spare_bonus_multiplier", 1.5)
+			)
 
 	grant_experience(player, final_xp, "combat_resolution")
 
@@ -139,7 +135,7 @@ func _evaluate_formula(formula: String, context: Dictionary) -> int:
 		push_error("LevelUpManager: Formula execution failed: " + expr.get_error_text())
 		return int(context.get("base_xp", 0))
 
-	return int(result)
+	return DeterministicMath.floori(float(result))
 
 
 func _get_player_entity() -> Entity:
