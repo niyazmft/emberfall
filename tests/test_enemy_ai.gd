@@ -152,3 +152,60 @@ func test_base_enemy_consumes_ap_on_move() -> void:
 	action = {"type": "move", "target_x": 6, "target_y": 7}
 	_enemy._execute_action(action)
 	assert_int(_enemy.entity.ap).is_equal(3)  # Diagonal move costs 2
+
+
+func test_archer_retreat_logic() -> void:
+	# Replace generic AI with ArcherAI
+	_enemy.remove_child(_ai)
+	_ai.free()
+	_ai = auto_free(ArcherAI.new()) as ArcherAI
+	_ai.grid_system = _grid
+	_ai.enemy_entity = _enemy.entity
+	_enemy.ai_controller = _ai
+	_enemy.add_child(_ai)
+
+	# Ensure ArcherAI has loaded its params from the updated config
+	_ai._load_params()
+
+	_enemy.entity.hp_max = 100
+	_enemy.entity.hp = 20  # Below 30% threshold
+	_enemy.entity.set_grid_position(5, 5)
+	_player.entity.set_grid_position(0, 0)
+
+	var action: Dictionary = _ai.decide_action()
+	assert_str(action["type"]).is_equal("move")
+
+	if action["type"] == "move":
+		var dist_after: int = max(abs(action["target_x"] - 0), abs(action["target_y"] - 0))
+		assert_int(dist_after).is_greater(1)
+
+
+func test_archer_elevation_preference() -> void:
+	# Replace generic AI with ArcherAI
+	_enemy.remove_child(_ai)
+	if is_instance_valid(_ai):
+		_ai.free()
+	_ai = auto_free(ArcherAI.new()) as ArcherAI
+	_ai.grid_system = _grid
+	_ai.enemy_entity = _enemy.entity
+	_enemy.ai_controller = _ai
+	_enemy.add_child(_ai)
+
+	_enemy.entity.archetype_id = "archer"
+	_ai._load_params()
+
+	_enemy.entity.set_grid_position(5, 5)
+	_player.entity.set_grid_position(10, 5)  # Directly to the right
+
+	# Make (6,5) mid elevation (so it's reachable from (5,5) which is ground)
+	# Other neighbors like (6,4) and (6,6) remain ground.
+	var high_tile: TacTileData = _grid.get_tile(6, 5)
+	high_tile.elevation = TacTileData.Elevation.MID
+	high_tile.recompute_flags()
+
+	var action: Dictionary = _ai.decide_action()
+	assert_str(action["type"]).is_equal("move")
+	# Archer should prefer the mid elevation tile at (6,5) over ground neighbors
+	if action["type"] == "move":
+		assert_int(action["target_x"]).is_equal(6)
+		assert_int(action["target_y"]).is_equal(5)

@@ -103,9 +103,18 @@ func _setup_ai() -> void:
 			"GRUNT":
 				controller.behavior = EnemyAIController.BehaviorType.GRUNT
 			"ARCHER":
+				# If we have a specific ArcherAI node, it will handle itself.
+				# Otherwise we set the behavior on the generic controller.
 				controller.behavior = EnemyAIController.BehaviorType.ARCHER
 			"TANK":
 				controller.behavior = EnemyAIController.BehaviorType.TANK
+
+	# Handle specific AI scripts if they exist as nodes
+	if behavior_str.to_upper() == "ARCHER" and not ai_controller is ArcherAI:
+		# If the current ai_controller is not ArcherAI but the behavior is ARCHER,
+		# we might want to swap it or ensure it's handled.
+		# For now, SimpleAI handles basic Archer behavior too.
+		pass
 
 
 func _setup_visual_proxy() -> void:
