@@ -6,6 +6,7 @@ class_name _AmbientNarrator
 ## Uses CaptionManager's AMBIENT channel for display.
 ## Architecture: Data-driven via ConfigLoader.
 
+
 func _ready() -> void:
 	_connect_signals()
 
