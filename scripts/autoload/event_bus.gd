@@ -30,12 +30,6 @@ signal moral_delta_processed(delta: int, source: String, sentient: bool)
 ## Fired when the player resolves a spare-or-execute choice.
 signal spare_or_execute(entity: Entity, was_spared: bool)
 
-## Fired when an entity (usually player) gains XP.
-signal experience_gained(entity: Entity, amount: int, reason: String)
-
-## Fired when an entity (usually player) levels up.
-signal level_up_achieved(entity: Entity, new_level: int)
-
 # ── BurdenManager ────────────────────────────────────────────────────────────
 
 ## Fired when the kill-history queue changes.
@@ -48,6 +42,17 @@ signal burden_active_changed(active: bool)
 ## Fired when a burden event resolves.
 ## result is a BurdenEventResult instance (widened to Object to avoid coupling).
 signal burden_event_triggered(result: Object)
+
+# ── TurnManager (Widened for EventBus) ───────────────────────────────────────
+
+## Fired when a new turn starts.
+signal turn_started(entity: Entity, is_player: bool)
+
+## Fired when a round starts.
+signal round_started(round_number: int)
+
+## Fired when combat ends.
+signal combat_ended(victory: bool)
 
 # ── RunManager ───────────────────────────────────────────────────────────────
 
