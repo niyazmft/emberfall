@@ -5,12 +5,16 @@
 [ext_resource type="PackedScene" uid="uid://g4s6t8m1p5n7y" path="res://scenes/ui/combat_hud.tscn" id="3_combat_hud"]
 [ext_resource type="PackedScene" uid="uid://toast001" path="res://scenes/ui/toast.tscn" id="4_toast"]
 [ext_resource type="PackedScene" uid="uid://ppburden001" path="res://scenes/ui/pp_burden_layer.tscn" id="5_pp_burden"]
+[ext_resource type="Script" path="res://scripts/core/camera_shaker.gd" id="5_shaker"]
 
 [node name="CombatRoom" type="Node2D"]
 script = ExtResource("1_cmbtrm")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 enabled = true
+
+[node name="CameraShaker" type="Node" parent="Camera2D"]
+script = ExtResource("5_shaker")
 
 [node name="GridRenderer" type="Node2D" parent="."]
 script = ExtResource("2_grid_renderer")
