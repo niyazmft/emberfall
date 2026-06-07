@@ -95,8 +95,8 @@ static func localization_manager() -> Node:
 ## if ConfigLoader is unavailable or the key is not set.
 static func config_int(key: String, fallback: int) -> int:
 	var n: Node = config_loader()
-	if n != null and n.has_method("get_int"):
-		return n.get_int(key, fallback)
+	if n != null and n.has_method("getInt"):
+		return n.getInt(key, fallback)
 	return fallback
 
 
@@ -104,8 +104,8 @@ static func config_int(key: String, fallback: int) -> int:
 ## if ConfigLoader is unavailable or the key is not set.
 static func config_float(key: String, fallback: float) -> float:
 	var n: Node = config_loader()
-	if n != null and n.has_method("get_float"):
-		return n.get_float(key, fallback)
+	if n != null and n.has_method("getFloat"):
+		return n.getFloat(key, fallback)
 	return fallback
 
 
@@ -113,6 +113,6 @@ static func config_float(key: String, fallback: float) -> float:
 ## if ConfigLoader is unavailable or the key is not set.
 static func config_string(key: String, fallback: String) -> String:
 	var n: Node = config_loader()
-	if n != null and n.has_method("get_string"):
-		return n.get_string(key, fallback)
+	if n != null and n.has_method("getString"):
+		return n.getString(key, fallback)
 	return fallback
