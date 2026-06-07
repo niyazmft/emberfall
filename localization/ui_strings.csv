@@ -17,9 +17,9 @@ menu.title.continue,Continue,Fortsetzen,Continuar,Continuer
 menu.title.new_game,New Game,Neues Spiel,Nuevo Juego,Nouveau Jeu
 menu.title.settings,Settings,Einstellungen,Ajustes,Paramètres
 menu.title.quit,Quit,Beenden,Salir,Quitter
-DLG_SPEAKER_KEEPER,The Keeper,Der Wächter,El Guardián,Le Gardien
-DLG_INTRO_01,The embers are fading. We must act quickly.,Die Glut verblasst. Wir müssen schnell handeln.,Las brasas se están desvaneciendo. Debemos actuar rápidamente.,Les braises s'estompent. Nous devons agir vite.
-DLG_INTRO_02,I can feel the burden increasing.,Ich kann spüren, wie die Last zunimmt.,Puedo sentir que la carga aumenta.,Je sens que le fardeau s'alourdit.
-DLG_UI_SPEAKER_DEFAULT,Narrator,Erzähler,Narrador,Narrateur
-DLG_UI_TEXT_DEFAULT,...,...,...,...
-DLG_UI_CONTINUE_HINT,Press [E] to continue,Drücken Sie [E] zum Fortfahren,Presione [E] para continuar,Appuyez sur [E] pour continuer
+dialogue.ui.speaker_default,Narrator,Erzähler,Narrador,Narrateur
+dialogue.ui.text_default,...,...,...,...
+dialogue.ui.continue_hint,Press [E] to continue,Drücken Sie [E] zum Fortfahren,Presione [E] para continuar,Appuyez sur [E] pour continuer
+dialogue.speaker.keeper,The Keeper,Der Wächter,El Guardián,Le Gardien
+dialogue.keeper.intro_01,The embers are fading. We must act quickly.,Die Glut verblasst. Wir müssen schnell handeln.,Las brasas se están desvaneciendo. Debemos actuar rápidamente.,Les braises s'estompent. Nous devons agir vite.
+dialogue.keeper.intro_02,I can feel the burden increasing.,Ich kann spüren, wie die Last zunimmt.,Puedo sentir que la carga aumenta.,Je sens que le fardeau s'alourdit.

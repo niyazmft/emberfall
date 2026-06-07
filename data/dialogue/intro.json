@@ -3,13 +3,13 @@
     "intro_sequence": {
       "lines": [
         {
-          "speaker": "DLG_SPEAKER_KEEPER",
-          "text_key": "DLG_INTRO_01",
+          "speaker": "dialogue.speaker.keeper",
+          "text_key": "dialogue.keeper.intro_01",
           "portrait": "keeper_neutral"
         },
         {
-          "speaker": "DLG_SPEAKER_KEEPER",
-          "text_key": "DLG_INTRO_02",
+          "speaker": "dialogue.speaker.keeper",
+          "text_key": "dialogue.keeper.intro_02",
           "portrait": "keeper_determined"
         }
       ],

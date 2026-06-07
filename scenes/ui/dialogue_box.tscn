@@ -52,14 +52,14 @@ size_flags_horizontal = 3
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
-text = "DLG_UI_SPEAKER_DEFAULT"
+text = "dialogue.ui.speaker_default"
 
 [node name="DialogueText" type="RichTextLabel" parent="Panel/MarginContainer/HBoxContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_font_sizes/normal_font_size = 24
-text = "DLG_UI_TEXT_DEFAULT"
+text = "dialogue.ui.text_default"
 
 [node name="ContinueIndicator" type="Control" parent="Panel/MarginContainer"]
 unique_name_in_owner = true
@@ -78,5 +78,5 @@ offset_left = -200.0
 offset_top = -23.0
 grow_horizontal = 0
 grow_vertical = 0
-text = "DLG_UI_CONTINUE_HINT"
+text = "dialogue.ui.continue_hint"
 horizontal_alignment = 2

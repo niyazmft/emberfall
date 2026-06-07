@@ -18,7 +18,9 @@ var _isTyping: bool = false
 
 func _ready() -> void:
 	hide()
-	continueHintLabel.text = tr("DLG_UI_CONTINUE_HINT")
+	speakerLabel.text = tr("dialogue.ui.speaker_default")
+	dialogueText.text = tr("dialogue.ui.text_default")
+	continueHintLabel.text = tr("dialogue.ui.continue_hint")
 	var dm: _DialogueManager = AutoloadHelper.dialogue_manager()
 	if dm:
 		dm.dialogue_requested.connect(_onDialogueRequested)

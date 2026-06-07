@@ -51,7 +51,7 @@ func _load_json_file(file_path: String) -> void:
 					if _dialogues.has(key):
 						push_error(
 							(
-								"DialogueManager: Collision detected for dialogue ID '%s' in %s. Skipping duplicate entry."
+								"DialogueManager: Duplicate dialogue ID '%s' found in %s"
 								% [key, file_path]
 							)
 						)
