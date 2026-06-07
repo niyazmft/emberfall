@@ -98,6 +98,10 @@ static func absi(a: int) -> int:
 	return a if a >= 0 else -a
 
 
+static func absf(a: float) -> float:
+	return a if a >= 0.0 else -a
+
+
 # ── Cross-Platform Golden-Seed Validation ─────────────────────────────
 static func validate_golden_seed() -> bool:
 	## Smoke test: a known set of floor/clamp operations against

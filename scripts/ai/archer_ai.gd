@@ -19,10 +19,10 @@ func _load_params() -> void:
 		return
 
 	var archer_id: String = "archer"
-	if enemy_entity:
+	if enemy_entity and not enemy_entity.archetype_id.is_empty():
 		archer_id = enemy_entity.archetype_id
 
-	var enemies_config: Dictionary = config_loader.getValue("enemies", "", {})
+	var enemies_config: Dictionary = config_loader.getValue("enemies", "enemies", {})
 	if enemies_config.has(archer_id):
 		var data: Dictionary = enemies_config[archer_id]
 		min_range = int(data.get("min_range", 2))
@@ -133,7 +133,7 @@ func _get_best_tile(target_pos: Vector2i, away: bool) -> Vector2i:
 					else:
 						# Penalty for being outside preferred range
 						var preferred_center: float = float(min_range + max_range) / 2.0
-						score -= abs(float(d) - preferred_center) * 20.0
+						score -= DeterministicMath.absf(float(d) - preferred_center) * 20.0
 
 				# Elevation priority
 				var tile: TacTileData = grid_system.get_tile(n_pos.x, n_pos.y)

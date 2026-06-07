@@ -86,9 +86,22 @@ func _loadJsonToConfig(filePath: String) -> void:
 			var fileText: String = fileHandle.get_as_text()
 			var parsedJson: Variant = JSON.parse_string(fileText)
 			if parsedJson is Dictionary:
-				_configData.merge(parsedJson, true)
+				var p_namespace: String = filePath.get_file().get_basename()
+				var data_to_merge: Dictionary = parsedJson as Dictionary
+				# Unwrap if the root key matches the namespace (redundant level in JSON)
+				if data_to_merge.has(p_namespace) and data_to_merge.size() == 1:
+					data_to_merge = data_to_merge[p_namespace]
+
+				if not _configData.has(p_namespace):
+					_configData[p_namespace] = {}
+				(_configData[p_namespace] as Dictionary).merge(data_to_merge, true)
 				_loadedFiles[filePath] = true
-				print("ConfigLoader: loaded config from %s" % filePath)
+				print(
+					(
+						"ConfigLoader: loaded config from %s into namespace %s"
+						% [filePath, p_namespace]
+					)
+				)
 			else:
 				push_warning("ConfigLoader: config file %s was not a valid JSON object." % filePath)
 			fileHandle.close()
@@ -101,22 +114,50 @@ func _loadJsonToConfig(filePath: String) -> void:
 func getValue(sectionOrKey: String, key: String = "", fallback: Variant = null) -> Variant:
 	if not key.is_empty():
 		# Two-arg mode: section + key
-		if _configData.has(sectionOrKey) and _configData[sectionOrKey] is Dictionary:
-			var section: Dictionary = _configData[sectionOrKey]
-			if section.has(key):
-				return section[key]
+		# Try looking up section as a namespace, then key inside it
+		if _configData.has(sectionOrKey):
+			var ns: Variant = _configData[sectionOrKey]
+			if ns is Dictionary:
+				if ns.has(key):
+					return ns[key]
+				# Also check if the section itself is inside the namespace (redundant level)
+				if ns.has(sectionOrKey) and ns[sectionOrKey] is Dictionary:
+					var inner: Dictionary = ns[sectionOrKey]
+					if inner.has(key):
+						return inner[key]
+
+		# Fallback: scan all namespaces for the section, then the key
+		for ns: Variant in _configData.values():
+			if ns is Dictionary:
+				if ns.has(sectionOrKey):
+					var section: Variant = ns[sectionOrKey]
+					if section is Dictionary and section.has(key):
+						return section[key]
+
 		# Try flattened default
 		if DEFAULTS.has(key):
 			return DEFAULTS[key]
 		return fallback
 
-	# One-arg mode: direct key lookup in flattened namespace
+	# One-arg mode
+	# 1. Direct namespace lookup
 	if _configData.has(sectionOrKey):
-		return _configData[sectionOrKey]
-	# Scan sub-sections for key
-	for section: Variant in _configData.values():
-		if section is Dictionary and section.has(sectionOrKey):
-			return section[sectionOrKey]
+		var val: Variant = _configData[sectionOrKey]
+		# If it's a dictionary with a single key that matches the namespace, unwrap it
+		if val is Dictionary and val.has(sectionOrKey) and val.size() == 1:
+			return val[sectionOrKey]
+		return val
+
+	# 2. Scan namespaces for the key or deeper sections
+	for ns: Variant in _configData.values():
+		if ns is Dictionary:
+			if ns.has(sectionOrKey):
+				return ns[sectionOrKey]
+			# One level deeper (e.g. game_config -> ap_economy)
+			for sub: Variant in ns.values():
+				if sub is Dictionary and sub.has(sectionOrKey):
+					return sub[sectionOrKey]
+
 	if DEFAULTS.has(sectionOrKey):
 		return DEFAULTS[sectionOrKey]
 	return fallback

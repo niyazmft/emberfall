@@ -256,19 +256,28 @@ func reset_moral_queue() -> void:
 
 ## Call at end of every combat turn. Decrements state timers and resolves
 ## expired states deterministically.
-func process_end_of_turn() -> void:
-	_resolve_dying_timers()
-	_resolve_stunned_timers()
+func process_end_of_turn(p_entity: Entity = null) -> void:
+	if p_entity:
+		var id: int = p_entity.get_instance_id()
+		_resolve_dying_timers_for(id)
+		_resolve_stunned_timers_for(id)
+	else:
+		_resolve_dying_timers()
+		_resolve_stunned_timers()
 
 
 func _resolve_dying_timers() -> void:
-	var to_remove: Array[int] = []
-	for id: int in _dying_turns.keys():
-		_dying_turns[id] -= 1
-		if _dying_turns[id] <= 0:
-			to_remove.append(id)
+	var ids: Array = _dying_turns.keys()
+	for id: int in ids:
+		_resolve_dying_timers_for(id)
 
-	for id: int in to_remove:
+
+func _resolve_dying_timers_for(id: int) -> void:
+	if not _dying_turns.has(id):
+		return
+
+	_dying_turns[id] -= 1
+	if _dying_turns[id] <= 0:
 		var obj: Object = instance_from_id(id)
 		if obj is Entity:
 			var ent: Entity = obj as Entity
@@ -280,13 +289,17 @@ func _resolve_dying_timers() -> void:
 
 
 func _resolve_stunned_timers() -> void:
-	var to_remove: Array[int] = []
-	for id: int in _stunned_turns.keys():
-		_stunned_turns[id] -= 1
-		if _stunned_turns[id] <= 0:
-			to_remove.append(id)
+	var ids: Array = _stunned_turns.keys()
+	for id: int in ids:
+		_resolve_stunned_timers_for(id)
 
-	for id: int in to_remove:
+
+func _resolve_stunned_timers_for(id: int) -> void:
+	if not _stunned_turns.has(id):
+		return
+
+	_stunned_turns[id] -= 1
+	if _stunned_turns[id] <= 0:
 		var obj: Object = instance_from_id(id)
 		if obj is Entity:
 			var ent: Entity = obj as Entity
@@ -306,7 +319,7 @@ func _trigger_loot_drop(entity: Entity) -> void:
 	if config_loader == null:
 		return
 
-	var enemies_config: Dictionary = config_loader.getValue("enemies", "", {})
+	var enemies_config: Dictionary = config_loader.getValue("enemies", "enemies", {})
 	var archetype_id: String = entity.archetype_id
 	if archetype_id.is_empty():
 		return

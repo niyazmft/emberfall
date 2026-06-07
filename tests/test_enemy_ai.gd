@@ -62,6 +62,7 @@ func test_archer_moves_away_when_too_close() -> void:
 	_ai.behavior = EnemyAIController.BehaviorType.ARCHER
 	_enemy.entity.set_grid_position(6, 5)
 	_player.entity.set_grid_position(5, 5)
+	var dist_before: int = max(abs(_enemy.entity.x - 5), abs(_enemy.entity.y - 5))
 
 	var action: Dictionary = _ai.decide_action()
 
@@ -71,7 +72,7 @@ func test_archer_moves_away_when_too_close() -> void:
 	# (7,5) or (7,6) or (7,4) etc.
 	# _get_next_tile_towards(player, true)
 	var dist_after: int = max(abs(action["target_x"] - 5), abs(action["target_y"] - 5))
-	assert_int(dist_after).is_greater(1)
+	assert_int(dist_after).is_greater(dist_before)
 
 
 func test_archer_attacks_at_range_2() -> void:
@@ -171,13 +172,14 @@ func test_archer_retreat_logic() -> void:
 	_enemy.entity.hp = 20  # Below 30% threshold
 	_enemy.entity.set_grid_position(5, 5)
 	_player.entity.set_grid_position(0, 0)
+	var dist_before: int = max(abs(_enemy.entity.x - 0), abs(_enemy.entity.y - 0))
 
 	var action: Dictionary = _ai.decide_action()
 	assert_str(action["type"]).is_equal("move")
 
 	if action["type"] == "move":
 		var dist_after: int = max(abs(action["target_x"] - 0), abs(action["target_y"] - 0))
-		assert_int(dist_after).is_greater(1)
+		assert_int(dist_after).is_greater(dist_before)
 
 
 func test_archer_elevation_preference() -> void:

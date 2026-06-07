@@ -166,7 +166,7 @@ func _end_current_turn() -> void:
 	var entity: Entity = current_actor.get("entity") as Entity
 
 	if is_instance_valid(_lifecycle):
-		_lifecycle.call("process_end_of_turn")
+		_lifecycle.call("process_end_of_turn", entity)
 
 	if entity:
 		turn_ended.emit(entity)
@@ -181,6 +181,13 @@ func _advance_turn_logic() -> void:
 func _execute_enemy_turn(p_enemy: Node2D) -> void:
 	if p_enemy.has_method("take_turn"):
 		p_enemy.call("take_turn")
+
+	var entity: Entity = p_enemy.get("entity") as Entity
+	if is_instance_valid(_lifecycle):
+		_lifecycle.call("process_end_of_turn", entity)
+
+	if entity:
+		turn_ended.emit(entity)
 
 	_change_state(CombatState.CHECK_END_CONDITIONS)
 
