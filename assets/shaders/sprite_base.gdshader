@@ -1,11 +1,11 @@
 shader_type canvas_item;
 
-// sprite_base.gdshader
-// 2.5D sprite shader with EPT Deuteranopia differential tokens.
-// Target: Mali-G57 @ 1080p (< 0.2ms batch)
-// References: asset-specs/ept-deuteranopia-texture-shape-differentials.md
+## sprite_base.gdshader
+## 2.5D sprite shader with EPT Deuteranopia differential tokens.
+## Target: Mali-G57 @ 1080p (< 0.2ms batch)
+## References: asset-specs/ept-deuteranopia-texture-shape-differentials.md
 
-// Deuteranopia Differentials
+group_uniforms "Deuteranopia Differentials";
 uniform bool u_HAS_SPEC = false;
 uniform bool u_HAS_DIR_AO = false;
 uniform bool u_HAS_TRAN = false;
@@ -16,14 +16,10 @@ uniform bool u_HAS_EMIT = false;
 uniform bool u_HAS_PORO = false;
 uniform bool u_HAS_STRI = false;
 
-// Differential Textures
+group_uniforms "Differential Textures";
 uniform sampler2D u_normal_map : hint_normal, repeat_disable, filter_linear;
 uniform sampler2D u_mask_1 : hint_default_transparent, repeat_disable, filter_linear;
 uniform sampler2D u_mask_2 : hint_default_transparent, repeat_disable, filter_linear;
-
-// Hit Flash
-uniform float u_hit_flash : hint_range(0.0, 1.0) = 0.0;
-uniform vec4 u_hit_flash_color : source_color = vec4(1.0, 1.0, 1.0, 1.0);
 
 // Shading Constants (Fixed to stay under 12-uniform ceiling)
 const vec3 LIGHT_DIR = vec3(-0.5, -0.5, 1.0);
@@ -96,7 +92,4 @@ void fragment() {
 	lit += t_emit * vec3(1.0, 0.9, 0.7) * 0.5;
 
 	COLOR = vec4(lit, tex.a * COLOR.a);
-
-	// Hit Flash overlay
-	COLOR.rgb = mix(COLOR.rgb, u_hit_flash_color.rgb, u_hit_flash * u_hit_flash_color.a);
 }

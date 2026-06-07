@@ -86,8 +86,6 @@ func _on_quit_pressed() -> void:
 
 func _on_quit_confirmed() -> void:
 	get_tree().paused = false
-	if RunManager.has_method("fade_out"):
-		await RunManager.call("fade_out", 0.5)
 	if RunManager.has_method("cmd_return_to_sanctum"):
 		RunManager.call("cmd_return_to_sanctum")
 	hide()

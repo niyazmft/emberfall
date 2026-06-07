@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" path="res://scripts/core/deterministic_math.gd" id="1_7x3a9"]
 [ext_resource type="Script" path="res://scripts/version_label.gd" id="2_vlabel"]
-[ext_resource type="PackedScene" path="res://scenes/ui/transition_layer.tscn" id="3_tlayer"]
 
 [node name="Main" type="Node2D"]
 
@@ -14,5 +13,3 @@ offset_right = 40.0
 offset_bottom = 23.0
 text = "@@VERSION@@"
 script = ExtResource("2_vlabel")
-
-[node name="TransitionLayer" parent="." instance=ExtResource("3_tlayer")]

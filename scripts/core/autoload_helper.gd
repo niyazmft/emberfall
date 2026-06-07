@@ -73,9 +73,9 @@ static func grid_system() -> _GridSystem:
 	return get_autoload("GridSystem") as _GridSystem
 
 
-## Returns the TutorialManager autoload, or null.
-static func tutorial_manager() -> _TutorialManager:
-	return get_autoload("TutorialManager") as _TutorialManager
+## Returns the InventoryManager autoload, or null.
+static func inventory_manager() -> Node:
+	return get_autoload("InventoryManager")
 
 
 ## Returns the SettingsManager autoload, or null.
