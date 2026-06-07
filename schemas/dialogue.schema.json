@@ -13,18 +13,36 @@
             "items": {
               "type": "object",
               "properties": {
-                "speaker": { "type": "string" },
-                "text_key": { "type": "string" },
-                "portrait": { "type": "string" }
+                "speaker": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "text_key": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "^[a-zA-Z0-9_.]+$"
+                },
+                "portrait": {
+                  "type": "string"
+                }
               },
-              "required": ["speaker", "text_key"]
+              "required": [
+                "speaker",
+                "text_key"
+              ]
             }
           },
-          "next_id": { "type": "string" }
+          "next_id": {
+            "type": "string"
+          }
         },
-        "required": ["lines"]
+        "required": [
+          "lines"
+        ]
       }
     }
   },
-  "required": ["dialogues"]
+  "required": [
+    "dialogues"
+  ]
 }

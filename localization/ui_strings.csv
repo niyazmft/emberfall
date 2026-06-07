@@ -20,55 +20,6 @@ menu.title.quit,Quit,Beenden,Salir,Quitter
 DLG_SPEAKER_KEEPER,The Keeper,Der Wächter,El Guardián,Le Gardien
 DLG_INTRO_01,The embers are fading. We must act quickly.,Die Glut verblasst. Wir müssen schnell handeln.,Las brasas se están desvaneciendo. Debemos actuar rápidamente.,Les braises s'estompent. Nous devons agir vite.
 DLG_INTRO_02,I can feel the burden increasing.,Ich kann spüren, wie die Last zunimmt.,Puedo sentir que la carga aumenta.,Je sens que le fardeau s'alourdit.
-SETTINGS_TEXT_SCALE,Text Scale,Textskalierung,Escala de texto,Échelle du texte
-SETTINGS_SLOW_MODE,Slow Mode,Langsamer Modus,Modo lento,Mode lent
-SETTINGS_HIGH_CONTRAST,High Contrast,Hoher Kontrast,Alto contraste,Contraste élevé
-SETTINGS_DYSLEXIA_FONT,Dyslexia Font,Dyslexie-Schriftart,Fuente para dislexia,Police dyslexie
-BE_B_FIRST_D,"Three witnesses to the fading light. Their vigil is over; yours continues.","Drei Zeugen des schwindenden Lichts. Ihre Mahnwache ist vorbei; Deine geht weiter.","Tres testigos de la luz que se desvanece. Su vigilia ha terminado; la tuya continúa.","Trois témoins de la lumière déclinante. Leur veille est terminée ; la vôtre continue."
-BE_B_FIRST_E,"Three threads unspun from the great tapestry. You gather the loose ends.","Drei Fäden, die aus dem großen Wandteppich gesponnen wurden. Du sammelst die losen Enden.","Tres hilos deshilachados del gran tapiz. Recoges los cabos sueltos.","Trois fils dévidés de la grande tapisserie. Vous rassemblez les bouts de ficelle."
-BE_B_REPEAT_R3,"More vessels emptied. The weight deepens.","Mehr Gefäße geleert. Die Last vertieft sich.","Más vasijas vaciadas. El peso se profundiza.","Plus de récipients vidés. Le poids s'alourdit."
-BE_B_REPEAT_R4,"More carriers stilled. The silence grows.","Mehr Träger beruhigt. Die Stille wächst.","Más portadores silenciados. El silencio crece.","Plus de porteurs immobilisés. Le silence grandit."
-AMBIENT_ROOM_ENTER_FIRST,"The air is thick with the scent of ozone and cooling metal.","Die Luft ist dick vom Geruch von Ozon und abkühlendem Metall.","El aire está cargado con el olor a ozono y metal enfriándose.","L'air est imprégné d'une odeur d'ozone et de métal qui refroidit."
-AMBIENT_NEAR_VOID,"A cold draft rises from the depths, carrying no sound.","Ein kalter Zug steigt aus der Tiefe auf und trägt keinen Ton.","Una corriente fría sube desde las profundidades, sin sonido.","Un courant d'air froid monte des profondeurs, sans aucun son."
-AMBIENT_REMNANT_SIGHTED,"Flickers of light dance in the shadows, memories of what was.","Lichtflimmern tanzt im Schatten, Erinnerungen an das, was war.","Destellos de luz bailan en las sombras, recuerdos de lo que fue.","Des lueurs dansent dans l'ombre, souvenirs de ce qui fut."
-CS_RUN_START_TITLE,"The Awakening",Das Erwachen,El Despertar,L'Éveil
-CS_RUN_START_SEG_1,"The embers glow faintly in the dark.","Die Glut leuchtet schwach im Dunkeln.","Las brasas brillan débilmente en la oscuridad.","Les braises rougeoient faiblement dans l'obscurité."
-CS_RUN_START_SEG_2,"You are the Keeper of what remains.","Du bist der Hüter dessen, was bleibt.","Eres el Guardián de lo que queda.","Vous êtes le Gardien de ce qui reste."
-CS_BIOME_TRANS_1_TITLE,"The Iron Descent","Der eiserne Abstieg","El Descenso de Hierro","La Descente de Fer"
-CS_BIOME_TRANS_1_SEG_1,"The metal groans as you descend deeper.","Das Metall stöhnt, während du tiefer absteigst.","El metal gime mientras desciendes más profundo.","Le métal gémit à mesure que vous descendez plus profondément."
-room_biome1_01,Room 1-01,Raum 1-01,Sala 1-01,Salle 1-01
-room_biome1_02,Room 1-02,Raum 1-02,Sala 1-02,Salle 1-02
-room_biome1_03,Room 1-03,Raum 1-03,Sala 1-03,Salle 1-03
-room_biome1_04,Room 1-04,Raum 1-04,Sala 1-04,Salle 1-04
-room_biome1_05,Room 1-05,Raum 1-05,Sala 1-05,Salle 1-05
-room_biome1_06,Room 1-06,Raum 1-06,Sala 1-06,Salle 1-06
-room_biome1_07,Room 1-07,Raum 1-07,Sala 1-07,Salle 1-07
-room_biome1_08,Room 1-08,Raum 1-08,Sala 1-08,Salle 1-08
-room_biome1_09,Room 1-09,Raum 1-09,Sala 1-09,Salle 1-09
-room_biome1_10,Room 1-10,Raum 1-10,Sala 1-10,Salle 1-10
-room_biome1_11,Room 1-11,Raum 1-11,Sala 1-11,Salle 1-11
-room_biome1_12,Room 1-12,Raum 1-12,Sala 1-12,Salle 1-12
-room_biome2_01,Room 2-01,Raum 2-01,Sala 2-01,Salle 2-01
-room_biome2_02,Room 2-02,Raum 2-02,Sala 2-02,Salle 2-02
-room_biome2_03,Room 2-03,Raum 2-03,Sala 2-03,Salle 2-03
-room_biome2_04,Room 2-04,Raum 2-04,Sala 2-04,Salle 2-04
-room_biome2_05,Room 2-05,Raum 2-05,Sala 2-05,Salle 2-05
-room_biome2_06,Room 2-06,Raum 2-06,Sala 2-06,Salle 2-06
-room_biome2_07,Room 2-07,Raum 2-07,Sala 2-07,Salle 2-07
-room_biome2_08,Room 2-08,Raum 2-08,Sala 2-08,Salle 2-08
-room_biome2_09,Room 2-09,Raum 2-09,Sala 2-09,Salle 2-09
-room_biome2_10,Room 2-10,Raum 2-10,Sala 2-10,Salle 2-10
-room_biome2_11,Room 2-11,Raum 2-11,Sala 2-11,Salle 2-11
-room_biome2_12,Room 2-12,Raum 2-12,Sala 2-12,Salle 2-12
-room_biome3_01,Room 3-01,Raum 3-01,Sala 3-01,Salle 3-01
-room_biome3_02,Room 3-02,Raum 3-02,Sala 3-02,Salle 3-02
-room_biome3_03,Room 3-03,Raum 3-03,Sala 3-03,Salle 3-03
-room_biome3_04,Room 3-04,Raum 3-04,Sala 3-04,Salle 3-04
-room_biome3_05,Room 3-05,Raum 3-05,Sala 3-05,Salle 3-05
-room_biome3_06,Room 3-06,Raum 3-06,Sala 3-06,Salle 3-06
-room_biome3_07,Room 3-07,Raum 3-07,Sala 3-07,Salle 3-07
-room_biome3_08,Room 3-08,Raum 3-08,Sala 3-08,Salle 3-08
-room_biome3_09,Room 3-09,Raum 3-09,Sala 3-09,Salle 3-09
-room_biome3_10,Room 3-10,Raum 3-10,Sala 3-10,Salle 3-10
-room_biome3_11,Room 3-11,Raum 3-11,Sala 3-11,Salle 3-11
-room_biome3_12,Room 3-12,Raum 3-12,Sala 3-12,Salle 3-12
+DLG_UI_SPEAKER_DEFAULT,Narrator,Erzähler,Narrador,Narrateur
+DLG_UI_TEXT_DEFAULT,...,...,...,...
+DLG_UI_CONTINUE_HINT,Press [E] to continue,Drücken Sie [E] zum Fortfahren,Presione [E] para continuar,Appuyez sur [E] pour continuer

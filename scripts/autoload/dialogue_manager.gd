@@ -48,6 +48,14 @@ func _load_json_file(file_path: String) -> void:
 			if parsed_data is Dictionary and parsed_data.has("dialogues"):
 				var dialogues_dict: Dictionary = parsed_data["dialogues"] as Dictionary
 				for key: String in dialogues_dict:
+					if _dialogues.has(key):
+						push_error(
+							(
+								"DialogueManager: Collision detected for dialogue ID '%s' in %s. Skipping duplicate entry."
+								% [key, file_path]
+							)
+						)
+						continue
 					_dialogues[key] = dialogues_dict[key]
 				_print_debug("Loaded dialogue file: %s" % file_path)
 			else:
