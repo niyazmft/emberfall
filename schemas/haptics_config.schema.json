@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Haptics Config Schema",
+  "type": "object",
+  "required": ["haptics"],
+  "properties": {
+    "haptics": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["intensity", "duration"],
+        "properties": {
+          "intensity": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+          "duration": { "type": "number", "minimum": 0.0 }
+        }
+      }
+    }
+  }
+}

@@ -238,3 +238,12 @@ text = "SETTINGS_RESET_DEFAULTS"
 unique_name_in_owner = true
 layout_mode = 2
 text = "MENU_BACK"
+
+[node name="HelpLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
+theme_override_font_sizes/font_size = 24
+text = " "
+horizontal_alignment = 1
+autowrap_mode = 3

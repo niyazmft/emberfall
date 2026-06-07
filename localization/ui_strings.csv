@@ -79,3 +79,16 @@ HUD_ROUND_LABEL,Round %d,,
 HUD_COMBAT_START,COMBAT START,,
 HUD_PLAYER_TURN_BANNER,PLAYER TURN,,
 HUD_ENEMY_TURN_BANNER,%s TURN,,
+SETTINGS_HELP_MASTER_VOL,Adjust the overall volume of the game.,Gesamtlautstärke des Spiels anpassen.,Ajustar el volumen general del juego.,Ajuster le volume global du jeu.
+SETTINGS_HELP_MUSIC_VOL,Adjust the volume of the background music.,Hintergrundmusik-Lautstärke anpassen.,Ajustar el volumen de la música de fondo.,Ajuster le volume de la musique de fond.
+SETTINGS_HELP_SFX_VOL,Adjust the volume of sound effects.,Effektlautstärke anpassen.,Ajustar el volumen de los efectos de sonido.,Ajuster le volume des effets sonores.
+SETTINGS_HELP_MUTE,Mute all game audio.,Alle Töne stummschalten.,Silenciar todo el audio del juego.,Couper tous les sons du jeu.
+SETTINGS_HELP_RESOLUTION,Change the display resolution.,Bildschirmauflösung ändern.,Cambiar la resolución de pantalla.,Changer la résolution d'affichage.
+SETTINGS_HELP_FULLSCREEN,Toggle fullscreen mode.,Vollbildmodus umschalten.,Alternar modo de pantalla completa.,Basculer en mode plein écran.
+SETTINGS_HELP_VSYNC,Enable or disable vertical sync.,Vertikale Synchronisation aktivieren/deaktivieren.,Activar o desactivar la sincronización vertical.,Activer ou désactiver la synchronisation verticale.
+SETTINGS_HELP_APPLY,Apply the selected video settings.,Ausgewählte Videoeinstellungen anwenden.,Aplicar los ajustes de video seleccionados.,Appliquer les paramètres vidéo sélectionnés.
+SETTINGS_HELP_SCREEN_SHAKE,Adjust the intensity of screen shake effects.,Intensität des Bildschirmwackelns anpassen.,Ajustar la intensidad del temblor de pantalla.,Ajuster l'intensité des secousses de l'écran.
+SETTINGS_HELP_CVD_SIM,Select a color vision deficiency simulation.,Farbenfehlsichtigkeits-Simulation wählen.,Seleccionar una simulación de deficiencia visual de color.,Sélectionner une simulation de daltonisme.
+SETTINGS_HELP_INPUT_HINTS,Choose how input hints are displayed.,Eingabehinweise-Anzeige wählen.,Elegir cómo se muestran las sugerencias de entrada.,Choisir comment les indices d'entrée sont affichés.
+SETTINGS_HELP_RESET,Reset all settings to their default values.,Alle Einstellungen auf Standardwerte zurücksetzen.,Restablecer todos los ajustes a sus valores predeterminados.,Réinitialiser tous les paramètres aux valeurs par défaut.
+SETTINGS_HELP_BACK,Return to the previous menu.,Zum vorherigen Menü zurückkehren.,Volver al menú anterior.,Retourner au menu précédent.

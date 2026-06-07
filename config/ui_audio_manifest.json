@@ -1,0 +1,24 @@
+{
+  "ui_audio": {
+    "hover": {
+      "file_path": "res://assets/audio/ui/ui_hover.wav",
+      "volume_db": -10.0,
+      "pitch_scale": 1.0
+    },
+    "click": {
+      "file_path": "res://assets/audio/ui/ui_click.wav",
+      "volume_db": -5.0,
+      "pitch_scale": 1.0
+    },
+    "cancel": {
+      "file_path": "res://assets/audio/ui/ui_cancel.wav",
+      "volume_db": -5.0,
+      "pitch_scale": 0.9
+    },
+    "apply": {
+      "file_path": "res://assets/audio/ui/ui_apply.wav",
+      "volume_db": -2.0,
+      "pitch_scale": 1.1
+    }
+  }
+}

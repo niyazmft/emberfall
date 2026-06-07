@@ -16,6 +16,9 @@ const REWARDS_PATH := "res://config/rewards.json"
 const UNLOCKS_PATH := "res://config/unlocks.json"
 const ENCOUNTER_SCALER_PATH := "res://config/encounter_scaler.json"
 const HUD_CONFIG_PATH := "res://config/hud_config.json"
+const UI_AUDIO_MANIFEST_PATH := "res://config/ui_audio_manifest.json"
+const SETTINGS_HELP_PATH := "res://config/settings_help.json"
+const HAPTICS_CONFIG_PATH := "res://config/haptics_config.json"
 
 # Fallback defaults (sensible so the game runs even if config is missing)
 const DEFAULTS: Dictionary = {
@@ -66,6 +69,9 @@ var _loadedFiles: Dictionary = {
 	UNLOCKS_PATH: false,
 	ENCOUNTER_SCALER_PATH: false,
 	HUD_CONFIG_PATH: false,
+	UI_AUDIO_MANIFEST_PATH: false,
+	SETTINGS_HELP_PATH: false,
+	HAPTICS_CONFIG_PATH: false,
 }
 
 
@@ -89,6 +95,9 @@ func _loadConfig() -> void:
 	_loadJsonToConfig(UNLOCKS_PATH)
 	_loadJsonToConfig(ENCOUNTER_SCALER_PATH)
 	_loadJsonToConfig(HUD_CONFIG_PATH)
+	_loadJsonToConfig(UI_AUDIO_MANIFEST_PATH)
+	_loadJsonToConfig(SETTINGS_HELP_PATH)
+	_loadJsonToConfig(HAPTICS_CONFIG_PATH)
 
 
 func _loadJsonToConfig(filePath: String) -> void:
