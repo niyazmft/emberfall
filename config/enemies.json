@@ -34,7 +34,7 @@
       "spd": 4,
       "ai_behavior": "ARCHER",
       "biome_affinity": "ANY",
-      "loot_table_id": "mage_loot"
+      "loot_table_id": "archer_loot"
     },
     "boss": {
       "hp_max": 150,
@@ -43,7 +43,7 @@
       "spd": 3,
       "ai_behavior": "GRUNT",
       "biome_affinity": "ANY",
-      "loot_table_id": "boss_loot"
+      "loot_table_id": "grunt_loot"
     }
   }
 }

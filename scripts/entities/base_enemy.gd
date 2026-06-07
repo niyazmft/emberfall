@@ -48,17 +48,13 @@ func _setup_entity() -> void:
 func _load_stats_from_config() -> void:
 	if archetype_id.is_empty():
 		# Try to determine archetype from class name or other hints if empty
-		if self is EnemyGrunt:
-			archetype_id = "grunt"
-		elif self is EnemyArcher:
-			archetype_id = "archer"
-		elif self is EnemyTank:
-			archetype_id = "tank"
+		# Use polymorphic check if available, otherwise default to "grunt"
+		if has_method("get_archetype_id"):
+			archetype_id = call("get_archetype_id")
 		else:
 			# Fallback to grunt if still empty
 			archetype_id = "grunt"
 
-	# print("BaseEnemy: Loading stats for ", archetype_id)
 	var config_loader: _ConfigLoader = AutoloadHelper.config_loader()
 	if config_loader == null:
 		return
@@ -77,11 +73,19 @@ func _load_stats_from_config() -> void:
 			# "Grunt" is the default in some constructors, but we want the specific archetype name
 			entity.entity_name = archetype_id.capitalize()
 
+		entity.archetype_id = archetype_id
 		entity.hp_max = int(data.get("hp_max", 30))
 		entity.hp = entity.hp_max
 		entity.off = int(data.get("off", 8))
 		entity.def_ = int(data.get("def_", 4))
 		entity.spd = int(data.get("spd", 4))
+	else:
+		push_warning(
+			(
+				"BaseEnemy: Archetype ID '%s' not found in config for node '%s'. Using defaults."
+				% [archetype_id, name]
+			)
+		)
 
 
 func _setup_ai() -> void:
@@ -182,14 +186,6 @@ func _handle_attack(action: Dictionary) -> void:
 
 	# Calculate damage
 	var damage: int = CombatFormula.compute_damage_from_entities(entity, target_entity, cover_tiles)
-
-	# Play attack sound
-	var emitter: _SFXEmitter = AutoloadHelper.sfx_emitter()
-	if emitter:
-		var path: String = "res://assets/audio/sfx/attack_swing.wav"
-		if ResourceLoader.exists(path):
-			var sfx: AudioStream = load(path) as AudioStream
-			emitter.play_sfx_2d(sfx, global_position)
 
 	# Apply damage through lifecycle
 	var lifecycle: _EntityLifecycle = AutoloadHelper.entity_lifecycle()
