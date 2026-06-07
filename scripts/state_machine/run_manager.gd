@@ -323,6 +323,9 @@ func _enter_room(_ctx: Dictionary) -> void:
 			if not room_data.has(key):
 				room_data[key] = room_def[key]
 
+	# Apply procedural augmentation (topology + encounters)
+	RoomLoader.augment_room_procedurally(room_data)
+
 	# Emit event for UI / encounter spawner
 	room_entered.emit(room_index, room_data)
 

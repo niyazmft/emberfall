@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Biome Configuration Schema",
+  "description": "Rules for procedural augmentation and room selection per biome.",
+  "type": "object",
+  "additionalProperties": {
+    "type": "object",
+    "properties": {
+      "name": { "type": "string" },
+      "room_templates": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "generation_params": {
+        "type": "object",
+        "properties": {
+          "cover_density": { "type": "number", "minimum": 0, "maximum": 1 },
+          "elevation_min": { "type": "integer", "minimum": 0, "maximum": 2 },
+          "elevation_max": { "type": "integer", "minimum": 0, "maximum": 2 },
+          "blocked_density": { "type": "number", "minimum": 0, "maximum": 1 },
+          "hazard_density": { "type": "number", "minimum": 0, "maximum": 1 },
+          "hazard_types": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "required": ["cover_density", "elevation_min", "elevation_max", "blocked_density"]
+      }
+    },
+    "required": ["name", "room_templates", "generation_params"]
+  }
+}

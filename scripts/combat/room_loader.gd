@@ -6,7 +6,11 @@ extends Node
 
 const ROOMS_PATH := "res://config/rooms/"
 const KEEPER_SCENE_PATH := "res://scenes/keeper.tscn"
-const ENEMY_SCENES := {"grunt": "res://scenes/enemies/enemy_grunt.tscn"}
+const ENEMY_SCENES := {
+	"grunt": "res://scenes/enemies/enemy_grunt.tscn",
+	"archer": "res://scenes/enemies/enemy_archer.tscn",
+	"tank": "res://scenes/enemies/enemy_tank.tscn"
+}
 
 
 ## Load room JSON data by ID.
@@ -49,8 +53,95 @@ static func configure_grid(room_data: Dictionary) -> void:
 	var grid_system := AutoloadHelper.grid_system()
 	if grid_system:
 		grid_system.load_room(room_data)
+
+		# Handle procedural hazards
+		if room_data.has("hazards"):
+			var hazards: Array = room_data["hazards"] as Array
+			for hazard_data: Variant in hazards:
+				if hazard_data is Dictionary:
+					var h := hazard_data as Dictionary
+					var x: int = int(h.get("x", 0))
+					var y: int = int(h.get("y", 0))
+					var type: String = h.get("type", "")
+					if type == "oil":
+						grid_system.set_oil_tile(x, y, true)
 	else:
 		push_error("GridSystem autoload not found")
+
+
+## Augments the room data with procedural elements and encounters.
+static func augment_room_procedurally(room_data: Dictionary) -> void:
+	var topo_seed: int = int(room_data.get("topology_seed", 0))
+	var enc_seed: int = int(room_data.get("encounter_seed", 0))
+	var biome_idx: int = int(room_data.get("biome", 0))
+	var biome_id := "biome%d" % (biome_idx + 1)
+
+	# 1. Topology Augmentation
+	RoomGenerator.augment_room(room_data, biome_id, topo_seed)
+
+	# 2. Encounter Generation
+	if not room_data.has("encounters") or (room_data["encounters"] as Array).is_empty():
+		var generated_encounters := EncounterSystem.build_encounters(biome_id, enc_seed)
+		room_data["encounters"] = generated_encounters
+		_assign_default_positions(room_data, enc_seed)
+
+
+static func _assign_default_positions(room_data: Dictionary, p_seed: int) -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = p_seed
+
+	var layout: Dictionary = room_data.get("layout", {})
+	var blocked: Array = layout.get("blocked", [])
+
+	var encounters: Array = room_data.get("encounters", []) as Array
+	var player_start: Dictionary = room_data.get("player_start", {"x": 1, "y": 1})
+	var px: int = int(player_start.get("x", 1))
+	var py: int = int(player_start.get("y", 1))
+
+	var reserved: Array[Vector2i] = [Vector2i(px, py)]
+
+	for encounter_variant: Variant in encounters:
+		if not encounter_variant is Dictionary:
+			continue
+		var encounter := encounter_variant as Dictionary
+		var positions: Array = encounter.get("positions", []) as Array
+		if positions.is_empty():
+			var count: int = int(encounter.get("count", 1))
+			for i in range(count):
+				var found := false
+				for attempt in range(200):
+					var rx := rng.randi_range(0, 11)
+					var ry := rng.randi_range(0, 11)
+					var rpos := Vector2i(rx, ry)
+
+					# Basic heuristic: spawn on opposite side of player if possible
+					if attempt < 100:
+						if px < 6 and rx < 6:
+							continue
+						if px >= 6 and rx >= 6:
+							continue
+
+					var idx := ry * 12 + rx
+					if idx < blocked.size() and bool(blocked[idx]):
+						continue
+					if rpos in reserved:
+						continue
+
+					positions.append({"x": rx, "y": ry})
+					reserved.append(rpos)
+					found = true
+					break
+				if not found:
+					# Last resort: just pick first available
+					for idx in range(144):
+						var rx := idx % 12
+						var ry := idx / 12
+						var rpos := Vector2i(rx, ry)
+						if not bool(blocked[idx]) and not rpos in reserved:
+							positions.append({"x": rx, "y": ry})
+							reserved.append(rpos)
+							break
+			encounter["positions"] = positions
 
 
 ## Spawn player and enemies based on room data.
