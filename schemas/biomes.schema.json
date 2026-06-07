@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Biome Definitions Schema",
+  "type": "object",
+  "required": ["biomes"],
+  "properties": {
+    "biomes": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["id", "name_key", "elevation_flavor"],
+        "properties": {
+          "id": { "type": "string" },
+          "name_key": { "type": "string" },
+          "elevation_flavor": {
+            "type": "object",
+            "additionalProperties": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}

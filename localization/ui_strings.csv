@@ -57,3 +57,14 @@ SKILL_STRIKE_EMBER_NAME,Strike Ember,Glutstreich,Golpe de Brasa,Frappe de Braise
 SKILL_STRIKE_EMBER_DESC,A fiery strike that deals damage.,Ein feuriger Schlag, der Schaden verursacht.,Un golpe ardiente que inflige daño.,Une frappe ardente qui inflige des dégâts.
 SKILL_QUICK_DASH_NAME,Quick Dash,Schneller Spurt,Carrera Rápida,Élan Rapide
 SKILL_QUICK_DASH_DESC,Dash forward to gain distance.,Spurte vorwärts, um Distanz zu gewinnen.,Corre hacia adelante para ganar distancia.,Élancez-vous pour gagner de la distance.
+prop.terminal.name,Terminal,Terminal,Terminal,Terminal
+prop.terminal.flavor,[The screen flickers with old data],[Der Bildschirm flackert mit alten Daten],[La pantalla parpadea con datos antiguos],[L'écran scintille avec d'anciennes données]
+prop.statue.name,Statue,Statue,Estatua,Statue
+prop.statue.flavor,[A figure from a forgotten era],[Eine Figur aus einer vergessenen Ära],[Una figura de una era olvidada],[Une figure d'une époque oubliée]
+biome.1.name,Iron Wastes,Eisenwüste,Páramos de Hierro,Déserts de Fer
+biome.1.elev.0,[The ground is cold and metallic],[Der Boden ist kalt und metallisch],[El suelo está frío y metálico],[Le sol est froid et métallique]
+biome.1.elev.1,[The air thins as you climb],[Die Luft wird dünner, während du steigst],[El aire se adelgaza a medida que subes],[L'air se raréfie à mesure que vous montez]
+biome.1.elev.2,[You overlook the rusted expanse],[Du übersiehst die verrostete Weite],[Observas la extensión oxidada],[Vous surplombez l'étendue rouillée]
+narrative.room.entry,[The room hums with energy],[Der Raum summt vor Energie],[La habitación zumba con energía],[La pièce bourdonne d'énergie]
+narrative.secret.spared_all,[Your mercy has opened a new path],[Deine Gnade hat einen neuen Weg eröffnet],[Tu misericordia ha abierto un nuevo camino],[Votre miséricorde a ouvert une nouvelle voie]
+narrative.secret.no_damage,[Flawless execution reveals the hidden],[Makellose Ausführung offenbart das Verborgene],[La ejecución impecable revela lo oculto],[Une exécution sans faille révèle le caché]

@@ -1,0 +1,10 @@
+{
+  "triggers": [
+    {
+      "id": "entry_narrative",
+      "event_type": "room_entered",
+      "localization_key": "narrative.room.entry",
+      "channel": "AMBIENT"
+    }
+  ]
+}
