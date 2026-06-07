@@ -8,6 +8,7 @@ class_name _ConfigLoader
 const CONFIG_PATH := "res://config/game_config.json"
 const ITEMS_PATH := "res://config/items.json"
 const EQUIPMENT_PATH := "res://config/entity_equipment.json"
+const INTERACTIONS_PATH := "res://schemas/elemental_interactions.json"
 
 # Fallback defaults (sensible so the game runs even if config is missing)
 const DEFAULTS: Dictionary = {
@@ -23,13 +24,21 @@ const DEFAULTS: Dictionary = {
 	"ELEVATION_2_BONUS": 0.25,
 	"LIGHT_COVER_PENALTY": -0.15,
 	"HEAVY_COVER_PENALTY": -0.30,
+	"PARTIAL_COVER_PENALTY": -0.20,
+	"DESTRUCTIBLE_COVER_PENALTY": -0.10,
 	"BACKSTAB_DOT_THRESHOLD": -0.7,
 	"FIRE_OIL_MODIFIER": 2.0,
 	"WIND_FIRE_MODIFIER": 1.5,
 	"WATER_FIRE_MODIFIER": 0.5,
 	"OIL_SLIP_SPEED_MULT": 0.8,
+	"ICE_SLIP_SPEED_MULT": 0.6,
 	"FIRE_DURATION_TURNS": 1,
 	"FIRE_OIL_DURATION_TURNS": 1,
+	"POISON_DAMAGE_PER_TURN": 5,
+	"SPIKE_TRAP_DAMAGE": 10,
+	"WIND_CURRENT_AP_COST_MOD": 1,
+	"FIRE_POISON_EXPLODE_MOD": 1.5,
+	"ICE_WATER_FREEZE_DURATION": 2,
 	"HP_MAX_DEFAULT": 40,
 	"OFF_DEFAULT": 12,
 	"DEF_DEFAULT": 6,
@@ -46,7 +55,9 @@ const DEFAULTS: Dictionary = {
 }
 
 var _configData: Dictionary = {}
-var _loadedFiles: Dictionary = {CONFIG_PATH: false, ITEMS_PATH: false, EQUIPMENT_PATH: false}
+var _loadedFiles: Dictionary = {
+	CONFIG_PATH: false, ITEMS_PATH: false, EQUIPMENT_PATH: false, INTERACTIONS_PATH: false
+}
 
 
 func _ready() -> void:
@@ -61,6 +72,7 @@ func _loadConfig() -> void:
 	_loadJsonToConfig(CONFIG_PATH)
 	_loadJsonToConfig(ITEMS_PATH)
 	_loadJsonToConfig(EQUIPMENT_PATH)
+	_loadJsonToConfig(INTERACTIONS_PATH)
 
 
 func _loadJsonToConfig(filePath: String) -> void:

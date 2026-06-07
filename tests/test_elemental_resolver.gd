@@ -50,6 +50,29 @@ func test_oil_slip_speed() -> void:
 	assert_that(is_equal_approx(speed, 0.8)).is_true()
 
 
+func test_ice_slip_speed() -> void:
+	var effects: Array[ElementalTypes.TileEffect] = []
+	effects = ElementalInteractionResolver.apply_element(
+		effects, ElementalTypes.ElementType.ICE, 0, 2
+	)
+
+	var speed: float = ElementalInteractionResolver.calculate_movement_speed_multiplier(effects, 0)
+	assert_that(is_equal_approx(speed, 0.6)).is_true()
+
+
+func test_fire_poison_modifier() -> void:
+	var effects: Array[ElementalTypes.TileEffect] = []
+	effects = ElementalInteractionResolver.apply_element(
+		effects, ElementalTypes.ElementType.FIRE, 0, 2
+	)
+	effects = ElementalInteractionResolver.apply_element(
+		effects, ElementalTypes.ElementType.POISON_GAS, 0, 2
+	)
+
+	var mult: float = ElementalInteractionResolver.compute_tile_damage_multiplier(effects, 0)
+	assert_that(is_equal_approx(mult, 1.5)).is_true()
+
+
 func test_no_elements_default() -> void:
 	var effects: Array[ElementalTypes.TileEffect] = []
 	var dmg: float = ElementalInteractionResolver.compute_tile_damage_multiplier(effects, 0)
@@ -244,6 +267,81 @@ func test_extinguish_bidirectional() -> void:
 	)
 	assert_that(result_b["extinguished"]).is_true()
 	assert_that(_count_element(result_b["effects"], ElementalTypes.ElementType.FIRE)).is_equal(0)
+
+
+func test_ice_melts_into_water_pool() -> void:
+	var effects: Array[ElementalTypes.TileEffect] = []
+	effects = ElementalInteractionResolver.apply_element(
+		effects, ElementalTypes.ElementType.FIRE, 0, 2
+	)
+	effects = ElementalInteractionResolver.apply_element(
+		effects, ElementalTypes.ElementType.ICE, 0, 2
+	)
+
+	var result: Dictionary = ElementalInteractionResolver.process_turn_tick(
+		effects, 0, Vector2i(0, 0), []
+	)
+	var out: Array[ElementalTypes.TileEffect] = result["effects"]
+
+	# Fire melts Ice -> Ice removed, Water Pool added.
+	# Then Water Pool extinguishes Fire -> both removed.
+	assert_that(_count_element(out, ElementalTypes.ElementType.ICE)).is_equal(0)
+	assert_that(_count_element(out, ElementalTypes.ElementType.WATER_POOL)).is_equal(0)
+	assert_that(_count_element(out, ElementalTypes.ElementType.FIRE)).is_equal(0)
+
+
+func test_ice_freezes_water_pool() -> void:
+	var effects: Array[ElementalTypes.TileEffect] = []
+	effects = ElementalInteractionResolver.apply_element(
+		effects, ElementalTypes.ElementType.WATER_POOL, 0, 2
+	)
+	effects = ElementalInteractionResolver.apply_element(
+		effects, ElementalTypes.ElementType.ICE, 0, 2
+	)
+
+	var result: Dictionary = ElementalInteractionResolver.process_turn_tick(
+		effects, 0, Vector2i(0, 0), []
+	)
+	var out: Array[ElementalTypes.TileEffect] = result["effects"]
+
+	assert_that(_count_element(out, ElementalTypes.ElementType.WATER_POOL)).is_equal(0)
+	assert_that(_count_element(out, ElementalTypes.ElementType.ICE)).is_equal(1)
+
+
+func test_wind_current_spreads_fire() -> void:
+	var effects: Array[ElementalTypes.TileEffect] = []
+	effects = ElementalInteractionResolver.apply_element(
+		effects, ElementalTypes.ElementType.FIRE, 0, 2
+	)
+	effects = ElementalInteractionResolver.apply_element(
+		effects, ElementalTypes.ElementType.WIND_CURRENT, 0, 2
+	)
+
+	var bounds: Array[Vector2i] = [Vector2i(0, 0), Vector2i(2, 2)]
+	var result: Dictionary = ElementalInteractionResolver.process_turn_tick(
+		effects, 0, Vector2i(1, 1), bounds
+	)
+	var spread: Array[Vector2i] = result["spread_positions"]
+
+	assert_that(spread.size()).is_equal(4)
+
+
+func test_wind_spreads_poison() -> void:
+	var effects: Array[ElementalTypes.TileEffect] = []
+	effects = ElementalInteractionResolver.apply_element(
+		effects, ElementalTypes.ElementType.POISON_GAS, 0, 2
+	)
+	effects = ElementalInteractionResolver.apply_element(
+		effects, ElementalTypes.ElementType.WIND, 0, 2
+	)
+
+	var bounds: Array[Vector2i] = [Vector2i(0, 0), Vector2i(2, 2)]
+	var result: Dictionary = ElementalInteractionResolver.process_turn_tick(
+		effects, 0, Vector2i(1, 1), bounds
+	)
+	var spread: Array[Vector2i] = result["spread_positions"]
+
+	assert_that(spread.size()).is_equal(4)
 
 
 func test_stacked_elements_tick_independently() -> void:
