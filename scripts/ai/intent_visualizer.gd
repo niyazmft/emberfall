@@ -3,38 +3,41 @@ extends Node
 ## IntentVisualizer
 ## Visualizes enemy intents (movement, attacks) using GridRenderer.
 
-var _grid_renderer: GridRenderer
-var _config_loader: _ConfigLoader
+var _gridRenderer: GridRenderer
+var _configLoader: _ConfigLoader
 
 
-func _init(p_grid_renderer: GridRenderer) -> void:
-	_grid_renderer = p_grid_renderer
-	_config_loader = AutoloadHelper.config_loader()
+func _init(pGridRenderer: GridRenderer) -> void:
+	_gridRenderer = pGridRenderer
+	_configLoader = AutoloadHelper.config_loader()
 
 
 ## Visualize the intended action of an enemy.
-func visualize_intent(enemy: Entity, action: Dictionary) -> void:
-	if not _grid_renderer or not _config_loader:
+func visualizeIntent(enemy: Entity, action: Dictionary) -> void:
+	if not _gridRenderer or not _configLoader:
 		return
 
-	match action.get("type"):
+	var actionType: String = str(action.get("type", ""))
+	match actionType:
 		"move":
-			var tx: int = action.get("target_x", enemy.x)
-			var ty: int = action.get("target_y", enemy.y)
-			_grid_renderer.highlight_tile_styled(tx, ty, "telegraph")
-			_grid_renderer.draw_telegraph_arrow(Vector2i(enemy.x, enemy.y), Vector2i(tx, ty))
+			var targetX: int = int(action.get("target_x", enemy.x))
+			var targetY: int = int(action.get("target_y", enemy.y))
+			_gridRenderer.highlight_tile_styled(targetX, targetY, "telegraph")
+			_gridRenderer.draw_telegraph_arrow(Vector2i(enemy.x, enemy.y), Vector2i(targetX, targetY))
 
 		"attack":
-			var target_node: Node2D = action.get("target")
-			if target_node:
-				var target_ent: Entity = target_node.get("entity") as Entity
-				if target_ent:
-					_grid_renderer.highlight_tile_styled(target_ent.x, target_ent.y, "telegraph")
-					_grid_renderer.draw_telegraph_arrow(Vector2i(enemy.x, enemy.y), Vector2i(target_ent.x, target_ent.y))
+			var targetNodeRef: Variant = action.get("target")
+			if targetNodeRef is Node2D:
+				var targetNode: Node2D = targetNodeRef as Node2D
+				var targetEntRef: Variant = targetNode.get("entity")
+				if targetEntRef is Entity:
+					var targetEnt: Entity = targetEntRef as Entity
+					_gridRenderer.highlight_tile_styled(targetEnt.x, targetEnt.y, "telegraph")
+					_gridRenderer.draw_telegraph_arrow(Vector2i(enemy.x, enemy.y), Vector2i(targetEnt.x, targetEnt.y))
 
 
 ## Clear all visualized intents.
-func clear_intents() -> void:
-	if _grid_renderer:
-		_grid_renderer.clear_highlights_styled("telegraph")
-		_grid_renderer.clear_telegraphs()
+func clearIntents() -> void:
+	if _gridRenderer:
+		_gridRenderer.clear_highlights_styled("telegraph")
+		_gridRenderer.clear_telegraphs()

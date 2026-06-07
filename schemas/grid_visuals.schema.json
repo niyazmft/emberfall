@@ -49,6 +49,7 @@
         "opacity": { "type": "number", "minimum": 0, "maximum": 1 },
         "pulse": {
           "type": "object",
+          "description": "Pulsing alpha animation. Note: min_alpha should be less than or equal to max_alpha.",
           "required": ["enabled", "speed", "min_alpha", "max_alpha"],
           "properties": {
             "enabled": { "type": "boolean" },

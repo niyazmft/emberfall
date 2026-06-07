@@ -80,6 +80,7 @@ func _loadConfig() -> void:
 	_loadJsonToConfig(HOTBAR_BINDINGS_PATH)
 	_loadJsonToConfig(ACCESSIBILITY_PATH)
 	_loadJsonToConfig(GRID_VISUALS_PATH)
+	_validateGridVisuals()
 
 
 func _loadJsonToConfig(filePath: String) -> void:
@@ -154,3 +155,27 @@ func isLoaded() -> bool:
 		if not _loadedFiles[path]:
 			return false
 	return true
+
+
+func _validateGridVisuals() -> void:
+	if not _configData.has("highlights"):
+		return
+
+	var rawHighlights: Variant = _configData["highlights"]
+	if not rawHighlights is Dictionary:
+		return
+	var highlights: Dictionary = rawHighlights as Dictionary
+
+	for key: Variant in highlights.keys():
+		var style: Dictionary = highlights[key] as Dictionary
+		if style.has("pulse"):
+			var pulse: Dictionary = style["pulse"] as Dictionary
+			var minA: float = float(pulse.get("min_alpha", 0.0))
+			var maxA: float = float(pulse.get("max_alpha", 1.0))
+			if minA > maxA:
+				push_error(
+					(
+						"ConfigLoader: Grid visual style '%s' has min_alpha (%.2f) > max_alpha (%.2f)!"
+						% [str(key), minA, maxA]
+					)
+				)
