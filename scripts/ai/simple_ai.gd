@@ -11,11 +11,18 @@ enum BehaviorType { GRUNT, ARCHER, TANK }
 
 ## Internal reference to player
 var _player_node: Node2D
+var _intent_visualizer: IntentVisualizer
 
 
 func _ready() -> void:
 	if grid_system == null:
 		grid_system = AutoloadHelper.grid_system()
+
+	# Find GridRenderer in the scene to initialize IntentVisualizer
+	var grid_renderer: GridRenderer = get_tree().root.find_child("GridRenderer", true, false) as GridRenderer
+	if grid_renderer:
+		_intent_visualizer = IntentVisualizer.new(grid_renderer)
+		add_child(_intent_visualizer)
 
 
 func decide_action(p_entity: Entity = null) -> Dictionary:
@@ -51,40 +58,54 @@ func decide_action(p_entity: Entity = null) -> Dictionary:
 		BehaviorType.ARCHER:
 			return _archer_behavior(enemy_pos, player_pos, dist)
 		BehaviorType.TANK:
-			return _tank_behavior(enemy_pos, player_pos, dist)
+			var action: Dictionary = _tank_behavior(enemy_pos, player_pos, dist)
+			if _intent_visualizer:
+				_intent_visualizer.visualize_intent(enemy_entity, action)
+			return action
 
-	return {"type": "wait"}
+	var final_action: Dictionary = {"type": "wait"}
+	if _intent_visualizer:
+		_intent_visualizer.visualize_intent(enemy_entity, final_action)
+	return final_action
 
 
 func _grunt_behavior(enemy_pos: Vector2i, player_pos: Vector2i, dist: int) -> Dictionary:
+	var action: Dictionary = {"type": "wait"}
 	# Rush player, attack when adjacent
 	if dist <= 1:
-		return {"type": "attack", "target": _player_node}
+		action = {"type": "attack", "target": _player_node}
+	else:
+		var next_tile: Vector2i = _get_next_tile_towards(player_pos)
+		if next_tile != enemy_pos:
+			action = {"type": "move", "target_x": next_tile.x, "target_y": next_tile.y}
 
-	var next_tile: Vector2i = _get_next_tile_towards(player_pos)
-	if next_tile != enemy_pos:
-		return {"type": "move", "target_x": next_tile.x, "target_y": next_tile.y}
-
-	return {"type": "wait"}
+	if _intent_visualizer:
+		_intent_visualizer.visualize_intent(enemy_entity, action)
+	return action
 
 
 func _archer_behavior(enemy_pos: Vector2i, player_pos: Vector2i, dist: int) -> Dictionary:
+	var action: Dictionary = {"type": "wait"}
 	# Maintain 2-3 tile distance
 	if dist < 2:
 		# Too close, move away
 		var next_tile: Vector2i = _get_next_tile_towards(player_pos, true)
 		if next_tile != enemy_pos:
-			return {"type": "move", "target_x": next_tile.x, "target_y": next_tile.y}
+			action = {"type": "move", "target_x": next_tile.x, "target_y": next_tile.y}
 	elif dist > 3:
 		# Too far, move towards
 		var next_tile: Vector2i = _get_next_tile_towards(player_pos)
 		if next_tile != enemy_pos:
-			return {"type": "move", "target_x": next_tile.x, "target_y": next_tile.y}
+			action = {"type": "move", "target_x": next_tile.x, "target_y": next_tile.y}
 	else:
 		# In range 2-3, attack
-		return {"type": "attack", "target": _player_node}
+		action = {"type": "attack", "target": _player_node}
 
-	return {"type": "wait"}
+	if _intent_visualizer:
+		_intent_visualizer.visualize_intent(enemy_entity, action)
+	return action
+
+
 
 
 func _tank_behavior(enemy_pos: Vector2i, player_pos: Vector2i, dist: int) -> Dictionary:

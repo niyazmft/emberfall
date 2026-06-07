@@ -12,6 +12,7 @@ const ENEMIES_PATH := "res://config/enemies.json"
 const SKILLS_PATH := "res://config/skills.json"
 const HOTBAR_BINDINGS_PATH := "res://config/hotbar_bindings.json"
 const ACCESSIBILITY_PATH := "res://config/accessibility.json"
+const GRID_VISUALS_PATH := "res://config/grid_visuals.json"
 
 # Fallback defaults (sensible so the game runs even if config is missing)
 const DEFAULTS: Dictionary = {
@@ -58,6 +59,7 @@ var _loadedFiles: Dictionary = {
 	SKILLS_PATH: false,
 	HOTBAR_BINDINGS_PATH: false,
 	ACCESSIBILITY_PATH: false,
+	GRID_VISUALS_PATH: false,
 }
 
 
@@ -77,6 +79,7 @@ func _loadConfig() -> void:
 	_loadJsonToConfig(SKILLS_PATH)
 	_loadJsonToConfig(HOTBAR_BINDINGS_PATH)
 	_loadJsonToConfig(ACCESSIBILITY_PATH)
+	_loadJsonToConfig(GRID_VISUALS_PATH)
 
 
 func _loadJsonToConfig(filePath: String) -> void:

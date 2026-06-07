@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Grid Visuals Schema",
+  "description": "Configuration for grid highlight colors, enemy telegraph styles, and gamepad bindings.",
+  "type": "object",
+  "required": ["highlights", "telegraph_arrows", "gamepad_bindings"],
+  "properties": {
+    "highlights": {
+      "type": "object",
+      "required": ["move", "attack", "target", "telegraph"],
+      "additionalProperties": false,
+      "properties": {
+        "move": { "$ref": "#/definitions/highlight_style" },
+        "attack": { "$ref": "#/definitions/highlight_style" },
+        "target": { "$ref": "#/definitions/highlight_style" },
+        "telegraph": { "$ref": "#/definitions/highlight_style" }
+      }
+    },
+    "telegraph_arrows": {
+      "type": "object",
+      "required": ["default"],
+      "properties": {
+        "default": {
+          "type": "object",
+          "required": ["color", "width", "head_size"],
+          "properties": {
+            "color": { "type": "string", "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$" },
+            "width": { "type": "number" },
+            "head_size": { "type": "number" }
+          }
+        }
+      }
+    },
+    "gamepad_bindings": {
+      "type": "object",
+      "properties": {
+        "cycle_target": { "type": "string" },
+        "confirm": { "type": "string" },
+        "cancel": { "type": "string" }
+      }
+    }
+  },
+  "definitions": {
+    "highlight_style": {
+      "type": "object",
+      "required": ["color", "opacity", "pulse"],
+      "properties": {
+        "color": { "type": "string", "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$" },
+        "opacity": { "type": "number", "minimum": 0, "maximum": 1 },
+        "pulse": {
+          "type": "object",
+          "required": ["enabled", "speed", "min_alpha", "max_alpha"],
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "speed": { "type": "number" },
+            "min_alpha": { "type": "number", "minimum": 0, "maximum": 1 },
+            "max_alpha": { "type": "number", "minimum": 0, "maximum": 1 }
+          }
+        }
+      }
+    }
+  }
+}

@@ -18,16 +18,43 @@ const COLOR_OIL: Color = Color(0.0, 0.0, 0.55)  # Dark Blue
 @export var elevation_step: float = 16.0
 
 var _grid_system: _GridSystem
+var _config_loader: _ConfigLoader
 var _tile_sprites: Array[Sprite2D] = []
 var _highlights: Dictionary = {}  # Vector2i -> Sprite2D
+var _highlight_styles: Dictionary = {}  # Vector2i -> Dictionary (style config)
+var _telegraph_lines: Array[Node2D] = []
 var _diamond_tex: Texture2D
+
+var _time: float = 0.0
 
 
 func _ready() -> void:
 	# Idiomatic access to Autoloaded systems
 	_grid_system = AutoloadHelper.grid_system()
+	_config_loader = AutoloadHelper.config_loader()
 	_diamond_tex = _generate_diamond_texture()
 	_render_grid()
+
+
+func _process(delta: float) -> void:
+	_time += delta
+	_update_animations()
+
+
+func _update_animations() -> void:
+	for key: Vector2i in _highlights:
+		var sprite: Sprite2D = _highlights[key]
+		var style: Dictionary = _highlight_styles.get(key, {})
+		var pulse: Dictionary = style.get("pulse", {})
+
+		if pulse.get("enabled", false):
+			var speed: float = pulse.get("speed", 2.0)
+			var min_a: float = pulse.get("min_alpha", 0.4)
+			var max_a: float = pulse.get("max_alpha", 0.8)
+
+			# Sine wave for alpha pulsing: maps [-1, 1] to [min_a, max_a]
+			var t: float = (sin(_time * speed) + 1.0) / 2.0
+			sprite.modulate.a = lerp(min_a, max_a, t)
 
 
 ## Render all 144 tiles from the GridSystem.
@@ -134,17 +161,40 @@ func grid_to_world(x: int, y: int, elevation: int = -1) -> Vector2:
 	return _grid_to_world(x, y, elev)
 
 
-## Public API: Highlight a specific tile with a color (e.g., for targeting).
+## Public API: Highlight a specific tile using a style key from config.
+func highlight_tile_styled(x: int, y: int, style_key: String) -> void:
+	if not _grid_system or not _config_loader:
+		return
+
+	var styles: Dictionary = _config_loader.getValue("highlights", "", {})
+	if not styles.has(style_key):
+		push_warning("GridRenderer: Style key '%s' not found in grid_visuals.json" % style_key)
+		return
+
+	var style: Dictionary = styles[style_key].duplicate()
+	style["_style_key"] = style_key
+	var color: Color = Color.from_string(style.get("color", "#ffffff"), Color.WHITE)
+	color.a = style.get("opacity", 0.6)
+
+	_apply_highlight(x, y, color, style)
+
+
+## Legacy Public API: Highlight a specific tile with a color.
 func highlight_tile(x: int, y: int, color: Color) -> void:
+	_apply_highlight(x, y, color, {})
+
+
+func _apply_highlight(x: int, y: int, color: Color, style: Dictionary) -> void:
 	if not _grid_system:
 		return
 
 	var key: Vector2i = Vector2i(x, y)
 
-	# If already highlighted, just update color
+	# If already highlighted, just update
 	if _highlights.has(key):
 		var sprite: Sprite2D = _highlights[key]
 		sprite.modulate = color
+		_highlight_styles[key] = style
 		return
 
 	var tile: TacTileData = _grid_system.get_tile(x, y)
@@ -156,8 +206,8 @@ func highlight_tile(x: int, y: int, color: Color) -> void:
 	sprite.centered = true
 	sprite.scale = Vector2(0.9, 0.9)  # Slightly smaller than the tile
 	sprite.modulate = color
-	# Ensure some transparency if not provided
-	if sprite.modulate.a == 1.0:
+	# Ensure some transparency if not provided in style
+	if style.is_empty() and sprite.modulate.a == 1.0:
 		sprite.modulate.a = 0.6
 
 	sprite.position = grid_to_world(x, y, int(tile.elevation))
@@ -165,6 +215,7 @@ func highlight_tile(x: int, y: int, color: Color) -> void:
 
 	add_child(sprite)
 	_highlights[key] = sprite
+	_highlight_styles[key] = style
 
 
 ## Public API: Clear all active highlights.
@@ -173,6 +224,73 @@ func clear_highlights() -> void:
 		if is_instance_valid(sprite):
 			sprite.queue_free()
 	_highlights.clear()
+	_highlight_styles.clear()
+
+
+## Public API: Clear highlights of a specific style.
+func clear_highlights_styled(style_key: String) -> void:
+	var keys_to_remove: Array[Vector2i] = []
+	for key: Vector2i in _highlight_styles:
+		if _highlight_styles[key].get("_style_key") == style_key:
+			keys_to_remove.append(key)
+
+	for key: Vector2i in keys_to_remove:
+		var sprite: Sprite2D = _highlights[key]
+		if is_instance_valid(sprite):
+			sprite.queue_free()
+		_highlights.erase(key)
+		_highlight_styles.erase(key)
+
+
+## Public API: Draw a telegraph arrow from start grid pos to end grid pos.
+func draw_telegraph_arrow(start_pos: Vector2i, end_pos: Vector2i) -> void:
+	if not _config_loader:
+		return
+
+	var arrow_config: Dictionary = _config_loader.getValue("telegraph_arrows", "default", {})
+	var color_hex: String = arrow_config.get("color", "#ffffff")
+	var color: Color = Color.from_string(color_hex, Color.WHITE)
+	var width: float = arrow_config.get("width", 2.0)
+
+	var start_world: Vector2 = grid_to_world(start_pos.x, start_pos.y)
+	var end_world: Vector2 = grid_to_world(end_pos.x, end_pos.y)
+
+	var line: Line2D = Line2D.new()
+	line.add_point(start_world)
+	line.add_point(end_world)
+	line.width = width
+	line.default_color = color
+	line.antialiased = true
+	line.z_index = 10  # Ensure it's above most things
+
+	add_child(line)
+	_telegraph_lines.append(line)
+
+	# Draw arrowhead
+	var head_size: float = arrow_config.get("head_size", 8.0)
+	if head_size > 0:
+		var dir: Vector2 = (end_world - start_world).normalized()
+		var perp: Vector2 = Vector2(-dir.y, dir.x)
+		var p1: Vector2 = end_world
+		var p2: Vector2 = end_world - dir * head_size + perp * (head_size * 0.6)
+		var p3: Vector2 = end_world - dir * head_size - perp * (head_size * 0.6)
+
+		var head: Polygon2D = Polygon2D.new()
+		head.polygon = PackedVector2Array([p1, p2, p3])
+		head.color = color
+		head.antialiased = true
+		head.z_index = 10
+
+		add_child(head)
+		_telegraph_lines.append(head)
+
+
+## Public API: Clear all telegraph indicators.
+func clear_telegraphs() -> void:
+	for node: Node2D in _telegraph_lines:
+		if is_instance_valid(node):
+			node.queue_free()
+	_telegraph_lines.clear()
 
 
 ## Procedural diamond texture generation for greyboxing.

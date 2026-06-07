@@ -18,6 +18,7 @@ var _grid_renderer: GridRenderer
 var _grid_system: Node
 var _valid_targets: Array[Node2D] = []
 var _target_index: int = -1
+var _gamepad_bindings: Dictionary = {}
 
 
 func _init(player: Node2D, enemies_node: Node2D, grid_renderer: GridRenderer) -> void:
@@ -26,19 +27,23 @@ func _init(player: Node2D, enemies_node: Node2D, grid_renderer: GridRenderer) ->
 	_grid_renderer = grid_renderer
 	_grid_system = AutoloadHelper.grid_system()
 
+	var config_loader: _ConfigLoader = AutoloadHelper.config_loader()
+	if config_loader:
+		_gamepad_bindings = config_loader.getValue("gamepad_bindings", "", {})
+
 
 func handle_input(event: InputEvent) -> bool:
 	if current_state == State.IDLE:
 		if event.is_action_pressed("combat_mode"):
 			return _start_targeting()
 	if current_state == State.TARGETING:
-		if event.is_action_pressed("combat_confirm"):
+		if event.is_action_pressed("combat_confirm") or _is_binding_pressed(event, "confirm"):
 			_execute_attack()
 			return true
-		if event.is_action_pressed("combat_cancel"):
+		if event.is_action_pressed("combat_cancel") or _is_binding_pressed(event, "cancel"):
 			_stop_targeting()
 			return true
-		if event.is_action_pressed("combat_cycle"):
+		if event.is_action_pressed("combat_cycle") or _is_binding_pressed(event, "cycle_target"):
 			_cycle_target()
 			return true
 		# Consume movement inputs during targeting to prevent player from moving
@@ -88,10 +93,10 @@ func _update_highlights() -> void:
 		var enemy: Node2D = _valid_targets[i]
 		var enemy_ent: RefCounted = enemy.get("entity") as RefCounted
 		if enemy_ent:
-			var color: Color = Color.RED
+			var style: String = "attack"
 			if i == _target_index:
-				color = Color.YELLOW
-			_grid_renderer.highlight_tile(enemy_ent.get("x"), enemy_ent.get("y"), color)
+				style = "target"
+			_grid_renderer.highlight_tile_styled(enemy_ent.get("x"), enemy_ent.get("y"), style)
 
 
 func _find_valid_targets() -> void:
@@ -163,3 +168,18 @@ func _execute_attack() -> void:
 
 	attack_executed.emit(target, damage)
 	_stop_targeting()
+
+
+func _is_binding_pressed(event: InputEvent, action_name: String) -> bool:
+	if not _gamepad_bindings.has(action_name):
+		return false
+
+	var binding: String = _gamepad_bindings[action_name]
+	if binding.begins_with("joy_button_"):
+		var button_index: int = int(binding.replace("joy_button_", ""))
+		return (
+			event is InputEventJoypadButton
+			and event.button_index == button_index
+			and event.pressed
+		)
+	return false
