@@ -17,7 +17,6 @@ var _noise_y: float = 0.0  # Incrementing value for noise sampling
 
 
 func _ready() -> void:
-	randomize()
 	noise.seed = randi()
 	noise.frequency = 0.1
 	noise.noise_type = FastNoiseLite.TYPE_PERLIN
@@ -43,18 +42,19 @@ func add_trauma(amount: float) -> void:
 
 func _shake(delta: float) -> void:
 	var sm: Node = AutoloadHelper.settings_manager()
-	var shake_multiplier: float = 1.0
+	var shakeMultiplier: float = 1.0
 	if sm != null:
-		var settings: Dictionary = sm.get("settings") as Dictionary
-		var access_cfg: Dictionary = settings.get("accessibility", {}) as Dictionary
-		shake_multiplier = float(access_cfg.get("screen_shake", 1.0))
+		var settings: Variant = sm.get("settings")
+		if settings is Dictionary:
+			var accessCfg: Dictionary = settings.get("accessibility", {}) as Dictionary
+			shakeMultiplier = float(accessCfg.get("screen_shake", 1.0))
 
-	if shake_multiplier <= 0:
+	if shakeMultiplier <= 0:
 		camera.offset = Vector2.ZERO
 		camera.rotation = 0
 		return
 
-	var amount: float = pow(trauma, trauma_power) * shake_multiplier
+	var amount: float = pow(trauma, trauma_power) * shakeMultiplier
 	_noise_y += delta * 1000.0  # Speed of noise sampling
 
 	camera.rotation = max_roll * amount * noise.get_noise_2d(noise.seed, _noise_y)

@@ -27,9 +27,9 @@ var _turn_manager: TurnManager
 func _ready() -> void:
 	_grid_system = AutoloadHelper.grid_system()
 
-	var event_bus: _EventBus = AutoloadHelper.event_bus()
-	if event_bus:
-		event_bus.entity_state_changed.connect(_on_entity_state_changed)
+	var eventBus: _EventBus = AutoloadHelper.event_bus()
+	if eventBus:
+		eventBus.entity_state_changed.connect(_on_entity_state_changed)
 
 	var run_manager := AutoloadHelper.run_manager()
 	if run_manager:
@@ -59,14 +59,14 @@ func _on_room_entered(_room_index: int, room_data: Dictionary) -> void:
 	_player = RoomLoader.spawn_entities(room_data, entity_container, _enemies_node)
 
 	if _player and _player.get("entity"):
-		var player_ent: Entity = _player.get("entity") as Entity
-		player_ent.hp_changed.connect(_on_entity_hp_changed)
+		var playerEnt: Entity = _player.get("entity") as Entity
+		playerEnt.hp_changed.connect(_on_entity_hp_changed)
 
 	if _enemies_node:
 		for enemy in _enemies_node.get_children():
 			if enemy.get("entity"):
-				var enemy_ent: Entity = enemy.get("entity") as Entity
-				enemy_ent.hp_changed.connect(_on_entity_hp_changed)
+				var enemyEnt: Entity = enemy.get("entity") as Entity
+				enemyEnt.hp_changed.connect(_on_entity_hp_changed)
 
 	# Setup combat systems
 	if _combat_input:
@@ -219,17 +219,20 @@ func _on_combat_ended(victory: bool) -> void:
 			camera_shaker.add_trauma(0.5)
 	else:
 		print("Defeat!")
+		if camera_shaker:
+			camera_shaker.add_trauma(0.3)
 
 
 func _on_entity_hp_changed(new_hp: int, old_hp: int) -> void:
 	if new_hp < old_hp:
 		if camera_shaker:
-			camera_shaker.add_trauma(0.3)
+			var traumaAmount: float = 0.2 + (float(old_hp - new_hp) / 50.0)
+			camera_shaker.add_trauma(traumaAmount)
 
 
 func _on_entity_state_changed(
-	entity: Entity, _old_state: Entity.State, new_state: Entity.State
+	entity: Entity, _oldState: Entity.State, newState: Entity.State
 ) -> void:
-	if new_state == Entity.State.DEAD or new_state == Entity.State.DYING:
+	if newState == Entity.State.DEAD or newState == Entity.State.DYING:
 		if camera_shaker:
 			camera_shaker.add_trauma(0.4)

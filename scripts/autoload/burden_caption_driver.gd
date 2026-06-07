@@ -95,24 +95,6 @@ func _map_and_trigger_caption(stem_id: String, event_type: String, intensity: fl
 					loc_key = "BE_CAP_CLIMB_CONVERGE"
 				duration = 2.0
 
-	var dm: Node = AutoloadHelper.get_autoload("DialogueManager")
-	if dm and dm.call("hasDialogue", loc_key):
-		caption_text = dm.call("getDialogue", loc_key).get("text", "")
-
-	if caption_text.is_empty():
-		# Fallback to hardcoded defaults if DialogueManager is missing or entry not found
-		match loc_key:
-			"BE_CAP_BASS_IMPACT":
-				caption_text = "[Deep impact]"
-			"BE_CAP_MECH_CLANG":
-				caption_text = "[Mechanical clang]"
-			"BE_CAP_STRESS_SWELL":
-				caption_text = "[Tension rising]"
-			"BE_CAP_CLIMB_EXPAND":
-				caption_text = "[The walls widen]"
-			"BE_CAP_CLIMB_CONVERGE":
-				caption_text = "[Everything converges]"
-
 	if not caption_text.is_empty():
 		var cm: Node = AutoloadHelper.get_autoload("CaptionManager")
 		if cm != null and cm.has_method("schedule"):
