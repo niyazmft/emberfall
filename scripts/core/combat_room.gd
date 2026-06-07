@@ -8,8 +8,6 @@ extends Node2D
 
 const KEEPER_SCENE_PATH: String = "res://scenes/keeper.tscn"
 const GRUNT_SCENE_PATH: String = "res://scenes/enemies/enemy_grunt.tscn"
-const VICTORY_MODAL_SCENE_PATH: String = "res://scenes/ui/victory_modal.tscn"
-const DEFEAT_MODAL_SCENE_PATH: String = "res://scenes/ui/defeat_modal.tscn"
 
 @export var test_mode: bool = true  # Spawn test enemies
 
@@ -199,35 +197,6 @@ func _try_move_player(dx: int, dy: int) -> void:
 
 func _on_combat_ended(victory: bool) -> void:
 	if victory:
-		_showVictoryModal()
+		print("Victory!")
 	else:
-		_showDefeatModal()
-
-
-func _showVictoryModal() -> void:
-	var scene: PackedScene = load(VICTORY_MODAL_SCENE_PATH)
-	if scene:
-		var modal: Control = scene.instantiate() as Control
-		ui_overlay.add_child(modal)
-		if modal.has_method("setup"):
-			# Collect summary data (placeholder values for now)
-			var summary: Dictionary = {
-				"turns": _turn_manager.round_number,
-				"kills": 3,  # TODO: source from TurnManager kill counter
-				"shards": 10,  # TODO: source from MetaProgressionManager session shards
-			}
-			modal.call("setup", summary)
-
-
-func _showDefeatModal() -> void:
-	var scene: PackedScene = load(DEFEAT_MODAL_SCENE_PATH)
-	if scene:
-		var modal: Control = scene.instantiate() as Control
-		ui_overlay.add_child(modal)
-		if modal.has_method("setup"):
-			var rm: _RunManager = AutoloadHelper.run_manager()
-			var summary: Dictionary = {
-				"turns": _turn_manager.round_number,
-				"rooms": rm.room_index if rm else 0,
-			}
-			modal.call("setup", summary)
+		print("Defeat!")

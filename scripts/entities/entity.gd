@@ -215,9 +215,9 @@ func _recompute_effect_caches() -> void:
 	_cached_spd_mult = 1.0
 
 	for effect: StatusEffect in status_effects:
-		_cached_off_bonus += effect.combatFormulaModifier.get("off_bonus", 0)
-		_cached_def_bonus += effect.combatFormulaModifier.get("def_bonus", 0)
-		_cached_spd_mult *= effect.combatFormulaModifier.get("spd_mult", 1.0)
+		_cached_off_bonus += effect.combat_formula_modifier.get("off_bonus", 0)
+		_cached_def_bonus += effect.combat_formula_modifier.get("def_bonus", 0)
+		_cached_spd_mult *= effect.combat_formula_modifier.get("spd_mult", 1.0)
 
 
 func has_status_effect(effect_id: String) -> bool:

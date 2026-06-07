@@ -78,16 +78,6 @@ static func grid_system() -> _GridSystem:
 	return get_autoload("GridSystem") as _GridSystem
 
 
-## Returns the EncounterScaler autoload, or null.
-static func encounter_scaler() -> _EncounterScaler:
-	return get_autoload("EncounterScaler") as _EncounterScaler
-
-
-## Returns the MetaProgressionManager autoload, or null.
-static func meta_progression_manager() -> _MetaProgressionManager:
-	return get_autoload("MetaProgressionManager") as _MetaProgressionManager
-
-
 ## Returns the InventoryManager autoload, or null.
 static func inventory_manager() -> Node:
 	return get_autoload("InventoryManager")
