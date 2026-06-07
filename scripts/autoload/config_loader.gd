@@ -9,9 +9,9 @@ const CONFIG_PATH := "res://config/game_config.json"
 const ITEMS_PATH := "res://config/items.json"
 const EQUIPMENT_PATH := "res://config/entity_equipment.json"
 const ENEMIES_PATH := "res://config/enemies.json"
+const ACCESSIBILITY_PATH := "res://config/accessibility.json"
 const PROGRESSION_PATH := "res://config/progression.json"
 const XP_ECONOMY_PATH := "res://config/xp_economy.json"
-const ACCESSIBILITY_PATH := "res://config/accessibility.json"
 
 # Fallback defaults (sensible so the game runs even if config is missing)
 const DEFAULTS: Dictionary = {
@@ -55,10 +55,9 @@ var _loadedFiles: Dictionary = {
 	ITEMS_PATH: false,
 	EQUIPMENT_PATH: false,
 	ENEMIES_PATH: false,
+	ACCESSIBILITY_PATH: false,
 	PROGRESSION_PATH: false,
 	XP_ECONOMY_PATH: false
-	ACCESSIBILITY_PATH: false
-	CONFIG_PATH: false, ITEMS_PATH: false, EQUIPMENT_PATH: false, ENEMIES_PATH: false
 }
 
 
@@ -75,6 +74,7 @@ func _loadConfig() -> void:
 	_loadJsonToConfig(ITEMS_PATH, "items")
 	_loadJsonToConfig(EQUIPMENT_PATH, "equipment")
 	_loadJsonToConfig(ENEMIES_PATH, "enemies")
+	_loadJsonToConfig(ACCESSIBILITY_PATH, "accessibility")
 	_loadJsonToConfig(PROGRESSION_PATH, "progression")
 	_loadJsonToConfig(XP_ECONOMY_PATH, "xp_economy")
 
@@ -149,6 +149,7 @@ func getValue(sectionOrKey: String, key: String = "", fallback: Variant = null) 
 			and sectionOrKey != "equipment"
 			and sectionOrKey != "progression"
 			and sectionOrKey != "xp_economy"
+			and sectionOrKey != "accessibility"
 			and sectionOrKey != "config"
 		):
 			for section: Variant in _configData.values():
