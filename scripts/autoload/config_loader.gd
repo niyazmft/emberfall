@@ -10,6 +10,7 @@ const ITEMS_PATH := "res://config/items.json"
 const EQUIPMENT_PATH := "res://config/entity_equipment.json"
 const ENEMIES_PATH := "res://config/enemies.json"
 const SKILLS_PATH := "res://config/skills.json"
+const HOTBAR_BINDINGS_PATH := "res://config/hotbar_bindings.json"
 const STATUS_EFFECTS_PATH := "res://config/status_effects.json"
 const ACCESSIBILITY_PATH := "res://config/accessibility.json"
 const REWARDS_PATH := "res://config/rewards.json"
@@ -62,6 +63,7 @@ var _loadedFiles: Dictionary = {
 	EQUIPMENT_PATH: false,
 	ENEMIES_PATH: false,
 	SKILLS_PATH: false,
+	HOTBAR_BINDINGS_PATH: false,
 	STATUS_EFFECTS_PATH: false,
 	ACCESSIBILITY_PATH: false,
 	REWARDS_PATH: false,
@@ -87,6 +89,7 @@ func _loadConfig() -> void:
 	_loadJsonToConfig(EQUIPMENT_PATH, "equipment")
 	_loadJsonToConfig(ENEMIES_PATH, "enemies")
 	_loadJsonToConfig(SKILLS_PATH, "skills")
+	_loadJsonToConfig(HOTBAR_BINDINGS_PATH, "hotbar_bindings")
 	_loadJsonToConfig(STATUS_EFFECTS_PATH, "status_effects")
 	_loadJsonToConfig(ACCESSIBILITY_PATH, "accessibility")
 	_loadJsonToConfig(REWARDS_PATH, "rewards")
@@ -178,6 +181,7 @@ func getValue(sectionOrKey: String, key: String = "", fallback: Variant = null) 
 			and sectionOrKey != "config"
 			and sectionOrKey != "biomes"
 			and sectionOrKey != "skills"
+			and sectionOrKey != "hotbar_bindings"
 			and sectionOrKey != "status_effects"
 			and sectionOrKey != "rewards"
 			and sectionOrKey != "unlocks"
