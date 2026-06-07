@@ -121,6 +121,14 @@ func _on_audio_changed(value: Variant, key: String) -> void:
 			settings["audio"][key] = value
 			sm.call("apply_audio_settings")
 
+	if key == "sfx_volume":
+		var emitter: _SFXEmitter = AutoloadHelper.sfx_emitter()
+		if emitter:
+			var path: String = "res://assets/audio/sfx/ui_click.wav"
+			if ResourceLoader.exists(path):
+				var sfx: AudioStream = load(path) as AudioStream
+				emitter.play_sfx(sfx)
+
 
 func _on_apply_video_settings() -> void:
 	var sm: Node = AutoloadHelper.settings_manager()
