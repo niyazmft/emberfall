@@ -78,11 +78,6 @@ static func inventory_manager() -> Node:
 	return get_autoload("InventoryManager")
 
 
-## Returns the DialogueManager autoload, or null.
-static func dialogue_manager() -> _DialogueManager:
-	return get_autoload("DialogueManager") as _DialogueManager
-
-
 ## Returns the SettingsManager autoload, or null.
 ## NOTE: Returns Node instead of _SettingsManager to prevent engine Parse Errors
 ## and circularities in headless Godot environments.
