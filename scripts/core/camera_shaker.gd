@@ -4,10 +4,10 @@ extends Node
 ## Manages screen shake for a Camera2D using trauma/decay and Perlin noise.
 ## Based on "Trauma-based Shake" as popularized by Squirrel Eiserloh.
 
-@export var decay: float = 0.8  # Trauma decay speed per second
-@export var max_offset: Vector2 = Vector2(100, 75)  # Maximum hor/ver shake in pixels
-@export var max_roll: float = 0.1  # Maximum rotation in radians
-@export var trauma_power: float = 2.0  # Trauma is squared for more impact at high levels
+`@export` var decay: float = 0.8  # Trauma decay speed per second
+`@export` var maxOffset: Vector2 = Vector2(100, 75)  # Maximum hor/ver shake in pixels
+`@export` var maxRoll: float = 0.1  # Maximum rotation in radians
+`@export` var traumaPower: float = 2.0  # Trauma is squared for more impact at high levels
 
 var trauma: float = 0.0  # Current trauma level [0, 1]
 var noise: FastNoiseLite = FastNoiseLite.new()
