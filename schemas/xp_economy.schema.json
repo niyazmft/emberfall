@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "XP Economy Schema",
+  "description": "Defines XP rewards for combat actions and biome progression.",
+  "type": "object",
+  "properties": {
+    "enemy_xp": {
+      "type": "object",
+      "additionalProperties": { "type": "integer", "minimum": 0 },
+      "description": "Base XP awarded for defeating an enemy archetype."
+    },
+    "spare_bonus_multiplier": {
+      "type": "number",
+      "minimum": 0.0,
+      "description": "Multiplier applied to base XP if the enemy is spared instead of executed."
+    },
+    "biome_clear_bonus": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "XP awarded upon completing a biome."
+    },
+    "hooks": {
+      "type": "object",
+      "additionalProperties": { "type": "string" },
+      "description": "Conditional branching hooks for custom XP logic expressions."
+    }
+  },
+  "required": ["enemy_xp", "spare_bonus_multiplier", "biome_clear_bonus"]
+}
