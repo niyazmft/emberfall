@@ -13,6 +13,7 @@ const ACCESSIBILITY_PATH := "res://config/accessibility.json"
 const PROGRESSION_PATH := "res://config/progression.json"
 const XP_ECONOMY_PATH := "res://config/xp_economy.json"
 const BIOMES_PATH := "res://config/biomes.json"
+const SKILLS_PATH := "res://config/skills.json"
 
 # Fallback defaults (sensible so the game runs even if config is missing)
 const DEFAULTS: Dictionary = {
@@ -60,6 +61,7 @@ var _loadedFiles: Dictionary = {
 	PROGRESSION_PATH: false,
 	XP_ECONOMY_PATH: false,
 	BIOMES_PATH: false
+	SKILLS_PATH: false,
 }
 
 
@@ -80,6 +82,7 @@ func _loadConfig() -> void:
 	_loadJsonToConfig(PROGRESSION_PATH, "progression")
 	_loadJsonToConfig(XP_ECONOMY_PATH, "xp_economy")
 	_loadJsonToConfig(BIOMES_PATH, "biomes")
+  _loadJsonToConfig(SKILLS_PATH, "skills")
 
 
 func _loadJsonToConfig(filePath: String, p_namespace: String = "") -> void:

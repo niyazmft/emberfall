@@ -1,0 +1,27 @@
+{
+  "skills": {
+    "strike_ember": {
+      "id": "strike_ember",
+      "name_key": "SKILL_STRIKE_EMBER_NAME",
+      "description_key": "SKILL_STRIKE_EMBER_DESC",
+      "ap_cost": 3,
+      "cooldown": 1,
+      "target_type": "SINGLE_ENEMY",
+      "effect_payload": {
+        "damage": 15,
+        "element": "FIRE"
+      }
+    },
+    "quick_dash": {
+      "id": "quick_dash",
+      "name_key": "SKILL_QUICK_DASH_NAME",
+      "description_key": "SKILL_QUICK_DASH_DESC",
+      "ap_cost": 3,
+      "cooldown": 2,
+      "target_type": "SELF",
+      "effect_payload": {
+        "move_range": 2
+      }
+    }
+  }
+}

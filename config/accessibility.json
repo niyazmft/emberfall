@@ -1,0 +1,20 @@
+{
+  "_description": "Accessibility configuration for Emberfall.",
+  "text_scale": {
+    "min": 0.8,
+    "max": 1.5,
+    "default": 1.0
+  },
+  "slow_mode": {
+    "min": 1.0,
+    "max": 3.0,
+    "default": 1.0,
+    "description": "Multiplier for turn-timer duration"
+  },
+  "high_contrast": {
+    "palette_path": "res://assets/palettes/high_contrast.tres"
+  },
+  "dyslexia_font": {
+    "font_path": "res://assets/fonts/OpenDyslexic-Regular.otf"
+  }
+}
