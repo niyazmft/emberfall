@@ -21,7 +21,7 @@ var _turn_manager: TurnManager
 @onready var entity_container: Node2D = $EntityContainer
 @onready var ui_overlay: CanvasLayer = $UIOverlay
 @onready var camera: Camera2D = $Camera2D
-@onready var camera_shaker: CameraShaker = $Camera2D/CameraShaker
+`@onready` var cameraShaker: CameraShaker = $Camera2D/CameraShaker
 
 
 func _ready() -> void:
