@@ -60,7 +60,7 @@ var _loadedFiles: Dictionary = {
 	ACCESSIBILITY_PATH: false,
 	PROGRESSION_PATH: false,
 	XP_ECONOMY_PATH: false,
-	BIOMES_PATH: false
+	BIOMES_PATH: false,
 	SKILLS_PATH: false,
 }
 
@@ -82,7 +82,7 @@ func _loadConfig() -> void:
 	_loadJsonToConfig(PROGRESSION_PATH, "progression")
 	_loadJsonToConfig(XP_ECONOMY_PATH, "xp_economy")
 	_loadJsonToConfig(BIOMES_PATH, "biomes")
-  _loadJsonToConfig(SKILLS_PATH, "skills")
+	_loadJsonToConfig(SKILLS_PATH, "skills")
 
 
 func _loadJsonToConfig(filePath: String, p_namespace: String = "") -> void:
