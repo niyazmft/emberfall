@@ -17,6 +17,8 @@ menu.title.continue,Continue,Fortsetzen,Continuar,Continuer
 menu.title.new_game,New Game,Neues Spiel,Nuevo Juego,Nouveau Jeu
 menu.title.settings,Settings,Einstellungen,Ajustes,Paramètres
 menu.title.quit,Quit,Beenden,Salir,Quitter
+MSG_LEVEL_UP,LEVEL UP!,LEVEL UP!,¡SUBIDA DE NIVEL!,NIVEAU SUPÉRIEUR !
+MSG_XP_GAINED,+{0} XP,+{0} EP,+{0} PX,+{0} XP
 room_biome1_01,Room 1-01,Raum 1-01,Sala 1-01,Salle 1-01
 room_biome1_02,Room 1-02,Raum 1-02,Sala 1-02,Salle 1-02
 room_biome1_03,Room 1-03,Raum 1-03,Sala 1-03,Salle 1-03
