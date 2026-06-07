@@ -24,9 +24,9 @@ signal back_pressed
 @onready var _remap_panel: Control = %RemapPanel
 @onready var _reset_button: Button = %ResetButton
 @onready var _back_button: Button = %BackButton
-@onready var _help_label: Label = %HelpLabel
+@onready var helpLabel: Label = %HelpLabel
 
-var _settings_help: Dictionary = {}
+var settingsHelp: Dictionary = {}
 var _resolutions: Array[Vector2i] = [
 	Vector2i(1920, 1080),
 	Vector2i(1600, 900),
@@ -39,39 +39,25 @@ func _ready() -> void:
 	SafeZoneManager.safe_area_changed.connect(_on_safe_area_changed)
 	_apply_safe_area()
 
-	_load_help_data()
+	_loadHelpData()
 	_setup_options()
 	_load_ui_from_settings()
 	_connect_signals()
-	_setup_help_listeners()
+	_setupHelpListeners()
 
 
-func _load_help_data() -> void:
+func _loadHelpData() -> void:
 	var cl: _ConfigLoader = AutoloadHelper.config_loader()
 	if cl:
 		if not cl.isLoaded():
 			await cl.ready
 
-		# We know the keys in settings_help.json from our step 2
-		var help_keys: Array[String] = [
-			"MasterSlider",
-			"MusicSlider",
-			"SFXSlider",
-			"MuteCheck",
-			"ResolutionOption",
-			"FullscreenCheck",
-			"VSyncCheck",
-			"ApplyButton",
-			"ShakeSlider",
-			"CVDOption",
-			"InputHintsOption",
-			"ResetButton",
-			"BackButton"
-		]
-		for key in help_keys:
-			var val: Variant = cl.getValue(key)
-			if val is String:
-				_settings_help[key] = val
+		var helpData: Variant = cl.getValue("settings_help")
+		if helpData is Dictionary:
+			for key: String in helpData:
+				var val: Variant = helpData[key]
+				if val is String:
+					settingsHelp[key] = val
 
 
 func _setup_options() -> void:
@@ -157,10 +143,10 @@ func _on_audio_changed(value: Variant, key: String) -> void:
 func _on_apply_video_settings() -> void:
 	var am: _UIAudioManager = AutoloadHelper.get_autoload("UIAudioManager")
 	if am:
-		am.play_ui_sound("apply")
+		am.playUiSound("apply")
 	var hm: _HapticsManager = AutoloadHelper.get_autoload("HapticsManager")
 	if hm:
-		hm.trigger_haptic("apply")
+		hm.triggerHaptic("apply")
 
 	var sm: Node = AutoloadHelper.settings_manager()
 	if sm == null:
@@ -213,7 +199,7 @@ func _on_reset_confirmed() -> void:
 		_load_ui_from_settings()
 
 
-func _setup_help_listeners() -> void:
+func _setupHelpListeners() -> void:
 	var controls: Array[Control] = [
 		_master_slider,
 		_music_slider,
@@ -230,7 +216,7 @@ func _setup_help_listeners() -> void:
 		_back_button
 	]
 
-	for control in controls:
+	for control: Control in controls:
 		control.mouse_entered.connect(_on_control_hovered.bind(control.name))
 		control.focus_entered.connect(_on_control_hovered.bind(control.name))
 		control.mouse_exited.connect(_clear_help_text)
@@ -249,37 +235,37 @@ func _on_control_hovered(control_name: String) -> void:
 	_update_help_text(control_name)
 	var am: _UIAudioManager = AutoloadHelper.get_autoload("UIAudioManager")
 	if am:
-		am.play_ui_sound("hover")
+		am.playUiSound("hover")
 	var hm: _HapticsManager = AutoloadHelper.get_autoload("HapticsManager")
 	if hm:
-		hm.trigger_haptic("hover")
+		hm.triggerHaptic("hover")
 
 
 func _on_control_clicked() -> void:
 	var am: _UIAudioManager = AutoloadHelper.get_autoload("UIAudioManager")
 	if am:
-		am.play_ui_sound("click")
+		am.playUiSound("click")
 	var hm: _HapticsManager = AutoloadHelper.get_autoload("HapticsManager")
 	if hm:
-		hm.trigger_haptic("click")
+		hm.triggerHaptic("click")
 
 
 func _update_help_text(control_name: String) -> void:
-	if _settings_help.has(control_name):
-		_help_label.text = tr(_settings_help[control_name])
+	if settingsHelp.has(control_name):
+		helpLabel.text = tr(settingsHelp[control_name])
 
 
 func _clear_help_text() -> void:
-	_help_label.text = " "
+	helpLabel.text = " "
 
 
 func _on_back_pressed() -> void:
 	var am: _UIAudioManager = AutoloadHelper.get_autoload("UIAudioManager")
 	if am:
-		am.play_ui_sound("cancel")
+		am.playUiSound("cancel")
 	var hm: _HapticsManager = AutoloadHelper.get_autoload("HapticsManager")
 	if hm:
-		hm.trigger_haptic("cancel")
+		hm.triggerHaptic("cancel")
 
 	var sm: Node = AutoloadHelper.settings_manager()
 	if sm != null:

@@ -7,56 +7,54 @@ extends Node
 
 class_name _UIAudioManager
 
-var _manifest: Dictionary = {}
-var _player_pool: Array[AudioStreamPlayer] = []
-const POOL_SIZE: int = 8
+var _manifestData: Dictionary = {}
+var _playerPool: Array[AudioStreamPlayer] = []
+const _poolSize: int = 8
 
 
 func _ready() -> void:
-	_load_manifest()
-	_setup_player_pool()
+	_loadManifest()
+	_setupPlayerPool()
 
 
-func _load_manifest() -> void:
+func _loadManifest() -> void:
 	var cl: _ConfigLoader = AutoloadHelper.config_loader()
 	if cl:
 		# UIAudioManager depends on ConfigLoader being ready
 		if not cl.isLoaded():
 			await cl.ready
 
-		# We don't have a direct "get manifest" in ConfigLoader that returns the whole thing easily
-		# without knowing keys, but ConfigLoader merges everything into _configData.
 		# Since our manifest is nested under "ui_audio" in ui_audio_manifest.json:
-		var ui_audio: Variant = cl.getValue("ui_audio")
-		if ui_audio is Dictionary:
-			_manifest = ui_audio
+		var uiAudio: Variant = cl.getValue("ui_audio")
+		if uiAudio is Dictionary:
+			_manifestData = uiAudio
 	else:
 		push_warning("UIAudioManager: ConfigLoader not found.")
 
 
-func _setup_player_pool() -> void:
-	for i in range(POOL_SIZE):
-		var player := AudioStreamPlayer.new()
+func _setupPlayerPool() -> void:
+	for i: int in range(_poolSize):
+		var player: AudioStreamPlayer = AudioStreamPlayer.new()
 		player.bus = "SFX"
 		add_child(player)
-		_player_pool.append(player)
+		_playerPool.append(player)
 
 
 ## Plays a UI sound based on the event type defined in the manifest.
-func play_ui_sound(event_type: String) -> void:
-	if not _manifest.has(event_type):
+func playUiSound(eventType: String) -> void:
+	if not _manifestData.has(eventType):
 		return
 
-	var data: Dictionary = _manifest[event_type] as Dictionary
-	var file_path: String = data.get("file_path", "")
-	if file_path.is_empty() or not FileAccess.file_exists(file_path):
+	var data: Dictionary = _manifestData[eventType] as Dictionary
+	var filePath: String = data.get("file_path", "")
+	if filePath.is_empty() or not FileAccess.file_exists(filePath):
 		return
 
-	var stream: AudioStream = load(file_path) as AudioStream
+	var stream: AudioStream = load(filePath) as AudioStream
 	if not stream:
 		return
 
-	var player := _get_available_player()
+	var player: AudioStreamPlayer = _getAvailablePlayer()
 	if player:
 		player.stream = stream
 		player.volume_db = float(data.get("volume_db", 0.0))
@@ -64,9 +62,17 @@ func play_ui_sound(event_type: String) -> void:
 		player.play()
 
 
-func _get_available_player() -> AudioStreamPlayer:
-	for player in _player_pool:
+func _getAvailablePlayer() -> AudioStreamPlayer:
+	if _playerPool.is_empty():
+		var player: AudioStreamPlayer = AudioStreamPlayer.new()
+		player.bus = "SFX"
+		add_child(player)
+		_playerPool.append(player)
+		return player
+
+	for player: AudioStreamPlayer in _playerPool:
 		if not player.playing:
 			return player
-	# If all players are busy, steal the first one (simplistic)
-	return _player_pool[0]
+
+	# If all players are busy, steal the first one
+	return _playerPool[0]
