@@ -243,8 +243,8 @@ Narrative, dialogue, localization.
 
 | Task | Issue | Status | Priority | Blocked By |
 |------|-------|--------|----------|------------|
-| Dialogue Manager Backend | #151 | ✅ Done | P1 | None |
-| Dialogue Box UI | #152 | ✅ Done | P1 | #151 |
+| Dialogue Manager Backend | #151 | ⏳ Ready | P1 | None |
+| Dialogue Box UI | #152 | ⚠️ Blocked | P1 | #151 |
 | Narrative Data Systems | #153 | ⏳ Ready | P2 | None |
 | Localization Expansion | #154 | ⏳ Ready | P2 | None |
 | Quest / Mission System | #155 | ⏳ Ready | P2 | None |
