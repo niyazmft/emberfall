@@ -20,6 +20,7 @@ const PROGRESSION_PATH := "res://config/progression.json"
 const XP_ECONOMY_PATH := "res://config/xp_economy.json"
 const BIOMES_PATH := "res://config/biomes.json"
 const ELITE_MODIFIERS_PATH := "res://config/elite_modifiers.json"
+const HUD_CONFIG_PATH := "res://config/hud_config.json"
 
 # Fallback defaults (sensible so the game runs even if config is missing)
 const DEFAULTS: Dictionary = {
@@ -74,6 +75,7 @@ var _loadedFiles: Dictionary = {
 	XP_ECONOMY_PATH: false,
 	BIOMES_PATH: false,
 	ELITE_MODIFIERS_PATH: false,
+	HUD_CONFIG_PATH: false,
 }
 
 
@@ -111,6 +113,20 @@ func _loadConfig() -> void:
 
 
 func _loadJsonToConfig(filePath: String, p_namespace: String = "") -> void:
+	_loadJsonToConfig(CONFIG_PATH)
+	_loadJsonToConfig(ITEMS_PATH)
+	_loadJsonToConfig(EQUIPMENT_PATH)
+	_loadJsonToConfig(ENEMIES_PATH)
+	_loadJsonToConfig(SKILLS_PATH)
+	_loadJsonToConfig(STATUS_EFFECTS_PATH)
+	_loadJsonToConfig(ACCESSIBILITY_PATH)
+	_loadJsonToConfig(REWARDS_PATH)
+	_loadJsonToConfig(UNLOCKS_PATH)
+	_loadJsonToConfig(ENCOUNTER_SCALER_PATH)
+	_loadJsonToConfig(HUD_CONFIG_PATH)
+
+
+func _loadJsonToConfig(filePath: String) -> void:
 	if FileAccess.file_exists(filePath):
 		var fileHandle: FileAccess = FileAccess.open(filePath, FileAccess.READ)
 		if fileHandle:

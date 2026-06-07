@@ -99,6 +99,15 @@ func _boss_behavior() -> Dictionary:
 	# Delegate to specialized BossAI resolver
 	return BossAI.decide_action(boss_behavior_name, enemy_entity, _player_node, grid_system, self)
 
+	return {"type": "wait"}
+
+
+func _tank_behavior(enemy_pos: Vector2i, player_pos: Vector2i, dist: int) -> Dictionary:
+	# Slow advance, heavy damage
+	# For Tank, we might want to only move if we have full AP or something,
+	# but for now it's same as grunt.
+	return _grunt_behavior(enemy_pos, player_pos, dist)
+
 
 func _get_next_tile_towards(target_pos: Vector2i, away: bool = false) -> Vector2i:
 	if enemy_entity == null or grid_system == null:
