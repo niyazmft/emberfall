@@ -2,47 +2,47 @@
   "items": {
     "rusted_blade": {
       "id": "rusted_blade",
-      "name": "ITEM_RUSTED_BLADE_NAME",
+      "name": "Rusted Blade",
       "type": "WEAPON",
       "rarity": "COMMON",
       "stats": {
         "off": 2
       },
       "stackLimit": 1,
-      "description": "ITEM_RUSTED_BLADE_DESC"
+      "description": "A worn out blade, but still sharp enough."
     },
     "leather_vest": {
       "id": "leather_vest",
-      "name": "ITEM_LEATHER_VEST_NAME",
+      "name": "Leather Vest",
       "type": "ARMOR",
       "rarity": "COMMON",
       "stats": {
         "def": 2
       },
       "stackLimit": 1,
-      "description": "ITEM_LEATHER_VEST_DESC"
+      "description": "Basic protection for a traveler."
     },
     "healing_salve": {
       "id": "healing_salve",
-      "name": "ITEM_HEALING_SALVE_NAME",
+      "name": "Healing Salve",
       "type": "CONSUMABLE",
       "rarity": "COMMON",
       "stats": {
         "hp": 10
       },
       "stackLimit": 10,
-      "description": "ITEM_HEALING_SALVE_DESC"
+      "description": "Restores 10 HP."
     },
     "lucky_pendant": {
       "id": "lucky_pendant",
-      "name": "ITEM_LUCKY_PENDANT_NAME",
+      "name": "Lucky Pendant",
       "type": "ACCESSORY",
       "rarity": "UNCOMMON",
       "stats": {
         "spd": 1
       },
       "stackLimit": 1,
-      "description": "ITEM_LUCKY_PENDANT_DESC"
+      "description": "A small charm that seems to bring good luck."
     }
   }
 }

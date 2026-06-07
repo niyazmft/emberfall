@@ -18,12 +18,10 @@ extends Node2D
 @export var base_sprite: Sprite2D
 @export var shadow_sprite: Sprite2D
 @export var height_indicator: CanvasItem
-@export var statusBar: Node
 @export var lerp_speed: float = 10.0
 
 var _target_position: Vector2
 var _grid_renderer: GridRenderer
-var _ftManager: FloatingTextManager
 
 var _hit_flash_tween: Tween
 var _hit_flash_weight: float = 0.0:
@@ -38,9 +36,6 @@ var _hit_flash_weight: float = 0.0:
 func _ready() -> void:
 	var combat_room: Node = get_node_or_null("/root/CombatRoom")
 	if combat_room:
-		_ftManager = (
-			combat_room.find_child("FloatingTextManager", true, false) as FloatingTextManager
-		)
 		for child: Node in combat_room.get_children():
 			if child is GridRenderer:
 				_grid_renderer = child as GridRenderer
@@ -65,12 +60,6 @@ func _process(delta: float) -> void:
 	else:
 		global_position = _target_position
 
-	if statusBar and statusBar is Control:
-		var sb: Control = statusBar as Control
-		if sb.top_level:
-			# Position status bar above the entity in world space
-			sb.global_position = global_position + Vector2(0, -60)
-
 
 func _find_grid_renderer(node: Node) -> GridRenderer:
 	if node is GridRenderer:
@@ -90,9 +79,6 @@ func _sync_to_entity() -> void:
 	_on_entity_facing_changed(entity.facing_x, entity.facing_y)
 	_on_entity_state_changed(entity.state)
 
-	if statusBar and statusBar.has_method("setup"):
-		statusBar.call("setup", entity)
-
 
 func _connect_entity_signals() -> void:
 	if not entity:
@@ -107,8 +93,6 @@ func _connect_entity_signals() -> void:
 		entity.state_changed.connect(_on_entity_state_changed)
 	if not entity.hp_changed.is_connected(_on_entity_hp_changed):
 		entity.hp_changed.connect(_on_entity_hp_changed)
-	if not entity.ap_changed.is_connected(_onEntityApChanged):
-		entity.ap_changed.connect(_onEntityApChanged)
 
 
 func _disconnect_entity_signals() -> void:
@@ -124,8 +108,6 @@ func _disconnect_entity_signals() -> void:
 		entity.state_changed.disconnect(_on_entity_state_changed)
 	if entity.hp_changed.is_connected(_on_entity_hp_changed):
 		entity.hp_changed.disconnect(_on_entity_hp_changed)
-	if entity.ap_changed.is_connected(_onEntityApChanged):
-		entity.ap_changed.disconnect(_onEntityApChanged)
 
 
 func _on_entity_position_changed(x: int, y: int) -> void:
@@ -151,19 +133,6 @@ func _on_entity_hp_changed(new_hp: int, old_hp: int) -> void:
 	if new_hp < old_hp:
 		trigger_hit_flash()
 
-	var delta: int = new_hp - old_hp
-	if delta == 0:
-		return
-
-	# Trigger floating text
-	if _ftManager:
-		# Spawn at center of the sprite
-		var spawnPos: Vector2 = global_position
-		if base_sprite:
-			spawnPos += base_sprite.offset
-		_ftManager.spawnText(delta, spawnPos)
-
-	if delta < 0:
 		var app: Node = null
 		if has_node("ApparitionRenderer"):
 			app = get_node("ApparitionRenderer")
@@ -172,14 +141,6 @@ func _on_entity_hp_changed(new_hp: int, old_hp: int) -> void:
 
 		if app and app.has_method("trigger_damage_effect"):
 			app.call("trigger_damage_effect")
-
-	if statusBar and statusBar.has_method("updateHp"):
-		statusBar.call("updateHp")
-
-
-func _onEntityApChanged(_new_ap: int, _old_ap: int) -> void:
-	if statusBar and statusBar.has_method("updateAp"):
-		statusBar.call("updateAp")
 
 
 func trigger_hit_flash() -> void:
@@ -231,29 +192,13 @@ func _update_facing_visuals(facing_x: int, facing_y: int) -> void:
 
 
 func _update_state_visuals(state: Entity.State) -> void:
-	var emitter: _SFXEmitter = AutoloadHelper.sfx_emitter()
 	match state:
 		Entity.State.DYING:
 			modulate = Color(1.0, 0.4, 0.4)
-			if emitter:
-				var path: String = "res://assets/audio/sfx/enemy_dying.wav"
-				if ResourceLoader.exists(path):
-					var sfx: AudioStream = load(path) as AudioStream
-					emitter.play_sfx_2d(sfx, global_position)
 		Entity.State.STUNNED:
 			modulate = Color(1.0, 1.0, 0.0)
-			if emitter:
-				var path: String = "res://assets/audio/sfx/stunned.wav"
-				if ResourceLoader.exists(path):
-					var sfx: AudioStream = load(path) as AudioStream
-					emitter.play_sfx_2d(sfx, global_position)
 		Entity.State.DEAD:
 			modulate = Color(0.3, 0.3, 0.3, 0.6)
-			if emitter:
-				var path: String = "res://assets/audio/sfx/enemy_death.wav"
-				if ResourceLoader.exists(path):
-					var sfx: AudioStream = load(path) as AudioStream
-					emitter.play_sfx_2d(sfx, global_position)
 		_:
 			modulate = Color.WHITE
 

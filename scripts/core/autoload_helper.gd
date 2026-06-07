@@ -63,11 +63,6 @@ static func event_bus() -> _EventBus:
 	return get_autoload("EventBus") as _EventBus
 
 
-## Returns the SFXEmitter autoload, or null.
-static func sfx_emitter() -> _SFXEmitter:
-	return get_autoload("SFXEmitter") as _SFXEmitter
-
-
 ## Returns the SaveManager autoload, or null.
 static func save_manager() -> _SaveManager:
 	return get_autoload("SaveManager") as _SaveManager
@@ -91,11 +86,6 @@ static func settings_manager() -> Node:
 ## may fail during early initialization.
 static func localization_manager() -> Node:
 	return get_autoload("LocalizationManager")
-
-
-## Returns the SafeZoneManager autoload, or null.
-static func safe_zone_manager() -> _SafeZoneManager:
-	return get_autoload("SafeZoneManager") as _SafeZoneManager
 
 
 # ── Derived Helpers ───────────────────────────────────────────────────────────
