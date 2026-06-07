@@ -19,9 +19,7 @@ const ENCOUNTER_SCALER_PATH := "res://config/encounter_scaler.json"
 const PROGRESSION_PATH := "res://config/progression.json"
 const XP_ECONOMY_PATH := "res://config/xp_economy.json"
 const BIOMES_PATH := "res://config/biomes.json"
-const SECRET_ROOM_CONDITIONS_PATH := "res://config/secret_room_conditions.json"
-const PROPS_PATH := "res://data/props.json"
-const AMBIENT_NARRATOR_PATH := "res://data/ambient_narrator.json"
+const HUD_CONFIG_PATH := "res://config/hud_config.json"
 
 # Fallback defaults (sensible so the game runs even if config is missing)
 const DEFAULTS: Dictionary = {
@@ -75,9 +73,7 @@ var _loadedFiles: Dictionary = {
 	PROGRESSION_PATH: false,
 	XP_ECONOMY_PATH: false,
 	BIOMES_PATH: false,
-	SECRET_ROOM_CONDITIONS_PATH: false,
-	PROPS_PATH: false,
-	AMBIENT_NARRATOR_PATH: false,
+	HUD_CONFIG_PATH: false,
 }
 
 
@@ -103,9 +99,7 @@ func _loadConfig() -> void:
 	_loadJsonToConfig(ENCOUNTER_SCALER_PATH, "encounter_scaler")
 	_loadJsonToConfig(PROGRESSION_PATH, "progression")
 	_loadJsonToConfig(XP_ECONOMY_PATH, "xp_economy")
-	_loadJsonToConfig(SECRET_ROOM_CONDITIONS_PATH, "secret_room_conditions")
-	_loadJsonToConfig(PROPS_PATH, "props")
-	_loadJsonToConfig(AMBIENT_NARRATOR_PATH, "ambient_narrator")
+	_loadJsonToConfig(HUD_CONFIG_PATH, "hud_config")
 
 	var actual_biomes_path := BIOMES_PATH
 	if _configData.has("config") and _configData["config"].has("run_manager"):
@@ -195,9 +189,7 @@ func getValue(sectionOrKey: String, key: String = "", fallback: Variant = null) 
 			and sectionOrKey != "rewards"
 			and sectionOrKey != "unlocks"
 			and sectionOrKey != "encounter_scaler"
-			and sectionOrKey != "secret_room_conditions"
-			and sectionOrKey != "props"
-			and sectionOrKey != "ambient_narrator"
+			and sectionOrKey != "hud_config"
 		):
 			for section: Variant in _configData.values():
 				if section is Dictionary and section.has(sectionOrKey):
