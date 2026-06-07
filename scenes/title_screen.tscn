@@ -1,7 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://ddy3r8j1m7n6b"]
 
 [ext_resource type="Script" path="res://scripts/ui/title_screen.gd" id="1_script"]
-[ext_resource type="PackedScene" path="res://scenes/ui/transition_layer.tscn" id="2_tlayer"]
 
 [node name="TitleScreen" type="Control"]
 layout_mode = 3
@@ -67,5 +66,3 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(300, 50)
 layout_mode = 2
 text = "Quit"
-
-[node name="TransitionLayer" parent="." instance=ExtResource("2_tlayer")]

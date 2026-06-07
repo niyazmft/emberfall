@@ -112,26 +112,17 @@ static func _is_backstab(attacker: Entity, defender: Entity) -> bool:
 
 
 static func _calculate_cover_penalty(defender: Entity, cover_tiles: Array[Vector2i]) -> float:
-	## Cover penalty calculation using the new TacTileData system.
-	## This version prioritises the GridSystem's tile data.
-	var grid: Node = AutoloadHelper.grid_system()
-	if grid != null:
-		var tile: TacTileData = grid.get_tile(defender.x, defender.y)
-		if tile != null:
-			if tile.is_heavy_cover():
-				return GameConstants.HEAVY_COVER_PENALTY
-			if tile.is_partial_cover():
-				return GameConstants.PARTIAL_COVER_PENALTY
-			if tile.is_light_cover():
-				return GameConstants.LIGHT_COVER_PENALTY
-			if tile.is_destructible_cover():
-				return GameConstants.DESTRUCTIBLE_COVER_PENALTY
-
-	## Fallback to legacy cover_tiles check if GridSystem is not available
+	## Light cover: defender tile is in cover_tiles → –0.15.
+	## Heavy cover: defender tile in cover_tiles AND adjacent to another
+	## cover tile → –0.30.
+	##
+	## We use TileMap-style integer coordinates; cover_tiles holds
+	## Vector2i positions.
 	var defender_pos := Vector2i(defender.x, defender.y)
 	if defender_pos not in cover_tiles:
 		return 0.0
 
+	# Check adjacent tiles for heavy cover
 	var directions: Array[Vector2i] = [
 		Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)
 	]

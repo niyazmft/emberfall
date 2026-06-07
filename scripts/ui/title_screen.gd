@@ -57,9 +57,6 @@ func _setup_focus_wrap() -> void:
 func _on_new_game_pressed() -> void:
 	# For now just print, as actual game start logic depends on other systems
 	_print_debug("New Game pressed")
-	var runMgr := AutoloadHelper.run_manager()
-	if runMgr:
-		await runMgr.fade_out(0.5)
 	get_tree().change_scene_to_file("res://scenes/main.tscn")
 
 

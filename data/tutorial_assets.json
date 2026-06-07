@@ -1,8 +1,0 @@
-{
-  "version": "1.0.0",
-  "assets": {
-    "highlight_frame": "res://assets/ui/tutorial/highlight_frame.png",
-    "arrow_texture": "res://assets/ui/tutorial/arrow.png",
-    "overlay_bg": "res://assets/ui/tutorial/overlay_bg.png"
-  }
-}

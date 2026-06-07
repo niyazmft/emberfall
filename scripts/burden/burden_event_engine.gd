@@ -39,30 +39,16 @@ func apply_config(config: Dictionary) -> void:
 	var phase_b: Dictionary = phases.get("B", {})
 	_variants_first = phase_b.get("variants_first", [])
 	_variants_repeat = phase_b.get("variants_repeat", [])
-
-	# Try to fetch templates from DialogueManager first
-	var dm: Node = AutoloadHelper.get_autoload("DialogueManager")
-	if dm:
-		var t_first: Dictionary = dm.call("getDialogue", "BE_B_TEMPLATE_FIRST")
-		if not t_first.is_empty():
-			_template_first = t_first.get("text", "")
-
-		var t_repeat: Dictionary = dm.call("getDialogue", "BE_B_TEMPLATE_REPEAT")
-		if not t_repeat.is_empty():
-			_template_repeat = t_repeat.get("text", "")
-
-	if _template_first.is_empty():
-		_template_first = (
-			phase_b
-			. get(
-				"template_first",
-				"{count} {collective_noun} of their own small truths. You hold them now. That is the burden."
-			)
+	_template_first = (
+		phase_b
+		. get(
+			"template_first",
+			"{count} {collective_noun} of their own small truths. You hold them now. That is the burden."
 		)
-	if _template_repeat.is_empty():
-		_template_repeat = phase_b.get(
-			"template_repeat", "{count} {collective_noun}. The burden holds."
-		)
+	)
+	_template_repeat = phase_b.get(
+		"template_repeat", "{count} {collective_noun}. The burden holds."
+	)
 	_count_first = phase_b.get("count_first", "Three")
 	_count_repeat = phase_b.get("count_repeat", "More")
 
@@ -198,8 +184,6 @@ func trigger_burden_event(
 		_numbness_localization_key if result.numbness_cap_reached else ""
 	)
 
-	var dm: Node = AutoloadHelper.get_autoload("DialogueManager")
-
 	## --- Phase A (Stillness) ---
 	result.phase_a_duration_ms = int(_phase_timing.get("A", 10000))
 	result.phase_a_localization_key = "BE_PHASE_A"
@@ -218,26 +202,11 @@ func trigger_burden_event(
 		if is_first:
 			variant = select_variant_first(run_seed, room_index, variant_state)
 			result.phase_b_duration_ms = int(_phase_timing.get("B_first", 15000))
-
-			var variant_id: String = str(variant.get("id", ""))
-			if dm and dm.call("hasDialogue", variant_id):
-				var d: Dictionary = dm.call("getDialogue", variant_id)
-				result.phase_b_text = _expand_template(_template_first, _count_first, noun, d)
-			else:
-				result.phase_b_text = _expand_template(_template_first, _count_first, noun, variant)
+			result.phase_b_text = _expand_template(_template_first, _count_first, noun, variant)
 		else:
 			variant = select_variant_repeat(run_seed, room_index, variant_state)
 			result.phase_b_duration_ms = int(_phase_timing.get("B_repeat", 10000))
-
-			var variant_id: String = str(variant.get("id", ""))
-			if dm and dm.call("hasDialogue", variant_id):
-				var d: Dictionary = dm.call("getDialogue", variant_id)
-				result.phase_b_text = _expand_template(_template_repeat, _count_repeat, noun, d)
-			else:
-				result.phase_b_text = _expand_template(
-					_template_repeat, _count_repeat, noun, variant
-				)
-
+			result.phase_b_text = _expand_template(_template_repeat, _count_repeat, noun, variant)
 		result.phase_b_localization_key = str(variant.get("localization_key", ""))
 		result.phase_b_variant_id = str(variant.get("id", ""))
 		result.phase_b_cadence_ms = int(variant.get("cadence_ms_estimate", 0))
@@ -248,12 +217,7 @@ func trigger_burden_event(
 	## --- Phase C (Choiceless Choice) ---
 	var phases: Dictionary = config.get("phases", {})
 	var phase_c: Dictionary = phases.get("C", {})
-
-	if dm and dm.call("hasDialogue", "BE_PHASE_C"):
-		var d: Dictionary = dm.call("getDialogue", "BE_PHASE_C")
-		result.phase_c_text = d.get("text", "The memory passes into you.")
-	else:
-		result.phase_c_text = str(phase_c.get("text", "The memory passes into you."))
+	result.phase_c_text = str(phase_c.get("text", "The memory passes into you."))
 	result.phase_c_duration_ms = int(phase_c.get("C", 15000))
 	result.phase_c_hold_ms = int(phase_c.get("C_hold", 5000))
 	result.phase_c_mandatory_input_hold_ms = int(phase_c.get("C_mandatory_input_hold", 5000))
@@ -262,12 +226,7 @@ func trigger_burden_event(
 
 	## --- Phase D (Return) ---
 	var phase_d: Dictionary = phases.get("D", {})
-
-	if dm and dm.call("hasDialogue", "BE_PHASE_D"):
-		var d: Dictionary = dm.call("getDialogue", "BE_PHASE_D")
-		result.phase_d_text = d.get("text", "You exhale. The embers cool.")
-	else:
-		result.phase_d_text = str(phase_d.get("text", "You exhale. The embers cool."))
+	result.phase_d_text = str(phase_d.get("text", "You exhale. The embers cool."))
 	result.phase_d_duration_ms = int(phase_d.get("D", 2000))
 	result.phase_d_localization_key = str(phase_d.get("localization_key", "BE_PHASE_D"))
 
@@ -275,7 +234,7 @@ func trigger_burden_event(
 	if not result.numbness_cap_reached and not is_within_phase_b_window(result.phase_b_duration_ms):
 		push_warning(
 			(
-				"BurdenEventEngine: Phase B duration %d ms is outside the configured 10-40 s window."
+				"BurdenEventEngine: Phase B duration %d ms is outside the configured 10–40 s window."
 				% result.phase_b_duration_ms
 			)
 		)

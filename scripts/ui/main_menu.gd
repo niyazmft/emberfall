@@ -56,8 +56,6 @@ func _update_hints(device: _InputRouter.InputDevice) -> void:
 
 
 func _on_new_run_pressed() -> void:
-	if RunManager.has_method("fade_out"):
-		await RunManager.call("fade_out", 0.5)
 	if RunManager.has_method("cmd_start_run"):
 		RunManager.call("cmd_start_run")
 	hide()
