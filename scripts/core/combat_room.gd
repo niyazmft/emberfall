@@ -20,10 +20,13 @@ var _turn_manager: TurnManager
 @onready var grid_renderer: GridRenderer = $GridRenderer
 @onready var entity_container: Node2D = $EntityContainer
 @onready var ui_overlay: CanvasLayer = $UIOverlay
-@onready var camera: Camera2D = $Camera2D
+@onready var camera: CameraController = $Camera2D
+
+static var instance: CombatRoom
 
 
 func _ready() -> void:
+	instance = self
 	_grid_system = AutoloadHelper.grid_system()
 
 	var run_manager := AutoloadHelper.run_manager()
@@ -68,6 +71,7 @@ func _on_room_entered(_room_index: int, room_data: Dictionary) -> void:
 
 	# Setup HUD
 	_setup_hud()
+	_setup_turn_banner()
 
 
 func _setup_hud() -> void:
@@ -75,6 +79,18 @@ func _setup_hud() -> void:
 	if combat_hud and _player:
 		var player_entity: Entity = _player.get("entity") as Entity
 		combat_hud.call("setup", player_entity, _turn_manager, _combat_input)
+
+
+func _setup_turn_banner() -> void:
+	var banner_scene: PackedScene = load("res://scenes/ui/turn_banner.tscn")
+	if banner_scene:
+		var banner: TurnBanner = banner_scene.instantiate() as TurnBanner
+		ui_overlay.add_child(banner)
+
+		if _turn_manager:
+			_turn_manager.turn_started.connect(func(is_player_turn: bool) -> void:
+				banner.show_banner("PLAYER TURN" if is_player_turn else "ENEMY TURN")
+			)
 
 
 func _setup_turn_manager() -> void:
@@ -147,7 +163,10 @@ func _spawn_enemies() -> void:
 func _setup_camera() -> void:
 	# Camera centered on grid (approximate center of 12x12 grid)
 	if grid_renderer:
-		camera.position = grid_renderer.grid_to_world(5, 5, 0)
+		camera.global_position = grid_renderer.grid_to_world(5, 5, 0)
+
+	if _player:
+		camera.set_target(_player)
 
 
 func _input(event: InputEvent) -> void:

@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Visual Feedback Config Schema",
+  "type": "object",
+  "properties": {
+    "hit_stop": {
+      "type": "object",
+      "properties": {
+        "tiers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["threshold", "frames"],
+            "properties": {
+              "threshold": { "type": "integer" },
+              "frames": { "type": "integer" }
+            }
+          }
+        }
+      }
+    },
+    "screen_shake": {
+      "type": "object",
+      "properties": {
+        "intensity_mult": { "type": "number" },
+        "decay": { "type": "number" }
+      }
+    },
+    "floating_text": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["color", "duration", "offset"],
+        "properties": {
+          "color": { "type": "string" },
+          "duration": { "type": "number" },
+          "offset": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 }
+        }
+      }
+    },
+    "health_bar": {
+      "type": "object",
+      "properties": {
+        "lerp_speed": { "type": "number" },
+        "hide_delay": { "type": "number" }
+      }
+    },
+    "transitions": {
+      "type": "object",
+      "properties": {
+        "fade_duration": { "type": "number" }
+      }
+    }
+  }
+}

@@ -22,6 +22,10 @@ extends Node2D
 
 var _target_position: Vector2
 var _grid_renderer: GridRenderer
+var _status_bar: EntityStatusBar
+var _hit_flash_timer: float = 0.0
+var _hit_flash_duration: float = 0.1
+var _hit_stop_remaining: int = 0
 
 
 func _ready() -> void:
@@ -38,6 +42,8 @@ func _ready() -> void:
 
 	_setup_greybox()
 
+	_setup_status_bar()
+
 	if entity:
 		_connect_entity_signals()
 		_sync_to_entity()
@@ -45,6 +51,19 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
+	if _hit_stop_remaining > 0:
+		_hit_stop_remaining -= 1
+		return
+
+	if _hit_flash_timer > 0:
+		_hit_flash_timer -= delta
+		if _hit_flash_timer <= 0:
+			if base_sprite:
+				base_sprite.modulate = Color.WHITE
+		else:
+			if base_sprite:
+				base_sprite.modulate = Color.RED
+
 	if global_position.distance_to(_target_position) > 0.1:
 		var weight: float = minf(delta * lerp_speed, 1.0)
 		global_position = global_position.lerp(_target_position, weight)
@@ -84,6 +103,10 @@ func _connect_entity_signals() -> void:
 		entity.state_changed.connect(_on_entity_state_changed)
 	if not entity.hp_changed.is_connected(_on_entity_hp_changed):
 		entity.hp_changed.connect(_on_entity_hp_changed)
+	if not entity.damage_taken.is_connected(_on_entity_damage_taken):
+		entity.damage_taken.connect(_on_entity_damage_taken)
+	if not entity.ap_changed.is_connected(_on_entity_ap_changed):
+		entity.ap_changed.connect(_on_entity_ap_changed)
 
 
 func _disconnect_entity_signals() -> void:
@@ -99,6 +122,10 @@ func _disconnect_entity_signals() -> void:
 		entity.state_changed.disconnect(_on_entity_state_changed)
 	if entity.hp_changed.is_connected(_on_entity_hp_changed):
 		entity.hp_changed.disconnect(_on_entity_hp_changed)
+	if entity.damage_taken.is_connected(_on_entity_damage_taken):
+		entity.damage_taken.disconnect(_on_entity_damage_taken)
+	if entity.ap_changed.is_connected(_on_entity_ap_changed):
+		entity.ap_changed.disconnect(_on_entity_ap_changed)
 
 
 func _on_entity_position_changed(x: int, y: int) -> void:
@@ -121,6 +148,9 @@ func _on_entity_state_changed(state: Entity.State) -> void:
 
 
 func _on_entity_hp_changed(new_hp: int, old_hp: int) -> void:
+	if _status_bar:
+		_status_bar.updateHp(new_hp, entity.hp_max)
+
 	if new_hp < old_hp:
 		var app: Node = null
 		if has_node("ApparitionRenderer"):
@@ -130,6 +160,15 @@ func _on_entity_hp_changed(new_hp: int, old_hp: int) -> void:
 
 		if app and app.has_method("trigger_damage_effect"):
 			app.call("trigger_damage_effect")
+
+
+func _on_entity_damage_taken(amount: int, damage_type: String) -> void:
+	_trigger_hit_effects(amount, damage_type)
+
+
+func _on_entity_ap_changed(new_ap: int, old_ap: int) -> void:
+	if _status_bar:
+		_status_bar.updateAp(new_ap, GameConstants.AP_MAX)
 
 
 func _update_elevation_visuals(elevation: int) -> void:
@@ -182,6 +221,72 @@ func grid_to_world(x: int, y: int, elevation: int) -> Vector2:
 	if _grid_renderer:
 		return _grid_renderer.grid_to_world(x, y, elevation)
 	return Vector2.ZERO
+
+
+func _setup_status_bar() -> void:
+	var bar_scene: PackedScene = load("res://scenes/ui/entity_status_bar.tscn")
+	if bar_scene:
+		_status_bar = bar_scene.instantiate() as EntityStatusBar
+		add_child(_status_bar)
+		_status_bar.position = Vector2(-32, -60)  # Position above entity
+		if entity:
+			_status_bar.updateHp(entity.hp, entity.hp_max)
+			_status_bar.updateAp(entity.ap, GameConstants.AP_MAX)
+
+
+func _trigger_hit_effects(damage: int, damage_type: String = "PHYSICAL") -> void:
+	var loader: _ConfigLoader = AutoloadHelper.config_loader()
+
+	# Hit Flash
+	if loader:
+		var flash_config: Dictionary = loader.getValue("hit_flash", "", {})
+		if not flash_config.is_empty():
+			_hit_flash_duration = float(flash_config.get("duration", 0.1))
+	_hit_flash_timer = _hit_flash_duration
+
+	# Hit Stop
+	if loader:
+		var hit_stop_config: Dictionary = loader.getValue("hit_stop", "", {})
+		if hit_stop_config:
+			var tiers: Array = hit_stop_config.get("tiers", [])
+			for tier: Dictionary in tiers:
+				if damage >= tier.get("threshold", 0):
+					_hit_stop_remaining = tier.get("frames", 0)
+
+	# Screen Shake
+	var combat_room: CombatRoom = CombatRoom.instance
+	if combat_room and combat_room.camera and combat_room.camera.has_method("add_shake"):
+		combat_room.camera.call("add_shake", clampf(float(damage) / 20.0, 0.1, 0.5))
+
+	# Floating Text
+	_spawn_damage_number(damage, damage_type)
+
+
+func _spawn_damage_number(damage: int, damage_type: String) -> void:
+	var loader: _ConfigLoader = AutoloadHelper.config_loader()
+	var color: Color = Color.WHITE
+	var duration: float = 0.5
+	var offset_vec: Vector2 = Vector2(0, -40)
+
+	if loader:
+		var floating_config: Dictionary = loader.getValue("floating_text", "", {})
+		if floating_config and floating_config.has(damage_type):
+			var preset: Dictionary = floating_config[damage_type]
+			color = Color(preset.get("color", "#FFFFFF"))
+			duration = float(preset.get("duration", 0.5))
+			var offset_arr: Array = preset.get("offset", [0, -40])
+			offset_vec = Vector2(float(offset_arr[0]), float(offset_arr[1]))
+
+	var label := Label.new()
+	label.text = str(damage)
+	label.modulate = color
+	add_child(label)
+	label.position = offset_vec
+
+	var tween := create_tween()
+	tween.tween_property(label, "position", label.position + Vector2(0, -20), duration)
+	tween.parallel().tween_property(label, "modulate:a", 0.0, duration)
+	tween.tween_callback(label.queue_free)
 
 
 func _setup_greybox() -> void:
