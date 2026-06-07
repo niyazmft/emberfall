@@ -57,3 +57,9 @@ SKILL_STRIKE_EMBER_NAME,Strike Ember,Glutstreich,Golpe de Brasa,Frappe de Braise
 SKILL_STRIKE_EMBER_DESC,A fiery strike that deals damage.,Ein feuriger Schlag, der Schaden verursacht.,Un golpe ardiente que inflige daño.,Une frappe ardente qui inflige des dégâts.
 SKILL_QUICK_DASH_NAME,Quick Dash,Schneller Spurt,Carrera Rápida,Élan Rapide
 SKILL_QUICK_DASH_DESC,Dash forward to gain distance.,Spurte vorwärts, um Distanz zu gewinnen.,Corre hacia adelante para ganar distancia.,Élancez-vous pour gagner de la distance.
+dialogue.ui.speaker_default,Narrator,Erzähler,Narrador,Narrateur
+dialogue.ui.text_default,...,...,...,...
+dialogue.ui.continue_hint,Press [E] to continue,Drücken Sie [E] zum Fortfahren,Presione [E] para continuar,Appuyez sur [E] pour continuer
+dialogue.speaker.keeper,The Keeper,Der Wächter,El Guardián,Le Gardien
+dialogue.keeper.intro_01,The embers are fading. We must act quickly.,Die Glut verblasst. Wir müssen schnell handeln.,Las brasas se están desvaneciendo. Debemos actuar rápidamente.,Les braises s'estompent. Nous devons agir vite.
+dialogue.keeper.intro_02,I can feel the burden increasing.,Ich kann spüren, wie die Last zunimmt.,Puedo sentir que la carga aumenta.,Je sens que le fardeau s'alourdit.
