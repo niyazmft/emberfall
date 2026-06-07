@@ -7,14 +7,12 @@ extends Control
 @onready var hpBar: ProgressBar = %HPBar
 @onready var apContainer: HBoxContainer = %APContainer
 
-var _pip_scene: PackedScene
 var _lerp_speed: float = 10.0
 var _target_hp: float = 0.0
 
 
 func _ready() -> void:
 	_load_config()
-	_setup_ap_pips()
 
 
 func _load_config() -> void:
@@ -38,17 +36,22 @@ func updateHp(current: int, max_hp: int) -> void:
 
 
 func updateAp(current: int, max_ap: int) -> void:
-	# Clear existing
-	for child in apContainer.get_children():
-		child.queue_free()
+	# Update or add pips
+	var current_child_count: int = apContainer.get_child_count()
 
+	if max_ap > current_child_count:
+		for i in range(max_ap - current_child_count):
+			var pip: ColorRect = ColorRect.new()
+			pip.custom_minimum_size = Vector2(4, 8)
+			apContainer.add_child(pip)
+	elif max_ap < current_child_count:
+		for i in range(current_child_count - 1, max_ap - 1, -1):
+			var child: Node = apContainer.get_child(i)
+			child.queue_free()
+
+	# Re-color based on current AP
 	for i in range(max_ap):
-		var pip := ColorRect.new()
-		pip.custom_minimum_size = Vector2(4, 8)
-		pip.color = Color.YELLOW if i < current else Color(0.2, 0.2, 0.2)
-		apContainer.add_child(pip)
-
-
-func _setup_ap_pips() -> void:
-	# Initial setup if needed
-	pass
+		if i < apContainer.get_child_count():
+			var pip: ColorRect = apContainer.get_child(i) as ColorRect
+			if pip:
+				pip.color = Color.YELLOW if i < current else Color(0.2, 0.2, 0.2)

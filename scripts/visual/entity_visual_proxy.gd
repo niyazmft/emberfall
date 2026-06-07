@@ -42,7 +42,7 @@ func _ready() -> void:
 
 	_setup_greybox()
 
-	_setup_status_bar()
+	_setupStatusBar()
 
 	if entity:
 		_connect_entity_signals()
@@ -105,8 +105,8 @@ func _connect_entity_signals() -> void:
 		entity.hp_changed.connect(_on_entity_hp_changed)
 	if not entity.damage_taken.is_connected(_on_entity_damage_taken):
 		entity.damage_taken.connect(_on_entity_damage_taken)
-	if not entity.ap_changed.is_connected(_on_entity_ap_changed):
-		entity.ap_changed.connect(_on_entity_ap_changed)
+	if not entity.ap_changed.is_connected(_onEntityApChanged):
+		entity.ap_changed.connect(_onEntityApChanged)
 
 
 func _disconnect_entity_signals() -> void:
@@ -124,8 +124,8 @@ func _disconnect_entity_signals() -> void:
 		entity.hp_changed.disconnect(_on_entity_hp_changed)
 	if entity.damage_taken.is_connected(_on_entity_damage_taken):
 		entity.damage_taken.disconnect(_on_entity_damage_taken)
-	if entity.ap_changed.is_connected(_on_entity_ap_changed):
-		entity.ap_changed.disconnect(_on_entity_ap_changed)
+	if entity.ap_changed.is_connected(_onEntityApChanged):
+		entity.ap_changed.disconnect(_onEntityApChanged)
 
 
 func _on_entity_position_changed(x: int, y: int) -> void:
@@ -163,12 +163,12 @@ func _on_entity_hp_changed(new_hp: int, old_hp: int) -> void:
 
 
 func _on_entity_damage_taken(amount: int, damage_type: String) -> void:
-	_trigger_hit_effects(amount, damage_type)
+	_triggerHitEffects(amount, damage_type)
 
 
-func _on_entity_ap_changed(new_ap: int, old_ap: int) -> void:
+func _onEntityApChanged(p_newAp: int, _p_oldAp: int) -> void:
 	if _status_bar:
-		_status_bar.updateAp(new_ap, GameConstants.AP_MAX)
+		_status_bar.updateAp(p_newAp, GameConstants.AP_MAX)
 
 
 func _update_elevation_visuals(elevation: int) -> void:
@@ -223,7 +223,7 @@ func grid_to_world(x: int, y: int, elevation: int) -> Vector2:
 	return Vector2.ZERO
 
 
-func _setup_status_bar() -> void:
+func _setupStatusBar() -> void:
 	var bar_scene: PackedScene = load("res://scenes/ui/entity_status_bar.tscn")
 	if bar_scene:
 		_status_bar = bar_scene.instantiate() as EntityStatusBar
@@ -234,7 +234,7 @@ func _setup_status_bar() -> void:
 			_status_bar.updateAp(entity.ap, GameConstants.AP_MAX)
 
 
-func _trigger_hit_effects(damage: int, damage_type: String = "PHYSICAL") -> void:
+func _triggerHitEffects(damage: int, damageType: String = "PHYSICAL") -> void:
 	var loader: _ConfigLoader = AutoloadHelper.config_loader()
 
 	# Hit Flash
@@ -259,10 +259,10 @@ func _trigger_hit_effects(damage: int, damage_type: String = "PHYSICAL") -> void
 		combat_room.camera.call("add_shake", clampf(float(damage) / 20.0, 0.1, 0.5))
 
 	# Floating Text
-	_spawn_damage_number(damage, damage_type)
+	_spawnDamageNumber(damage, damageType)
 
 
-func _spawn_damage_number(damage: int, damage_type: String) -> void:
+func _spawnDamageNumber(p_damage: int, p_damageType: String) -> void:
 	var loader: _ConfigLoader = AutoloadHelper.config_loader()
 	var color: Color = Color.WHITE
 	var duration: float = 0.5
@@ -270,20 +270,21 @@ func _spawn_damage_number(damage: int, damage_type: String) -> void:
 
 	if loader:
 		var floating_config: Dictionary = loader.getValue("floating_text", "", {})
-		if floating_config and floating_config.has(damage_type):
-			var preset: Dictionary = floating_config[damage_type]
+		if floating_config and floating_config.has(p_damageType):
+			var preset: Dictionary = floating_config[p_damageType]
 			color = Color(preset.get("color", "#FFFFFF"))
 			duration = float(preset.get("duration", 0.5))
-			var offset_arr: Array = preset.get("offset", [0, -40])
-			offset_vec = Vector2(float(offset_arr[0]), float(offset_arr[1]))
+			var offset_arr: Variant = preset.get("offset", [0, -40])
+			if offset_arr is Array and offset_arr.size() >= 2:
+				offset_vec = Vector2(float(offset_arr[0]), float(offset_arr[1]))
 
-	var label := Label.new()
-	label.text = str(damage)
+	var label: Label = Label.new()
+	label.text = str(p_damage)
 	label.modulate = color
 	add_child(label)
 	label.position = offset_vec
 
-	var tween := create_tween()
+	var tween: Tween = create_tween()
 	tween.tween_property(label, "position", label.position + Vector2(0, -20), duration)
 	tween.parallel().tween_property(label, "modulate:a", 0.0, duration)
 	tween.tween_callback(label.queue_free)

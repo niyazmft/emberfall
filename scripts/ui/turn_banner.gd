@@ -14,7 +14,9 @@ func _ready() -> void:
 	_load_config()
 	modulate.a = 0.0
 
-	EventBus.entity_state_changed.connect(_on_entity_state_changed)
+	var eb: _EventBus = AutoloadHelper.event_bus()
+	if eb:
+		eb.entity_state_changed.connect(_on_entity_state_changed)
 	# Connect to other turn-related signals if available
 
 
@@ -26,12 +28,12 @@ func _load_config() -> void:
 			_fade_duration = feedback.get("fade_duration", 0.5)
 
 
-func show_banner(text: String, color: Color = Color.WHITE) -> void:
+func showBanner(text: String, color: Color = Color.WHITE) -> void:
 	label.text = text
 	background.color = color
 	background.color.a = 0.5
 
-	var tween := create_tween()
+	var tween: Tween = create_tween()
 	tween.tween_property(self, "modulate:a", 1.0, _fade_duration)
 	tween.tween_interval(1.5)
 	tween.tween_property(self, "modulate:a", 0.0, _fade_duration)
