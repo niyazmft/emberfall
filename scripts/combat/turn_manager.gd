@@ -22,12 +22,14 @@ var current_turn_index: int = -1
 var _player: Node2D
 var _enemies: Array[Node2D] = []
 var _lifecycle: Node
-var _is_processing_state: bool = false
+var _eventBus: _EventBus
+var _isProcessingState: bool = false
 
 
 # ── Lifecycle ───────────────────────────────────────────────────────
 func _ready() -> void:
 	_lifecycle = AutoloadHelper.entity_lifecycle()
+	_eventBus = AutoloadHelper.event_bus()
 	if _lifecycle and _lifecycle.has_signal("entity_state_changed"):
 		_lifecycle.connect("entity_state_changed", _on_entity_state_changed)
 
@@ -49,16 +51,16 @@ func _change_state(p_new_state: CombatState) -> void:
 	if current_state == CombatState.COMBAT_END and p_new_state != CombatState.IDLE:
 		return
 	current_state = p_new_state
-	if not _is_processing_state:
+	if not _isProcessingState:
 		_process_state_loop()
 
 
 func _process_state_loop() -> void:
-	_is_processing_state = true
+	_isProcessingState = true
 	var iterations: int = 0
 	const MAX_ITERATIONS: int = 200
 
-	while _is_processing_state and iterations < MAX_ITERATIONS:
+	while _isProcessingState and iterations < MAX_ITERATIONS:
 		var start_state: CombatState = current_state
 		_process_current_state()
 
@@ -70,7 +72,7 @@ func _process_state_loop() -> void:
 		push_error("TurnManager: Infinite state transition loop detected!")
 		current_state = CombatState.COMBAT_END
 
-	_is_processing_state = false
+	_isProcessingState = false
 
 
 func _process_current_state() -> void:
@@ -84,10 +86,14 @@ func _process_current_state() -> void:
 			if turn_order.is_empty():
 				current_state = CombatState.COMBAT_END
 				combat_ended.emit(false)
+				if _eventBus:
+					_eventBus.combat_ended.emit(false)
 				return
 
 			round_number += 1
 			round_started.emit(round_number)
+			if _eventBus:
+				_eventBus.round_started.emit(round_number)
 			current_turn_index = 0
 			_start_next_turn_logic()
 
@@ -96,19 +102,23 @@ func _process_current_state() -> void:
 			var actor: Node2D = turn_order[current_turn_index]
 			var entity: Entity = actor.get("entity") as Entity
 			turn_started.emit(entity, true)
+			if _eventBus:
+				_eventBus.turn_started.emit(entity, true)
 
 		CombatState.ENEMY_TURN:
 			_regen_current_actor_ap()
 			var enemy: Node2D = turn_order[current_turn_index]
 			var entity: Entity = enemy.get("entity") as Entity
 			turn_started.emit(entity, false)
+			if _eventBus:
+				_eventBus.turn_started.emit(entity, false)
 			_execute_enemy_turn(enemy)
 
 		CombatState.CHECK_END_CONDITIONS:
 			_check_end_conditions()
 
 		CombatState.COMBAT_END:
-			_is_processing_state = false
+			_isProcessingState = false
 
 
 func _calculate_initiative() -> void:
@@ -165,8 +175,8 @@ func _end_current_turn() -> void:
 	var current_actor: Node2D = turn_order[current_turn_index]
 	var entity: Entity = current_actor.get("entity") as Entity
 
-	if is_instance_valid(_lifecycle):
-		_lifecycle.call("process_end_of_turn")
+	if is_instance_valid(_lifecycle) and entity != null:
+		_lifecycle.call("process_end_of_turn", entity)
 
 	if entity:
 		turn_ended.emit(entity)
@@ -209,11 +219,15 @@ func _is_combat_over() -> bool:
 	if not player_alive:
 		_change_state(CombatState.COMBAT_END)
 		combat_ended.emit(false)
+		if _eventBus:
+			_eventBus.combat_ended.emit(false)
 		return true
 
 	if not enemies_alive:
 		_change_state(CombatState.COMBAT_END)
 		combat_ended.emit(true)
+		if _eventBus:
+			_eventBus.combat_ended.emit(true)
 		return true
 
 	return false

@@ -87,9 +87,11 @@ func _archer_behavior(enemy_pos: Vector2i, player_pos: Vector2i, dist: int) -> D
 	return {"type": "wait"}
 
 
-func _tank_behavior(_enemy_pos: Vector2i, _player_pos: Vector2i, _dist: int) -> Dictionary:
-	# Delegate to specialized TankAI resolver
-	return TankAI.decide_action(enemy_entity, _player_node, grid_system, self)
+func _tank_behavior(enemy_pos: Vector2i, player_pos: Vector2i, dist: int) -> Dictionary:
+	# Slow advance, heavy damage
+	# For Tank, we might want to only move if we have full AP or something,
+	# but for now it's same as grunt.
+	return _grunt_behavior(enemy_pos, player_pos, dist)
 
 
 func _get_next_tile_towards(target_pos: Vector2i, away: bool = false) -> Vector2i:
