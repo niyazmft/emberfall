@@ -27,11 +27,11 @@ func test_boss_ai_delegation() -> void:
 	enemy_scene.ai_controller = ai_controller
 	enemy_scene.archetype_id = "overgrown_guardian"
 
-	# overgrown_guardian has ai_behavior: "BOSS" in config
+	# overgrown_guardian has ai_behavior: "OVERGROWN_GUARDIAN" in config
 	enemy_scene._ready()
 
 	assert_that(ai_controller.behavior).is_equal(EnemyAIController.BehaviorType.BOSS)
-	assert_that(ai_controller.boss_behavior_name).is_equal("BOSS")
+	assert_that(ai_controller.boss_behavior_name).is_equal("OVERGROWN_GUARDIAN")
 
 	# Test behavior override
 	enemy_scene.behavior_override = "OVERGROWN_GUARDIAN"
@@ -65,6 +65,7 @@ func test_room_loader_boss_spawning() -> void:
 
 	RoomLoader.spawn_entities(room_data, container, enemies_node)
 
+	assert_that(enemies_node.get_child_count()).is_greater_than(0)
 	var boss_node: Node2D = enemies_node.get_child(0) as Node2D
 	assert_that(boss_node).is_not_null()
 	assert_that(boss_node.get("archetype_id")).is_equal("overgrown_guardian")

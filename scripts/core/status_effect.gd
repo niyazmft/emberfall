@@ -5,4 +5,4 @@ extends Resource
 ## Created by PR #229 but the class file was missing; added during PR #230 merge resolution.
 
 @export var id: String = ""
-@export var combat_formula_modifier: Dictionary = {}
+@export var combatFormulaModifier: Dictionary = {}

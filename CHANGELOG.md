@@ -22,4 +22,4 @@ All notable releases for the prototype are documented here.
 
 ### Known Issues
 
-- No macOS native Apple Silicon export (requires custom template).
+- No web/HTML5 export preset yet.

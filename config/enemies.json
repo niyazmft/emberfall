@@ -57,7 +57,7 @@
       "off": 25,
       "def_": 15,
       "spd": 2,
-      "ai_behavior": "BOSS",
+      "ai_behavior": "OVERGROWN_GUARDIAN",
       "biome_affinity": "biome1",
       "loot_table_id": "boss_loot"
     }

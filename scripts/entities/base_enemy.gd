@@ -107,10 +107,18 @@ func _apply_elite_modifiers() -> void:
 		if not prefix.is_empty():
 			entity.entity_name = prefix + " " + entity.entity_name
 
-		entity.hp_max = int(float(entity.hp_max) * float(mods.get("hp_mult", 1.0)))
-		entity.off = int(float(entity.off) * float(mods.get("off_mult", 1.0)))
-		entity.def_ = int(float(entity.def_) * float(mods.get("def_mult", 1.0)))
-		entity.spd = int(float(entity.spd) * float(mods.get("spd_mult", 1.0)))
+		entity.hp_max = DeterministicMath.damage_floor(
+			float(entity.hp_max) * float(mods.get("hp_mult", 1.0))
+		)
+		entity.off = DeterministicMath.damage_floor(
+			float(entity.off) * float(mods.get("off_mult", 1.0))
+		)
+		entity.def_ = DeterministicMath.damage_floor(
+			float(entity.def_) * float(mods.get("def_mult", 1.0))
+		)
+		entity.spd = DeterministicMath.damage_floor(
+			float(entity.spd) * float(mods.get("spd_mult", 1.0))
+		)
 
 
 func _setup_ai() -> void:

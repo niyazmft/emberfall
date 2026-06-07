@@ -44,18 +44,12 @@ func _ready() -> void:
 		global_position = _target_position  # Snap initially
 
 
-var _status_bar: Control = null
-
-
 func _process(delta: float) -> void:
 	if global_position.distance_to(_target_position) > 0.1:
 		var weight: float = minf(delta * lerp_speed, 1.0)
 		global_position = global_position.lerp(_target_position, weight)
 	else:
 		global_position = _target_position
-
-	if _status_bar:
-		_status_bar.global_position = global_position + Vector2(0, STATUS_BAR_VERTICAL_OFFSET)
 
 
 func _find_grid_renderer(node: Node) -> GridRenderer:
@@ -188,22 +182,6 @@ func grid_to_world(x: int, y: int, elevation: int) -> Vector2:
 	if _grid_renderer:
 		return _grid_renderer.grid_to_world(x, y, elevation)
 	return Vector2.ZERO
-
-
-func _setup_status_bar() -> void:
-	var status_bar: EntityStatusBar = null
-	if not has_node("EntityStatusBar"):
-		var status_bar_scene: PackedScene = load("res://scenes/ui/entity_status_bar.tscn")
-		if status_bar_scene:
-			status_bar = status_bar_scene.instantiate() as EntityStatusBar
-			status_bar.name = "EntityStatusBar"
-			status_bar.top_level = true
-			add_child(status_bar)
-			if entity:
-				status_bar.setup(entity)
-	else:
-		status_bar = get_node("EntityStatusBar") as EntityStatusBar
-	_status_bar = status_bar
 
 
 func _setup_greybox() -> void:
