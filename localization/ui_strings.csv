@@ -17,6 +17,11 @@ menu.title.continue,Continue,Fortsetzen,Continuar,Continuer
 menu.title.new_game,New Game,Neues Spiel,Nuevo Juego,Nouveau Jeu
 menu.title.settings,Settings,Einstellungen,Ajustes,Paramètres
 menu.title.quit,Quit,Beenden,Salir,Quitter
+PHASE_COMBAT_STARTED,COMBAT STARTED,KAMPF BEGONNEN,COMBATE INICIADO,COMBAT COMMENCÉ
+PHASE_PLAYER_TURN,PLAYER TURN,SPIELERZUG,TURNO DEL JUGADOR,TOUR DU JOUEUR
+PHASE_ENEMY_TURN,ENEMY TURN,GEGNERZUG,TURNO DEL ENEMIGO,TOUR DE L'ENNEMI
+PHASE_VICTORY,VICTORY,SIEG,VICTORIA,VICTOIRE
+PHASE_DEFEAT,DEFEAT,NIEDERLAGE,DERROTA,DÉFAITE
 ITEM_RUSTED_BLADE_NAME,Rusted Blade,Rostige Klinge,Hoja Oxidada,Lame Rouillée
 ITEM_RUSTED_BLADE_DESC,A worn out blade but still sharp enough.,Eine abgenutzte Klinge aber noch scharf genug.,Una hoja desgastada pero lo suficientemente afilada.,Une lame usée mais encore assez tranchante.
 ITEM_LEATHER_VEST_NAME,Leather Vest,Lederweste,Chaleco de Cuero,Gilet en Cuir
