@@ -39,6 +39,29 @@ static func compute_damage(
 	return DeterministicMath.damage_floor(raw)
 
 
+static func compute_damage_with_effects(
+	attacker: Entity,
+	defender: Entity,
+	cover_tiles: Array[Vector2i],
+	elemental_modifier: float = 1.0,
+	memory_synergy: float = 0.0
+) -> int:
+	var pos_mod: float = calculate_position_modifier(attacker, defender, cover_tiles)
+
+	var damage_dealt_mult: float = 1.0
+	for effect: StatusEffect in attacker.status_effects:
+		damage_dealt_mult *= effect.combat_formula_modifier.get("damage_dealt_mult", 1.0)
+
+	var damage_taken_mult: float = 1.0
+	for effect: StatusEffect in defender.status_effects:
+		damage_taken_mult *= effect.combat_formula_modifier.get("damage_taken_mult", 1.0)
+
+	var base_dmg: int = compute_damage(attacker.off, defender.def_, pos_mod, elemental_modifier, memory_synergy)
+	var final_dmg: float = float(base_dmg) * damage_dealt_mult * damage_taken_mult
+
+	return DeterministicMath.damage_floor(final_dmg)
+
+
 static func compute_damage_from_entities(
 	attacker: Entity,
 	defender: Entity,

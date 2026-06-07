@@ -10,6 +10,7 @@ const ITEMS_PATH := "res://config/items.json"
 const EQUIPMENT_PATH := "res://config/entity_equipment.json"
 const ENEMIES_PATH := "res://config/enemies.json"
 const SKILLS_PATH := "res://config/skills.json"
+const STATUS_EFFECTS_PATH := "res://config/status_effects.json"
 const ACCESSIBILITY_PATH := "res://config/accessibility.json"
 
 # Fallback defaults (sensible so the game runs even if config is missing)
@@ -55,6 +56,7 @@ var _loadedFiles: Dictionary = {
 	EQUIPMENT_PATH: false,
 	ENEMIES_PATH: false,
 	SKILLS_PATH: false,
+	STATUS_EFFECTS_PATH: false,
 	ACCESSIBILITY_PATH: false,
 }
 
@@ -73,6 +75,7 @@ func _loadConfig() -> void:
 	_loadJsonToConfig(EQUIPMENT_PATH)
 	_loadJsonToConfig(ENEMIES_PATH)
 	_loadJsonToConfig(SKILLS_PATH)
+	_loadJsonToConfig(STATUS_EFFECTS_PATH)
 	_loadJsonToConfig(ACCESSIBILITY_PATH)
 
 

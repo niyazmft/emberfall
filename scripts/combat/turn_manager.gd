@@ -166,7 +166,7 @@ func _end_current_turn() -> void:
 	var entity: Entity = current_actor.get("entity") as Entity
 
 	if is_instance_valid(_lifecycle):
-		_lifecycle.call("process_end_of_turn")
+		_lifecycle.call("process_end_of_turn", entity)
 
 	if entity:
 		turn_ended.emit(entity)
