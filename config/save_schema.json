@@ -41,20 +41,7 @@
     "room_queue": "Array<Dictionary>",
     "biome_index": "int",
     "player_entity_snapshot": "Dictionary — full Entity serialization",
-    "inventory_snapshot": {
-      "inventory": [
-        {
-          "item_id": "string",
-          "quantity": "int"
-        }
-      ],
-      "equipment": {
-        "weapon": "string | null",
-        "armor": "string | null",
-        "accessory_1": "string | null",
-        "accessory_2": "string | null"
-      }
-    },
+    "inventory_snapshot": "Dictionary",
     "burden_run_snapshot": {
       "trigger_count_this_run": "int — 0 at run start, increments on each burden event trigger",
       "last_noun_index_used": "int — copied from memory_state.echo_flags.burden_noun_index at run start; may update during run"

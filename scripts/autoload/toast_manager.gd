@@ -30,9 +30,13 @@ func _process_queue() -> void:
 	_is_displaying = true
 	var data: Dictionary = _queue.pop_front() as Dictionary
 	var toast: Node = TOAST_SCENE.instantiate()
-	LayerManager.add_child(toast)
+	LayerManager.add_child.call_deferred(toast)
+
 	if toast.has_method("display"):
-		toast.call("display", str(data.get("key", "")), int(data.get("type", 1)), DISMISS_TIME)
+		# Using call_deferred for display to ensure node is in tree
+		toast.call_deferred(
+			"display", str(data.get("key", "")), int(data.get("type", 1)), DISMISS_TIME
+		)
 
 	if toast.has_signal("finished"):
 		toast.connect("finished", _on_toast_finished)
