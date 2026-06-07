@@ -7,8 +7,10 @@ class_name _AmbientNarrator
 ## captions via CaptionManager when specific keys are triggered.
 
 const DATA_PATH := "res://data/ambient_narrator.json"
+const SUPPORTED_VERSION := "1.0.0"
 
 var _triggers: Dictionary = {}
+var _version: String = ""
 var _init_time_ms: int = 0
 
 
@@ -17,7 +19,7 @@ func _ready() -> void:
 	_load_data()
 	_connect_signals()
 	_init_time_ms = int(Time.get_ticks_msec() - start_time)
-	_print_debug("Initialized in %dms" % _init_time_ms)
+	_print_debug("Initialized version %s in %dms" % [_version, _init_time_ms])
 
 
 func _load_data() -> void:
@@ -25,12 +27,24 @@ func _load_data() -> void:
 		var file := FileAccess.open(DATA_PATH, FileAccess.READ)
 		if file:
 			var json_text := file.get_as_text()
+			file.close()
 			var parsed: Variant = JSON.parse_string(json_text)
-			if parsed is Dictionary and parsed.has("triggers"):
+			if parsed is Dictionary and parsed.has("triggers") and parsed.has("version"):
+				_version = str(parsed["version"])
+				if _version != SUPPORTED_VERSION:
+					push_warning(
+						(
+							"AmbientNarrator: Unsupported version %s. Expected %s."
+							% [_version, SUPPORTED_VERSION]
+						)
+					)
+
 				_triggers = parsed["triggers"]
-				_print_debug("Loaded %d triggers" % _triggers.size())
+				_print_debug("Loaded %d triggers from version %s" % [_triggers.size(), _version])
 			else:
-				push_warning("AmbientNarrator: Invalid JSON format in %s" % DATA_PATH)
+				push_warning(
+					"AmbientNarrator: Invalid JSON format or missing version in %s" % DATA_PATH
+				)
 		else:
 			push_error("AmbientNarrator: Failed to open %s" % DATA_PATH)
 	else:
@@ -50,12 +64,13 @@ func trigger(trigger_key: String) -> void:
 		return
 
 	var data: Dictionary = _triggers[trigger_key]
-	var text: String = data.get("text", "")
-	var loc_key: String = data.get("localization_key", "")
-	var duration: float = data.get("duration_sec", 4.0)
+	var text: String = str(data.get("text", ""))
+	var loc_key: String = str(data.get("localization_key", ""))
+	var duration: float = float(data.get("duration_sec", 4.0))
 
-	if AutoloadHelper.caption_manager():
-		AutoloadHelper.caption_manager().schedule(
+	var mgr: _CaptionManager = AutoloadHelper.caption_manager()
+	if mgr != null:
+		mgr.schedule(
 			text,
 			_CaptionManager.Channel.AMBIENT,
 			0.0,
@@ -64,6 +79,10 @@ func trigger(trigger_key: String) -> void:
 			loc_key
 		)
 		_print_debug("Triggered: %s" % trigger_key)
+	else:
+		push_warning(
+			"AmbientNarrator: Failed to trigger '%s' because CaptionManager is nil." % trigger_key
+		)
 
 
 func _print_debug(msg: String) -> void:

@@ -78,6 +78,11 @@ static func ambient_narrator() -> _AmbientNarrator:
 	return get_autoload("AmbientNarrator") as _AmbientNarrator
 
 
+## Returns the CutscenePlayer autoload, or null.
+static func cutscene_player() -> _CutscenePlayer:
+	return get_autoload("CutscenePlayer") as _CutscenePlayer
+
+
 ## Returns the InventoryManager autoload, or null.
 static func inventory_manager() -> Node:
 	return get_autoload("InventoryManager")

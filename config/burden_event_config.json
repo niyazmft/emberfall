@@ -21,8 +21,8 @@
     "variant_hash_seed_formula": "run_seed + encounter_room_index + variant_state",
     "noun_rotation_seed_formula": "seed_room_topology hash mod noun_pool size",
     "noun_pool_size": 8,
-    "variant_first_pool_size": 3,
-    "variant_repeat_pool_size": 2,
+    "variant_first_pool_size": 5,
+    "variant_repeat_pool_size": 4,
     "fallback_variant_id": "BE_B_FIRST_A"
   },
   "numbness_cap": {
