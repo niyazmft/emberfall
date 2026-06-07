@@ -41,6 +41,7 @@ limits/message_queue/max_size=4096
 EventBus="*res://scripts/autoload/event_bus.gd"
 SafeZoneManager="*res://scripts/autoload/safe_zone_manager.gd"
 ConfigLoader="*res://scripts/autoload/config_loader.gd"
+DialogueManager="*res://scripts/autoload/dialogue_manager.gd"
 BurdenManager="*res://scripts/autoload/burden_manager.gd"
 CaptionManager="*res://scripts/autoload/caption_manager.gd"
 AudioMiddleware="*res://scripts/autoload/audio_middleware.gd"
