@@ -78,18 +78,12 @@ func _process_current_state() -> void:
 		CombatState.COMBAT_START:
 			round_number = 0
 			current_state = CombatState.INITIATIVE_PHASE
-			var eb: _EventBus = AutoloadHelper.event_bus()
-			if eb:
-				eb.combat_started.emit()
 
 		CombatState.INITIATIVE_PHASE:
 			_calculate_initiative()
 			if turn_order.is_empty():
 				current_state = CombatState.COMBAT_END
 				combat_ended.emit(false)
-				var eb: _EventBus = AutoloadHelper.event_bus()
-				if eb:
-					eb.combat_ended.emit(false)
 				return
 
 			round_number += 1
@@ -102,18 +96,12 @@ func _process_current_state() -> void:
 			var actor: Node2D = turn_order[current_turn_index]
 			var entity: Entity = actor.get("entity") as Entity
 			turn_started.emit(entity, true)
-			var eb: _EventBus = AutoloadHelper.event_bus()
-			if eb:
-				eb.turn_started.emit(entity, true)
 
 		CombatState.ENEMY_TURN:
 			_regen_current_actor_ap()
 			var enemy: Node2D = turn_order[current_turn_index]
 			var entity: Entity = enemy.get("entity") as Entity
 			turn_started.emit(entity, false)
-			var eb: _EventBus = AutoloadHelper.event_bus()
-			if eb:
-				eb.turn_started.emit(entity, false)
 			_execute_enemy_turn(enemy)
 
 		CombatState.CHECK_END_CONDITIONS:
@@ -221,17 +209,11 @@ func _is_combat_over() -> bool:
 	if not player_alive:
 		_change_state(CombatState.COMBAT_END)
 		combat_ended.emit(false)
-		var eb: _EventBus = AutoloadHelper.event_bus()
-		if eb:
-			eb.combat_ended.emit(false)
 		return true
 
 	if not enemies_alive:
 		_change_state(CombatState.COMBAT_END)
 		combat_ended.emit(true)
-		var eb: _EventBus = AutoloadHelper.event_bus()
-		if eb:
-			eb.combat_ended.emit(true)
 		return true
 
 	return false

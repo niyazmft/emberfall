@@ -61,6 +61,9 @@ var _trail_timer: float = 0.0
 var _trail_index: int = 0
 var _master_alpha: float = 1.0
 
+var _hit_flash_tween: Tween
+var _hit_flash_weight: float = 0.0
+
 ## Shared shader material for tinting.
 var _tint_material: ShaderMaterial
 
@@ -191,11 +194,27 @@ func _apply_rig_config() -> void:
 func trigger_recoil() -> void:
 	if state_machine:
 		state_machine.cmd_recoil()
+	trigger_hit_flash()
 
 
 ## Alias for trigger_recoil() to match damage effect naming.
 func trigger_damage_effect() -> void:
 	trigger_recoil()
+
+
+## Triggers a white flash on all apparitions.
+func trigger_hit_flash() -> void:
+	if _hit_flash_tween:
+		_hit_flash_tween.kill()
+
+	_hit_flash_tween = create_tween()
+	_hit_flash_weight = 1.0
+	(
+		_hit_flash_tween
+		. tween_property(self, "_hit_flash_weight", 0.0, 0.15)
+		. set_trans(Tween.TRANS_QUAD)
+		. set_ease(Tween.EASE_OUT)
+	)
 
 
 ## Call every frame to sync position to owner.
@@ -398,6 +417,7 @@ func _update_shader_uniforms(_delta: float) -> void:
 		_tint_material.set_shader_parameter("u_dissolve_threshold", dissolve_threshold)
 		_tint_material.set_shader_parameter("u_shear_intensity", shear_intensity)
 		_tint_material.set_shader_parameter("u_intensity", breathing_intensity)
+		_tint_material.set_shader_parameter("u_hit_flash", _hit_flash_weight)
 
 
 func _update_trail(delta: float) -> void:

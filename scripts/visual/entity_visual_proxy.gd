@@ -23,6 +23,15 @@ extends Node2D
 var _target_position: Vector2
 var _grid_renderer: GridRenderer
 
+var _hit_flash_tween: Tween
+var _hit_flash_weight: float = 0.0:
+	set(p_value):
+		_hit_flash_weight = p_value
+		if base_sprite and base_sprite.material is ShaderMaterial:
+			(base_sprite.material as ShaderMaterial).set_shader_parameter(
+				"u_hit_flash", _hit_flash_weight
+			)
+
 
 func _ready() -> void:
 	var combat_room: Node = get_node_or_null("/root/CombatRoom")
@@ -122,6 +131,8 @@ func _on_entity_state_changed(state: Entity.State) -> void:
 
 func _on_entity_hp_changed(new_hp: int, old_hp: int) -> void:
 	if new_hp < old_hp:
+		trigger_hit_flash()
+
 		var app: Node = null
 		if has_node("ApparitionRenderer"):
 			app = get_node("ApparitionRenderer")
@@ -130,6 +141,20 @@ func _on_entity_hp_changed(new_hp: int, old_hp: int) -> void:
 
 		if app and app.has_method("trigger_damage_effect"):
 			app.call("trigger_damage_effect")
+
+
+func trigger_hit_flash() -> void:
+	if _hit_flash_tween:
+		_hit_flash_tween.kill()
+
+	_hit_flash_tween = create_tween()
+	self._hit_flash_weight = 1.0
+	(
+		_hit_flash_tween
+		. tween_property(self, "_hit_flash_weight", 0.0, 0.15)
+		. set_trans(Tween.TRANS_QUAD)
+		. set_ease(Tween.EASE_OUT)
+	)
 
 
 func _update_elevation_visuals(elevation: int) -> void:
@@ -193,6 +218,11 @@ func _setup_greybox() -> void:
 		base_sprite.texture = ImageTexture.create_from_image(img)
 		base_sprite.offset = Vector2(0, -24)
 		add_child(base_sprite)
+
+	if base_sprite and not base_sprite.material:
+		var mat := ShaderMaterial.new()
+		mat.shader = load("res://assets/shaders/sprite_base.gdshader")
+		base_sprite.material = mat
 
 	if not shadow_sprite:
 		shadow_sprite = Sprite2D.new()
