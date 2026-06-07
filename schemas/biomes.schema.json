@@ -1,40 +1,23 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Biome Configuration Schema",
-  "description": "Combined schema for biome definitions with procedural generation and narrative flavor.",
+  "title": "Biome Definitions Schema",
   "type": "object",
-  "additionalProperties": {
-    "type": "object",
-    "additionalProperties": false,
-    "properties": {
-      "id": { "type": "string" },
-      "name": { "type": "string" },
-      "name_key": { "type": "string" },
-      "elevation_flavor": {
+  "required": ["biomes"],
+  "properties": {
+    "biomes": {
+      "type": "object",
+      "additionalProperties": {
         "type": "object",
-        "additionalProperties": { "type": "string" }
-      },
-      "room_templates": {
-        "type": "array",
-        "items": { "type": "string" }
-      },
-      "generation_params": {
-        "type": "object",
-        "additionalProperties": false,
+        "required": ["id", "name_key", "elevation_flavor"],
         "properties": {
-          "cover_density": { "type": "number", "minimum": 0, "maximum": 1 },
-          "elevation_min": { "type": "integer", "minimum": 0, "maximum": 2 },
-          "elevation_max": { "type": "integer", "minimum": 0, "maximum": 2 },
-          "blocked_density": { "type": "number", "minimum": 0, "maximum": 1 },
-          "hazard_density": { "type": "number", "minimum": 0, "maximum": 1 },
-          "hazard_types": {
-            "type": "array",
-            "items": { "type": "string" }
+          "id": { "type": "string" },
+          "name_key": { "type": "string" },
+          "elevation_flavor": {
+            "type": "object",
+            "additionalProperties": { "type": "string" }
           }
-        },
-        "required": ["cover_density", "elevation_min", "elevation_max", "blocked_density"]
+        }
       }
-    },
-    "required": ["name", "room_templates", "generation_params"]
+    }
   }
 }
