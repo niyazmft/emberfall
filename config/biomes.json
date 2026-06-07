@@ -1,0 +1,22 @@
+{
+  "biomes": [
+    {
+      "id": "biome1",
+      "name_key": "BIOME_1_NAME",
+      "directory": "biome1",
+      "available_rooms": 12
+    },
+    {
+      "id": "biome2",
+      "name_key": "BIOME_2_NAME",
+      "directory": "biome2",
+      "available_rooms": 12
+    },
+    {
+      "id": "biome3",
+      "name_key": "BIOME_3_NAME",
+      "directory": "biome3",
+      "available_rooms": 12
+    }
+  ]
+}

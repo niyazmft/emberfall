@@ -40,7 +40,8 @@
     "ROOMS_PER_BIOME_MIN": 8,
     "ROOMS_PER_BIOME_MAX": 12,
     "ECHO_COUNT": "BIOME_COUNT - 1",
-    "DYING_DURATION_TURNS": 1
+    "DYING_DURATION_TURNS": 1,
+    "BIOMES_CONFIG_PATH": "res://config/biomes.json"
   },
   "golden_seed": "0xDEADBEEF",
   "grid": {

@@ -6,7 +6,11 @@ extends Node
 
 const ROOMS_PATH := "res://config/rooms/"
 const KEEPER_SCENE_PATH := "res://scenes/keeper.tscn"
-const ENEMY_SCENES := {"grunt": "res://scenes/enemies/enemy_grunt.tscn"}
+const ENEMY_SCENES := {
+	"grunt": "res://scenes/enemies/enemy_grunt.tscn",
+	"archer": "res://scenes/enemies/enemy_archer.tscn",
+	"tank": "res://scenes/enemies/enemy_tank.tscn"
+}
 
 
 ## Load room JSON data by ID.
@@ -116,6 +120,9 @@ static func _spawn_encounter(encounter: Dictionary, container: Node, enemies_nod
 		var y: int = int(d.get("y", 0))
 
 		var enemy := enemy_scene.instantiate() as Node2D
+		if "archetype_id" in enemy:
+			enemy.set("archetype_id", enemy_type)
+
 		if enemies_node:
 			enemies_node.add_child(enemy)
 		else:

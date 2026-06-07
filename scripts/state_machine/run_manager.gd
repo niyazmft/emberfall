@@ -466,16 +466,28 @@ func _action_start_run(_ctx: Dictionary) -> void:
 func _action_generate_rooms(_ctx: Dictionary) -> void:
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.seed = run_seed
+
+	var config_loader := AutoloadHelper.config_loader()
+	var biomes_data: Array = []
+	if config_loader:
+		biomes_data = config_loader.getValue("biomes", "", []) as Array
+
 	for b: int in range(biome_count):
 		var count: int = rng.randi_range(rooms_per_biome_min, rooms_per_biome_max)
-		var biome_subpath := "biome%d" % (b + 1)
+
+		var biome_info: Dictionary = {}
+		if b < biomes_data.size():
+			biome_info = biomes_data[b] as Dictionary
+
+		var available_rooms: int = int(biome_info.get("available_rooms", 5))
+
 		for r: int in range(count):
 			var current_room_idx: int = room_queue.size()
-			# Determine room ID based on available files in biome directory
-			# Fallback to standard rooms if biome directory doesn't have many
 			var room_id := ""
-			if b < 3:  # We only generated for 3 biomes
-				room_id = "room_biome%d_%02d" % [b + 1, rng.randi_range(1, 12)]
+
+			if not biome_info.is_empty():
+				var room_num: int = rng.randi_range(1, available_rooms)
+				room_id = "room_%s_%02d" % [biome_info.get("id", "standard"), room_num]
 			else:
 				room_id = "room_standard_0%d" % (rng.randi_range(1, 5))
 
