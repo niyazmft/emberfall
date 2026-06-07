@@ -4,14 +4,14 @@ extends Label
 ## FloatingText
 ## Handles the visual animation and lifecycle of a floating numeric popup.
 
-@export var travel_distance: float = 64.0
+@export var travelDistance: float = 64.0
 @export var duration: float = 1.0
 @export var spread: float = 16.0
 
 
 func _ready() -> void:
-	# Randomize horizontal offset slightly
-	position.x += randf_range(-spread, spread)
+	# Randomize horizontal offset slightly (deterministic)
+	position.x += DeterministicMath.randf_range(-spread, spread)
 
 	_animate()
 
@@ -36,7 +36,7 @@ func _animate() -> void:
 	# Move upward
 	(
 		tween
-		. tween_property(self, "position:y", position.y - travel_distance, duration)
+		. tween_property(self, "position:y", position.y - travelDistance, duration)
 		. set_trans(Tween.TRANS_QUAD)
 		. set_ease(Tween.EASE_OUT)
 	)

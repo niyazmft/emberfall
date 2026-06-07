@@ -24,9 +24,6 @@ extends Control
 @onready var turn_label: Label = %TurnLabel
 @onready var round_label: Label = %RoundLabel
 
-# Quest Display
-@onready var quest_container: VBoxContainer = %QuestContainer
-
 var _player_entity: Entity
 var _turn_manager: TurnManager
 var _combat_input: CombatInput
@@ -42,13 +39,6 @@ func _ready() -> void:
 	move_button.pressed.connect(_on_move_pressed)
 	attack_button.pressed.connect(_on_attack_pressed)
 	end_turn_button.pressed.connect(_on_end_turn_pressed)
-
-	# Quest Tracker
-	var qt: _QuestTracker = AutoloadHelper.quest_tracker()
-	if qt:
-		qt.quests_updated.connect(_update_quest_list)
-		qt.quest_progressed.connect(_on_quest_progressed)
-		_update_quest_list()
 
 
 func setup(player_entity: Entity, turn_manager: TurnManager, combat_input: CombatInput) -> void:
@@ -75,47 +65,6 @@ func setup(player_entity: Entity, turn_manager: TurnManager, combat_input: Comba
 			_combat_input.targeting_started.connect(_on_targeting_started)
 		if not _combat_input.attack_executed.is_connected(_on_attack_executed):
 			_combat_input.attack_executed.connect(_on_attack_executed)
-
-
-func _update_quest_list() -> void:
-	# Clear existing quest entries (except the title label)
-	for child: Node in quest_container.get_children():
-		if child is Label and child.name.begins_with("Quest_"):
-			quest_container.remove_child(child)
-			child.free()
-
-	var qt: _QuestTracker = AutoloadHelper.quest_tracker()
-	if not qt:
-		return
-
-	var activeQuests: Array[Dictionary] = qt.get_active_quests()
-	for quest: Dictionary in activeQuests:
-		var label: Label = Label.new()
-		label.name = "Quest_" + quest["id"]
-		label.add_theme_font_size_override("font_size", 12)
-		_update_quest_label(label, quest)
-		quest_container.add_child(label)
-
-
-func _update_quest_label(label: Label, q: Dictionary) -> void:
-	var status: String = "[DONE]" if q["completed"] else "[%d/%d]" % [q["current"], q["goal"]]
-	label.text = "%s: %s" % [q["name"], status]
-	if q["completed"]:
-		label.modulate = Color.GREEN
-	else:
-		label.modulate = Color.WHITE
-
-
-func _on_quest_progressed(questId: String, _current: int, _goal: int) -> void:
-	var label: Label = quest_container.get_node_or_null("Quest_" + questId) as Label
-	if label:
-		var qt: _QuestTracker = AutoloadHelper.quest_tracker()
-		if qt:
-			var activeQuests: Array[Dictionary] = qt.get_active_quests()
-			for quest: Dictionary in activeQuests:
-				if quest["id"] == questId:
-					_update_quest_label(label, quest)
-					break
 
 
 func update_player_stats(entity: Entity) -> void:

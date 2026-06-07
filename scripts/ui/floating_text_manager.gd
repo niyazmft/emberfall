@@ -4,7 +4,7 @@ extends Control
 ## FloatingTextManager
 ## Orchestrates the spawning of numeric popups based on world-space signals.
 
-const FLOATING_TEXT_SCENE: PackedScene = preload("res://scenes/ui/floating_text.tscn")
+const floatingTextScene: PackedScene = preload("res://scenes/ui/floating_text.tscn")
 
 
 func _ready() -> void:
@@ -14,20 +14,20 @@ func _ready() -> void:
 
 
 ## Spawns a floating text at the given world position.
-func spawn_text(value: int, global_pos: Vector2) -> void:
+func spawnText(value: int, globalPos: Vector2) -> void:
 	if value == 0:
 		return
 
-	var floating_text: FloatingText = FLOATING_TEXT_SCENE.instantiate() as FloatingText
+	var floatingText: FloatingText = floatingTextScene.instantiate() as FloatingText
 
 	# Convert world position to screen position (CanvasLayer space)
 	# get_viewport().get_canvas_transform() accounts for Camera2D
-	var screen_pos: Vector2 = get_viewport().get_canvas_transform() * global_pos
+	var screenPos: Vector2 = get_viewport().get_canvas_transform() * globalPos
 
-	floating_text.position = screen_pos
-	floating_text.setup(value)
+	floatingText.position = screenPos
+	floatingText.setup(value)
 
 	# add_child() triggers _ready() which starts the animation.
 	# We call it AFTER setup() and setting position to ensure the animation
 	# starts from the correct location.
-	add_child(floating_text)
+	add_child(floatingText)
