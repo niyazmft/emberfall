@@ -1,0 +1,26 @@
+{
+  "vanguard": {
+    "name_prefix": "Vanguard",
+    "hp_mult": 1.5,
+    "off_mult": 1.2,
+    "def_mult": 1.0,
+    "spd_mult": 1.1,
+    "ability_flags": ["fast_init"]
+  },
+  "bulwark": {
+    "name_prefix": "Bulwark",
+    "hp_mult": 2.0,
+    "off_mult": 0.8,
+    "def_mult": 2.0,
+    "spd_mult": 0.7,
+    "ability_flags": ["unyielding"]
+  },
+  "stinger": {
+    "name_prefix": "Stinger",
+    "hp_mult": 0.8,
+    "off_mult": 2.0,
+    "def_mult": 0.5,
+    "spd_mult": 1.5,
+    "ability_flags": ["toxic_strike"]
+  }
+}

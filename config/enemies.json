@@ -51,6 +51,15 @@
       "ai_behavior": "GRUNT",
       "biome_affinity": "ANY",
       "loot_table_id": "grunt_loot"
+    },
+    "overgrown_guardian": {
+      "hp_max": 300,
+      "off": 25,
+      "def_": 15,
+      "spd": 2,
+      "ai_behavior": "BOSS",
+      "biome_affinity": "biome1",
+      "loot_table_id": "boss_loot"
     }
   }
 }

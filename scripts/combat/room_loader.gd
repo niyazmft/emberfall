@@ -224,7 +224,17 @@ static func _spawn_encounter(encounter: Dictionary, container: Node, enemies_nod
 
 		var enemy := enemy_scene.instantiate() as Node2D
 		if "archetype_id" in enemy:
-			enemy.set("archetype_id", enemy_type)
+			var arch_override: String = encounter.get("archetype_override", "")
+			if not arch_override.is_empty():
+				enemy.set("archetype_id", arch_override)
+			else:
+				enemy.set("archetype_id", enemy_type)
+
+		if "elite_type" in enemy:
+			enemy.set("elite_type", encounter.get("elite_type", ""))
+
+		if "behavior_override" in enemy:
+			enemy.set("behavior_override", encounter.get("behavior_override", ""))
 
 		if enemies_node:
 			enemies_node.add_child(enemy)
