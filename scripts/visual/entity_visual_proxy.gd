@@ -18,6 +18,7 @@ extends Node2D
 @export var base_sprite: Sprite2D
 @export var shadow_sprite: Sprite2D
 @export var height_indicator: CanvasItem
+@export var statusBar: Node
 @export var lerp_speed: float = 10.0
 
 var _target_position: Vector2
@@ -51,6 +52,12 @@ func _process(delta: float) -> void:
 	else:
 		global_position = _target_position
 
+	if statusBar and statusBar is Control:
+		var sb: Control = statusBar as Control
+		if sb.top_level:
+			# Position status bar above the entity in world space
+			sb.global_position = global_position + Vector2(0, -60)
+
 
 func _find_grid_renderer(node: Node) -> GridRenderer:
 	if node is GridRenderer:
@@ -70,6 +77,9 @@ func _sync_to_entity() -> void:
 	_on_entity_facing_changed(entity.facing_x, entity.facing_y)
 	_on_entity_state_changed(entity.state)
 
+	if statusBar and statusBar.has_method("setup"):
+		statusBar.call("setup", entity)
+
 
 func _connect_entity_signals() -> void:
 	if not entity:
@@ -84,6 +94,8 @@ func _connect_entity_signals() -> void:
 		entity.state_changed.connect(_on_entity_state_changed)
 	if not entity.hp_changed.is_connected(_on_entity_hp_changed):
 		entity.hp_changed.connect(_on_entity_hp_changed)
+	if not entity.ap_changed.is_connected(_onEntityApChanged):
+		entity.ap_changed.connect(_onEntityApChanged)
 
 
 func _disconnect_entity_signals() -> void:
@@ -99,6 +111,8 @@ func _disconnect_entity_signals() -> void:
 		entity.state_changed.disconnect(_on_entity_state_changed)
 	if entity.hp_changed.is_connected(_on_entity_hp_changed):
 		entity.hp_changed.disconnect(_on_entity_hp_changed)
+	if entity.ap_changed.is_connected(_onEntityApChanged):
+		entity.ap_changed.disconnect(_onEntityApChanged)
 
 
 func _on_entity_position_changed(x: int, y: int) -> void:
@@ -130,6 +144,14 @@ func _on_entity_hp_changed(new_hp: int, old_hp: int) -> void:
 
 		if app and app.has_method("trigger_damage_effect"):
 			app.call("trigger_damage_effect")
+
+	if statusBar and statusBar.has_method("updateHp"):
+		statusBar.call("updateHp")
+
+
+func _onEntityApChanged(_new_ap: int, _old_ap: int) -> void:
+	if statusBar and statusBar.has_method("updateAp"):
+		statusBar.call("updateAp")
 
 
 func _update_elevation_visuals(elevation: int) -> void:
