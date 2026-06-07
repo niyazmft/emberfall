@@ -7,24 +7,24 @@ extends Resource
 enum TargetType { SELF, SINGLE_ENEMY, SINGLE_ALLY, AREA_ENEMY, AREA_ALLY, ALL }
 
 @export var id: String = ""
-@export var name_key: String = ""
-@export var description_key: String = ""
-@export var ap_cost: int = 1
+@export var nameKey: String = ""
+@export var descriptionKey: String = ""
+@export var apCost: int = 1
 @export var cooldown: int = 0
-@export var target_type: TargetType = TargetType.SINGLE_ENEMY
-@export var effect_payload: Dictionary = {}
+@export var targetType: TargetType = TargetType.SINGLE_ENEMY
+@export var effectPayload: Dictionary = {}
 
 
 ## Factory method to create an Ability from a Dictionary (parsed JSON).
 static func fromDict(data: Dictionary) -> Ability:
 	var ability: Ability = Ability.new()
 	ability.id = data.get("id", "")
-	ability.name_key = data.get("name_key", "")
-	ability.description_key = data.get("description_key", "")
-	ability.ap_cost = int(data.get("ap_cost", 1))
+	ability.nameKey = data.get("name_key", "")
+	ability.descriptionKey = data.get("description_key", "")
+	ability.apCost = int(data.get("ap_cost", 1))
 	ability.cooldown = int(data.get("cooldown", 0))
-	ability.target_type = _parseTargetType(data.get("target_type", "SINGLE_ENEMY"))
-	ability.effect_payload = data.get("effect_payload", {})
+	ability.targetType = _parseTargetType(data.get("target_type", "SINGLE_ENEMY"))
+	ability.effectPayload = data.get("effect_payload", {})
 	return ability
 
 

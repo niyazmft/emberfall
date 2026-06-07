@@ -4,7 +4,7 @@ class_name _AbilityManager
 ## Autoload: AbilityManager
 ## Manages ability registration and lookup.
 
-var _abilities: Dictionary = {}
+var abilities: Dictionary = {}
 
 
 func _ready() -> void:
@@ -12,35 +12,35 @@ func _ready() -> void:
 
 
 func _loadAbilities() -> void:
-	_abilities.clear()
-	var config_loader: _ConfigLoader = AutoloadHelper.config_loader()
-	if not config_loader:
+	abilities.clear()
+	var configLoader: _ConfigLoader = AutoloadHelper.config_loader()
+	if not configLoader:
 		push_error("AbilityManager: ConfigLoader not found.")
 		return
 
 	# Skills are merged into ConfigLoader's _configData
-	var skills_data: Variant = config_loader.getValue("skills")
-	if skills_data is Dictionary:
-		for skill_id: String in skills_data:
-			var skill_dict: Dictionary = skills_data[skill_id]
-			var ability: Ability = Ability.fromDict(skill_dict)
-			_abilities[skill_id] = ability
-		print("AbilityManager: loaded %d abilities." % _abilities.size())
+	var skillsData: Variant = configLoader.getValue("skills")
+	if skillsData is Dictionary:
+		for skillId: String in skillsData:
+			var skillDict: Dictionary = skillsData[skillId]
+			var ability: Ability = Ability.fromDict(skillDict)
+			abilities[skillId] = ability
+		print("AbilityManager: loaded %d abilities." % abilities.size())
 	else:
 		push_warning("AbilityManager: No skills data found in ConfigLoader.")
 
 
 ## Retrieve an ability by its ID.
-func get_ability(id: String) -> Ability:
-	if _abilities.has(id):
-		return _abilities[id]
+func getAbility(id: String) -> Ability:
+	if abilities.has(id):
+		return abilities[id]
 	push_warning("AbilityManager: Ability with ID '%s' not found." % id)
 	return null
 
 
 ## Retrieve all loaded abilities.
-func get_all_abilities() -> Array[Ability]:
+func getAllAbilities() -> Array[Ability]:
 	var result: Array[Ability] = []
-	for ability: Ability in _abilities.values():
+	for ability: Ability in abilities.values():
 		result.append(ability)
 	return result
