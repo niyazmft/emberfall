@@ -313,11 +313,9 @@ func _enter_room(_ctx: Dictionary) -> void:
 
 	var room_data: Dictionary = _get_current_room_data()
 	var room_id: String = room_data.get("room_id", "room_standard_01")
-	var biome_idx: int = int(room_data.get("biome", 0))
-	var biome_subpath := "biome%d" % (biome_idx + 1)
 
 	# Load room definition and augment room_data
-	var room_def := RoomLoader.load_room_data(room_id, biome_subpath)
+	var room_def := RoomLoader.load_room_data(room_id)
 	if not room_def.is_empty():
 		for key: String in room_def:
 			if not room_data.has(key):
@@ -471,17 +469,9 @@ func _action_generate_rooms(_ctx: Dictionary) -> void:
 	rng.seed = run_seed
 	for b: int in range(biome_count):
 		var count: int = rng.randi_range(rooms_per_biome_min, rooms_per_biome_max)
-		var biome_subpath := "biome%d" % (b + 1)
 		for r: int in range(count):
 			var current_room_idx: int = room_queue.size()
-			# Determine room ID based on available files in biome directory
-			# Fallback to standard rooms if biome directory doesn't have many
-			var room_id := ""
-			if b < 3:  # We only generated for 3 biomes
-				room_id = "room_biome%d_%02d" % [b + 1, rng.randi_range(1, 12)]
-			else:
-				room_id = "room_standard_0%d" % (rng.randi_range(1, 5))
-
+			var room_id := "room_standard_0%d" % (rng.randi_range(1, 5))
 			(
 				room_queue
 				. append(
