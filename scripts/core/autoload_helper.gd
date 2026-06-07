@@ -98,6 +98,21 @@ static func localization_manager() -> Node:
 	return get_autoload("LocalizationManager")
 
 
+## Returns the EncounterScaler autoload, or null.
+static func encounter_scaler() -> _EncounterScaler:
+	return get_autoload("EncounterScaler") as _EncounterScaler
+
+
+## Returns the MetaProgressionManager autoload, or null.
+static func meta_progression_manager() -> _MetaProgressionManager:
+	return get_autoload("MetaProgressionManager") as _MetaProgressionManager
+
+
+## Returns the CraftingManager autoload, or null.
+static func crafting_manager() -> _CraftingManager:
+	return get_autoload("CraftingManager") as _CraftingManager
+
+
 # ── Derived Helpers ───────────────────────────────────────────────────────────
 
 

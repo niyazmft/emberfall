@@ -20,6 +20,9 @@ const ENCOUNTER_SCALER_PATH := "res://config/encounter_scaler.json"
 const PROGRESSION_PATH := "res://config/progression.json"
 const XP_ECONOMY_PATH := "res://config/xp_economy.json"
 const BIOMES_PATH := "res://config/biomes.json"
+const CURRENCY_PATH := "res://config/currency.json"
+const WEAPONS_PATH := "res://config/weapons.json"
+const RECIPES_PATH := "res://config/recipes.json"
 
 # Fallback defaults (sensible so the game runs even if config is missing)
 const DEFAULTS: Dictionary = {
@@ -74,6 +77,9 @@ var _loadedFiles: Dictionary = {
 	PROGRESSION_PATH: false,
 	XP_ECONOMY_PATH: false,
 	BIOMES_PATH: false,
+	CURRENCY_PATH: false,
+	WEAPONS_PATH: false,
+	RECIPES_PATH: false,
 }
 
 
@@ -111,6 +117,9 @@ func _loadJsonToConfig(filePath: String) -> void:
 	_loadJsonToConfig(ENCOUNTER_SCALER_PATH, "encounter_scaler")
 	_loadJsonToConfig(PROGRESSION_PATH, "progression")
 	_loadJsonToConfig(XP_ECONOMY_PATH, "xp_economy")
+	_loadJsonToConfig(CURRENCY_PATH, "currency")
+	_loadJsonToConfig(WEAPONS_PATH, "weapons")
+	_loadJsonToConfig(RECIPES_PATH, "recipes")
 
 	var actual_biomes_path := BIOMES_PATH
 	if _configData.has("config") and _configData["config"].has("run_manager"):
@@ -200,6 +209,9 @@ func getValue(sectionOrKey: String, key: String = "", fallback: Variant = null) 
 			and sectionOrKey != "rewards"
 			and sectionOrKey != "unlocks"
 			and sectionOrKey != "encounter_scaler"
+			and sectionOrKey != "currency"
+			and sectionOrKey != "weapons"
+			and sectionOrKey != "recipes"
 		):
 			for section: Variant in _configData.values():
 				if section is Dictionary and section.has(sectionOrKey):
