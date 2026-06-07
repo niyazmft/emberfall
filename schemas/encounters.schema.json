@@ -17,6 +17,7 @@
         "type": "array",
         "items": {
           "type": "object",
+          "additionalProperties": false,
           "properties": {
             "group_id": { "type": "string" },
             "weight": { "type": "number", "minimum": 0 },

@@ -8,73 +8,78 @@ const ENCOUNTERS_CONFIG_PATH := "res://config/encounters.json"
 
 
 ## Builds a list of encounters for the given biome and seed.
-static func build_encounters(biome_id: String, encounter_seed: int) -> Array:
-	var config := _get_config()
+static func buildEncounters(biomeId: String, encounterSeed: int) -> Array:
+	var config: Dictionary = _getConfig()
 	if config.is_empty():
 		return []
 
-	var compositions: Array = config.get("biome_compositions", {}).get(biome_id, [])
+	var compositions: Array = config.get("biome_compositions", {}).get(biomeId, [])
 	if compositions.is_empty():
 		return []
 
-	var group_templates: Dictionary = config.get("group_templates", {})
+	var groupTemplates: Dictionary = config.get("group_templates", {}) as Dictionary
 
 	var rng := RandomNumberGenerator.new()
-	rng.seed = encounter_seed
+	rng.seed = encounterSeed
 
 	# Select a group template based on weights
-	var selected_group_id := _select_weighted_group(compositions, rng)
-	var enemy_types: Array = group_templates.get(selected_group_id, [])
-
-	if enemy_types.is_empty():
+	var selectedGroupId: String = _selectWeightedGroup(compositions, rng)
+	if selectedGroupId == "":
 		return []
 
-	# Build encounter dictionary
-	# For now, we'll just return a single encounter entry containing all enemies
-	# but with randomly assigned valid positions.
-	# Positions will need to be decided by the RoomLoader or a shared helper
-	# because we need to know what's walkable/blocked.
-	# However, the schema expects positions in the encounter object.
-	# For simplicity in this step, we'll just return the types and let the
-	# loader assign positions if they are not provided, or we provide them here
-	# assuming some standard areas.
+	var enemyTypes: Array = groupTemplates.get(selectedGroupId, []) as Array
+	if enemyTypes.is_empty():
+		return []
 
-	var encounters := []
-	var type_counts := {}
+	var encounters: Array = []
+	var typeCounts: Dictionary = {}
 
-	for type: String in enemy_types:
-		if not type_counts.has(type):
-			type_counts[type] = 0
-		type_counts[type] += 1
+	for type_v: Variant in enemyTypes:
+		var type: String = str(type_v)
+		if not typeCounts.has(type):
+			typeCounts[type] = 0
+		typeCounts[type] = int(typeCounts[type]) + 1
 
-	for type: String in type_counts:
-		encounters.append({"enemy_type": type, "count": type_counts[type], "positions": []})  # Will be filled by the loader or a positioner
+	for type: String in typeCounts:
+		encounters.append(
+			{"enemy_type": type, "count": int(typeCounts[type]), "positions": [] as Array}
+		)
 
 	return encounters
 
 
-static func _get_config() -> Dictionary:
-	var f := FileAccess.open(ENCOUNTERS_CONFIG_PATH, FileAccess.READ)
+static func _getConfig() -> Dictionary:
+	var f: FileAccess = FileAccess.open(ENCOUNTERS_CONFIG_PATH, FileAccess.READ)
 	if not f:
 		return {}
 	var json := JSON.new()
-	var err := json.parse(f.get_as_text())
+	var err: Error = json.parse(f.get_as_text())
 	f.close()
 	if err != OK:
 		return {}
-	return json.data
+	var data: Variant = json.data
+	if data is Dictionary:
+		return data as Dictionary
+	return {}
 
 
-static func _select_weighted_group(compositions: Array, rng: RandomNumberGenerator) -> String:
-	var total_weight := 0.0
-	for comp: Dictionary in compositions:
-		total_weight += float(comp.get("weight", 0.0))
+static func _selectWeightedGroup(compositions: Array, rng: RandomNumberGenerator) -> String:
+	var totalWeight: float = 0.0
+	for comp_v: Variant in compositions:
+		if comp_v is Dictionary:
+			var comp: Dictionary = comp_v as Dictionary
+			totalWeight += float(comp.get("weight", 0.0))
 
-	var roll := rng.randf() * total_weight
-	var current_weight := 0.0
-	for comp: Dictionary in compositions:
-		current_weight += float(comp.get("weight", 0.0))
-		if roll <= current_weight:
-			return comp.get("group_id", "")
+	if totalWeight <= 0.0:
+		return ""
 
-	return compositions[0].get("group_id", "")
+	var roll: float = rng.randf() * totalWeight
+	var currentWeight: float = 0.0
+	for comp_v: Variant in compositions:
+		if comp_v is Dictionary:
+			var comp: Dictionary = comp_v as Dictionary
+			currentWeight += float(comp.get("weight", 0.0))
+			if roll <= currentWeight:
+				return str(comp.get("group_id", ""))
+
+	return ""

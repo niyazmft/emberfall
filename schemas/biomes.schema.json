@@ -5,6 +5,7 @@
   "type": "object",
   "additionalProperties": {
     "type": "object",
+    "additionalProperties": false,
     "properties": {
       "name": { "type": "string" },
       "room_templates": {
@@ -13,6 +14,7 @@
       },
       "generation_params": {
         "type": "object",
+        "additionalProperties": false,
         "properties": {
           "cover_density": { "type": "number", "minimum": 0, "maximum": 1 },
           "elevation_min": { "type": "integer", "minimum": 0, "maximum": 2 },
