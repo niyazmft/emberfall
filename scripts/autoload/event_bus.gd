@@ -30,6 +30,12 @@ signal moral_delta_processed(delta: int, source: String, sentient: bool)
 ## Fired when the player resolves a spare-or-execute choice.
 signal spare_or_execute(entity: Entity, was_spared: bool)
 
+## Fired when an entity (usually player) gains XP.
+signal experience_gained(entity: Entity, amount: int, reason: String)
+
+## Fired when an entity (usually player) levels up.
+signal level_up_achieved(entity: Entity, new_level: int)
+
 # ── BurdenManager ────────────────────────────────────────────────────────────
 
 ## Fired when the kill-history queue changes.

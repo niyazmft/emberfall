@@ -53,6 +53,11 @@ static func entity_lifecycle() -> _EntityLifecycle:
 	return get_autoload("EntityLifecycle") as _EntityLifecycle
 
 
+## Returns the LevelUpManager autoload, or null.
+static func level_up_manager() -> _LevelUpManager:
+	return get_autoload("LevelUpManager") as _LevelUpManager
+
+
 ## Returns the RunManager autoload, or null.
 static func run_manager() -> _RunManager:
 	return get_autoload("RunManager") as _RunManager
@@ -71,6 +76,16 @@ static func save_manager() -> _SaveManager:
 ## Returns the GridSystem autoload, or null.
 static func grid_system() -> _GridSystem:
 	return get_autoload("GridSystem") as _GridSystem
+
+
+## Returns the EncounterScaler autoload, or null.
+static func encounter_scaler() -> _EncounterScaler:
+	return get_autoload("EncounterScaler") as _EncounterScaler
+
+
+## Returns the MetaProgressionManager autoload, or null.
+static func meta_progression_manager() -> _MetaProgressionManager:
+	return get_autoload("MetaProgressionManager") as _MetaProgressionManager
 
 
 ## Returns the InventoryManager autoload, or null.
