@@ -51,7 +51,12 @@ func _update_summary_display() -> void:
 	for key in summary_keys:
 		if key_map.has(key):
 			var lbl := Label.new()
-			lbl.text = tr(key) % key_map[key]
+		for key in summary_keys:
+			if key_map.has(key):
+				var lbl := Label.new()
+				var translated: String = tr(key)
+				lbl.text = translated % key_map[key] if "%" in translated else translated
+				summary_container.add_child(lbl)
 			summary_container.add_child(lbl)
 
 
