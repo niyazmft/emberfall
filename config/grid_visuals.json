@@ -1,0 +1,56 @@
+{
+  "highlights": {
+    "move": {
+      "color": "#3498db",
+      "opacity": 0.6,
+      "pulse": {
+        "enabled": false,
+        "speed": 2.0,
+        "min_alpha": 0.4,
+        "max_alpha": 0.8
+      }
+    },
+    "attack": {
+      "color": "#e74c3c",
+      "opacity": 0.6,
+      "pulse": {
+        "enabled": false,
+        "speed": 2.0,
+        "min_alpha": 0.4,
+        "max_alpha": 0.8
+      }
+    },
+    "target": {
+      "color": "#f1c40f",
+      "opacity": 0.8,
+      "pulse": {
+        "enabled": true,
+        "speed": 3.0,
+        "min_alpha": 0.5,
+        "max_alpha": 1.0
+      }
+    },
+    "telegraph": {
+      "color": "#9b59b6",
+      "opacity": 0.5,
+      "pulse": {
+        "enabled": true,
+        "speed": 1.5,
+        "min_alpha": 0.3,
+        "max_alpha": 0.7
+      }
+    }
+  },
+  "telegraph_arrows": {
+    "default": {
+      "color": "#ffffff",
+      "width": 2.0,
+      "head_size": 8.0
+    }
+  },
+  "gamepad_bindings": {
+    "cycle_target": "joy_button_6",
+    "confirm": "joy_button_0",
+    "cancel": "joy_button_1"
+  }
+}
