@@ -201,68 +201,6 @@ custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 
-[node name="TextScale" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_ACCESSIBILITY"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_ACCESSIBILITY/TextScale"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "SETTINGS_TEXT_SCALE"
-
-[node name="TextScaleSlider" type="HSlider" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_ACCESSIBILITY/TextScale"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(400, 0)
-layout_mode = 2
-mouse_default_cursor_shape = 2
-min_value = 0.8
-max_value = 1.5
-step = 0.1
-value = 1.0
-
-[node name="SlowMode" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_ACCESSIBILITY"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_ACCESSIBILITY/SlowMode"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "SETTINGS_SLOW_MODE"
-
-[node name="SlowModeSlider" type="HSlider" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_ACCESSIBILITY/SlowMode"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(400, 0)
-layout_mode = 2
-mouse_default_cursor_shape = 2
-min_value = 1.0
-max_value = 3.0
-step = 0.1
-value = 1.0
-
-[node name="HighContrast" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_ACCESSIBILITY"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_ACCESSIBILITY/HighContrast"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "SETTINGS_HIGH_CONTRAST"
-
-[node name="HighContrastCheck" type="CheckBox" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_ACCESSIBILITY/HighContrast"]
-unique_name_in_owner = true
-layout_mode = 2
-mouse_default_cursor_shape = 2
-
-[node name="DyslexiaFont" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_ACCESSIBILITY"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_ACCESSIBILITY/DyslexiaFont"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "SETTINGS_DYSLEXIA_FONT"
-
-[node name="DyslexiaFontCheck" type="CheckBox" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_ACCESSIBILITY/DyslexiaFont"]
-unique_name_in_owner = true
-layout_mode = 2
-mouse_default_cursor_shape = 2
-
 [node name="SETTINGS_CONTROLS" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
 visible = false
 layout_mode = 2
