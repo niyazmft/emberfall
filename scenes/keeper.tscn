@@ -9,12 +9,12 @@
 script = ExtResource("1_keeper")
 visual_proxy = NodePath("EntityVisualProxy")
 
-[node name="EntityVisualProxy" type="Node2D" parent="." node_paths=PackedStringArray("base_sprite", "shadow_sprite", "height_indicator", "status_bar")]
+[node name="EntityVisualProxy" type="Node2D" parent="." node_paths=PackedStringArray("base_sprite", "shadow_sprite", "height_indicator", "statusBar")]
 script = ExtResource("3_visual_proxy")
 base_sprite = NodePath("BaseSprite")
 shadow_sprite = NodePath("ShadowSprite")
 height_indicator = NodePath("HeightIndicator")
-status_bar = NodePath("EntityStatusBar")
+statusBar = NodePath("EntityStatusBar")
 
 [node name="BaseSprite" type="Sprite2D" parent="EntityVisualProxy"]
 

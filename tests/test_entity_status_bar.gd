@@ -34,7 +34,7 @@ func test_entity_status_bar_sync() -> void:
 	status_bar.add_child(vbox)
 
 	proxy.add_child(status_bar)
-	proxy.set("status_bar", status_bar)
+	proxy.set("statusBar", status_bar)
 	proxy.set("entity", entity)
 	combat_room.add_child(proxy)
 
@@ -49,11 +49,11 @@ func test_entity_status_bar_sync() -> void:
 
 	# Check AP sync
 	# Initial setup of pips
-	assert_int(ap_container.get_child_count()).is_equal(6)
+	assert_int(ap_container.get_child_count()).is_equal(GameConstants.AP_MAX)
 
 	entity.set("ap", 4)
 	# update_ap() should have been called via signal
-	assert_int(ap_container.get_child_count()).is_equal(6)
+	assert_int(ap_container.get_child_count()).is_equal(GameConstants.AP_MAX)
 
 	# Verify position sync in _process
 	# In headless mode, global_position might not behave as expected with top_level for UI.

@@ -18,7 +18,7 @@ extends Node2D
 @export var base_sprite: Sprite2D
 @export var shadow_sprite: Sprite2D
 @export var height_indicator: CanvasItem
-@export var status_bar: Node
+@export var statusBar: Node
 @export var lerp_speed: float = 10.0
 
 var _target_position: Vector2
@@ -52,8 +52,8 @@ func _process(delta: float) -> void:
 	else:
 		global_position = _target_position
 
-	if status_bar and status_bar is Control:
-		var sb: Control = status_bar as Control
+	if statusBar and statusBar is Control:
+		var sb: Control = statusBar as Control
 		if sb.top_level:
 			# Position status bar above the entity in world space
 			sb.global_position = global_position + Vector2(0, -60)
@@ -77,8 +77,8 @@ func _sync_to_entity() -> void:
 	_on_entity_facing_changed(entity.facing_x, entity.facing_y)
 	_on_entity_state_changed(entity.state)
 
-	if status_bar and status_bar.has_method("setup"):
-		status_bar.call("setup", entity)
+	if statusBar and statusBar.has_method("setup"):
+		statusBar.call("setup", entity)
 
 
 func _connect_entity_signals() -> void:
@@ -94,8 +94,8 @@ func _connect_entity_signals() -> void:
 		entity.state_changed.connect(_on_entity_state_changed)
 	if not entity.hp_changed.is_connected(_on_entity_hp_changed):
 		entity.hp_changed.connect(_on_entity_hp_changed)
-	if not entity.ap_changed.is_connected(_on_entity_ap_changed):
-		entity.ap_changed.connect(_on_entity_ap_changed)
+	if not entity.ap_changed.is_connected(_onEntityApChanged):
+		entity.ap_changed.connect(_onEntityApChanged)
 
 
 func _disconnect_entity_signals() -> void:
@@ -111,8 +111,8 @@ func _disconnect_entity_signals() -> void:
 		entity.state_changed.disconnect(_on_entity_state_changed)
 	if entity.hp_changed.is_connected(_on_entity_hp_changed):
 		entity.hp_changed.disconnect(_on_entity_hp_changed)
-	if entity.ap_changed.is_connected(_on_entity_ap_changed):
-		entity.ap_changed.disconnect(_on_entity_ap_changed)
+	if entity.ap_changed.is_connected(_onEntityApChanged):
+		entity.ap_changed.disconnect(_onEntityApChanged)
 
 
 func _on_entity_position_changed(x: int, y: int) -> void:
@@ -145,13 +145,13 @@ func _on_entity_hp_changed(new_hp: int, old_hp: int) -> void:
 		if app and app.has_method("trigger_damage_effect"):
 			app.call("trigger_damage_effect")
 
-	if status_bar and status_bar.has_method("update_hp"):
-		status_bar.call("update_hp")
+	if statusBar and statusBar.has_method("updateHp"):
+		statusBar.call("updateHp")
 
 
-func _on_entity_ap_changed(_new_ap: int, _old_ap: int) -> void:
-	if status_bar and status_bar.has_method("update_ap"):
-		status_bar.call("update_ap")
+func _onEntityApChanged(_new_ap: int, _old_ap: int) -> void:
+	if statusBar and statusBar.has_method("updateAp"):
+		statusBar.call("updateAp")
 
 
 func _update_elevation_visuals(elevation: int) -> void:

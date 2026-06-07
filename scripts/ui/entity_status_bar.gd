@@ -4,37 +4,37 @@ extends Control
 ## EntityStatusBar
 ## Displays HP bar and AP pips above entities in world space.
 
-@onready var hp_bar: ProgressBar = $VBoxContainer/HPBar
-@onready var ap_container: HBoxContainer = $VBoxContainer/APContainer
+@onready var hpBar: ProgressBar = $VBoxContainer/HPBar
+@onready var apContainer: HBoxContainer = $VBoxContainer/APContainer
 
-var _entity: Entity
+var _entityRef: Entity
 
 
 func setup(p_entity: Entity) -> void:
-	_entity = p_entity
-	update_hp()
-	update_ap()
+	_entityRef = p_entity
+	updateHp()
+	updateAp()
 
 
-func update_hp() -> void:
-	if not _entity or not hp_bar:
+func updateHp() -> void:
+	if not _entityRef or not hpBar:
 		return
-	hp_bar.max_value = _entity.hp_max
-	hp_bar.value = _entity.hp
+	hpBar.max_value = _entityRef.hp_max
+	hpBar.value = _entityRef.hp
 
 
-func update_ap() -> void:
-	if not _entity or not ap_container:
+func updateAp() -> void:
+	if not _entityRef or not apContainer:
 		return
 
 	# Clear existing pips
-	for child: Node in ap_container.get_children():
-		ap_container.remove_child(child)
+	for child: Node in apContainer.get_children():
+		apContainer.remove_child(child)
 		child.queue_free()
 
 	# Create new pips
 	var maxAp: int = GameConstants.AP_MAX
-	var currentAp: int = _entity.ap
+	var currentAp: int = _entityRef.ap
 
 	for i: int in range(maxAp):
 		var pip: ColorRect = ColorRect.new()
@@ -44,4 +44,4 @@ func update_ap() -> void:
 			pip.color = Color.CYAN
 		else:
 			pip.color = Color(0.2, 0.2, 0.2, 0.5)
-		ap_container.add_child(pip)
+		apContainer.add_child(pip)
