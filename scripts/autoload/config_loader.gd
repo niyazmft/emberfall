@@ -6,8 +6,6 @@ class_name _ConfigLoader
 ## All tunable values live in res://config/game_config.json per gameplay standards.
 
 const CONFIG_PATH := "res://config/game_config.json"
-const ITEMS_PATH := "res://config/items.json"
-const EQUIPMENT_PATH := "res://config/entity_equipment.json"
 
 # Fallback defaults (sensible so the game runs even if config is missing)
 const DEFAULTS: Dictionary = {
@@ -45,48 +43,40 @@ const DEFAULTS: Dictionary = {
 	"GRID_H": 12,
 }
 
-var _configData: Dictionary = {}
-var _loadedFiles: Dictionary = {CONFIG_PATH: false, ITEMS_PATH: false, EQUIPMENT_PATH: false}
+var _config: Dictionary = {}
+var _loaded: bool = false
 
 
 func _ready() -> void:
-	_loadConfig()
+	_load_config()
 
 
-func _loadConfig() -> void:
-	_configData.clear()
-	for path: String in _loadedFiles:
-		_loadedFiles[path] = false
-
-	_loadJsonToConfig(CONFIG_PATH)
-	_loadJsonToConfig(ITEMS_PATH)
-	_loadJsonToConfig(EQUIPMENT_PATH)
-
-
-func _loadJsonToConfig(filePath: String) -> void:
-	if FileAccess.file_exists(filePath):
-		var fileHandle: FileAccess = FileAccess.open(filePath, FileAccess.READ)
-		if fileHandle:
-			var fileText: String = fileHandle.get_as_text()
-			var parsedJson: Variant = JSON.parse_string(fileText)
-			if parsedJson is Dictionary:
-				_configData.merge(parsedJson, true)
-				_loadedFiles[filePath] = true
-				print("ConfigLoader: loaded config from %s" % filePath)
+func _load_config() -> void:
+	if FileAccess.file_exists(CONFIG_PATH):
+		var file := FileAccess.open(CONFIG_PATH, FileAccess.READ)
+		if file:
+			var text: String = file.get_as_text()
+			var parsed: Variant = JSON.parse_string(text)
+			if parsed is Dictionary:
+				_config = parsed
+				_loaded = true
+				print("ConfigLoader: loaded config from %s" % CONFIG_PATH)
 			else:
-				push_warning("ConfigLoader: config file %s was not a valid JSON object." % filePath)
-			fileHandle.close()
+				push_warning(
+					"ConfigLoader: config file was not a valid JSON object; using defaults."
+				)
+			file.close()
 	else:
-		push_warning("ConfigLoader: config file not found at %s." % filePath)
+		push_warning("ConfigLoader: config file not found at %s; using defaults." % CONFIG_PATH)
 
 
 ## Get a gameplay constant. First checks config JSON, then falls back to DEFAULTS.
-## Usage: ConfigLoader.getValue("AP_MAX") or ConfigLoader.getValue("combat", "D_BASE")
-func getValue(sectionOrKey: String, key: String = "", fallback: Variant = null) -> Variant:
+## Usage: ConfigLoader.get_value("AP_MAX") or ConfigLoader.get_value("combat", "D_BASE")
+func get_value(section_or_key: String, key: String = "", fallback: Variant = null) -> Variant:
 	if not key.is_empty():
 		# Two-arg mode: section + key
-		if _configData.has(sectionOrKey) and _configData[sectionOrKey] is Dictionary:
-			var section: Dictionary = _configData[sectionOrKey]
+		if _config.has(section_or_key) and _config[section_or_key] is Dictionary:
+			var section: Dictionary = _config[section_or_key]
 			if section.has(key):
 				return section[key]
 		# Try flattened default
@@ -95,20 +85,20 @@ func getValue(sectionOrKey: String, key: String = "", fallback: Variant = null) 
 		return fallback
 	else:
 		# One-arg mode: direct key lookup in flattened namespace
-		if _configData.has(sectionOrKey):
-			return _configData[sectionOrKey]
+		if _config.has(section_or_key):
+			return _config[section_or_key]
 		# Scan sub-sections for key
-		for section: Variant in _configData.values():
-			if section is Dictionary and section.has(sectionOrKey):
-				return section[sectionOrKey]
-		if DEFAULTS.has(sectionOrKey):
-			return DEFAULTS[sectionOrKey]
+		for section: Variant in _config.values():
+			if section is Dictionary and section.has(section_or_key):
+				return section[section_or_key]
+		if DEFAULTS.has(section_or_key):
+			return DEFAULTS[section_or_key]
 		return fallback
 
 
 ## Convenience typed getters for hot-path values.
-func getInt(key: String, fallback: int = 0) -> int:
-	var v: Variant = getValue(key, "", fallback)
+func get_int(key: String, fallback: int = 0) -> int:
+	var v: Variant = get_value(key, "", fallback)
 	if v is float:
 		return int(v)
 	if v is int:
@@ -116,22 +106,19 @@ func getInt(key: String, fallback: int = 0) -> int:
 	return fallback
 
 
-func getFloat(key: String, fallback: float = 0.0) -> float:
-	var v: Variant = getValue(key, "", fallback)
+func get_float(key: String, fallback: float = 0.0) -> float:
+	var v: Variant = get_value(key, "", fallback)
 	if v is float or v is int:
 		return float(v)
 	return fallback
 
 
-func getString(key: String, fallback: String = "") -> String:
-	var v: Variant = getValue(key, "", fallback)
+func get_string(key: String, fallback: String = "") -> String:
+	var v: Variant = get_value(key, "", fallback)
 	if v is String:
 		return v
 	return fallback
 
 
-func isLoaded() -> bool:
-	for path: String in _loadedFiles:
-		if not _loadedFiles[path]:
-			return false
-	return true
+func is_loaded() -> bool:
+	return _loaded
