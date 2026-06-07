@@ -1,0 +1,19 @@
+{
+  "dialogues": {
+    "intro_sequence": {
+      "lines": [
+        {
+          "speaker": "DLG_SPEAKER_KEEPER",
+          "text_key": "DLG_INTRO_01",
+          "portrait": "keeper_neutral"
+        },
+        {
+          "speaker": "DLG_SPEAKER_KEEPER",
+          "text_key": "DLG_INTRO_02",
+          "portrait": "keeper_determined"
+        }
+      ],
+      "next_id": ""
+    }
+  }
+}
