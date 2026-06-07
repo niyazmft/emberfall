@@ -59,8 +59,8 @@ func _load_stats_from_config() -> void:
 	if config_loader == null:
 		return
 
-	var enemies_config: Dictionary = config_loader.getValue("enemies", "enemies", {})
-	if enemies_config.has(archetype_id):
+	var enemies_config: Variant = config_loader.getValue("enemies")
+	if enemies_config is Dictionary and enemies_config.has(archetype_id):
 		var data: Dictionary = enemies_config[archetype_id]
 		# Use data-driven name if present, otherwise fallback to existing name or capitalized ID
 		if data.has("name"):
@@ -93,8 +93,8 @@ func _setup_ai() -> void:
 	var config_loader: _ConfigLoader = AutoloadHelper.config_loader()
 	var behavior_str: String = ""
 	if config_loader:
-		var enemies_config: Dictionary = config_loader.getValue("enemies", "enemies", {})
-		if enemies_config.has(archetype_id):
+		var enemies_config: Variant = config_loader.getValue("enemies")
+		if enemies_config is Dictionary and enemies_config.has(archetype_id):
 			behavior_str = enemies_config[archetype_id].get("ai_behavior", "")
 
 	if ai_controller and ai_controller is EnemyAIController:

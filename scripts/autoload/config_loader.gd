@@ -12,7 +12,6 @@ const ENEMIES_PATH := "res://config/enemies.json"
 const SKILLS_PATH := "res://config/skills.json"
 const HOTBAR_BINDINGS_PATH := "res://config/hotbar_bindings.json"
 const ACCESSIBILITY_PATH := "res://config/accessibility.json"
-const GRID_VISUALS_PATH := "res://config/grid_visuals.json"
 
 # Fallback defaults (sensible so the game runs even if config is missing)
 const DEFAULTS: Dictionary = {
@@ -59,7 +58,6 @@ var _loadedFiles: Dictionary = {
 	SKILLS_PATH: false,
 	HOTBAR_BINDINGS_PATH: false,
 	ACCESSIBILITY_PATH: false,
-	GRID_VISUALS_PATH: false,
 }
 
 
@@ -79,8 +77,6 @@ func _loadConfig() -> void:
 	_loadJsonToConfig(SKILLS_PATH)
 	_loadJsonToConfig(HOTBAR_BINDINGS_PATH)
 	_loadJsonToConfig(ACCESSIBILITY_PATH)
-	_loadJsonToConfig(GRID_VISUALS_PATH)
-	_validateGridVisuals()
 
 
 func _loadJsonToConfig(filePath: String) -> void:
@@ -106,9 +102,6 @@ func _loadJsonToConfig(filePath: String) -> void:
 						% [filePath, p_namespace]
 					)
 				)
-				_configData.merge(parsedJson, true)
-				_loadedFiles[filePath] = true
-				print("ConfigLoader: loaded config from %s" % filePath)
 			else:
 				push_warning("ConfigLoader: config file %s was not a valid JSON object." % filePath)
 			fileHandle.close()
@@ -141,10 +134,6 @@ func getValue(sectionOrKey: String, key: String = "", fallback: Variant = null) 
 					if section is Dictionary and section.has(key):
 						return section[key]
 
-		if _configData.has(sectionOrKey) and _configData[sectionOrKey] is Dictionary:
-			var section: Dictionary = _configData[sectionOrKey]
-			if section.has(key):
-				return section[key]
 		# Try flattened default
 		if DEFAULTS.has(key):
 			return DEFAULTS[key]
@@ -169,13 +158,6 @@ func getValue(sectionOrKey: String, key: String = "", fallback: Variant = null) 
 				if sub is Dictionary and sub.has(sectionOrKey):
 					return sub[sectionOrKey]
 
-	# One-arg mode: direct key lookup in flattened namespace
-	if _configData.has(sectionOrKey):
-		return _configData[sectionOrKey]
-	# Scan sub-sections for key
-	for section: Variant in _configData.values():
-		if section is Dictionary and section.has(sectionOrKey):
-			return section[sectionOrKey]
 	if DEFAULTS.has(sectionOrKey):
 		return DEFAULTS[sectionOrKey]
 	return fallback
@@ -210,31 +192,3 @@ func isLoaded() -> bool:
 		if not _loadedFiles[path]:
 			return false
 	return true
-
-
-func _validateGridVisuals() -> void:
-	if not _configData.has("highlights"):
-		return
-
-	var rawHighlights: Variant = _configData["highlights"]
-	if not rawHighlights is Dictionary:
-		return
-	var highlightsDict: Dictionary = rawHighlights as Dictionary
-
-	for key: Variant in highlightsDict.keys():
-		var styleRef: Variant = highlightsDict[key]
-		if styleRef is Dictionary:
-			var style: Dictionary = styleRef as Dictionary
-			if style.has("pulse"):
-				var pulseRef: Variant = style["pulse"]
-				if pulseRef is Dictionary:
-					var pulse: Dictionary = pulseRef as Dictionary
-					var minA: float = float(pulse.get("min_alpha", 0.0))
-					var maxA: float = float(pulse.get("max_alpha", 1.0))
-					if minA > maxA:
-						push_error(
-							(
-								"ConfigLoader: Grid visual style '%s' has min_alpha (%.2f) > max_alpha (%.2f)!"
-								% [str(key), minA, maxA]
-							)
-						)

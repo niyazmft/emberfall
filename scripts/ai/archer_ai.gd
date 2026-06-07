@@ -22,8 +22,8 @@ func _load_params() -> void:
 	if enemy_entity and not enemy_entity.archetype_id.is_empty():
 		archer_id = enemy_entity.archetype_id
 
-	var enemies_config: Dictionary = config_loader.getValue("enemies", "enemies", {})
-	if enemies_config.has(archer_id):
+	var enemies_config: Variant = config_loader.getValue("enemies")
+	if enemies_config is Dictionary and enemies_config.has(archer_id):
 		var data: Dictionary = enemies_config[archer_id]
 		min_range = int(data.get("min_range", 2))
 		max_range = int(data.get("max_range", 3))
@@ -147,5 +147,9 @@ func _get_best_tile(target_pos: Vector2i, away: bool) -> Vector2i:
 				if score > best_score:
 					best_score = score
 					best_tile = n_pos
+
+	if away and best_tile == current_pos:
+		# If no better tile found, stay put but maybe we should log it
+		pass
 
 	return best_tile
