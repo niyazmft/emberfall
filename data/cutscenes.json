@@ -1,0 +1,32 @@
+{
+  "version": "1.0.0",
+  "cutscenes": {
+    "RUN_START": {
+      "title": "The Awakening",
+      "localization_key": "CS_RUN_START_TITLE",
+      "segments": [
+        {
+          "text": "The embers glow faintly in the dark.",
+          "localization_key": "CS_RUN_START_SEG_1",
+          "duration_sec": 3.0
+        },
+        {
+          "text": "You are the Keeper of what remains.",
+          "localization_key": "CS_RUN_START_SEG_2",
+          "duration_sec": 4.0
+        }
+      ]
+    },
+    "BIOME_TRANSITION_1": {
+      "title": "The Iron Descent",
+      "localization_key": "CS_BIOME_TRANS_1_TITLE",
+      "segments": [
+        {
+          "text": "The metal groans as you descend deeper.",
+          "localization_key": "CS_BIOME_TRANS_1_SEG_1",
+          "duration_sec": 4.0
+        }
+      ]
+    }
+  }
+}
