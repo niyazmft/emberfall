@@ -15,6 +15,9 @@ const ACCESSIBILITY_PATH := "res://config/accessibility.json"
 const REWARDS_PATH := "res://config/rewards.json"
 const UNLOCKS_PATH := "res://config/unlocks.json"
 const ENCOUNTER_SCALER_PATH := "res://config/encounter_scaler.json"
+const CURRENCY_PATH := "res://config/currency.json"
+const WEAPONS_PATH := "res://config/weapons.json"
+const RECIPES_PATH := "res://config/recipes.json"
 
 # Fallback defaults (sensible so the game runs even if config is missing)
 const DEFAULTS: Dictionary = {
@@ -64,6 +67,9 @@ var _loadedFiles: Dictionary = {
 	REWARDS_PATH: false,
 	UNLOCKS_PATH: false,
 	ENCOUNTER_SCALER_PATH: false,
+	CURRENCY_PATH: false,
+	WEAPONS_PATH: false,
+	RECIPES_PATH: false,
 }
 
 
@@ -86,6 +92,9 @@ func _loadConfig() -> void:
 	_loadJsonToConfig(REWARDS_PATH)
 	_loadJsonToConfig(UNLOCKS_PATH)
 	_loadJsonToConfig(ENCOUNTER_SCALER_PATH)
+	_loadJsonToConfig(CURRENCY_PATH)
+	_loadJsonToConfig(WEAPONS_PATH)
+	_loadJsonToConfig(RECIPES_PATH)
 
 
 func _loadJsonToConfig(filePath: String) -> void:
