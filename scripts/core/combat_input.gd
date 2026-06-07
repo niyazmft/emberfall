@@ -18,7 +18,7 @@ var _grid_renderer: GridRenderer
 var _grid_system: Node
 var _valid_targets: Array[Node2D] = []
 var _target_index: int = -1
-var _gamepad_bindings: Dictionary[String, String] = {}
+var _gamepad_bindings: Dictionary = {}
 
 
 func _init(player: Node2D, enemies_node: Node2D, grid_renderer: GridRenderer) -> void:

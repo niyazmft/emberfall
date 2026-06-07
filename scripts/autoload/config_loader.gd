@@ -164,18 +164,22 @@ func _validateGridVisuals() -> void:
 	var rawHighlights: Variant = _configData["highlights"]
 	if not rawHighlights is Dictionary:
 		return
-	var highlights: Dictionary = rawHighlights as Dictionary
+	var highlightsDict: Dictionary = rawHighlights as Dictionary
 
-	for key: Variant in highlights.keys():
-		var style: Dictionary = highlights[key] as Dictionary
-		if style.has("pulse"):
-			var pulse: Dictionary = style["pulse"] as Dictionary
-			var minA: float = float(pulse.get("min_alpha", 0.0))
-			var maxA: float = float(pulse.get("max_alpha", 1.0))
-			if minA > maxA:
-				push_error(
-					(
-						"ConfigLoader: Grid visual style '%s' has min_alpha (%.2f) > max_alpha (%.2f)!"
-						% [str(key), minA, maxA]
-					)
-				)
+	for key: Variant in highlightsDict.keys():
+		var styleRef: Variant = highlightsDict[key]
+		if styleRef is Dictionary:
+			var style: Dictionary = styleRef as Dictionary
+			if style.has("pulse"):
+				var pulseRef: Variant = style["pulse"]
+				if pulseRef is Dictionary:
+					var pulse: Dictionary = pulseRef as Dictionary
+					var minA: float = float(pulse.get("min_alpha", 0.0))
+					var maxA: float = float(pulse.get("max_alpha", 1.0))
+					if minA > maxA:
+						push_error(
+							(
+								"ConfigLoader: Grid visual style '%s' has min_alpha (%.2f) > max_alpha (%.2f)!"
+								% [str(key), minA, maxA]
+							)
+						)

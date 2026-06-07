@@ -167,19 +167,18 @@ func _get_occupied_coords() -> Array[Vector2i]:
 	if tree == null:
 		return occupied
 
-	var playerNodeLocal: Node = tree.get_first_node_in_group("player")
-	if playerNodeLocal is Node2D:
-		var pEntRef: Variant = playerNodeLocal.get("entity")
-		if pEntRef is Entity:
-			var pEnt: Entity = pEntRef as Entity
+	var firstPlayer: Node = tree.get_first_node_in_group("player")
+	if firstPlayer is Node2D:
+		var pent: Variant = firstPlayer.get("entity")
+		if pent is Entity:
+			var pEnt: Entity = pent as Entity
 			occupied.append(Vector2i(pEnt.x, pEnt.y))
 
 	for enemyNodeLocal: Node in tree.get_nodes_in_group("enemies"):
 		if enemyNodeLocal == get_parent():  # Skip self
 			continue
 		if enemyNodeLocal is Node2D:
-			var eNodeLocal: Node2D = enemyNodeLocal as Node2D
-			var eEntRef: Variant = eNodeLocal.get("entity")
+			var eEntRef: Variant = enemyNodeLocal.get("entity")
 			if eEntRef is Entity:
 				var eEnt: Entity = eEntRef as Entity
 				if eEnt.alive():
