@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://turnbanner001" path="res://scenes/ui/turn_banner.tscn" id="4_turn_banner"]
 [ext_resource type="PackedScene" uid="uid://toast001" path="res://scenes/ui/toast.tscn" id="5_toast"]
 [ext_resource type="PackedScene" uid="uid://toast001" path="res://scenes/ui/toast.tscn" id="4_toast"]
+[ext_resource type="PackedScene" uid="uid://c6j2y7k8m1n2p" path="res://scenes/ui/tutorial_overlay.tscn" id="5_tutorial_overlay"]
 [ext_resource type="PackedScene" uid="uid://ppburden001" path="res://scenes/ui/pp_burden_layer.tscn" id="5_pp_burden"]
 [ext_resource type="Script" path="res://scripts/ui/floating_text_manager.gd" id="5_floating_text_manager"]
 [ext_resource type="Script" path="res://scripts/core/camera_shaker.gd" id="5_shaker"]
@@ -38,6 +39,7 @@ y_sort_enabled = true
 [node name="ToastWidget" parent="UIOverlay" instance=ExtResource("5_toast")]
 [node name="ToastWidget" parent="UIOverlay" instance=ExtResource("4_toast")]
 
+[node name="TutorialOverlay" parent="UIOverlay" instance=ExtResource("5_tutorial_overlay")]
 [node name="BurdenLayer" parent="." instance=ExtResource("5_pp_burden")]
 [node name="FloatingTextManager" type="Control" parent="UIOverlay"]
 layout_mode = 3

@@ -78,6 +78,11 @@ static func grid_system() -> _GridSystem:
 	return get_autoload("GridSystem") as _GridSystem
 
 
+## Returns the TutorialManager autoload, or null.
+static func tutorial_manager() -> _TutorialManager:
+	return get_autoload("TutorialManager") as _TutorialManager
+
+
 ## Returns the SettingsManager autoload, or null.
 ## NOTE: Returns Node instead of _SettingsManager to prevent engine Parse Errors
 ## and circularities in headless Godot environments.
