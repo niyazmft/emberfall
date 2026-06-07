@@ -275,6 +275,17 @@ func _resolve_dying_timers() -> void:
 func _resolve_dying_timers_for(id: int) -> void:
 	if not _dying_turns.has(id):
 		return
+func process_end_of_turn() -> void:
+	_resolve_dying_timers()
+	_resolve_stunned_timers()
+
+
+func _resolve_dying_timers() -> void:
+	var to_remove: Array[int] = []
+	for id: int in _dying_turns.keys():
+		_dying_turns[id] -= 1
+		if _dying_turns[id] <= 0:
+			to_remove.append(id)
 
 	_dying_turns[id] -= 1
 	if _dying_turns[id] <= 0:

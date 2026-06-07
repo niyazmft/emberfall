@@ -18,7 +18,14 @@ func _ready() -> void:
 
 	var eb: _EventBus = AutoloadHelper.event_bus()
 	if eb:
-		eb.run_started.connect(_onRunStarted)
+		eb.run_started.connect(_on_run_started)
+
+	_refresh_hotbar()
+
+
+func _on_run_started(_seed: int) -> void:
+	_refresh_hotbar()
+
 
 	_refreshHotbar()
 
@@ -57,6 +64,18 @@ func _refreshHotbar() -> void:
 
 	if not config or not abilityMgr:
 		_clearAllSlots()
+		left_arrow.hide()
+		right_arrow.hide()
+		scroll_container.custom_minimum_size.x = 0  # Expand naturally
+
+
+func _refresh_hotbar() -> void:
+	var config: _ConfigLoader = AutoloadHelper.config_loader()
+	var ability_mgr: _AbilityManager = (
+		AutoloadHelper.get_autoload("AbilityManager") as _AbilityManager
+	)
+
+	if not config or not ability_mgr:
 		return
 
 	var bindings: Variant = config.getValue("hotbar_bindings", "default_layout")
@@ -95,3 +114,28 @@ func _clearSlot(slotBtn: Button) -> void:
 	slotBtn.text = ""
 	slotBtn.tooltip_text = ""
 	slotBtn.hide()
+		return
+
+	var slots: Array[Node] = slots_container.get_children()
+	for i: int in range(slots.size()):
+		var slot_btn: Button = slots[i] as Button
+		if not slot_btn:
+			continue
+
+		if i < bindings.size() and bindings[i] != null:
+			var ability_id: String = str(bindings[i])
+			var ability: Ability = ability_mgr.getAbility(ability_id)
+			if ability:
+				slot_btn.text = tr(ability.nameKey)
+				slot_btn.tooltip_text = tr(ability.descriptionKey)
+				slot_btn.show()
+			else:
+				_clear_slot(slot_btn)
+		else:
+			_clear_slot(slot_btn)
+
+
+func _clear_slot(slot_btn: Button) -> void:
+	slot_btn.text = ""
+	slot_btn.tooltip_text = ""
+	slot_btn.hide()
