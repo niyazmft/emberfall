@@ -1,6 +1,7 @@
 class_name TestStatusEffects
 extends GdUnitTestSuite
 
+
 func _new_lifecycle() -> _EntityLifecycle:
 	var script: GDScript = load("res://scripts/entities/entity_lifecycle.gd")
 	var el: _EntityLifecycle = auto_free(script.new()) as _EntityLifecycle

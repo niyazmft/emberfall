@@ -56,7 +56,9 @@ static func compute_damage_with_effects(
 	for effect: StatusEffect in defender.status_effects:
 		damage_taken_mult *= effect.combat_formula_modifier.get("damage_taken_mult", 1.0)
 
-	var base_dmg: int = compute_damage(attacker.off, defender.def_, pos_mod, elemental_modifier, memory_synergy)
+	var base_dmg: int = compute_damage(
+		attacker.off, defender.def_, pos_mod, elemental_modifier, memory_synergy
+	)
 	var final_dmg: float = float(base_dmg) * damage_dealt_mult * damage_taken_mult
 
 	return DeterministicMath.damage_floor(final_dmg)

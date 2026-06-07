@@ -82,7 +82,6 @@ func _record_kill(enemy_id: String, enemy_name: String) -> void:
 
 # ── Status Effects ───────────────────────────────────────────────────────
 
-
 ## Map of status effect ID to StatusEffect template
 var _status_effect_templates: Dictionary = {}
 
@@ -98,7 +97,9 @@ func _load_status_effect_templates() -> void:
 		_status_effect_templates[effect_id] = StatusEffect.from_dict(effect_data)
 
 
-func apply_status_effect(entity: Entity, effect_id: String, duration: int = -1, potency: int = 0) -> void:
+func apply_status_effect(
+	entity: Entity, effect_id: String, duration: int = -1, potency: int = 0
+) -> void:
 	if _status_effect_templates.is_empty():
 		_load_status_effect_templates()
 
@@ -109,7 +110,9 @@ func apply_status_effect(entity: Entity, effect_id: String, duration: int = -1, 
 	# If entity already has the effect, refresh it (simple implementation)
 	var existing: StatusEffect = entity.get_status_effect(effect_id)
 	if existing:
-		existing.remaining_duration = duration if duration >= 0 else _status_effect_templates[effect_id].duration
+		existing.remaining_duration = (
+			duration if duration >= 0 else _status_effect_templates[effect_id].duration
+		)
 		existing.base_potency = potency
 		return
 
@@ -323,7 +326,9 @@ func _process_entity_status_effects(entity: Entity) -> void:
 func _apply_periodic_effect(entity: Entity, effect: StatusEffect) -> void:
 	match effect.id:
 		"BURNING", "POISONED", "BLEEDING":
-			var tick_rate: float = _config_float("status_effects", "DOT_TICK_RATE_" + effect.id, 1.0)
+			var tick_rate: float = _config_float(
+				"status_effects", "DOT_TICK_RATE_" + effect.id, 1.0
+			)
 			var damage: int = _evaluate_potency(entity, effect)
 			var final_damage: int = DeterministicMath.damage_floor(float(damage) * tick_rate)
 			if final_damage > 0:
@@ -335,14 +340,26 @@ func _apply_periodic_effect(entity: Entity, effect: StatusEffect) -> void:
 func _evaluate_potency(entity: Entity, effect: StatusEffect) -> int:
 	# Simple expression evaluation for potency formulas
 	var expr := Expression.new()
-	var error: int = expr.parse(effect.potency_formula, ["base_potency", "target_hp_max", "target_hp"])
+	var error: int = expr.parse(
+		effect.potency_formula, ["base_potency", "target_hp_max", "target_hp"]
+	)
 	if error != OK:
-		push_warning("EntityLifecycle: Failed to parse potency formula for %s: %s" % [effect.id, expr.get_error_text()])
+		push_warning(
+			(
+				"EntityLifecycle: Failed to parse potency formula for %s: %s"
+				% [effect.id, expr.get_error_text()]
+			)
+		)
 		return effect.base_potency
 
 	var result: Variant = expr.execute([effect.base_potency, entity.hp_max, entity.hp], null, true)
 	if expr.has_execute_failed():
-		push_warning("EntityLifecycle: Failed to execute potency formula for %s: %s" % [effect.id, expr.get_error_text()])
+		push_warning(
+			(
+				"EntityLifecycle: Failed to execute potency formula for %s: %s"
+				% [effect.id, expr.get_error_text()]
+			)
+		)
 		return effect.base_potency
 
 	return int(result)
