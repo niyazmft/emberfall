@@ -37,7 +37,14 @@
       "min_range": 1,
       "max_range": 1,
       "retreat_hp_threshold": 0.0,
-      "elevation_priority": 0.0
+      "elevation_priority": 0.0,
+      "taunt_radius": 3,
+      "shield_block_cooldown": 3,
+      "flanking_protection_weights": {
+        "front": 1.0,
+        "side": 0.5,
+        "back": 0.1
+      }
     },
     "mage": {
       "hp_max": 20,
@@ -64,6 +71,15 @@
       "max_range": 1,
       "retreat_hp_threshold": 0.1,
       "elevation_priority": 0.0
+    },
+    "overgrown_guardian": {
+      "hp_max": 300,
+      "off": 25,
+      "def_": 15,
+      "spd": 2,
+      "ai_behavior": "OVERGROWN_GUARDIAN",
+      "biome_affinity": "biome1",
+      "loot_table_id": "boss_loot"
     }
   }
 }

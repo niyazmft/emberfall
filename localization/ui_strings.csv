@@ -17,6 +17,8 @@ menu.title.continue,Continue,Fortsetzen,Continuar,Continuer
 menu.title.new_game,New Game,Neues Spiel,Nuevo Juego,Nouveau Jeu
 menu.title.settings,Settings,Einstellungen,Ajustes,Paramètres
 menu.title.quit,Quit,Beenden,Salir,Quitter
+MSG_LEVEL_UP,LEVEL UP!,LEVEL UP!,¡SUBIDA DE NIVEL!,NIVEAU SUPÉRIEUR !
+MSG_XP_GAINED,+{0} XP,+{0} EP,+{0} PX,+{0} XP
 room_biome1_01,Room 1-01,Raum 1-01,Sala 1-01,Salle 1-01
 room_biome1_02,Room 1-02,Raum 1-02,Sala 1-02,Salle 1-02
 room_biome1_03,Room 1-03,Raum 1-03,Sala 1-03,Salle 1-03
@@ -32,7 +34,7 @@ room_biome1_12,Room 1-12,Raum 1-12,Sala 1-12,Salle 1-12
 room_biome2_01,Room 2-01,Raum 2-01,Sala 2-01,Salle 2-01
 room_biome2_02,Room 2-02,Raum 2-02,Sala 2-02,Salle 2-02
 room_biome2_03,Room 2-03,Raum 2-03,Sala 2-03,Salle 2-03
-room_biome2_04,Room 2-04,Raum 2-04,Sala 2-04,Salle 2-04
+room_biome2_04,Room 2-04,Raum 2-04,Sala 2-04,Sala 2-04
 room_biome2_05,Room 2-05,Raum 2-05,Sala 2-05,Salle 2-05
 room_biome2_06,Room 2-06,Raum 2-06,Sala 2-06,Salle 2-06
 room_biome2_07,Room 2-07,Raum 2-07,Sala 2-07,Salle 2-07
@@ -92,3 +94,12 @@ biome.1.elev.2,[You overlook the rusted expanse],[Du übersiehst die verrostete 
 narrative.room.entry,[The room hums with energy],[Der Raum summt vor Energie],[La habitación zumba con energía],[La pièce bourdonne d'énergie]
 narrative.secret.spared_all,[Your mercy has opened a new path],[Deine Gnade hat einen neuen Weg eröffnet],[Tu misericordia ha abierto un nuevo camino],[Votre miséricorde a ouvert une nouvelle voie]
 narrative.secret.no_damage,[Flawless execution reveals the hidden],[Makellose Ausführung offenbart das Verborgene],[La ejecución impecable revela lo oculto],[Une exécution sans faille révèle le caché]
+biome.2.name,Industrial Depot,Industriedepot,Depósito Industrial,Dépôt Industriel
+biome.2.elev.0,[Machinery hums beneath rusted gantries],[Maschinen summen unter rostigen Brücken],[La maquinaria zumbaba bajo puentes oxidados],[Les machines bourdonnent sous les passerilles rouillées]
+biome.2.elev.1,[Steam vents hiss at your ankles],[Dampfventile zischen an deinen Knöcheln],[Las válvulas de vapor silban en tus tobillos],[Les soupapes de vapeur sifflent à vos chevilles]
+biome.2.elev.2,[You stand above the smog],[Du stehst über dem Smog],[Te encuentras por encima de la niebla tóxica],[Vous surplombez le smog]
+biome.3.name,Crystal Spires,Kristallspitzen,Pináculos de Cristal,Pinacles de Cristal
+biome.3.elev.0,[Shimmering shards underfoot],[Schimmernde Scherben unter den Füßen],[Fragmentos brillantes bajo tus pies],[Éclats chatoyants sous vos pieds]
+biome.3.elev.1,[The crystals grow denser],[Die Kristalle werden dichter],[Los cristales se vuelven más densos],[Les cristaux deviennent plus denses]
+biome.3.elev.2,[Light refracts through the spires],[Licht bricht sich in den Spitzen],[La luz se refracta a través de los pináculos],[La lumière se réfracte à travers les pinacles]
+>>>>>>> origin/main
