@@ -34,6 +34,8 @@ const HOTBAR_BINDINGS_PATH := "res://config/hotbar_bindings.json"
 const DEFAULTS: Dictionary = {
 	"AP_MAX": 6,
 	"AP_REGEN": 2,
+	"ability_min": 3,
+	"ability_max": 5,
 	"D_BASE": 10,
 	"CRIT_MULT": 1.5,
 	"MIN_DAMAGE": 1,
