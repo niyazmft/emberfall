@@ -25,9 +25,19 @@ func update_visuals() -> void:
 	update_ap(_entity.ap)
 
 
+## Backward-compatible camelCase alias for update_hp
+func updateHp(p_current_hp: int, p_max_hp: int) -> void:
+	update_hp(p_current_hp, p_max_hp)
+
+
 func update_hp(p_current_hp: int, p_max_hp: int) -> void:
 	hp_bar.max_value = p_max_hp
 	hp_bar.value = p_current_hp
+
+
+## Backward-compatible camelCase alias for update_ap (accepts 1 or 2 args)
+func updateAp(p_current_ap: int, _p_max_ap: int = 0) -> void:
+	update_ap(p_current_ap)
 
 
 func update_ap(p_current_ap: int) -> void:
