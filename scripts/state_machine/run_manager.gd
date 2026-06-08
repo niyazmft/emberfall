@@ -316,7 +316,7 @@ func _enter_room(_ctx: Dictionary) -> void:
 	# Reset one-shot flags that are room-scoped
 	_combat_resolved = false
 
-	var room_data: Dictionary = _get_current_room_data()
+	var room_data: Dictionary = get_current_room_data()
 	var room_id: String = room_data.get("room_id", "room_standard_01")
 
 	# Load room definition and augment room_data
@@ -558,7 +558,7 @@ func _get_current_biome_index() -> int:
 	return 0
 
 
-func _get_current_room_data() -> Dictionary:
+func get_current_room_data() -> Dictionary:
 	if room_index >= 0 and room_index < room_queue.size():
 		return room_queue[room_index]
 	return {}

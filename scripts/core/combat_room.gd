@@ -33,7 +33,7 @@ func _ready() -> void:
 		run_manager.room_entered.connect(_on_room_entered)
 		# If we are already in a room, trigger it manually
 		if run_manager.current_state == _RunManager.RunState.ROOM:
-			_on_room_entered(run_manager.room_index, run_manager._get_current_room_data())
+			_on_room_entered(run_manager.room_index, run_manager.get_current_room_data())
 	elif test_mode:
 		_spawn_test_encounter()
 
