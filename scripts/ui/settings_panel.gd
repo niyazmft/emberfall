@@ -114,6 +114,11 @@ func _load_ui_from_settings() -> void:
 		_remap_panel.call("refresh")
 
 
+func _exit_tree() -> void:
+	if SafeZoneManager.safe_area_changed.is_connected(_on_safe_area_changed):
+		SafeZoneManager.safe_area_changed.disconnect(_on_safe_area_changed)
+
+
 func _connect_signals() -> void:
 	_master_slider.value_changed.connect(_on_audio_changed.bind("master_volume"))
 	_music_slider.value_changed.connect(_on_audio_changed.bind("music_volume"))

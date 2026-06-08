@@ -30,6 +30,15 @@ func _connect_signals() -> void:
 		event_bus.biome_echo_triggered.connect(_on_biome_echo_triggered)
 
 
+func _exit_tree() -> void:
+	var event_bus: _EventBus = AutoloadHelper.event_bus()
+	if event_bus:
+		if event_bus.spare_or_execute.is_connected(_on_spare_or_execute):
+			event_bus.spare_or_execute.disconnect(_on_spare_or_execute)
+		if event_bus.biome_echo_triggered.is_connected(_on_biome_echo_triggered):
+			event_bus.biome_echo_triggered.disconnect(_on_biome_echo_triggered)
+
+
 func grant_experience(entity: Entity, amount: int, reason: String = "") -> void:
 	if amount <= 0:
 		return

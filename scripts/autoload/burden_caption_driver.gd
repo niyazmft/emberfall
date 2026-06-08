@@ -23,6 +23,12 @@ func _ready() -> void:
 	_print_debug("BurdenCaptionDriver ready")
 
 
+func _exit_tree() -> void:
+	var am: _AudioMiddleware = AutoloadHelper.get_autoload("AudioMiddleware") as _AudioMiddleware
+	if am != null and am.is_connected("stem_event_detected", _on_stem_event):
+		am.stem_event_detected.disconnect(_on_stem_event)
+
+
 func _process(delta: float) -> void:
 	if _cooldowns.is_empty():
 		return

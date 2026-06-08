@@ -6,7 +6,17 @@ extends Label
 func _ready() -> void:
 	text = "v0.1.0-sprint1"
 	_apply_notch_offset()
-	SafeZoneManager.safe_area_changed.connect(func(_r: Rect2) -> void: _apply_notch_offset())
+	if not SafeZoneManager.safe_area_changed.is_connected(_on_safe_area_changed):
+		SafeZoneManager.safe_area_changed.connect(_on_safe_area_changed)
+
+
+func _exit_tree() -> void:
+	if SafeZoneManager.safe_area_changed.is_connected(_on_safe_area_changed):
+		SafeZoneManager.safe_area_changed.disconnect(_on_safe_area_changed)
+
+
+func _on_safe_area_changed(_r: Rect2) -> void:
+	_apply_notch_offset()
 
 
 func _apply_notch_offset() -> void:

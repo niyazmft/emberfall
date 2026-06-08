@@ -22,6 +22,11 @@ func _ready() -> void:
 		call_deferred("_on_burden_active_changed", BurdenManager.burden_active)
 
 
+func _exit_tree() -> void:
+	if BurdenManager and BurdenManager.is_connected("burden_active_changed", _on_burden_active_changed):
+		BurdenManager.disconnect("burden_active_changed", _on_burden_active_changed)
+
+
 func _allocate_static_pool() -> void:
 	# Pre-allocate the 512 KB VRAM scratch buffer at boot (Static pool allocation)
 	var img: Image = Image.create(
