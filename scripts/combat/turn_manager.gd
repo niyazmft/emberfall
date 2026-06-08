@@ -34,6 +34,11 @@ func _ready() -> void:
 		_lifecycle.connect("entity_state_changed", _on_entity_state_changed)
 
 
+func _exit_tree() -> void:
+	if _lifecycle and _lifecycle.is_connected("entity_state_changed", _on_entity_state_changed):
+		_lifecycle.disconnect("entity_state_changed", _on_entity_state_changed)
+
+
 # ── Public API ──────────────────────────────────────────────────────
 func start_combat(p_player: Node2D, p_enemies: Array[Node2D]) -> void:
 	_player = p_player

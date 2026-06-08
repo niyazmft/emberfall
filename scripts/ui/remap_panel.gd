@@ -19,6 +19,14 @@ func _ready() -> void:
 	call_deferred("_focus_first_item")
 
 
+func _exit_tree() -> void:
+	if (
+		InputRouter.has_signal("device_changed")
+		and InputRouter.device_changed.is_connected(_on_device_changed)
+	):
+		InputRouter.device_changed.disconnect(_on_device_changed)
+
+
 func _focus_first_item() -> void:
 	if not action_list:
 		return

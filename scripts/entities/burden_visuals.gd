@@ -10,6 +10,12 @@ func _ready() -> void:
 		BurdenManager.burden_event_triggered.connect(on_entity_burden_triggered)
 
 
+func _exit_tree() -> void:
+	if BurdenManager:
+		if BurdenManager.burden_event_triggered.is_connected(on_entity_burden_triggered):
+			BurdenManager.burden_event_triggered.disconnect(on_entity_burden_triggered)
+
+
 func on_entity_burden_triggered(_result: RefCounted) -> void:
 	# Wire router reset or other logic here if needed.
 	# For DON-223, this is a requested hook.

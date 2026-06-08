@@ -23,6 +23,16 @@ func _ready() -> void:
 	_refresh_hotbar()
 
 
+func _exit_tree() -> void:
+	if get_tree() and get_tree().root:
+		if get_tree().root.size_changed.is_connected(_on_viewport_resized):
+			get_tree().root.size_changed.disconnect(_on_viewport_resized)
+
+	var eb: _EventBus = AutoloadHelper.event_bus()
+	if eb and eb.run_started.is_connected(_on_run_started):
+		eb.run_started.disconnect(_on_run_started)
+
+
 func _on_run_started(_seed: int) -> void:
 	_refresh_hotbar()
 

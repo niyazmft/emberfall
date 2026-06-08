@@ -40,6 +40,12 @@ func _ready() -> void:
 	_setup_camera()
 
 
+func _exit_tree() -> void:
+	var run_manager := AutoloadHelper.run_manager()
+	if run_manager and run_manager.room_entered.is_connected(_on_room_entered):
+		run_manager.room_entered.disconnect(_on_room_entered)
+
+
 func _on_room_entered(_room_index: int, room_data: Dictionary) -> void:
 	# Clear existing entities if any
 	for child in entity_container.get_children():

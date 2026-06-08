@@ -16,6 +16,17 @@ func _ready() -> void:
 	_connect_signals()
 
 
+func _exit_tree() -> void:
+	var eb: _EventBus = AutoloadHelper.event_bus()
+	if eb:
+		if eb.room_entered.is_connected(_on_room_entered):
+			eb.room_entered.disconnect(_on_room_entered)
+		if eb.combat_resolved_signal.is_connected(_on_combat_resolved):
+			eb.combat_resolved_signal.disconnect(_on_combat_resolved)
+		if eb.spare_or_execute.is_connected(_on_spare_or_execute):
+			eb.spare_or_execute.disconnect(_on_spare_or_execute)
+
+
 func _connect_signals() -> void:
 	var eb: _EventBus = AutoloadHelper.event_bus()
 	if eb:

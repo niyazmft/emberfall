@@ -49,6 +49,10 @@ func _ready() -> void:
 		global_position = _target_position  # Snap initially
 
 
+func _exit_tree() -> void:
+	_disconnect_entity_signals()
+
+
 func _process(delta: float) -> void:
 	if global_position.distance_to(_target_position) > 0.1:
 		var weight: float = minf(delta * lerp_speed, 1.0)

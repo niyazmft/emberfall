@@ -95,6 +95,14 @@ func _ready() -> void:
 	_refresh_stack()
 
 
+func _exit_tree() -> void:
+	if BurdenManager:
+		if BurdenManager.kill_history_changed.is_connected(_on_kill_history_changed):
+			BurdenManager.kill_history_changed.disconnect(_on_kill_history_changed)
+		if BurdenManager.burden_active_changed.is_connected(_on_burden_active_changed):
+			BurdenManager.burden_active_changed.disconnect(_on_burden_active_changed)
+
+
 func _process(delta: float) -> void:
 	if state_machine:
 		state_machine.update(delta)
