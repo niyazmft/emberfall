@@ -217,22 +217,22 @@ func _setupHelpListeners() -> void:
 	]
 
 	for control: Control in controls:
-		control.mouse_entered.connect(_on_control_hovered.bind(control.name))
-		control.focus_entered.connect(_on_control_hovered.bind(control.name))
-		control.mouse_exited.connect(_clear_help_text)
-		control.focus_exited.connect(_clear_help_text)
+		control.mouse_entered.connect(_onControlHovered.bind(control.name))
+		control.focus_entered.connect(_onControlHovered.bind(control.name))
+		control.mouse_exited.connect(_clearHelpText)
+		control.focus_exited.connect(_clearHelpText)
 
 		if control is Button or control is CheckBox or control is OptionButton:
 			if control.has_signal("pressed"):
-				control.pressed.connect(_on_control_clicked)
+				control.pressed.connect(_onControlClicked)
 			elif control.has_signal("item_selected"):
-				control.item_selected.connect(func(_idx: int) -> void: _on_control_clicked())
+				control.item_selected.connect(func(_idx: int) -> void: _onControlClicked())
 		elif control is HSlider:
-			control.drag_ended.connect(func(_changed: bool) -> void: _on_control_clicked())
+			control.drag_ended.connect(func(_changed: bool) -> void: _onControlClicked())
 
 
-func _on_control_hovered(control_name: String) -> void:
-	_update_help_text(control_name)
+func _onControlHovered(control_name: String) -> void:
+	_updateHelpText(control_name)
 	var am: _UIAudioManager = AutoloadHelper.get_autoload("UIAudioManager")
 	if am:
 		am.playUiSound("hover")
@@ -241,7 +241,7 @@ func _on_control_hovered(control_name: String) -> void:
 		hm.triggerHaptic("hover")
 
 
-func _on_control_clicked() -> void:
+func _onControlClicked() -> void:
 	var am: _UIAudioManager = AutoloadHelper.get_autoload("UIAudioManager")
 	if am:
 		am.playUiSound("click")
@@ -250,12 +250,12 @@ func _on_control_clicked() -> void:
 		hm.triggerHaptic("click")
 
 
-func _update_help_text(control_name: String) -> void:
+func _updateHelpText(control_name: String) -> void:
 	if settingsHelp.has(control_name):
 		helpLabel.text = tr(settingsHelp[control_name])
 
 
-func _clear_help_text() -> void:
+func _clearHelpText() -> void:
 	helpLabel.text = " "
 
 

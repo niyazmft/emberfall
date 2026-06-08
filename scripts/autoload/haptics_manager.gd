@@ -11,10 +11,10 @@ var _configData: Dictionary = {}
 
 
 func _ready() -> void:
-	_loadConfig()
+	loadConfig()
 
 
-func _loadConfig() -> void:
+func loadConfig() -> void:
 	var cl: _ConfigLoader = AutoloadHelper.config_loader()
 	if cl:
 		if not cl.isLoaded():

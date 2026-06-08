@@ -43,6 +43,17 @@ signal burden_active_changed(active: bool)
 ## result is a BurdenEventResult instance (widened to Object to avoid coupling).
 signal burden_event_triggered(result: Object)
 
+# ── TurnManager (Widened for EventBus) ───────────────────────────────────────
+
+## Fired when a new turn starts.
+signal turn_started(entity: Entity, is_player: bool)
+
+## Fired when a round starts.
+signal round_started(round_number: int)
+
+## Fired when combat ends.
+signal combat_ended(victory: bool)
+
 # ── RunManager ───────────────────────────────────────────────────────────────
 
 ## Fired when a new run begins.
