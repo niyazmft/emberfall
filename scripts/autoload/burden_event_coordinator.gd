@@ -14,6 +14,14 @@ func _ready() -> void:
 	_print_debug("BurdenEventCoordinator ready")
 
 
+func _exit_tree() -> void:
+	if BurdenManager:
+		if BurdenManager.is_connected("burden_event_triggered", _on_burden_event_triggered):
+			BurdenManager.disconnect("burden_event_triggered", _on_burden_event_triggered)
+		if BurdenManager.is_connected("burden_active_changed", _on_burden_active_changed):
+			BurdenManager.disconnect("burden_active_changed", _on_burden_active_changed)
+
+
 # ── Internal ────────────────────────────────────────────────────────────────
 
 

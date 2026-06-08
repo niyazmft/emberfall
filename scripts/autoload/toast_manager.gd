@@ -18,6 +18,13 @@ func _ready() -> void:
 	LayerManager.modal_closed.connect(_on_modal_closed)
 
 
+func _exit_tree() -> void:
+	if LayerManager.modal_opened.is_connected(_on_modal_opened):
+		LayerManager.modal_opened.disconnect(_on_modal_opened)
+	if LayerManager.modal_closed.is_connected(_on_modal_closed):
+		LayerManager.modal_closed.disconnect(_on_modal_closed)
+
+
 func show_toast(text_key: String, type: ToastType = ToastType.T_01) -> void:
 	_queue.append({"key": text_key, "type": type})
 	_process_queue()

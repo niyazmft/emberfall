@@ -63,6 +63,11 @@ func _ready() -> void:
 			_entity_lifecycle.connect("mwt_reached", _on_mwt_reached)
 
 
+func _exit_tree() -> void:
+	if _entity_lifecycle and _entity_lifecycle.is_connected("mwt_reached", _on_mwt_reached):
+		_entity_lifecycle.disconnect("mwt_reached", _on_mwt_reached)
+
+
 func _on_mwt_reached(_moral_flag: int, _remaining: int) -> void:
 	# When MWT is reached, the Burden Event system takes over.
 	_moral_eval_waiting_burden = true

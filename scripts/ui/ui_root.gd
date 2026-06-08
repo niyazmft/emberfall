@@ -23,6 +23,11 @@ func _ready() -> void:
 	_settings_panel.hide()
 
 
+func _exit_tree() -> void:
+	if get_viewport() and get_viewport().size_changed.is_connected(_apply_safe_area):
+		get_viewport().size_changed.disconnect(_apply_safe_area)
+
+
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		if _settings_panel.visible:

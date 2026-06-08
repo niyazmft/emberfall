@@ -28,6 +28,15 @@ func _ready() -> void:
 		eb.turn_started.connect(_on_turn_started)
 
 
+func _exit_tree() -> void:
+	var eb: _EventBus = AutoloadHelper.event_bus()
+	if eb:
+		if eb.room_entered.is_connected(_on_combat_started):
+			eb.room_entered.disconnect(_on_combat_started)
+		if eb.turn_started.is_connected(_on_turn_started):
+			eb.turn_started.disconnect(_on_turn_started)
+
+
 func display_message(p_text: String, p_color: Color = Color.WHITE) -> void:
 	turn_label.text = p_text
 	turn_label.modulate = p_color

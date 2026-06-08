@@ -42,6 +42,31 @@ func _ready() -> void:
 	end_turn_button.pressed.connect(_on_end_turn_pressed)
 
 
+func _exit_tree() -> void:
+	if SafeZoneManager.safe_area_changed.is_connected(_on_safe_area_changed):
+		SafeZoneManager.safe_area_changed.disconnect(_on_safe_area_changed)
+	if SafeZoneManager.aspect_ratio_changed.is_connected(_on_aspect_ratio_changed):
+		SafeZoneManager.aspect_ratio_changed.disconnect(_on_aspect_ratio_changed)
+
+	if _player_entity:
+		if _player_entity.hp_changed.is_connected(_on_hp_changed):
+			_player_entity.hp_changed.disconnect(_on_hp_changed)
+		if _player_entity.ap_changed.is_connected(_on_ap_changed):
+			_player_entity.ap_changed.disconnect(_on_ap_changed)
+
+	if _turn_manager:
+		if _turn_manager.turn_started.is_connected(_on_turn_started):
+			_turn_manager.turn_started.disconnect(_on_turn_started)
+		if _turn_manager.round_started.is_connected(_on_round_started):
+			_turn_manager.round_started.disconnect(_on_round_started)
+
+	if _combat_input:
+		if _combat_input.targeting_started.is_connected(_on_targeting_started):
+			_combat_input.targeting_started.disconnect(_on_targeting_started)
+		if _combat_input.attack_executed.is_connected(_on_attack_executed):
+			_combat_input.attack_executed.disconnect(_on_attack_executed)
+
+
 func setup(player_entity: Entity, turn_manager: TurnManager, combat_input: CombatInput) -> void:
 	_player_entity = player_entity
 	_turn_manager = turn_manager

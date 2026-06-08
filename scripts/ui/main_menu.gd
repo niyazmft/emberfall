@@ -36,6 +36,13 @@ func _on_safe_area_changed(_rect: Rect2) -> void:
 	_apply_safe_area()
 
 
+func _exit_tree() -> void:
+	if InputRouter.device_changed.is_connected(_on_device_changed):
+		InputRouter.device_changed.disconnect(_on_device_changed)
+	if SafeZoneManager.safe_area_changed.is_connected(_on_safe_area_changed):
+		SafeZoneManager.safe_area_changed.disconnect(_on_safe_area_changed)
+
+
 func _apply_safe_area() -> void:
 	var margins: Dictionary = SafeZoneManager.get_safe_margins() as Dictionary
 	margin_container.add_theme_constant_override("margin_left", int(margins.get("left", 0)))
