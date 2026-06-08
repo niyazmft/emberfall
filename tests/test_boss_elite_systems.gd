@@ -65,7 +65,7 @@ func test_room_loader_boss_spawning() -> void:
 
 	RoomLoader.spawn_entities(room_data, container, enemies_node)
 
-	assert_that(enemies_node.get_child_count()).is_greater_than(0)
+	assert_that(enemies_node.get_child_count()).is_greater(0)
 	var boss_node: Node2D = enemies_node.get_child(0) as Node2D
 	assert_that(boss_node).is_not_null()
 	assert_that(boss_node.get("archetype_id")).is_equal("overgrown_guardian")

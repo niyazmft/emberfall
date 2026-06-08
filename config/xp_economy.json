@@ -1,15 +1,17 @@
 {
-  "enemy_xp": {
-    "grunt": 20,
-    "archer": 25,
-    "tank": 40,
-    "mage": 35,
-    "boss": 200
-  },
-  "spare_bonus_multiplier": 1.5,
-  "biome_clear_bonus": 100,
-  "hooks": {
-    "execute_xp_formula": "base_xp",
-    "spare_xp_formula": "base_xp * spare_bonus_multiplier"
+  "xp_economy": {
+    "enemy_xp": {
+      "grunt": 20,
+      "archer": 25,
+      "tank": 40,
+      "mage": 35,
+      "boss": 200
+    },
+    "spare_bonus_multiplier": 1.5,
+    "biome_clear_bonus": 100,
+    "hooks": {
+      "execute_xp_formula": "base_xp",
+      "spare_xp_formula": "base_xp * spare_bonus_multiplier"
+    }
   }
 }

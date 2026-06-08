@@ -1,0 +1,134 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Visual Feedback Config Schema",
+  "type": "object",
+  "required": [
+    "hit_stop",
+    "screen_shake",
+    "floating_text",
+    "health_bar",
+    "hit_flash",
+    "transitions"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "hit_stop": {
+      "type": "object",
+      "required": [
+        "tiers"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "tiers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "threshold",
+              "frames"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "threshold": {
+                "type": "integer"
+              },
+              "frames": {
+                "type": "integer"
+              }
+            }
+          }
+        }
+      }
+    },
+    "screen_shake": {
+      "type": "object",
+      "required": [
+        "intensity_mult",
+        "decay"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "intensity_mult": {
+          "type": "number"
+        },
+        "decay": {
+          "type": "number"
+        }
+      }
+    },
+    "floating_text": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "color",
+          "duration",
+          "offset"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "color": {
+            "type": "string"
+          },
+          "duration": {
+            "type": "number"
+          },
+          "offset": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2
+          }
+        }
+      }
+    },
+    "health_bar": {
+      "type": "object",
+      "required": [
+        "lerp_speed",
+        "hide_delay"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "lerp_speed": {
+          "type": "number"
+        },
+        "hide_delay": {
+          "type": "number"
+        }
+      }
+    },
+    "hit_flash": {
+      "type": "object",
+      "required": [
+        "duration"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "duration": {
+          "type": "number"
+        },
+        "color": {
+          "type": "string"
+        },
+        "intensity": {
+          "type": "number"
+        }
+      }
+    },
+    "transitions": {
+      "type": "object",
+      "required": [
+        "fade_duration"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "fade_duration": {
+          "type": "number"
+        }
+      }
+    }
+  }
+}

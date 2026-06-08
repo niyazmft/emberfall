@@ -4,16 +4,17 @@ const HOTBAR_SCENE: String = "res://scenes/ui/hotbar.tscn"
 
 
 func test_hotbar_population() -> void:
-	var hotbar: Control = load(HOTBAR_SCENE).instantiate() as Control
+	var hotbar: Control = auto_free(load(HOTBAR_SCENE).instantiate() as Control)
 	add_child(hotbar)
 
-	# Wait for _ready to finish (it calls _refresh_hotbar)
+	# Wait for _ready to finish (it calls _refreshHotbar)
 	await get_tree().process_frame
 
 	var slots_container: HBoxContainer = hotbar.get_node(
 		"HBoxContainer/ScrollContainer/HBoxContainer"
 	)
 	var slots: Array[Node] = slots_container.get_children()
+	assert_int(slots.size()).is_greater_equal(3)
 
 	# Based on config/hotbar_bindings.json:
 	# slot 0: strike_ember
@@ -33,5 +34,3 @@ func test_hotbar_population() -> void:
 
 	var slot2: Button = slots[2] as Button
 	assert_bool(slot2.visible).is_false()
-
-	hotbar.queue_free()

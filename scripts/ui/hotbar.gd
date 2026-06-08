@@ -52,11 +52,13 @@ func _refresh_hotbar() -> void:
 	)
 
 	if not config or not ability_mgr:
+		_clear_all_slots()
 		return
 
 	var bindings: Variant = config.getValue("hotbar_bindings", "default_layout")
 	if not bindings is Array:
 		push_warning("Hotbar: No default_layout found in hotbar_bindings.")
+		_clear_all_slots()
 		return
 
 	var slots: Array[Node] = slots_container.get_children()
@@ -76,6 +78,13 @@ func _refresh_hotbar() -> void:
 				_clear_slot(slot_btn)
 		else:
 			_clear_slot(slot_btn)
+
+
+func _clear_all_slots() -> void:
+	var slots: Array[Node] = slots_container.get_children()
+	for slot: Node in slots:
+		if slot is Button:
+			_clear_slot(slot)
 
 
 func _clear_slot(slot_btn: Button) -> void:

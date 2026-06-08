@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Enemy Definitions",
+  "type": "object",
+  "properties": {
+    "enemies": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "hp_max": { "type": "integer", "minimum": 1 },
+          "off": { "type": "integer", "minimum": 0 },
+          "def_": { "type": "integer", "minimum": 0 },
+          "spd": { "type": "integer", "minimum": 1 },
+          "ai_behavior": { "type": "string" },
+          "biome_affinity": { "type": "string" },
+          "loot_table_id": { "type": "string" },
+          "min_range": { "type": "integer", "minimum": 1 },
+          "max_range": { "type": "integer", "minimum": 1 },
+          "retreat_hp_threshold": { "type": "number", "minimum": 0, "maximum": 1 },
+          "elevation_priority": { "type": "number" }
+        },
+        "required": ["hp_max", "off", "def_", "spd", "ai_behavior", "biome_affinity", "loot_table_id"],
+        "allOf": [
+          {
+            "if": {
+              "properties": { "ai_behavior": { "const": "ARCHER" } }
+            },
+            "then": {
+              "required": ["min_range", "max_range", "retreat_hp_threshold", "elevation_priority"]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "required": ["enemies"]
+}

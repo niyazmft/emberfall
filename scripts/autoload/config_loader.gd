@@ -1,5 +1,5 @@
-extends Node
 class_name _ConfigLoader
+extends Node
 
 ## Autoload: ConfigLoader
 ## Loads gameplay constants from JSON config with sensible hard-coded defaults.
@@ -10,36 +10,22 @@ const ITEMS_PATH := "res://config/items.json"
 const EQUIPMENT_PATH := "res://config/entity_equipment.json"
 const ENEMIES_PATH := "res://config/enemies.json"
 const SKILLS_PATH := "res://config/skills.json"
-const HOTBAR_BINDINGS_PATH := "res://config/hotbar_bindings.json"
 const STATUS_EFFECTS_PATH := "res://config/status_effects.json"
 const ACCESSIBILITY_PATH := "res://config/accessibility.json"
+const GRID_VISUALS_PATH := "res://config/grid_visuals.json"
+const BIOMES_PATH := "res://config/biomes.json"
+const SECRET_ROOM_CONDITIONS_PATH := "res://config/secret_room_conditions.json"
+const PROPS_PATH := "res://data/props.json"
+const AMBIENT_NARRATOR_PATH := "res://data/ambient_narrator.json"
 const REWARDS_PATH := "res://config/rewards.json"
 const UNLOCKS_PATH := "res://config/unlocks.json"
 const ENCOUNTER_SCALER_PATH := "res://config/encounter_scaler.json"
 const PROGRESSION_PATH := "res://config/progression.json"
 const XP_ECONOMY_PATH := "res://config/xp_economy.json"
-const BIOMES_PATH := "res://config/biomes.json"
 const ELITE_MODIFIERS_PATH := "res://config/elite_modifiers.json"
-const GRID_VISUALS_PATH := "res://config/grid_visuals.json"
-
-const _NAMESPACE_KEYS: Array[String] = [
-	"items",
-	"enemies",
-	"equipment",
-	"progression",
-	"xp_economy",
-	"accessibility",
-	"config",
-	"biomes",
-	"skills",
-	"hotbar_bindings",
-	"status_effects",
-	"rewards",
-	"unlocks",
-	"encounter_scaler",
-	"elite_modifiers",
-	"grid_visuals"
-]
+const HUD_CONFIG_PATH := "res://config/hud_config.json"
+const FEEDBACK_PATH := "res://config/feedback_config.json"
+const HOTBAR_BINDINGS_PATH := "res://config/hotbar_bindings.json"
 
 # Fallback defaults (sensible so the game runs even if config is missing)
 const DEFAULTS: Dictionary = {
@@ -84,17 +70,21 @@ var _loadedFiles: Dictionary = {
 	EQUIPMENT_PATH: false,
 	ENEMIES_PATH: false,
 	SKILLS_PATH: false,
-	HOTBAR_BINDINGS_PATH: false,
 	STATUS_EFFECTS_PATH: false,
 	ACCESSIBILITY_PATH: false,
+	GRID_VISUALS_PATH: false,
+	BIOMES_PATH: false,
+	SECRET_ROOM_CONDITIONS_PATH: false,
+	PROPS_PATH: false,
+	AMBIENT_NARRATOR_PATH: false,
 	REWARDS_PATH: false,
 	UNLOCKS_PATH: false,
 	ENCOUNTER_SCALER_PATH: false,
 	PROGRESSION_PATH: false,
 	XP_ECONOMY_PATH: false,
-	BIOMES_PATH: false,
 	ELITE_MODIFIERS_PATH: false,
-	GRID_VISUALS_PATH: false,
+	FEEDBACK_PATH: false,
+	HOTBAR_BINDINGS_PATH: false,
 }
 
 
@@ -107,52 +97,40 @@ func _loadConfig() -> void:
 	for path: String in _loadedFiles:
 		_loadedFiles[path] = false
 
-	_loadJsonToConfig(CONFIG_PATH, "config")
-	_loadJsonToConfig(ITEMS_PATH, "items")
-	_loadJsonToConfig(EQUIPMENT_PATH, "equipment")
-	_loadJsonToConfig(ENEMIES_PATH, "enemies")
-	_loadJsonToConfig(SKILLS_PATH, "skills")
-	_loadJsonToConfig(HOTBAR_BINDINGS_PATH, "hotbar_bindings")
-	_loadJsonToConfig(STATUS_EFFECTS_PATH, "status_effects")
-	_loadJsonToConfig(ACCESSIBILITY_PATH, "accessibility")
-	_loadJsonToConfig(REWARDS_PATH, "rewards")
-	_loadJsonToConfig(UNLOCKS_PATH, "unlocks")
-	_loadJsonToConfig(ENCOUNTER_SCALER_PATH, "encounter_scaler")
-	_loadJsonToConfig(PROGRESSION_PATH, "progression")
-	_loadJsonToConfig(XP_ECONOMY_PATH, "xp_economy")
-	_loadJsonToConfig(ELITE_MODIFIERS_PATH, "elite_modifiers")
-	_loadJsonToConfig(GRID_VISUALS_PATH, "grid_visuals")
-
-	var actual_biomes_path := BIOMES_PATH
-	if _configData.has("config") and _configData["config"].has("run_manager"):
-		actual_biomes_path = _configData["config"]["run_manager"].get(
-			"BIOMES_CONFIG_PATH", BIOMES_PATH
-		)
-
-	_loadJsonToConfig(actual_biomes_path, "biomes")
-
-	if has_method("_validateGridVisuals"):
-		call("_validateGridVisuals")
+	_loadJsonToConfig(CONFIG_PATH)
+	_loadJsonToConfig(ITEMS_PATH)
+	_loadJsonToConfig(EQUIPMENT_PATH)
+	_loadJsonToConfig(ENEMIES_PATH)
+	_loadJsonToConfig(SKILLS_PATH)
+	_loadJsonToConfig(STATUS_EFFECTS_PATH)
+	_loadJsonToConfig(ACCESSIBILITY_PATH)
+	_loadJsonToConfig(GRID_VISUALS_PATH)
+	_loadJsonToConfig(BIOMES_PATH)
+	_loadJsonToConfig(SECRET_ROOM_CONDITIONS_PATH)
+	_loadJsonToConfig(PROPS_PATH)
+	_loadJsonToConfig(AMBIENT_NARRATOR_PATH)
+	_loadJsonToConfig(REWARDS_PATH)
+	_loadJsonToConfig(UNLOCKS_PATH)
+	_loadJsonToConfig(ENCOUNTER_SCALER_PATH)
+	_loadJsonToConfig(PROGRESSION_PATH)
+	_loadJsonToConfig(XP_ECONOMY_PATH)
+	_loadJsonToConfig(ELITE_MODIFIERS_PATH)
+	_loadJsonToConfig(HUD_CONFIG_PATH)
+	_loadJsonToConfig(FEEDBACK_PATH)
+	_loadJsonToConfig(HOTBAR_BINDINGS_PATH)
+	_validateGridVisuals()
 
 
-func _loadJsonToConfig(filePath: String, p_namespace: String = "") -> void:
+func _loadJsonToConfig(filePath: String) -> void:
 	if FileAccess.file_exists(filePath):
 		var fileHandle: FileAccess = FileAccess.open(filePath, FileAccess.READ)
 		if fileHandle:
 			var fileText: String = fileHandle.get_as_text()
 			var parsedJson: Variant = JSON.parse_string(fileText)
 			if parsedJson is Dictionary:
-				if p_namespace.is_empty():
-					_configData.merge(parsedJson, true)
-				else:
-					_configData[p_namespace] = parsedJson
+				_configData.merge(parsedJson, true)
 				_loadedFiles[filePath] = true
-				print(
-					(
-						"ConfigLoader: loaded config from %s into namespace '%s'"
-						% [filePath, p_namespace]
-					)
-				)
+				print("ConfigLoader: loaded config from %s" % filePath)
 			else:
 				push_warning("ConfigLoader: config file %s was not a valid JSON object." % filePath)
 			fileHandle.close()
@@ -160,44 +138,33 @@ func _loadJsonToConfig(filePath: String, p_namespace: String = "") -> void:
 		push_warning("ConfigLoader: config file not found at %s." % filePath)
 
 
+## Get a gameplay constant. First checks config JSON, then falls back to DEFAULTS.
+## Usage: ConfigLoader.getValue("AP_MAX") or ConfigLoader.getValue("combat", "D_BASE")
 func getValue(sectionOrKey: String, key: String = "", fallback: Variant = null) -> Variant:
 	if not key.is_empty():
-		var section: Dictionary = {}
+		# Two-arg mode: section + key
 		if _configData.has(sectionOrKey) and _configData[sectionOrKey] is Dictionary:
-			section = _configData[sectionOrKey]
-		else:
-			for s: Variant in _configData.values():
-				if s is Dictionary and s.has(sectionOrKey) and s[sectionOrKey] is Dictionary:
-					section = s[sectionOrKey]
-					break
-
-		if not section.is_empty():
-			if section.has(sectionOrKey) and section[sectionOrKey] is Dictionary:
-				section = section[sectionOrKey]
-
+			var section: Dictionary = _configData[sectionOrKey]
 			if section.has(key):
 				return section[key]
-
+		# Try flattened default
 		if DEFAULTS.has(key):
 			return DEFAULTS[key]
 		return fallback
-	else:
-		if _configData.has(sectionOrKey):
-			var data: Variant = _configData[sectionOrKey]
-			if data is Dictionary and data.has(sectionOrKey):
-				return data[sectionOrKey]
-			return data
 
-		if sectionOrKey not in _NAMESPACE_KEYS:
-			for section: Variant in _configData.values():
-				if section is Dictionary and section.has(sectionOrKey):
-					return section[sectionOrKey]
-
-		if DEFAULTS.has(sectionOrKey):
-			return DEFAULTS[sectionOrKey]
-		return fallback
+	# One-arg mode: direct key lookup in flattened namespace
+	if _configData.has(sectionOrKey):
+		return _configData[sectionOrKey]
+	# Scan sub-sections for key
+	for section: Variant in _configData.values():
+		if section is Dictionary and section.has(sectionOrKey):
+			return section[sectionOrKey]
+	if DEFAULTS.has(sectionOrKey):
+		return DEFAULTS[sectionOrKey]
+	return fallback
 
 
+## Convenience typed getters for hot-path values.
 func getInt(key: String, fallback: int = 0) -> int:
 	var v: Variant = getValue(key, "", fallback)
 	if v is float:
@@ -226,3 +193,31 @@ func isLoaded() -> bool:
 		if not _loadedFiles[path]:
 			return false
 	return true
+
+
+func _validateGridVisuals() -> void:
+	if not _configData.has("highlights"):
+		return
+
+	var rawHighlights: Variant = _configData["highlights"]
+	if not rawHighlights is Dictionary:
+		return
+	var highlightsDict: Dictionary = rawHighlights as Dictionary
+
+	for key: Variant in highlightsDict.keys():
+		var styleRef: Variant = highlightsDict[key]
+		if styleRef is Dictionary:
+			var style: Dictionary = styleRef as Dictionary
+			if style.has("pulse"):
+				var pulseRef: Variant = style["pulse"]
+				if pulseRef is Dictionary:
+					var pulse: Dictionary = pulseRef as Dictionary
+					var minA: float = float(pulse.get("min_alpha", 0.0))
+					var maxA: float = float(pulse.get("max_alpha", 1.0))
+					if minA > maxA:
+						push_error(
+							(
+								"ConfigLoader: Grid visual style '%s' has min_alpha (%.2f) > max_alpha (%.2f)!"
+								% [str(key), minA, maxA]
+							)
+						)

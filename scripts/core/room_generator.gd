@@ -89,7 +89,8 @@ static func _getBiomeParams(biomeId: String) -> Dictionary:
 	if err != OK:
 		return {}
 	var data: Dictionary = json.data as Dictionary
-	return data.get(biomeId, {}) as Dictionary
+	var biomes_data: Dictionary = data.get("biomes", {}) as Dictionary
+	return biomes_data.get(biomeId, {}) as Dictionary
 
 
 static func _createEmptyLayout() -> Dictionary:

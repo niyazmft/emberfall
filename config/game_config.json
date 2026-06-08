@@ -45,6 +45,12 @@
     "DYING_DURATION_TURNS": 1
   },
   "golden_seed": "0xDEADBEEF",
+  "camera": {
+    "LERP_SPEED": 5.0,
+    "ZOOM_LEVEL": 2.0,
+    "SHAKE_MAX_OFFSET": 10.0,
+    "SHAKE_MAX_ROLL": 0.1
+  },
   "grid": {
     "GRID_W": 12,
     "GRID_H": 12,

@@ -92,7 +92,7 @@ func _archer_behavior(enemy_pos: Vector2i, player_pos: Vector2i, dist: int) -> D
 
 func _tank_behavior(_enemy_pos: Vector2i, _player_pos: Vector2i, _dist: int) -> Dictionary:
 	# Delegate to specialized TankAI resolver
-	return TankAI.decideAction(enemy_entity, _player_node, grid_system, self)
+	return TankAI.decide_action(enemy_entity, _player_node, grid_system, self)
 
 
 func _boss_behavior() -> Dictionary:
