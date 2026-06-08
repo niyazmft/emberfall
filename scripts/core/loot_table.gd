@@ -26,17 +26,12 @@ static func load_loot_table(table_id: String) -> LootTable:
 	var text := f.get_as_text()
 	f.close()
 
-	var json := JSON.new()
-	var err := json.parse(text)
-	if err != OK:
-		push_error("LootTable: JSON parse error in %s: %s" % [path, json.get_error_message()])
+	var data_v: Variant = JSON.parse_string(text)
+	if data_v == null or not data_v is Dictionary:
+		push_error("LootTable: JSON parse error or not a Dictionary in " + path)
 		return null
 
-	if not json.data is Dictionary:
-		push_error("LootTable: Expected Dictionary at root of " + path)
-		return null
-
-	var data: Dictionary = json.data
+	var data: Dictionary = data_v as Dictionary
 	var table := LootTable.new()
 	table.min_rolls = int(data.get("min_rolls", 1))
 	table.max_rolls = int(data.get("max_rolls", 1))

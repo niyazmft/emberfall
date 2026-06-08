@@ -26,17 +26,12 @@ static func load_room_data(room_id: String) -> Dictionary:
 	var text := f.get_as_text()
 	f.close()
 
-	var json := JSON.new()
-	var err := json.parse(text)
-	if err != OK:
-		push_error("Failed to parse room JSON: " + path + " Error: " + json.get_error_message())
+	var data: Variant = JSON.parse_string(text)
+	if data == null or not data is Dictionary:
+		push_error("Failed to parse room JSON or data is not a Dictionary: " + path)
 		return {}
 
-	if not json.data is Dictionary:
-		push_error("Room JSON data is not a Dictionary: " + path)
-		return {}
-
-	return json.data as Dictionary
+	return data as Dictionary
 
 
 ## Configure the GridSystem with room layout.

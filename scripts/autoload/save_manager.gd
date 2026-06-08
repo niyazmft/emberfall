@@ -128,19 +128,9 @@ func load_game() -> Dictionary:
 	var raw_text: String = file.get_as_text()
 	file.close()
 
-	var json: JSON = JSON.new()
-	var parse_error: Error = json.parse(raw_text)
-	if parse_error != OK:
-		var reason: String = (
-			"JSON parse error at line %d: %s" % [json.get_error_line(), json.get_error_message()]
-		)
-		push_error("[SaveManager] load_game: %s" % reason)
-		load_failed.emit(reason)
-		return {}
-
-	var raw_data: Variant = json.get_data()
+	var raw_data: Variant = JSON.parse_string(raw_text)
 	if typeof(raw_data) != TYPE_DICTIONARY:
-		var reason: String = "Parsed JSON is not a Dictionary."
+		var reason: String = "Parsed JSON is not a Dictionary or failed to parse."
 		push_error("[SaveManager] load_game: %s" % reason)
 		load_failed.emit(reason)
 		return {}
