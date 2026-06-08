@@ -267,7 +267,6 @@ Outside the numbered phases, recent infrastructure work:
 | Branch protection ruleset | n/a | 2026-06-06 | Required CI + 1 review + squash |
 | Community health files | n/a | 2026-06-06 | LICENSE, SECURITY, CoC, PR/issue templates |
 | Dependabot + secret scanning | n/a | 2026-06-06 | Auto security updates |
-| Desktop-only optimizations | #240 | 2026-06-08 | Windowed mode, input bindings, SafeZoneManager no-op, EVProxy cache |
 
 ---
 
