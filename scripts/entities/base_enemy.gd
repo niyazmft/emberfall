@@ -256,11 +256,11 @@ func _handle_attack(action: Dictionary) -> void:
 
 
 ## Damage API
-func apply_damage(damage: int) -> void:
+func apply_damage(damage: int, attacker: Entity = null) -> void:
 	## Apply damage through EntityLifecycle via AutoloadHelper
 	var lifecycle: _EntityLifecycle = AutoloadHelper.entity_lifecycle()
 	if lifecycle:
-		lifecycle.apply_damage(null, entity, damage)
+		lifecycle.apply_damage(attacker, entity, damage)
 	else:
 		entity.apply_damage(damage)
 

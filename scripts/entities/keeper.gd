@@ -59,12 +59,12 @@ func trigger_damage_effect() -> void:
 
 ## Apply damage to the Keeper entity and trigger recoil on the apparition.
 ## Delegates to EntityLifecycle for canonical state transitions.
-func apply_damage(damage: int) -> void:
+func apply_damage(damage: int, attacker: Entity = null) -> void:
 	if entity == null:
 		return
 	var lifecycle: _EntityLifecycle = AutoloadHelper.entity_lifecycle()
 	if lifecycle:
-		lifecycle.apply_damage(null, entity, damage)
+		lifecycle.apply_damage(attacker, entity, damage)
 	else:
 		entity.apply_damage(damage)
 
