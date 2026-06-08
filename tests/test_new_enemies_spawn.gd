@@ -2,6 +2,7 @@ extends GdUnitTestSuite
 
 const RoomLoader = preload("res://scripts/combat/room_loader.gd")
 
+
 func test_mage_and_boss_spawn() -> void:
 	var container := Node2D.new()
 	var enemies_node := Node2D.new()
@@ -10,15 +11,10 @@ func test_mage_and_boss_spawn() -> void:
 
 	var room_data: Dictionary = {
 		"player_start": {"x": 0, "y": 0},
-		"encounters": [
-			{
-				"enemy_type": "mage",
-				"positions": [{"x": 1, "y": 1}]
-			},
-			{
-				"enemy_type": "boss",
-				"positions": [{"x": 2, "y": 2}]
-			}
+		"encounters":
+		[
+			{"enemy_type": "mage", "positions": [{"x": 1, "y": 1}]},
+			{"enemy_type": "boss", "positions": [{"x": 2, "y": 2}]}
 		]
 	}
 
