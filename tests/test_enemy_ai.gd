@@ -62,6 +62,9 @@ func test_archer_moves_away_when_too_close() -> void:
 	_ai.behavior = EnemyAIController.BehaviorType.ARCHER
 	_enemy.entity.set_grid_position(6, 5)
 	_player.entity.set_grid_position(5, 5)
+	var dist_before: int = max(
+		abs(_enemy.entity.grid_position().x - 5), abs(_enemy.entity.grid_position().y - 5)
+	)
 
 	var action: Dictionary = _ai.decide_action()
 
@@ -71,7 +74,7 @@ func test_archer_moves_away_when_too_close() -> void:
 	# (7,5) or (7,6) or (7,4) etc.
 	# _get_next_tile_towards(player, true)
 	var dist_after: int = max(abs(action["target_x"] - 5), abs(action["target_y"] - 5))
-	assert_int(dist_after).is_greater(1)
+	assert_int(dist_after).is_greater(dist_before)
 
 
 func test_archer_attacks_at_range_2() -> void:
@@ -136,8 +139,8 @@ func test_base_enemy_facing_updates_on_move() -> void:
 	var action: Dictionary = {"type": "move", "target_x": 7, "target_y": 7}
 	_enemy._execute_action(action)
 
-	assert_int(_enemy.entity.x).is_equal(7)
-	assert_int(_enemy.entity.y).is_equal(7)
+	assert_int(_enemy.entity.grid_position().x).is_equal(7)
+	assert_int(_enemy.entity.grid_position().y).is_equal(7)
 	assert_int(_enemy.entity.facing_x).is_equal(-1)
 	assert_int(_enemy.entity.facing_y).is_equal(-1)
 
@@ -152,3 +155,62 @@ func test_base_enemy_consumes_ap_on_move() -> void:
 	action = {"type": "move", "target_x": 6, "target_y": 7}
 	_enemy._execute_action(action)
 	assert_int(_enemy.entity.ap).is_equal(3)  # Diagonal move costs 2
+
+
+func test_archer_retreat_logic() -> void:
+	# Replace generic AI with ArcherAI
+	_enemy.remove_child(_ai)
+	_ai.free()
+	_ai = auto_free(ArcherAI.new()) as ArcherAI
+	_ai.grid_system = _grid
+	_ai.enemy_entity = _enemy.entity
+	_enemy.ai_controller = _ai
+	_enemy.add_child(_ai)
+
+	# Manually set parameters to ensure we are in retreat mode
+	_ai.retreat_hp_threshold = 0.5
+	_enemy.entity.hp_max = 100
+	_enemy.entity.hp = 20  # 20% < 50% threshold
+	_enemy.entity.set_grid_position(5, 5)
+	_player.entity.set_grid_position(0, 0)
+	var dist_before: int = 5
+
+	var action: Dictionary = _ai.decide_action()
+	assert_str(action["type"]).is_equal("move")
+
+	if action["type"] == "move":
+		var dist_after: int = max(abs(action["target_x"] - 0), abs(action["target_y"] - 0))
+		# In an empty 12x12 grid, moving away from (0,0) from (5,5) should be possible.
+		# e.g., to (6,6), which is distance 6.
+		assert_int(dist_after).is_greater(dist_before)
+
+
+func test_archer_elevation_preference() -> void:
+	# Replace generic AI with ArcherAI
+	_enemy.remove_child(_ai)
+	if is_instance_valid(_ai):
+		_ai.free()
+	_ai = auto_free(ArcherAI.new()) as ArcherAI
+	_ai.grid_system = _grid
+	_ai.enemy_entity = _enemy.entity
+	_enemy.ai_controller = _ai
+	_enemy.add_child(_ai)
+
+	_enemy.entity.archetype_id = "archer"
+	_ai._load_params()
+
+	_enemy.entity.set_grid_position(5, 5)
+	_player.entity.set_grid_position(10, 5)  # Directly to the right
+
+	# Make (6,5) mid elevation (so it's reachable from (5,5) which is ground)
+	# Other neighbors like (6,4) and (6,6) remain ground.
+	var high_tile: TacTileData = _grid.get_tile(6, 5)
+	high_tile.elevation = TacTileData.Elevation.MID
+	high_tile.recompute_flags()
+
+	var action: Dictionary = _ai.decide_action()
+	assert_str(action["type"]).is_equal("move")
+	# Archer should prefer the mid elevation tile at (6,5) over ground neighbors
+	if action["type"] == "move":
+		assert_int(action["target_x"]).is_equal(6)
+		assert_int(action["target_y"]).is_equal(5)

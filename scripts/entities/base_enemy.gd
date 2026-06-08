@@ -3,6 +3,8 @@ extends Node2D
 ## Enemy scene root with configurable AI behavior
 
 @export var archetype_id: String = ""
+@export var elite_type: String = ""
+@export var behavior_override: String = ""
 @export var entity: Entity
 @export var ai_controller: Node  ## Will integrate with behavior tree
 @export var visual_proxy: EntityVisualProxy
@@ -59,8 +61,8 @@ func _load_stats_from_config() -> void:
 	if config_loader == null:
 		return
 
-	var enemies_config: Dictionary = config_loader.getValue("enemies", "", {})
-	if enemies_config.has(archetype_id):
+	var enemies_config: Variant = config_loader.getValue("enemies")
+	if enemies_config is Dictionary and enemies_config.has(archetype_id):
 		var data: Dictionary = enemies_config[archetype_id]
 		# Use data-driven name if present, otherwise fallback to existing name or capitalized ID
 		if data.has("name"):
@@ -75,10 +77,12 @@ func _load_stats_from_config() -> void:
 
 		entity.archetype_id = archetype_id
 		entity.hp_max = int(data.get("hp_max", 30))
-		entity.hp = entity.hp_max
 		entity.off = int(data.get("off", 8))
 		entity.def_ = int(data.get("def_", 4))
 		entity.spd = int(data.get("spd", 4))
+
+		_apply_elite_modifiers()
+		entity.hp = entity.hp_max
 	else:
 		push_warning(
 			(
@@ -88,24 +92,73 @@ func _load_stats_from_config() -> void:
 		)
 
 
+func _apply_elite_modifiers() -> void:
+	if elite_type.is_empty():
+		return
+
+	var config_loader: _ConfigLoader = AutoloadHelper.config_loader()
+	if config_loader == null:
+		return
+
+	var elite_config: Dictionary = config_loader.getValue("elite_modifiers", "", {})
+	if elite_config.has(elite_type):
+		var mods: Dictionary = elite_config[elite_type]
+		var prefix: String = mods.get("name_prefix", "")
+		if not prefix.is_empty():
+			entity.entity_name = prefix + " " + entity.entity_name
+
+		entity.hp_max = DeterministicMath.damage_floor(
+			float(entity.hp_max) * float(mods.get("hp_mult", 1.0))
+		)
+		entity.off = DeterministicMath.damage_floor(
+			float(entity.off) * float(mods.get("off_mult", 1.0))
+		)
+		entity.def_ = DeterministicMath.damage_floor(
+			float(entity.def_) * float(mods.get("def_mult", 1.0))
+		)
+		entity.spd = DeterministicMath.damage_floor(
+			float(entity.spd) * float(mods.get("spd_mult", 1.0))
+		)
+
+
 func _setup_ai() -> void:
 	# If archetype defines behavior, try to apply it
 	var config_loader: _ConfigLoader = AutoloadHelper.config_loader()
 	var behavior_str: String = ""
 	if config_loader:
-		var enemies_config: Dictionary = config_loader.getValue("enemies", "", {})
-		if enemies_config.has(archetype_id):
+		var enemies_config: Variant = config_loader.getValue("enemies")
+		if enemies_config is Dictionary and enemies_config.has(archetype_id):
 			behavior_str = enemies_config[archetype_id].get("ai_behavior", "")
 
 	if ai_controller and ai_controller is EnemyAIController:
 		var controller: EnemyAIController = ai_controller as EnemyAIController
-		match behavior_str.to_upper():
+
+		# Apply behavior override if present
+		var final_behavior: String = behavior_str
+		if not behavior_override.is_empty():
+			final_behavior = behavior_override
+
+		match final_behavior.to_upper():
 			"GRUNT":
 				controller.behavior = EnemyAIController.BehaviorType.GRUNT
 			"ARCHER":
+				# If we have a specific ArcherAI node, it will handle itself.
+				# Otherwise we set the behavior on the generic controller.
 				controller.behavior = EnemyAIController.BehaviorType.ARCHER
 			"TANK":
 				controller.behavior = EnemyAIController.BehaviorType.TANK
+			"":
+				controller.behavior = EnemyAIController.BehaviorType.GRUNT
+			_:
+				controller.behavior = EnemyAIController.BehaviorType.BOSS
+				controller.boss_behavior_name = final_behavior
+
+	# Handle specific AI scripts if they exist as nodes
+	if behavior_str.to_upper() == "ARCHER" and not ai_controller is ArcherAI:
+		# If the current ai_controller is not ArcherAI but the behavior is ARCHER,
+		# we might want to swap it or ensure it's handled.
+		# For now, SimpleAI handles basic Archer behavior too.
+		pass
 
 
 func _setup_visual_proxy() -> void:

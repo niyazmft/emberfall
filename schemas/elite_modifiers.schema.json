@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Elite Modifiers Schema",
+  "description": "Stat multipliers and ability flags for elite enemy modifiers.",
+  "type": "object",
+  "additionalProperties": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "name_prefix": { "type": "string" },
+      "hp_mult": { "type": "number", "minimum": 0.1 },
+      "off_mult": { "type": "number", "minimum": 0.1 },
+      "def_mult": { "type": "number", "minimum": 0.1 },
+      "spd_mult": { "type": "number", "minimum": 0.1 },
+      "ability_flags": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "hotbar_bindings": {
+    "default_layout": [
+      "strike_ember",
+      "quick_dash",
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  }
+}
