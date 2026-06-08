@@ -23,7 +23,10 @@ func _ready() -> void:
 
 
 func _exit_tree() -> void:
-	if BurdenManager and BurdenManager.is_connected("burden_active_changed", _on_burden_active_changed):
+	if (
+		BurdenManager
+		and BurdenManager.is_connected("burden_active_changed", _on_burden_active_changed)
+	):
 		BurdenManager.disconnect("burden_active_changed", _on_burden_active_changed)
 
 

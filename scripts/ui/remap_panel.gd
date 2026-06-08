@@ -20,7 +20,10 @@ func _ready() -> void:
 
 
 func _exit_tree() -> void:
-	if InputRouter.has_signal("device_changed") and InputRouter.device_changed.is_connected(_on_device_changed):
+	if (
+		InputRouter.has_signal("device_changed")
+		and InputRouter.device_changed.is_connected(_on_device_changed)
+	):
 		InputRouter.device_changed.disconnect(_on_device_changed)
 
 
