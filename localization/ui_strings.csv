@@ -57,6 +57,8 @@ SKILL_STRIKE_EMBER_NAME,Strike Ember,Glutstreich,Golpe de Brasa,Frappe de Braise
 SKILL_STRIKE_EMBER_DESC,A fiery strike that deals damage.,Ein feuriger Schlag, der Schaden verursacht.,Un golpe ardiente que inflige daño.,Une frappe ardente qui inflige des dégâts.
 SKILL_QUICK_DASH_NAME,Quick Dash,Schneller Spurt,Carrera Rápida,Élan Rapide
 SKILL_QUICK_DASH_DESC,Dash forward to gain distance.,Spurte vorwärts, um Distanz zu gewinnen.,Corre hacia adelante para ganar distancia.,Élancez-vous pour gagner de la distance.
+ENEMY_ARCHER_NAME,Archer,Bogenschütze,Arquero,Archer
+ENEMY_ARCHER_DESC,Ranged enemy that maintains distance.,Fernkampfgegner, der Distanz hält.,Enemigo a distancia que mantiene la distancia.,Ennemi à distance qui maintient ses distances.
 HUD_TOOLTIP_HP,HP: Current / Max health,,
 HUD_TOOLTIP_AP,AP: Current / Max action points,,
 HUD_TOOLTIP_MOVE,Move to a new position,,

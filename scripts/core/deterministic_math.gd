@@ -3,15 +3,15 @@ class_name DeterministicMath
 ## Every function is annotated with exact semantics so that
 ## cross-platform validation can compare outputs bit-for-bit.
 ##
-## References: system-specification-core.md §2, §3, §11.
+## References: system-specification-core.md section 2, 3, 11.
 
-# ── Floating-Point Bounds ──────────────────────────────────────────
+# -- Floating-Point Bounds ------------------------------------------
 const EPSILON: float = 1e-9
 
 
-# ── Floor / Ceil ────────────────────────────────────────────────────
+# -- Floor / Ceil ----------------------------------------------------
 static func floori(value: float) -> int:
-	## Floor to integer: largest integer ≤ value.
+	## Floor to integer: largest integer <= value.
 	## In GDScript, floor() returns float; we cast to int for integer math.
 	return int(floor(value))
 
@@ -22,7 +22,7 @@ static func floorf(value: float) -> float:
 
 
 static func ceili(value: float) -> int:
-	## Ceiling to integer: smallest integer ≥ value.
+	## Ceiling to integer: smallest integer >= value.
 	return int(ceil(value))
 
 
@@ -31,9 +31,9 @@ static func ceilf(value: float) -> float:
 	return ceil(value)
 
 
-# ── Clamp ──────────────────────────────────────────────────────────
+# -- Clamp ----------------------------------------------------------
 static func clampi(value: int, min_val: int, max_val: int) -> int:
-	## Integer clamp — inclusive bounds.
+	## Integer clamp -- inclusive bounds.
 	if value < min_val:
 		return min_val
 	if value > max_val:
@@ -42,7 +42,7 @@ static func clampi(value: int, min_val: int, max_val: int) -> int:
 
 
 static func clampf(value: float, min_val: float, max_val: float) -> float:
-	## Float clamp — inclusive bounds.
+	## Float clamp -- inclusive bounds.
 	if value < min_val:
 		return min_val
 	if value > max_val:
@@ -50,9 +50,9 @@ static func clampf(value: float, min_val: float, max_val: float) -> float:
 	return value
 
 
-# ── Signum ────────────────────────────────────────────────────────
+# -- Signum --------------------------------------------------------
 static func sgn(value: float) -> int:
-	## Returns –1, 0, or +1.
+	## Returns -1, 0, or +1.
 	if value < -EPSILON:
 		return -1
 	if value > EPSILON:
@@ -60,19 +60,19 @@ static func sgn(value: float) -> int:
 	return 0
 
 
-# ── Deterministic Damage Floor ────────────────────────────────────
+# -- Deterministic Damage Floor ------------------------------------
 static func damage_floor(raw: float) -> int:
-	## §2.1: DAMAGE_DEALT = ⌊ raw ⌋, then clamped to minimum 1.
-	## raw is always expected to be ≥ 0 in normal combat, but we guard anyway.
+	## section 2.1: DAMAGE_DEALT = floor(raw), then clamped to minimum 1.
+	## raw is always expected to be >= 0 in normal combat, but we guard anyway.
 	if raw < 0.0:
 		raw = 0.0
 	var floored: int = floori(raw)
 	return maxi(floored, 1)
 
 
-# ── AP Overflow Guard ─────────────────────────────────────────────
+# -- AP Overflow Guard ---------------------------------------------
 static func ap_start(ap_carried: int, ap_regen: int, ap_max: int) -> int:
-	## §3.1: AP_START_OF_PLAYER_PHASE = min(AP_MAX, AP_CARRIED_OVER + AP_REGEN)
+	## section 3.1: AP_START_OF_PLAYER_PHASE = min(AP_MAX, AP_CARRIED_OVER + AP_REGEN)
 	var sum: int = ap_carried + ap_regen
 	if sum > ap_max:
 		return ap_max
@@ -80,12 +80,12 @@ static func ap_start(ap_carried: int, ap_regen: int, ap_max: int) -> int:
 
 
 static func ap_carry_over(ap_previous_end: int, ap_spent: int, ap_max: int) -> int:
-	## §3.1: AP_CARRIED_OVER = clamp(AP_PREVIOUS_END – AP_SPENT, 0, AP_MAX)
+	## section 3.1: AP_CARRIED_OVER = clamp(AP_PREVIOUS_END - AP_SPENT, 0, AP_MAX)
 	var remaining: int = ap_previous_end - ap_spent
 	return clampi(remaining, 0, ap_max)
 
 
-# ── Integer Helpers ───────────────────────────────────────────────
+# -- Integer Helpers -----------------------------------------------
 static func maxi(a: int, b: int) -> int:
 	return a if a >= b else b
 
@@ -98,7 +98,11 @@ static func absi(a: int) -> int:
 	return a if a >= 0 else -a
 
 
-# ── Cross-Platform Golden-Seed Validation ─────────────────────────────
+static func absf(a: float) -> float:
+	return a if a >= 0.0 else -a
+
+
+# -- Cross-Platform Golden-Seed Validation -----------------------------
 static func validate_golden_seed() -> bool:
 	## Smoke test: a known set of floor/clamp operations against
 	## golden seed must match reference values.
