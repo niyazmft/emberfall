@@ -8,7 +8,7 @@ config/version="0.1.0-sprint1"
 config/description="Tactical grid combat with deterministic AP economy"
 config/icon="res://assets/icons/icon.png"
 run/main_scene="res://scenes/title_screen.tscn"
-config/features=PackedStringArray("4.6", "Mobile")
+config/features=PackedStringArray("4.6", "PC")
 boot_splash/show_image=false
 
 [display]
@@ -17,7 +17,7 @@ window/size/viewport_height=1080
 window/stretch/mode="canvas_items"
 
 [rendering]
-renderer/rendering_method="mobile"
+renderer/rendering_method="forward_plus"
 textures/canvas_textures/default_texture_filter=0
 
 [layer_names]
@@ -34,7 +34,7 @@ gdscript/warnings/unsafe_cast=1
 gdscript/warnings/unsafe_call_argument=1
 
 [memory]
-limits/message_queue/max_size=4096
+; limits/message_queue/max_size=4096
 
 [autoload]
 
@@ -56,6 +56,8 @@ LocalizationManager="*res://scripts/autoload/localization_manager.gd"
 ToastManager="*res://scripts/autoload/toast_manager.gd"
 FocusManager="*res://ui/framework/focus_manager.gd"
 SettingsManager="*res://scripts/autoload/settings_manager.gd"
+UIAudioManager="*res://scripts/autoload/ui_audio_manager.gd"
+HapticsManager="*res://scripts/autoload/haptics_manager.gd"
 SaveManager="*res://scripts/autoload/save_manager.gd"
 InventoryManager="*res://scripts/inventory/inventory_manager.gd"
 InputRouter="*res://scripts/autoload/input_router.gd"

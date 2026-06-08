@@ -24,7 +24,9 @@ signal back_pressed
 @onready var _remap_panel: Control = %RemapPanel
 @onready var _reset_button: Button = %ResetButton
 @onready var _back_button: Button = %BackButton
+@onready var helpLabel: Label = %HelpLabel
 
+var settingsHelp: Dictionary = {}
 var _resolutions: Array[Vector2i] = [
 	Vector2i(1920, 1080),
 	Vector2i(1600, 900),
@@ -37,9 +39,25 @@ func _ready() -> void:
 	SafeZoneManager.safe_area_changed.connect(_on_safe_area_changed)
 	_apply_safe_area()
 
+	_loadHelpData()
 	_setup_options()
 	_load_ui_from_settings()
 	_connect_signals()
+	_setupHelpListeners()
+
+
+func _loadHelpData() -> void:
+	var cl: _ConfigLoader = AutoloadHelper.config_loader()
+	if cl:
+		if not cl.isLoaded():
+			await cl.ready
+
+		var helpData: Variant = cl.getValue("settings_help")
+		if helpData is Dictionary:
+			for key: String in helpData:
+				var val: Variant = helpData[key]
+				if val is String:
+					settingsHelp[key] = val
 
 
 func _setup_options() -> void:
@@ -123,6 +141,13 @@ func _on_audio_changed(value: Variant, key: String) -> void:
 
 
 func _on_apply_video_settings() -> void:
+	var am: _UIAudioManager = AutoloadHelper.get_autoload("UIAudioManager")
+	if am:
+		am.playUiSound("apply")
+	var hm: _HapticsManager = AutoloadHelper.get_autoload("HapticsManager")
+	if hm:
+		hm.triggerHaptic("apply")
+
 	var sm: Node = AutoloadHelper.settings_manager()
 	if sm == null:
 		return
@@ -174,7 +199,74 @@ func _on_reset_confirmed() -> void:
 		_load_ui_from_settings()
 
 
+func _setupHelpListeners() -> void:
+	var controls: Array[Control] = [
+		_master_slider,
+		_music_slider,
+		_sfx_slider,
+		_mute_check,
+		_resolution_option,
+		_fullscreen_check,
+		_vsync_check,
+		_apply_button,
+		_shake_slider,
+		_cvd_option,
+		_input_hints_option,
+		_reset_button,
+		_back_button
+	]
+
+	for control: Control in controls:
+		control.mouse_entered.connect(_onControlHovered.bind(control.name))
+		control.focus_entered.connect(_onControlHovered.bind(control.name))
+		control.mouse_exited.connect(_clearHelpText)
+		control.focus_exited.connect(_clearHelpText)
+
+		if control is Button or control is CheckBox or control is OptionButton:
+			if control.has_signal("pressed"):
+				control.pressed.connect(_onControlClicked)
+			elif control.has_signal("item_selected"):
+				control.item_selected.connect(func(_idx: int) -> void: _onControlClicked())
+		elif control is HSlider:
+			control.drag_ended.connect(func(_changed: bool) -> void: _onControlClicked())
+
+
+func _onControlHovered(control_name: String) -> void:
+	_updateHelpText(control_name)
+	var am: _UIAudioManager = AutoloadHelper.get_autoload("UIAudioManager")
+	if am:
+		am.playUiSound("hover")
+	var hm: _HapticsManager = AutoloadHelper.get_autoload("HapticsManager")
+	if hm:
+		hm.triggerHaptic("hover")
+
+
+func _onControlClicked() -> void:
+	var am: _UIAudioManager = AutoloadHelper.get_autoload("UIAudioManager")
+	if am:
+		am.playUiSound("click")
+	var hm: _HapticsManager = AutoloadHelper.get_autoload("HapticsManager")
+	if hm:
+		hm.triggerHaptic("click")
+
+
+func _updateHelpText(control_name: String) -> void:
+	if settingsHelp.has(control_name):
+		helpLabel.text = tr(settingsHelp[control_name])
+
+
+func _clearHelpText() -> void:
+	helpLabel.text = " "
+
+
 func _on_back_pressed() -> void:
+	var am: _UIAudioManager = AutoloadHelper.get_autoload("UIAudioManager")
+	if am:
+		am.playUiSound("cancel")
+	var hm: _HapticsManager = AutoloadHelper.get_autoload("HapticsManager")
+	if hm:
+		hm.triggerHaptic("cancel")
+
 	var sm: Node = AutoloadHelper.settings_manager()
 	if sm != null:
 		sm.call("sync_bindings_to_settings")

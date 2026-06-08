@@ -20,10 +20,13 @@ const AMBIENT_NARRATOR_PATH := "res://data/ambient_narrator.json"
 const REWARDS_PATH := "res://config/rewards.json"
 const UNLOCKS_PATH := "res://config/unlocks.json"
 const ENCOUNTER_SCALER_PATH := "res://config/encounter_scaler.json"
+const HUD_CONFIG_PATH := "res://config/hud_config.json"
+const UI_AUDIO_MANIFEST_PATH := "res://config/ui_audio_manifest.json"
+const SETTINGS_HELP_PATH := "res://config/settings_help.json"
+const HAPTICS_CONFIG_PATH := "res://config/haptics_config.json"
 const PROGRESSION_PATH := "res://config/progression.json"
 const XP_ECONOMY_PATH := "res://config/xp_economy.json"
 const ELITE_MODIFIERS_PATH := "res://config/elite_modifiers.json"
-const HUD_CONFIG_PATH := "res://config/hud_config.json"
 const FEEDBACK_PATH := "res://config/feedback_config.json"
 const HOTBAR_BINDINGS_PATH := "res://config/hotbar_bindings.json"
 
@@ -80,6 +83,10 @@ var _loadedFiles: Dictionary = {
 	REWARDS_PATH: false,
 	UNLOCKS_PATH: false,
 	ENCOUNTER_SCALER_PATH: false,
+	HUD_CONFIG_PATH: false,
+	UI_AUDIO_MANIFEST_PATH: false,
+	SETTINGS_HELP_PATH: false,
+	HAPTICS_CONFIG_PATH: false,
 	PROGRESSION_PATH: false,
 	XP_ECONOMY_PATH: false,
 	ELITE_MODIFIERS_PATH: false,
@@ -112,10 +119,13 @@ func _loadConfig() -> void:
 	_loadJsonToConfig(REWARDS_PATH)
 	_loadJsonToConfig(UNLOCKS_PATH)
 	_loadJsonToConfig(ENCOUNTER_SCALER_PATH)
+	_loadJsonToConfig(HUD_CONFIG_PATH)
+	_loadJsonToConfig(UI_AUDIO_MANIFEST_PATH)
+	_loadJsonToConfig(SETTINGS_HELP_PATH)
+	_loadJsonToConfig(HAPTICS_CONFIG_PATH)
 	_loadJsonToConfig(PROGRESSION_PATH)
 	_loadJsonToConfig(XP_ECONOMY_PATH)
 	_loadJsonToConfig(ELITE_MODIFIERS_PATH)
-	_loadJsonToConfig(HUD_CONFIG_PATH)
 	_loadJsonToConfig(FEEDBACK_PATH)
 	_loadJsonToConfig(HOTBAR_BINDINGS_PATH)
 	_validateGridVisuals()

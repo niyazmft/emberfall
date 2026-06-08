@@ -41,7 +41,6 @@ func _ready() -> void:
 		_grid_renderer = _find_grid_renderer(get_tree().root)
 
 	_setup_greybox()
-
 	_setupStatusBar()
 
 	if entity:
@@ -51,19 +50,6 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	if _hit_stop_remaining > 0:
-		_hit_stop_remaining -= 1
-		return
-
-	if _hit_flash_timer > 0:
-		_hit_flash_timer -= delta
-		if _hit_flash_timer <= 0:
-			if base_sprite:
-				base_sprite.modulate = Color.WHITE
-		else:
-			if base_sprite:
-				base_sprite.modulate = Color.RED
-
 	if global_position.distance_to(_target_position) > 0.1:
 		var weight: float = minf(delta * lerp_speed, 1.0)
 		global_position = global_position.lerp(_target_position, weight)
@@ -103,10 +89,8 @@ func _connect_entity_signals() -> void:
 		entity.state_changed.connect(_on_entity_state_changed)
 	if not entity.hp_changed.is_connected(_on_entity_hp_changed):
 		entity.hp_changed.connect(_on_entity_hp_changed)
-	if not entity.damage_taken.is_connected(_on_entity_damage_taken):
-		entity.damage_taken.connect(_on_entity_damage_taken)
-	if not entity.ap_changed.is_connected(_onEntityApChanged):
-		entity.ap_changed.connect(_onEntityApChanged)
+	if not entity.ap_changed.is_connected(_on_entity_ap_changed):
+		entity.ap_changed.connect(_on_entity_ap_changed)
 
 
 func _disconnect_entity_signals() -> void:
@@ -122,36 +106,31 @@ func _disconnect_entity_signals() -> void:
 		entity.state_changed.disconnect(_on_entity_state_changed)
 	if entity.hp_changed.is_connected(_on_entity_hp_changed):
 		entity.hp_changed.disconnect(_on_entity_hp_changed)
-	if entity.damage_taken.is_connected(_on_entity_damage_taken):
-		entity.damage_taken.disconnect(_on_entity_damage_taken)
-	if entity.ap_changed.is_connected(_onEntityApChanged):
-		entity.ap_changed.disconnect(_onEntityApChanged)
+	if entity.ap_changed.is_connected(_on_entity_ap_changed):
+		entity.ap_changed.disconnect(_on_entity_ap_changed)
 
 
-func _on_entity_position_changed(p_x: int, p_y: int) -> void:
+func _on_entity_position_changed(x: int, y: int) -> void:
 	if _grid_renderer and entity:
-		_target_position = _grid_renderer.grid_to_world(p_x, p_y, entity.elevation)
+		_target_position = _grid_renderer.grid_to_world(x, y, entity.elevation)
 
 
-func _on_entity_elevation_changed(p_elevation: int) -> void:
+func _on_entity_elevation_changed(elevation: int) -> void:
 	if _grid_renderer and entity:
-		_target_position = _grid_renderer.grid_to_world(entity.x, entity.y, p_elevation)
-	_update_elevation_visuals(p_elevation)
+		_target_position = _grid_renderer.grid_to_world(entity.x, entity.y, elevation)
+	_update_elevation_visuals(elevation)
 
 
-func _on_entity_facing_changed(p_fx: int, p_fy: int) -> void:
-	_update_facing_visuals(p_fx, p_fy)
+func _on_entity_facing_changed(fx: int, fy: int) -> void:
+	_update_facing_visuals(fx, fy)
 
 
-func _on_entity_state_changed(p_state: Entity.State) -> void:
-	_update_state_visuals(p_state)
+func _on_entity_state_changed(state: Entity.State) -> void:
+	_update_state_visuals(state)
 
 
-func _on_entity_hp_changed(p_new_hp: int, p_old_hp: int) -> void:
-	if _status_bar:
-		_status_bar.updateHp(p_new_hp, entity.hp_max)
-
-	if p_new_hp < p_old_hp:
+func _on_entity_hp_changed(new_hp: int, old_hp: int) -> void:
+	if new_hp < old_hp:
 		var app: Node = null
 		if has_node("ApparitionRenderer"):
 			app = get_node("ApparitionRenderer")
@@ -161,27 +140,26 @@ func _on_entity_hp_changed(p_new_hp: int, p_old_hp: int) -> void:
 		if app and app.has_method("trigger_damage_effect"):
 			app.call("trigger_damage_effect")
 
-
-func _on_entity_damage_taken(p_amount: int, p_damage_type: String) -> void:
-	_triggerHitEffects(p_amount, p_damage_type)
-
-
-func _onEntityApChanged(p_new_ap: int, _p_old_ap: int) -> void:
 	if _status_bar:
-		_status_bar.updateAp(p_new_ap, GameConstants.AP_MAX)
+		_status_bar.updateHp(new_hp, entity.hp_max)
 
 
-func _update_elevation_visuals(p_elevation: int) -> void:
+func _on_entity_ap_changed(new_ap: int, _old_ap: int) -> void:
+	if _status_bar:
+		_status_bar.updateAp(new_ap, GameConstants.AP_MAX)
+
+
+func _update_elevation_visuals(elevation: int) -> void:
 	# Shadow offset: drop down as elevation increases to stay on ground.
 	# Elevation step is 16.0 in GridRenderer.
 	if shadow_sprite:
-		shadow_sprite.position.y = float(p_elevation) * 16.0
+		shadow_sprite.position.y = float(elevation) * 16.0
 
 	if height_indicator:
-		height_indicator.visible = p_elevation > 0
+		height_indicator.visible = elevation > 0
 		if height_indicator is ColorRect:
 			var cr: ColorRect = height_indicator as ColorRect
-			match p_elevation:
+			match elevation:
 				1:
 					cr.color = Color.RED
 				2:
@@ -190,16 +168,15 @@ func _update_elevation_visuals(p_elevation: int) -> void:
 					cr.color = Color.GRAY
 
 
-func _update_facing_visuals(p_facing_x: int, _p_facing_y: int) -> void:
+func _update_facing_visuals(facing_x: int, facing_y: int) -> void:
 	if base_sprite:
 		# Horizontal flip based on X
-		if p_facing_x < 0:
+		if facing_x < 0:
 			base_sprite.flip_h = true
-		elif p_facing_x > 0:
+		elif facing_x > 0:
 			base_sprite.flip_h = false
 
 		# Vertical orientation (facing_y) would typically swap textures or regions.
-		# For this greybox, we print a debug message to acknowledge 4-way support.
 		pass
 
 

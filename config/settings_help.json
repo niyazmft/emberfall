@@ -1,0 +1,17 @@
+{
+  "settings_help": {
+    "MasterSlider": "SETTINGS_HELP_MASTER_VOL",
+    "MusicSlider": "SETTINGS_HELP_MUSIC_VOL",
+    "SFXSlider": "SETTINGS_HELP_SFX_VOL",
+    "MuteCheck": "SETTINGS_HELP_MUTE",
+    "ResolutionOption": "SETTINGS_HELP_RESOLUTION",
+    "FullscreenCheck": "SETTINGS_HELP_FULLSCREEN",
+    "VSyncCheck": "SETTINGS_HELP_VSYNC",
+    "ApplyButton": "SETTINGS_HELP_APPLY",
+    "ShakeSlider": "SETTINGS_HELP_SCREEN_SHAKE",
+    "CVDOption": "SETTINGS_HELP_CVD_SIM",
+    "InputHintsOption": "SETTINGS_HELP_INPUT_HINTS",
+    "ResetButton": "SETTINGS_HELP_RESET",
+    "BackButton": "SETTINGS_HELP_BACK"
+  }
+}
