@@ -77,12 +77,12 @@ Every task in the phase tables below should have a **Priority** and **Blocked By
 
 ## Phase 1: Foundation Hardening ✅ COMPLETE
 
-| Task | Issue | Status | Assignee | Notes |
-|------|-------|--------|----------|-------|
-| 1.1 Split BurdenManager | #72 | ✅ Done | Jules | Split into 3 classes |
-| 1.2 Fix ElementalTypes Enum | #73 | ✅ Done | Jules | Removed magic numbers |
-| 1.3 Timing Instrumentation | #74 | ✅ Done | Jules | Performance monitoring |
-| 1.4 BaseEnemy Class | #76 | ✅ Done | Jules | Enemy framework ready |
+| Task | Issue | Status | Estimate | Assignee | Notes |
+|----|-----|------|--------|--------|-----|
+| 1.1 Split BurdenManager | #72 | ✅ Done | 1.5d | Jules | Split into 3 classes |
+| 1.2 Fix ElementalTypes Enum | #73 | ✅ Done | 1d | Jules | Removed magic numbers |
+| 1.3 Timing Instrumentation | #74 | ✅ Done | 1d | Jules | Performance monitoring |
+| 1.4 BaseEnemy Class | #76 | ✅ Done | 1.5d | Jules | Enemy framework ready |
 
 **Phase 1 Completion:** 100% ✅
 **Date Completed:** 2026-05-31
@@ -91,12 +91,12 @@ Every task in the phase tables below should have a **Priority** and **Blocked By
 
 ## Phase 2: 2.5D Rendering System ✅ COMPLETE
 
-| Task | Issue | Status | Assignee | Notes |
-|------|-------|--------|----------|-------|
-| 2.1 GridRenderer | #75 | ✅ Done | Jules | Isometric grid working |
-| 2.2 EntityVisualProxy | #77 | ✅ Done | Jules | Smooth interpolation |
-| 2.3 ApparitionRenderer | #78 | ✅ Done | Jules | Effects integrated |
-| 2.4 CombatRoom Scene | #79 | ✅ Done | Jules | Main scene functional |
+| Task | Issue | Status | Estimate | Assignee | Notes |
+|----|-----|------|--------|--------|-----|
+| 2.1 GridRenderer | #75 | ✅ Done | 2.5d | Jules | Isometric grid working |
+| 2.2 EntityVisualProxy | #77 | ✅ Done | 1.5d | Jules | Smooth interpolation |
+| 2.3 ApparitionRenderer | #78 | ✅ Done | 1.5d | Jules | Effects integrated |
+| 2.4 CombatRoom Scene | #79 | ✅ Done | 2.5d | Jules | Main scene functional |
 
 **Phase 2 Completion:** 100% ✅
 **Date Completed:** 2026-05-31
@@ -105,11 +105,11 @@ Every task in the phase tables below should have a **Priority** and **Blocked By
 
 ## Phase 3: CI/CD & Documentation ✅ COMPLETE
 
-| Task | Issue | Status | Assignee | Notes |
-|------|-------|--------|----------|-------|
-| 3.1 Update CI Workflow | #83 | ✅ Done | Jules | Test suite in CI |
-| 3.2 Pre-Push Script | #81 | ✅ Done | Jules | Full validation |
-| 3.3 ARCHITECTURE.md | #80 | ✅ Done | Jules | Documentation |
+| Task | Issue | Status | Estimate | Assignee | Notes |
+|----|-----|------|--------|--------|-----|
+| 3.1 Update CI Workflow | #83 | ✅ Done | 1d | Jules | Test suite in CI |
+| 3.2 Pre-Push Script | #81 | ✅ Done | 1d | Jules | Full validation |
+| 3.3 ARCHITECTURE.md | #80 | ✅ Done | 1d | Jules | Documentation |
 
 **Phase 3 Completion:** 100% ✅
 **Date Completed:** 2026-05-31
@@ -118,16 +118,16 @@ Every task in the phase tables below should have a **Priority** and **Blocked By
 
 ## Phase 4: Minimum Viable Gameplay ✅ COMPLETE
 
-| Task | Issue | Status | PR | Notes |
-|------|-------|--------|-----|-------|
-| 4.1 Combat Input System | #130 | ✅ Done | #142 | Targeting & attack actions |
-| 4.2 Basic Enemy AI | #132 | ✅ Done | #146 | Movement + basic attack |
-| 4.3 Turn Manager | #131 | ✅ Done | #147 | Full turn-based loop |
-| 4.4 Room Loading System | #133 | ✅ Done | #150 | Room spawn/integration |
-| 4.5 Enemy Variety | #135 | ✅ Done | #149 | Grunt, Archer, Tank |
-| 4.6 Combat HUD | #134 | ✅ Done | #184 | Functional HUD |
-| 4.7 Settings Menu | #136 | ✅ Done | #141 | Persistence + audio |
-| 4.8 Moral Choice UI | #137 | ✅ Done | #182 | Spare/execute choices |
+| Task | Issue | Status | Estimate | PR | Notes |
+|----|-----|------|--------|--|-----|
+| 4.1 Combat Input System | #130 | ✅ Done | 2.5d | #142 | Targeting & attack actions |
+| 4.2 Basic Enemy AI | #132 | ✅ Done | 2.5d | #146 | Movement + basic attack |
+| 4.3 Turn Manager | #131 | ✅ Done | 2.5d | #147 | Full turn-based loop |
+| 4.4 Room Loading System | #133 | ✅ Done | 2.5d | #150 | Room spawn/integration |
+| 4.5 Enemy Variety | #135 | ✅ Done | 2.5d | #149 | Grunt, Archer, Tank |
+| 4.6 Combat HUD | #134 | ✅ Done | 2.5d | #184 | Functional HUD |
+| 4.7 Settings Menu | #136 | ✅ Done | 1.5d | #141 | Persistence + audio |
+| 4.8 Moral Choice UI | #137 | ✅ Done | 1.5d | #182 | Spare/execute choices |
 
 **Phase 4 Completion:** 100% ✅
 **Date Completed:** 2026-06-06
@@ -161,18 +161,18 @@ feedback, tutorial, advanced content, and the full roguelike loop.
 
 Visual, audio, and animation assets needed for game feel.
 
-| Task | Issue | Status | Priority | Blocked By |
-|------|-------|--------|----------|------------|
-| Asset Directory Structure | #194 | ⏳ Ready | P0 | None |
-| Audio Bus & SFX Nodes | #190 | ⏳ Ready | P0 | None |
-| Camera Screen Shake | #185 | ⏳ Ready | P1 | None |
-| Hit Flash Feedback | #189 | ⏳ Ready | P1 | None |
-| Damage Numbers | #188 | ⏳ Ready | P1 | None |
-| HP/AP Health Bars | #186 | ⏳ Ready | P1 | None |
-| Turn Banner / Phase UI | #192 | ⏳ Ready | P1 | None |
-| Scene Transitions | #191 | ⏳ Ready | P2 | None |
-| Burden Shader Resolve Pass | #187 | ⏳ Ready | P2 | None |
-| Hotbar Dynamic Icons | #193 | ⏳ Ready | P2 | None |
+| Task | Issue | Status | Priority | Estimate | Blocked By |
+|----|-----|------|--------|--------|----------|
+| Asset Directory Structure | #194 | ⏳ Ready | P0 | 1d | None |
+| Audio Bus & SFX Nodes | #190 | ⏳ Ready | P0 | 2.5d | None |
+| Camera Screen Shake | #185 | ⏳ Ready | P1 | 1d | None |
+| Hit Flash Feedback | #189 | ⏳ Ready | P1 | 1d | None |
+| Damage Numbers | #188 | ⏳ Ready | P1 | 1.5d | None |
+| HP/AP Health Bars | #186 | ⏳ Ready | P1 | 1d | None |
+| Turn Banner / Phase UI | #192 | ⏳ Ready | P1 | 1d | None |
+| Scene Transitions | #191 | ⏳ Ready | P2 | 1d | None |
+| Burden Shader Resolve Pass | #187 | ⏳ Ready | P2 | 2.5d | None |
+| Hotbar Dynamic Icons | #193 | ⏳ Ready | P2 | 1.5d | None |
 
 **Can parallelize:** Most are independent. Group 1 (shake, hit flash, damage
 numbers, health bars) forms a "combat feedback" subset that can ship together.
@@ -183,15 +183,15 @@ numbers, health bars) forms a "combat feedback" subset that can ship together.
 
 Player-facing features for clarity, accessibility, and onboarding.
 
-| Task | Issue | Status | Priority | Blocked By |
-|------|-------|--------|----------|------------|
-| Tutorial Manager autoload | #175 | ⏳ Ready | P0 | None |
-| Tutorial Overlay UI | #176 | ⚠️ Blocked | P0 | #175 |
-| Combat HUD Polish | #177 | ⏳ Ready | P1 | #184 (done) |
-| Visual Feedback Suite | #178 | 📋 Backlog | P1 | #185, #188, #189 |
-| Combat Clarity (telegraphs) | #179 | ⏳ Ready | P1 | None |
-| Accessibility Expansion | #180 | ⏳ Ready | P1 | None |
-| Polish Features | #181 | ⏳ Ready | P2 | None |
+| Task | Issue | Status | Priority | Estimate | Blocked By |
+|----|-----|------|--------|--------|----------|
+| Tutorial Manager autoload | #175 | ⏳ Ready | P0 | 1.5d | None |
+| Tutorial Overlay UI | #176 | ⚠️ Blocked | P0 | 1.5d | #175 |
+| Combat HUD Polish | #177 | ⏳ Ready | P1 | 1.5d | #184 (done) |
+| Visual Feedback Suite | #178 | 📋 Backlog | P1 | 2.5d | #185, #188, #189 |
+| Combat Clarity (telegraphs) | #179 | ⏳ Ready | P1 | 1.5d | None |
+| Accessibility Expansion | #180 | ⏳ Ready | P1 | 2.5d | None |
+| Polish Features | #181 | ⏳ Ready | P2 | 1.5d | None |
 
 **Critical path:** #175 → #176 (tutorial must come before overlay).
 
@@ -201,19 +201,19 @@ Player-facing features for clarity, accessibility, and onboarding.
 
 Backend systems for progression, abilities, and content variety.
 
-| Task | Issue | Status | Priority | Blocked By |
-|------|-------|--------|----------|------------|
-| XP / Leveling | #164 | ⏳ Ready | P0 | None |
-| Ability Base Class | #165 | 📋 Backlog | P0 | #164 |
-| Ability Hotbar | #166 | ⚠️ Blocked | P0 | #165 |
-| Inventory Backend | #167 | ⏳ Ready | P1 | None |
-| Inventory UI | #168 | ⚠️ Blocked | P1 | #167 |
-| Data-Driven Enemies | #169 | ⏳ Ready | P1 | None |
-| Enemy Archer Scene | #170 | ⏳ Ready | P1 | #149 (done) |
-| Enemy Tank Scene | #171 | ⏳ Ready | P1 | #149 (done) |
-| Status Effect System | #172 | ⏳ Ready | P1 | None |
-| Run Scaling | #173 | 📋 Backlog | P2 | #164 |
-| Advanced Economy | #174 | 📋 Backlog | P2 | #167 |
+| Task | Issue | Status | Priority | Estimate | Blocked By |
+|----|-----|------|--------|--------|----------|
+| XP / Leveling | #164 | ⏳ Ready | P0 | 2.5d | None |
+| Ability Base Class | #165 | 📋 Backlog | P0 | 1.5d | #164 |
+| Ability Hotbar | #166 | ⚠️ Blocked | P0 | 1.5d | #165 |
+| Inventory Backend | #167 | ⏳ Ready | P1 | 2.5d | None |
+| Inventory UI | #168 | ⚠️ Blocked | P1 | 1.5d | #167 |
+| Data-Driven Enemies | #169 | ⏳ Ready | P1 | 2.5d | None |
+| Enemy Archer Scene | #170 | ⏳ Ready | P1 | 1d | #149 (done) |
+| Enemy Tank Scene | #171 | ⏳ Ready | P1 | 1d | #149 (done) |
+| Status Effect System | #172 | ⏳ Ready | P1 | 2.5d | None |
+| Run Scaling | #173 | 📋 Backlog | P2 | 1.5d | #164 |
+| Advanced Economy | #174 | 📋 Backlog | P2 | 2.5d | #167 |
 
 **Critical path:** #164 (XP) → #165 (Abilities) → #166 (Hotbar).
 
@@ -223,15 +223,15 @@ Backend systems for progression, abilities, and content variety.
 
 Procedural level generation, room variety, and biomes.
 
-| Task | Issue | Status | Priority | Blocked By |
-|------|-------|--------|----------|------------|
-| Biome Definitions JSON | #159 | ⏳ Ready | P0 | None |
-| Room Layout JSON Library | #157 | 📋 Backlog | P0 | #159 |
-| Room Loading Wiring | #158 | ⚠️ Blocked | P0 | #133 (done), #157 |
-| Room Generation Pipeline | #160 | ⚠️ Blocked | P0 | #158 |
-| Advanced Grid Features | #162 | ⏳ Ready | P1 | None |
-| Boss Rooms | #161 | 📋 Backlog | P1 | #160 |
-| Advanced Level Features | #163 | 📋 Backlog | P2 | #160 |
+| Task | Issue | Status | Priority | Estimate | Blocked By |
+|----|-----|------|--------|--------|----------|
+| Biome Definitions JSON | #159 | ⏳ Ready | P0 | 1d | None |
+| Room Layout JSON Library | #157 | 📋 Backlog | P0 | 1d | #159 |
+| Room Loading Wiring | #158 | ⚠️ Blocked | P0 | 1.5d | #133 (done), #157 |
+| Room Generation Pipeline | #160 | ⚠️ Blocked | P0 | 5.5d | #158 |
+| Advanced Grid Features | #162 | ⏳ Ready | P1 | 1.5d | None |
+| Boss Rooms | #161 | 📋 Backlog | P1 | 2.5d | #160 |
+| Advanced Level Features | #163 | 📋 Backlog | P2 | 2.5d | #160 |
 
 **Critical path:** #159 → #157 → #158 → #160 → #161 (full procedural loop).
 
@@ -241,14 +241,14 @@ Procedural level generation, room variety, and biomes.
 
 Narrative, dialogue, localization.
 
-| Task | Issue | Status | Priority | Blocked By |
-|------|-------|--------|----------|------------|
-| Dialogue Manager Backend | #151 | ⏳ Ready | P1 | None |
-| Dialogue Box UI | #152 | ⚠️ Blocked | P1 | #151 |
-| Narrative Data Systems | #153 | ⏳ Ready | P2 | None |
-| Localization Expansion | #154 | ⏳ Ready | P2 | None |
-| Quest / Mission System | #155 | ⏳ Ready | P2 | None |
-| Narrative Content Expansion | #156 | 📋 Backlog | P2 | #153, #155 |
+| Task | Issue | Status | Priority | Estimate | Blocked By |
+|----|-----|------|--------|--------|----------|
+| Dialogue Manager Backend | #151 | ⏳ Ready | P1 | 1.5d | None |
+| Dialogue Box UI | #152 | ⚠️ Blocked | P1 | 1.5d | #151 |
+| Narrative Data Systems | #153 | ⏳ Ready | P2 | 1.5d | None |
+| Localization Expansion | #154 | ⏳ Ready | P2 | 1.5d | None |
+| Quest / Mission System | #155 | ⏳ Ready | P2 | 2.5d | None |
+| Narrative Content Expansion | #156 | 📋 Backlog | P2 | 5.5d | #153, #155 |
 
 **Critical path:** #151 → #152 (dialogue before UI).
 
