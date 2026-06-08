@@ -21,6 +21,7 @@ const REWARDS_PATH := "res://config/rewards.json"
 const UNLOCKS_PATH := "res://config/unlocks.json"
 const ENCOUNTER_SCALER_PATH := "res://config/encounter_scaler.json"
 const HUD_CONFIG_PATH := "res://config/hud_config.json"
+const FEEDBACK_PATH := "res://config/feedback_config.json"
 
 # Fallback defaults (sensible so the game runs even if config is missing)
 const DEFAULTS: Dictionary = {
@@ -75,7 +76,7 @@ var _loadedFiles: Dictionary = {
 	REWARDS_PATH: false,
 	UNLOCKS_PATH: false,
 	ENCOUNTER_SCALER_PATH: false,
-	HUD_CONFIG_PATH: false,
+	FEEDBACK_PATH: false,
 }
 
 
@@ -104,6 +105,7 @@ func _loadConfig() -> void:
 	_loadJsonToConfig(UNLOCKS_PATH)
 	_loadJsonToConfig(ENCOUNTER_SCALER_PATH)
 	_loadJsonToConfig(HUD_CONFIG_PATH)
+	_loadJsonToConfig(FEEDBACK_PATH)
 	_validateGridVisuals()
 
 
