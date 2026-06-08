@@ -52,12 +52,8 @@ static func _getConfig() -> Dictionary:
 	var f: FileAccess = FileAccess.open(ENCOUNTERS_CONFIG_PATH, FileAccess.READ)
 	if not f:
 		return {}
-	var json := JSON.new()
-	var err: Error = json.parse(f.get_as_text())
+	var data: Variant = JSON.parse_string(f.get_as_text())
 	f.close()
-	if err != OK:
-		return {}
-	var data: Variant = json.data
 	if data is Dictionary:
 		return data as Dictionary
 	return {}

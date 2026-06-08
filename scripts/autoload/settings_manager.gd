@@ -72,23 +72,13 @@ func load_settings() -> void:
 		var json_string: String = file.get_as_text()
 		file.close()
 
-		var json: JSON = JSON.new()
-		var error: Error = json.parse(json_string)
-		if error == OK:
-			var loaded_settings: Variant = json.data
-			if loaded_settings is Dictionary:
-				_merge_dict(settings, loaded_settings as Dictionary)
-				_apply_loaded_bindings()
-				_print_debug("Settings loaded successfully from JSON")
-			else:
-				_print_error("Settings JSON is not a dictionary")
+		var loaded_settings: Variant = JSON.parse_string(json_string)
+		if loaded_settings is Dictionary:
+			_merge_dict(settings, loaded_settings as Dictionary)
+			_apply_loaded_bindings()
+			_print_debug("Settings loaded successfully from JSON")
 		else:
-			_print_error(
-				(
-					"JSON Parse Error: %s at line %d"
-					% [json.get_error_message(), json.get_error_line()]
-				)
-			)
+			_print_error("Settings JSON is not a dictionary or failed to parse")
 	else:
 		_print_error("Failed to open settings file for reading: %s" % SAVE_PATH)
 

@@ -83,12 +83,14 @@ static func _getBiomeParams(biomeId: String) -> Dictionary:
 	var f := FileAccess.open(BIOMES_CONFIG_PATH, FileAccess.READ)
 	if not f:
 		return {}
-	var json := JSON.new()
-	var err := json.parse(f.get_as_text())
+	var text := f.get_as_text()
 	f.close()
-	if err != OK:
+
+	var data_v: Variant = JSON.parse_string(text)
+	if not data_v is Dictionary:
 		return {}
-	var data: Dictionary = json.data as Dictionary
+
+	var data: Dictionary = data_v as Dictionary
 	var biomes_data: Dictionary = data.get("biomes", {}) as Dictionary
 	return biomes_data.get(biomeId, {}) as Dictionary
 

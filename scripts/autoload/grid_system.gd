@@ -163,13 +163,10 @@ func load_room_from_file(path: String) -> Error:
 		return FileAccess.get_open_error()
 	var text: String = f.get_as_text()
 	f.close()
-	var json := JSON.new()
-	var err: Error = json.parse(text)
-	if err != OK:
-		return err
-	if not json.data is Dictionary:
+	var data: Variant = JSON.parse_string(text)
+	if not data is Dictionary:
 		return ERR_INVALID_DATA
-	return load_room(json.data)
+	return load_room(data)
 
 
 ## ------------------------------------------------------------------

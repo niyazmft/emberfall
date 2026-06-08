@@ -129,18 +129,12 @@ func _load_rig_config() -> void:
 	var json_text: String = file.get_as_text()
 	file.close()
 
-	var json: JSON = JSON.new()
-	var error: Error = json.parse(json_text)
-	if error == OK and json.data is Dictionary:
-		_rig_config = json.data as Dictionary
+	var data: Variant = JSON.parse_string(json_text)
+	if data is Dictionary:
+		_rig_config = data as Dictionary
 		_apply_rig_config()
 	else:
-		push_error(
-			(
-				"ApparitionRenderer: failed to parse JSON config or config is not a Dictionary: %s"
-				% json.get_error_message()
-			)
-		)
+		push_error("ApparitionRenderer: failed to parse JSON config or config is not a Dictionary")
 
 
 func _apply_rig_config() -> void:
