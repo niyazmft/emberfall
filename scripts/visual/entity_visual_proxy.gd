@@ -252,8 +252,8 @@ func _triggerHitEffects(p_damage: int, p_damage_type: String = "PHYSICAL") -> vo
 					_hit_stop_remaining = tier.get("frames", 0)
 
 	# Screen Shake
-	var combat_room: CombatRoom = CombatRoom.instance
-	if combat_room and combat_room.camera and combat_room.camera.has_method("add_shake"):
+	var combat_room: Node = get_node_or_null("/root/CombatRoom")
+	if combat_room and combat_room.get("camera") and combat_room.camera.has_method("add_shake"):
 		combat_room.camera.call("add_shake", clampf(float(p_damage) / 20.0, 0.1, 0.5))
 
 	# Floating Text

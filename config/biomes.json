@@ -1,0 +1,22 @@
+{
+  "biomes": {
+    "biome_1": {
+      "id": "biome_1",
+      "name_key": "biome.1.name",
+      "elevation_flavor": {
+        "0": "biome.1.elev.0",
+        "1": "biome.1.elev.1",
+        "2": "biome.1.elev.2"
+      }
+    },
+    "biome_2": {
+      "id": "biome_2",
+      "name_key": "biome.2.name",
+      "elevation_flavor": {
+        "0": "biome.2.elev.0",
+        "1": "biome.2.elev.1",
+        "2": "biome.2.elev.2"
+      }
+    }
+  }
+}

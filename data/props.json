@@ -1,0 +1,16 @@
+{
+  "props": [
+    {
+      "id": "old_terminal",
+      "name_key": "prop.terminal.name",
+      "flavor_key": "prop.terminal.flavor",
+      "interactable": true
+    },
+    {
+      "id": "broken_statue",
+      "name_key": "prop.statue.name",
+      "flavor_key": "prop.statue.flavor",
+      "interactable": true
+    }
+  ]
+}

@@ -60,6 +60,8 @@ EncounterScaler="*res://scripts/autoload/encounter_scaler.gd"
 MetaProgressionManager="*res://scripts/autoload/meta_progression_manager.gd"
 InventoryManager="*res://scripts/inventory/inventory_manager.gd"
 InputRouter="*res://scripts/autoload/input_router.gd"
+AmbientNarrator="*res://scripts/autoload/ambient_narrator.gd"
+SecretRoomTrigger="*res://scripts/autoload/secret_room_trigger.gd"
 
 [internationalization]
 

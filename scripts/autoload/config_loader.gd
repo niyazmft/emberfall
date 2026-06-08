@@ -1,5 +1,5 @@
-extends Node
 class_name _ConfigLoader
+extends Node
 
 ## Autoload: ConfigLoader
 ## Loads gameplay constants from JSON config with sensible hard-coded defaults.
@@ -12,9 +12,15 @@ const ENEMIES_PATH := "res://config/enemies.json"
 const SKILLS_PATH := "res://config/skills.json"
 const STATUS_EFFECTS_PATH := "res://config/status_effects.json"
 const ACCESSIBILITY_PATH := "res://config/accessibility.json"
+const GRID_VISUALS_PATH := "res://config/grid_visuals.json"
+const BIOMES_PATH := "res://config/biomes.json"
+const SECRET_ROOM_CONDITIONS_PATH := "res://config/secret_room_conditions.json"
+const PROPS_PATH := "res://data/props.json"
+const AMBIENT_NARRATOR_PATH := "res://data/ambient_narrator.json"
 const REWARDS_PATH := "res://config/rewards.json"
 const UNLOCKS_PATH := "res://config/unlocks.json"
 const ENCOUNTER_SCALER_PATH := "res://config/encounter_scaler.json"
+const HUD_CONFIG_PATH := "res://config/hud_config.json"
 const FEEDBACK_PATH := "res://config/feedback_config.json"
 
 # Fallback defaults (sensible so the game runs even if config is missing)
@@ -62,6 +68,11 @@ var _loadedFiles: Dictionary = {
 	SKILLS_PATH: false,
 	STATUS_EFFECTS_PATH: false,
 	ACCESSIBILITY_PATH: false,
+	GRID_VISUALS_PATH: false,
+	BIOMES_PATH: false,
+	SECRET_ROOM_CONDITIONS_PATH: false,
+	PROPS_PATH: false,
+	AMBIENT_NARRATOR_PATH: false,
 	REWARDS_PATH: false,
 	UNLOCKS_PATH: false,
 	ENCOUNTER_SCALER_PATH: false,
@@ -85,10 +96,17 @@ func _loadConfig() -> void:
 	_loadJsonToConfig(SKILLS_PATH)
 	_loadJsonToConfig(STATUS_EFFECTS_PATH)
 	_loadJsonToConfig(ACCESSIBILITY_PATH)
+	_loadJsonToConfig(GRID_VISUALS_PATH)
+	_loadJsonToConfig(BIOMES_PATH)
+	_loadJsonToConfig(SECRET_ROOM_CONDITIONS_PATH)
+	_loadJsonToConfig(PROPS_PATH)
+	_loadJsonToConfig(AMBIENT_NARRATOR_PATH)
 	_loadJsonToConfig(REWARDS_PATH)
 	_loadJsonToConfig(UNLOCKS_PATH)
 	_loadJsonToConfig(ENCOUNTER_SCALER_PATH)
+	_loadJsonToConfig(HUD_CONFIG_PATH)
 	_loadJsonToConfig(FEEDBACK_PATH)
+	_validateGridVisuals()
 
 
 func _loadJsonToConfig(filePath: String) -> void:
@@ -163,3 +181,31 @@ func isLoaded() -> bool:
 		if not _loadedFiles[path]:
 			return false
 	return true
+
+
+func _validateGridVisuals() -> void:
+	if not _configData.has("highlights"):
+		return
+
+	var rawHighlights: Variant = _configData["highlights"]
+	if not rawHighlights is Dictionary:
+		return
+	var highlightsDict: Dictionary = rawHighlights as Dictionary
+
+	for key: Variant in highlightsDict.keys():
+		var styleRef: Variant = highlightsDict[key]
+		if styleRef is Dictionary:
+			var style: Dictionary = styleRef as Dictionary
+			if style.has("pulse"):
+				var pulseRef: Variant = style["pulse"]
+				if pulseRef is Dictionary:
+					var pulse: Dictionary = pulseRef as Dictionary
+					var minA: float = float(pulse.get("min_alpha", 0.0))
+					var maxA: float = float(pulse.get("max_alpha", 1.0))
+					if minA > maxA:
+						push_error(
+							(
+								"ConfigLoader: Grid visual style '%s' has min_alpha (%.2f) > max_alpha (%.2f)!"
+								% [str(key), minA, maxA]
+							)
+						)
