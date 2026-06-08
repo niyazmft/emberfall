@@ -7,9 +7,11 @@ extends Node
 const ROOMS_PATH := "res://config/rooms/"
 const KEEPER_SCENE_PATH := "res://scenes/keeper.tscn"
 const ENEMY_SCENES := {
-	"grunt": "res://scenes/enemies/enemy_grunt.tscn",
-	"archer": "res://scenes/enemies/enemy_archer.tscn",
-	"tank": "res://scenes/enemies/enemy_tank.tscn"
+	"grunt": preload("res://scenes/enemies/enemy_grunt.tscn"),
+	"archer": preload("res://scenes/enemies/enemy_archer.tscn"),
+	"tank": preload("res://scenes/enemies/enemy_tank.tscn"),
+	"mage": preload("res://scenes/enemies/enemy_mage.tscn"),
+	"boss": preload("res://scenes/enemies/enemy_boss.tscn")
 }
 
 
@@ -204,10 +206,9 @@ static func _spawn_encounter(encounter: Dictionary, container: Node, enemies_nod
 	var enemy_type: String = encounter.get("enemy_type", "grunt")
 	var positions: Array = encounter.get("positions", []) as Array
 
-	var scene_path: String = ENEMY_SCENES.get(enemy_type, ENEMY_SCENES["grunt"])
-	var enemy_scene := load(scene_path) as PackedScene
+	var enemy_scene: PackedScene = ENEMY_SCENES.get(enemy_type, ENEMY_SCENES["grunt"])
 	if enemy_scene == null:
-		push_error("Failed to load enemy scene: " + scene_path)
+		push_error("Failed to get enemy scene for type: " + enemy_type)
 		return
 
 	for pos_data: Variant in positions:
