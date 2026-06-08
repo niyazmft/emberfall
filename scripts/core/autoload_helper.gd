@@ -73,6 +73,16 @@ static func grid_system() -> _GridSystem:
 	return get_autoload("GridSystem") as _GridSystem
 
 
+## Returns the EncounterScaler autoload, or null.
+static func encounter_scaler() -> _EncounterScaler:
+	return get_autoload("EncounterScaler") as _EncounterScaler
+
+
+## Returns the MetaProgressionManager autoload, or null.
+static func meta_progression_manager() -> _MetaProgressionManager:
+	return get_autoload("MetaProgressionManager") as _MetaProgressionManager
+
+
 ## Returns the InventoryManager autoload, or null.
 static func inventory_manager() -> Node:
 	return get_autoload("InventoryManager")
@@ -91,6 +101,16 @@ static func settings_manager() -> Node:
 ## may fail during early initialization.
 static func localization_manager() -> Node:
 	return get_autoload("LocalizationManager")
+
+
+## Returns the AmbientNarrator autoload, or null.
+static func ambient_narrator() -> _AmbientNarrator:
+	return get_autoload("AmbientNarrator") as _AmbientNarrator
+
+
+## Returns the SecretRoomTrigger autoload, or null.
+static func secret_room_trigger() -> _SecretRoomTrigger:
+	return get_autoload("SecretRoomTrigger") as _SecretRoomTrigger
 
 
 # ── Derived Helpers ───────────────────────────────────────────────────────────

@@ -59,3 +59,36 @@ SKILL_QUICK_DASH_NAME,Quick Dash,Schneller Spurt,Carrera Rápida,Élan Rapide
 SKILL_QUICK_DASH_DESC,Dash forward to gain distance.,Spurte vorwärts, um Distanz zu gewinnen.,Corre hacia adelante para ganar distancia.,Élancez-vous pour gagner de la distance.
 ENEMY_ARCHER_NAME,Archer,Bogenschütze,Arquero,Archer
 ENEMY_ARCHER_DESC,Ranged enemy that maintains distance.,Fernkampfgegner, der Distanz hält.,Enemigo a distancia que mantiene la distancia.,Ennemi à distance qui maintient ses distances.
+HUD_TOOLTIP_HP,HP: Current / Max health,,
+HUD_TOOLTIP_AP,AP: Current / Max action points,,
+HUD_TOOLTIP_MOVE,Move to a new position,,
+HUD_TOOLTIP_ATTACK,Initiate an attack,,
+HUD_TOOLTIP_END_TURN,End your turn,,
+HUD_LOG_PLAYER_TURN,PLAYER TURN,,
+HUD_LOG_ENEMY_TURN,ENEMY TURN: %s,,
+HUD_LOG_ROUND_START,ROUND %d,,
+HUD_LOG_SELECT_TARGET,SELECT TARGET,,
+HUD_LOG_DAMAGE_DEALT,Dealt %d damage to %s,,
+HUD_VICTORY_TITLE,VICTORY,,
+HUD_DEFEAT_TITLE,DEFEAT,,
+HUD_SUMMARY_TURNS,Turns taken: %d,,
+HUD_SUMMARY_KILLS,Enemies defeated: %d,,
+HUD_SUMMARY_SHARDS,Echo shards earned: %d,,
+HUD_SUMMARY_ROOMS,Rooms cleared: %d,,
+HUD_PLAYER_TURN,Your Turn,,
+HUD_ENEMY_TURN,Enemy Turn: %s,,
+HUD_ROUND_LABEL,Round %d,,
+HUD_COMBAT_START,COMBAT START,,
+HUD_PLAYER_TURN_BANNER,PLAYER TURN,,
+HUD_ENEMY_TURN_BANNER,%s TURN,,
+prop.terminal.name,Terminal,Terminal,Terminal,Terminal
+prop.terminal.flavor,[The screen flickers with old data],[Der Bildschirm flackert mit alten Daten],[La pantalla parpadea con datos antiguos],[L'écran scintille avec d'anciennes données]
+prop.statue.name,Statue,Statue,Estatua,Statue
+prop.statue.flavor,[A figure from a forgotten era],[Eine Figur aus einer vergessenen Ära],[Una figura de una era olvidada],[Une figure d'une époque oubliée]
+biome.1.name,Iron Wastes,Eisenwüste,Páramos de Hierro,Déserts de Fer
+biome.1.elev.0,[The ground is cold and metallic],[Der Boden ist kalt und metallisch],[El suelo está frío y metálico],[Le sol est froid et métallique]
+biome.1.elev.1,[The air thins as you climb],[Die Luft wird dünner, während du steigst],[El aire se adelgaza a medida que subes],[L'air se raréfie à mesure que vous montez]
+biome.1.elev.2,[You overlook the rusted expanse],[Du übersiehst die verrostete Weite],[Observas la extensión oxidada],[Vous surplombez l'étendue rouillée]
+narrative.room.entry,[The room hums with energy],[Der Raum summt vor Energie],[La habitación zumba con energía],[La pièce bourdonne d'énergie]
+narrative.secret.spared_all,[Your mercy has opened a new path],[Deine Gnade hat einen neuen Weg eröffnet],[Tu misericordia ha abierto un nuevo camino],[Votre miséricorde a ouvert une nouvelle voie]
+narrative.secret.no_damage,[Flawless execution reveals the hidden],[Makellose Ausführung offenbart das Verborgene],[La ejecución impecable revela lo oculto],[Une exécution sans faille révèle le caché]

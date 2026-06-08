@@ -28,6 +28,11 @@
     "FIRE_DURATION_TURNS": 1,
     "FIRE_OIL_DURATION_TURNS": 1
   },
+  "status_effects": {
+    "DOT_TICK_RATE_BURNING": 1.0,
+    "DOT_TICK_RATE_POISONED": 1.0,
+    "DOT_TICK_RATE_BLEEDING": 1.0
+  },
   "entity": {
     "HP_MAX_DEFAULT": 40,
     "OFF_DEFAULT": 12,
@@ -45,6 +50,12 @@
     "DYING_DURATION_TURNS": 1
   },
   "golden_seed": "0xDEADBEEF",
+  "camera": {
+    "LERP_SPEED": 5.0,
+    "ZOOM_LEVEL": 2.0,
+    "SHAKE_MAX_OFFSET": 10.0,
+    "SHAKE_MAX_ROLL": 0.1
+  },
   "grid": {
     "GRID_W": 12,
     "GRID_H": 12,

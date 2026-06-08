@@ -1,24 +1,24 @@
 extends Node
 class_name _EntityLifecycle
 
-## Canonical owner of entity state transitions per system-spec section 4.2, 4.3, 4.4.
+## Canonical owner of entity state transitions per system-spec §4.2, §4.3, §4.4.
 ## All Entity state changes should flow through this class; Entity itself is a
 ## RefCounted data block with typed mutators only.
 #
 ## Responsibilities:
-##   * Deterministic damage application with state transition
-##   * HP healing with state reversal (DYING -> IDLE)
-##   * Turn-based state timers (STUNNED recovery, DYING -> DEAD)
-##   * MORAL_FLAG queue with sequential MWT checking
-##   * Burden Event signal emission at first MWT crossing
-##   * Spare / Execute player choices on dying enemies
+##   • Deterministic damage application with state transition
+##   • HP healing with state reversal (DYING → IDLE)
+##   • Turn-based state timers (STUNNED recovery, DYING → DEAD)
+##   • MORAL_FLAG queue with sequential MWT checking
+##   • Burden Event signal emission at first MWT crossing
+##   • Spare / Execute player choices on dying enemies
 ##
-## Reference: system-specification-core.md section 4, 11.3
+## Reference: system-specification-core.md §4, §11.3
 
-# -- Signals ----------------------------------------------------------------
+# ── Signals ────────────────────────────────────────────────────────────────
 signal entity_state_changed(entity: Entity, old_state: Entity.State, new_state: Entity.State)
 signal moral_flag_changed(entity: Entity, old_flag: int, new_flag: int)
-## Emitted when a moral delta pushes the player from below MWT to >= MWT.
+## Emitted when a moral delta pushes the player from below MWT to ≥ MWT.
 ## Carries the new moral_flag value and how many deltas remain queued.
 signal mwt_reached(moral_flag: int, remaining_deltas: int)
 ## Emitted whenever a moral delta is processed (including non-triggering ones).
@@ -27,7 +27,7 @@ signal moral_delta_processed(delta: int, source: String, sentient: bool)
 signal spare_or_execute(entity: Entity, was_spared: bool)
 
 
-# -- Queued moral delta record --------------------------------------------
+# ── Queued moral delta record ────────────────────────────────────────────
 class MoralDeltaRecord:
 	extends RefCounted
 	var delta: int
@@ -46,22 +46,22 @@ class MoralDeltaRecord:
 		source = p_source
 
 
-# -- State timers ---------------------------------------------------------
-## Entity instance_id -> turns remaining in DYING
+# ── State timers ─────────────────────────────────────────────────────────
+## Entity instance_id → turns remaining in DYING
 var _dying_turns: Dictionary = {}
-## Entity instance_id -> turns remaining in STUNNED
+## Entity instance_id → turns remaining in STUNNED
 var _stunned_turns: Dictionary = {}
 
-# -- Moral queue ------------------------------------------------------------
+# ── Moral queue ────────────────────────────────────────────────────────────
 var _moral_queue: Array[MoralDeltaRecord] = []
 
-# -- Player reference (set by combat / run system) ----------------------
+# ── Player reference (set by combat / run system) ──────────────────────
 var player_entity: Entity = null:
 	set(value):
 		player_entity = value
 
-# -- Autoload access helpers --------------------------------------------------
-# Delegated to AutoloadHelper -- single source of truth for safe autoload access.
+# ── Autoload access helpers ──────────────────────────────────────────────────
+# Delegated to AutoloadHelper — single source of truth for safe autoload access.
 
 
 func _config_int(key: String, fallback: int) -> int:
@@ -80,15 +80,66 @@ func _record_kill(enemy_id: String, enemy_name: String) -> void:
 		n.record_sentient_kill(enemy_id, enemy_name)
 
 
-# -- Damage & State -------------------------------------------------------
+# ── Status Effects ───────────────────────────────────────────────────────
+
+## Map of status effect ID to StatusEffect template
+var _status_effect_templates: Dictionary = {}
 
 
-## Canonical damage application. Updates defender HP and transitions state
+func _load_status_effect_templates() -> void:
+	var config_loader: _ConfigLoader = AutoloadHelper.config_loader()
+	if config_loader == null:
+		return
+
+	var config: Dictionary = config_loader.getValue("status_effects", "", {})
+	for effect_id: String in config:
+		var effect_data: Dictionary = config[effect_id]
+		_status_effect_templates[effect_id] = StatusEffect.fromDict(effect_data)
+
+
+func apply_status_effect(
+	entity: Entity, effect_id: String, duration: int = -1, potency: int = 0
+) -> void:
+	if _status_effect_templates.is_empty():
+		_load_status_effect_templates()
+
+	if not _status_effect_templates.has(effect_id):
+		push_warning("EntityLifecycle: Unknown status effect ID: %s" % effect_id)
+		return
+
+	# If entity already has the effect, refresh it (simple implementation)
+	var existing: StatusEffect = entity.get_status_effect(effect_id)
+	if existing:
+		existing.remainingDuration = (
+			duration if duration >= 0 else _status_effect_templates[effect_id].duration
+		)
+		existing.basePotency = potency
+		# Recompute caches since basePotency might be used in formulas (though currently not in stat getters)
+		entity._recompute_effect_caches()
+		return
+
+	var template: StatusEffect = _status_effect_templates[effect_id]
+	var instance: StatusEffect = template.createInstance(duration, potency)
+	entity.add_status_effect(instance)
+
+
+func remove_status_effect(entity: Entity, effect_id: String) -> void:
+	var effect: StatusEffect = entity.get_status_effect(effect_id)
+	if effect:
+		entity.remove_status_effect(effect)
+
+
+# ── Damage & State ───────────────────────────────────────────────────────
 ## deterministically. If damage is lethal, targets enter DYING (not DEAD).
-func apply_damage(attacker: Entity, defender: Entity, damage: int) -> void:
+func apply_damage(
+	attacker: Entity, defender: Entity, damage: int, damage_type: String = "PHYSICAL"
+) -> void:
 	var old_hp: int = defender.hp
 	var new_hp: int = DeterministicMath.clampi(old_hp - damage, 0, defender.hp_max)
 	defender.hp = new_hp
+
+	if damage > 0:
+		defender.damage_taken.emit(damage, damage_type)
 
 	if (
 		new_hp == 0
@@ -112,7 +163,7 @@ func heal(entity: Entity, amount: int) -> void:
 
 
 ## Apply stun to an entity for a fixed number of turns.
-## Reversible: STUNNED -> IDLE after duration expires in process_end_of_turn().
+## Reversible: STUNNED → IDLE after duration expires in process_end_of_turn().
 func stun(entity: Entity, duration_turns: int = 1) -> void:
 	if not entity.alive():
 		return
@@ -120,11 +171,11 @@ func stun(entity: Entity, duration_turns: int = 1) -> void:
 	_stunned_turns[entity.get_instance_id()] = duration_turns
 
 
-# -- Kill / Spare / Execute -----------------------------------------------
+# ── Kill / Spare / Execute ───────────────────────────────────────────────
 
 
 ## Record a sentient enemy kill and queue the moral delta.
-## Does NOT transition the defender to DEAD -- that happens via
+## Does NOT transition the defender to DEAD — that happens via
 ## execute_entity() at player choice, or automatically at end-of-turn expiry.
 #
 ## @param attacker Usually the player Entity; may be null for environmental.
@@ -160,7 +211,7 @@ func process_kill(
 		_record_kill(id, enemy_name)
 
 
-## Spare a dying enemy. Costs 1 AP, applies -1 MORAL_DELTA, transitions target
+## Spare a dying enemy. Costs 1 AP, applies –1 MORAL_DELTA, transitions target
 ## to GHOST. Returns true if successful, false if player lacks AP or target is
 ## not DYING.
 func spare_entity(player: Entity, target: Entity) -> bool:
@@ -198,11 +249,11 @@ func execute_entity(target: Entity) -> void:
 	spare_or_execute.emit(target, false)
 
 
-# -- Moral Flag Queue -----------------------------------------------------
+# ── Moral Flag Queue ─────────────────────────────────────────────────────
 
 
 ## Resolve queued moral deltas sequentially, checking MWT after each increment.
-## Per spec 11.3: first kill that hits MWT triggers Burden Event; subsequent
+## Per spec §11.3: first kill that hits MWT triggers Burden Event; subsequent
 ## kills in same phase are queued for next legal moment (i.e. next call).
 func resolve_moral_queue() -> void:
 	if player_entity == null:
@@ -232,7 +283,7 @@ func resolve_moral_queue() -> void:
 
 		_moral_queue.remove_at(0)
 
-	## Queue exhausted without hitting MWT -- still sync BurdenManager state.
+	## Queue exhausted without hitting MWT — still sync BurdenManager state.
 	_update_burden_weight(player_entity.moral_flag)
 
 
@@ -251,55 +302,111 @@ func reset_moral_queue() -> void:
 	_moral_queue.clear()
 
 
-# -- Turn-Based State Resolution ------------------------------------------
+# ── Turn-Based State Resolution ──────────────────────────────────────────
 
 
 ## Call at end of every combat turn. Decrements state timers and resolves
 ## expired states deterministically.
-func process_end_of_turn(p_entity: Entity = null) -> void:
-	if p_entity:
-		var id: int = p_entity.get_instance_id()
-		_resolve_dying_timers_for(id)
-		_resolve_stunned_timers_for(id)
-	else:
-		_resolve_dying_timers()
-		_resolve_stunned_timers()
+func process_end_of_turn(entity: Entity = null) -> void:
+	if entity:
+		_process_entity_status_effects(entity)
+	_resolve_dying_timers()
+	_resolve_stunned_timers()
+
+
+func _process_entity_status_effects(entity: Entity) -> void:
+	var effects_to_remove: Array[StatusEffect] = []
+
+	for effect: StatusEffect in entity.status_effects:
+		# Apply periodic effects (DoT)
+		_apply_periodic_effect(entity, effect)
+
+		# Decrement duration
+		effect.remainingDuration -= 1
+		if effect.remainingDuration <= 0:
+			effects_to_remove.append(effect)
+
+	for effect: StatusEffect in effects_to_remove:
+		entity.remove_status_effect(effect)
+
+
+func _apply_periodic_effect(entity: Entity, effect: StatusEffect) -> void:
+	match effect.id:
+		"BURNING", "POISONED", "BLEEDING":
+			var tick_rate: float = _config_float(
+				"status_effects", "DOT_TICK_RATE_" + effect.id, 1.0
+			)
+			var damage: int = _evaluate_potency(entity, effect)
+			var final_damage: int = DeterministicMath.damage_floor(float(damage) * tick_rate)
+			if final_damage > 0:
+				# Apply damage directly to bypass attacker requirement if needed,
+				# or pass null as attacker.
+				apply_damage(null, entity, final_damage)
+
+
+func _evaluate_potency(entity: Entity, effect: StatusEffect) -> int:
+	# Simple expression evaluation for potency formulas
+	var expr: Expression = Expression.new()
+	var error: int = expr.parse(
+		effect.potencyFormula, ["base_potency", "target_hp_max", "target_hp"]
+	)
+	if error != OK:
+		push_warning(
+			(
+				"EntityLifecycle: Failed to parse potency formula for %s: %s"
+				% [effect.id, expr.get_error_text()]
+			)
+		)
+		return effect.basePotency
+
+	var result: Variant = expr.execute([effect.basePotency, entity.hp_max, entity.hp], null, true)
+	if expr.has_execute_failed():
+		push_warning(
+			(
+				"EntityLifecycle: Failed to execute potency formula for %s: %s"
+				% [effect.id, expr.get_error_text()]
+			)
+		)
+		return effect.basePotency
+
+	return int(result)
+
+
+func _config_float(section: String, key: String, fallback: float) -> float:
+	var loader: _ConfigLoader = AutoloadHelper.config_loader()
+	if loader:
+		var val: Variant = loader.getValue(section, key, fallback)
+		if val is float or val is int:
+			return float(val)
+	return fallback
 
 
 func _resolve_dying_timers() -> void:
-	var ids: Array = _dying_turns.keys()
-	for id: int in ids:
-		_resolve_dying_timers_for(id)
+	var to_remove: Array[int] = []
+	for id: int in _dying_turns.keys():
+		_dying_turns[id] -= 1
+		if _dying_turns[id] <= 0:
+			to_remove.append(id)
 
-
-func _resolve_dying_timers_for(id: int) -> void:
-	if not _dying_turns.has(id):
-		return
-
-	_dying_turns[id] -= 1
-	if _dying_turns[id] <= 0:
+	for id: int in to_remove:
 		var obj: Object = instance_from_id(id)
 		if obj is Entity:
 			var ent: Entity = obj as Entity
 			if ent.alive() and ent.state == Entity.State.DYING:
-				## Expired without player choice -> DEAD
+				## Expired without player choice → DEAD
 				_change_state(ent, Entity.State.DEAD)
 				_trigger_loot_drop(ent)
 		_dying_turns.erase(id)
 
 
 func _resolve_stunned_timers() -> void:
-	var ids: Array = _stunned_turns.keys()
-	for id: int in ids:
-		_resolve_stunned_timers_for(id)
+	var to_remove: Array[int] = []
+	for id: int in _stunned_turns.keys():
+		_stunned_turns[id] -= 1
+		if _stunned_turns[id] <= 0:
+			to_remove.append(id)
 
-
-func _resolve_stunned_timers_for(id: int) -> void:
-	if not _stunned_turns.has(id):
-		return
-
-	_stunned_turns[id] -= 1
-	if _stunned_turns[id] <= 0:
+	for id: int in to_remove:
 		var obj: Object = instance_from_id(id)
 		if obj is Entity:
 			var ent: Entity = obj as Entity
@@ -308,7 +415,7 @@ func _resolve_stunned_timers_for(id: int) -> void:
 		_stunned_turns.erase(id)
 
 
-# -- Helpers --------------------------------------------------------------
+# ── Helpers ──────────────────────────────────────────────────────────────
 
 
 func _trigger_loot_drop(entity: Entity) -> void:
@@ -319,25 +426,27 @@ func _trigger_loot_drop(entity: Entity) -> void:
 	if config_loader == null:
 		return
 
-	var enemies_config: Variant = config_loader.getValue("enemies")
+	var enemies_config: Dictionary = config_loader.getValue("enemies", "", {})
 	var archetype_id: String = entity.archetype_id
 	if archetype_id.is_empty():
 		return
 
-	if enemies_config is Dictionary and enemies_config.has(archetype_id):
-		var loot_table_id: String = enemies_config[archetype_id].get("loot_table_id", "")
-		if loot_table_id.is_empty():
-			return
+	if not enemies_config.has(archetype_id):
+		return
 
-		var table: LootTable = LootTable.load_loot_table(loot_table_id)
-		if table:
-			# Use moral flag and HP max as a crude source of entropy for the loot roll
-			var seed_val: int = entity.moral_flag + entity.hp_max
-			var dropped_items: Array[String] = table.roll_loot(seed_val)
-			var inventory_manager: Node = AutoloadHelper.inventory_manager()
-			if inventory_manager:
-				for item_id: String in dropped_items:
-					inventory_manager.call("add_item", item_id, 1)
+	var loot_table_id: String = enemies_config[archetype_id].get("loot_table_id", "")
+	if loot_table_id.is_empty():
+		return
+
+	var table: LootTable = LootTable.load_loot_table(loot_table_id)
+	if table:
+		# Use moral flag and HP max as a crude source of entropy for the loot roll
+		var seed_val: int = entity.moral_flag + entity.hp_max
+		var dropped_items: Array[String] = table.roll_loot(seed_val)
+		var inventory_manager: Node = AutoloadHelper.inventory_manager()
+		if inventory_manager:
+			for item_id: String in dropped_items:
+				inventory_manager.call("add_item", item_id, 1)
 
 
 func _change_state(entity: Entity, new_state: Entity.State) -> void:

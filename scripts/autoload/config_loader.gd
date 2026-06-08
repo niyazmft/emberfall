@@ -1,5 +1,5 @@
-extends Node
 class_name _ConfigLoader
+extends Node
 
 ## Autoload: ConfigLoader
 ## Loads gameplay constants from JSON config with sensible hard-coded defaults.
@@ -10,8 +10,19 @@ const ITEMS_PATH := "res://config/items.json"
 const EQUIPMENT_PATH := "res://config/entity_equipment.json"
 const ENEMIES_PATH := "res://config/enemies.json"
 const SKILLS_PATH := "res://config/skills.json"
-const HOTBAR_BINDINGS_PATH := "res://config/hotbar_bindings.json"
+const STATUS_EFFECTS_PATH := "res://config/status_effects.json"
 const ACCESSIBILITY_PATH := "res://config/accessibility.json"
+const GRID_VISUALS_PATH := "res://config/grid_visuals.json"
+const BIOMES_PATH := "res://config/biomes.json"
+const SECRET_ROOM_CONDITIONS_PATH := "res://config/secret_room_conditions.json"
+const PROPS_PATH := "res://data/props.json"
+const AMBIENT_NARRATOR_PATH := "res://data/ambient_narrator.json"
+const REWARDS_PATH := "res://config/rewards.json"
+const UNLOCKS_PATH := "res://config/unlocks.json"
+const ENCOUNTER_SCALER_PATH := "res://config/encounter_scaler.json"
+const HUD_CONFIG_PATH := "res://config/hud_config.json"
+const FEEDBACK_PATH := "res://config/feedback_config.json"
+const HOTBAR_BINDINGS_PATH := "res://config/hotbar_bindings.json"
 
 # Fallback defaults (sensible so the game runs even if config is missing)
 const DEFAULTS: Dictionary = {
@@ -56,8 +67,18 @@ var _loadedFiles: Dictionary = {
 	EQUIPMENT_PATH: false,
 	ENEMIES_PATH: false,
 	SKILLS_PATH: false,
-	HOTBAR_BINDINGS_PATH: false,
+	STATUS_EFFECTS_PATH: false,
 	ACCESSIBILITY_PATH: false,
+	GRID_VISUALS_PATH: false,
+	BIOMES_PATH: false,
+	SECRET_ROOM_CONDITIONS_PATH: false,
+	PROPS_PATH: false,
+	AMBIENT_NARRATOR_PATH: false,
+	REWARDS_PATH: false,
+	UNLOCKS_PATH: false,
+	ENCOUNTER_SCALER_PATH: false,
+	FEEDBACK_PATH: false,
+	HOTBAR_BINDINGS_PATH: false,
 }
 
 
@@ -75,8 +96,20 @@ func _loadConfig() -> void:
 	_loadJsonToConfig(EQUIPMENT_PATH)
 	_loadJsonToConfig(ENEMIES_PATH)
 	_loadJsonToConfig(SKILLS_PATH)
-	_loadJsonToConfig(HOTBAR_BINDINGS_PATH)
+	_loadJsonToConfig(STATUS_EFFECTS_PATH)
 	_loadJsonToConfig(ACCESSIBILITY_PATH)
+	_loadJsonToConfig(GRID_VISUALS_PATH)
+	_loadJsonToConfig(BIOMES_PATH)
+	_loadJsonToConfig(SECRET_ROOM_CONDITIONS_PATH)
+	_loadJsonToConfig(PROPS_PATH)
+	_loadJsonToConfig(AMBIENT_NARRATOR_PATH)
+	_loadJsonToConfig(REWARDS_PATH)
+	_loadJsonToConfig(UNLOCKS_PATH)
+	_loadJsonToConfig(ENCOUNTER_SCALER_PATH)
+	_loadJsonToConfig(HUD_CONFIG_PATH)
+	_loadJsonToConfig(FEEDBACK_PATH)
+	_loadJsonToConfig(HOTBAR_BINDINGS_PATH)
+	_validateGridVisuals()
 
 
 func _loadJsonToConfig(filePath: String) -> void:
@@ -86,22 +119,9 @@ func _loadJsonToConfig(filePath: String) -> void:
 			var fileText: String = fileHandle.get_as_text()
 			var parsedJson: Variant = JSON.parse_string(fileText)
 			if parsedJson is Dictionary:
-				var p_namespace: String = filePath.get_file().get_basename()
-				var data_to_merge: Dictionary = parsedJson as Dictionary
-				# Unwrap if the root key matches the namespace (redundant level in JSON)
-				if data_to_merge.has(p_namespace) and data_to_merge.size() == 1:
-					data_to_merge = data_to_merge[p_namespace]
-
-				if not _configData.has(p_namespace):
-					_configData[p_namespace] = {}
-				(_configData[p_namespace] as Dictionary).merge(data_to_merge, true)
+				_configData.merge(parsedJson, true)
 				_loadedFiles[filePath] = true
-				print(
-					(
-						"ConfigLoader: loaded config from %s into namespace %s"
-						% [filePath, p_namespace]
-					)
-				)
+				print("ConfigLoader: loaded config from %s" % filePath)
 			else:
 				push_warning("ConfigLoader: config file %s was not a valid JSON object." % filePath)
 			fileHandle.close()
@@ -114,50 +134,22 @@ func _loadJsonToConfig(filePath: String) -> void:
 func getValue(sectionOrKey: String, key: String = "", fallback: Variant = null) -> Variant:
 	if not key.is_empty():
 		# Two-arg mode: section + key
-		# Try looking up section as a namespace, then key inside it
-		if _configData.has(sectionOrKey):
-			var ns: Variant = _configData[sectionOrKey]
-			if ns is Dictionary:
-				if ns.has(key):
-					return ns[key]
-				# Also check if the section itself is inside the namespace (redundant level)
-				if ns.has(sectionOrKey) and ns[sectionOrKey] is Dictionary:
-					var inner: Dictionary = ns[sectionOrKey]
-					if inner.has(key):
-						return inner[key]
-
-		# Fallback: scan all namespaces for the section, then the key
-		for ns: Variant in _configData.values():
-			if ns is Dictionary:
-				if ns.has(sectionOrKey):
-					var section: Variant = ns[sectionOrKey]
-					if section is Dictionary and section.has(key):
-						return section[key]
-
+		if _configData.has(sectionOrKey) and _configData[sectionOrKey] is Dictionary:
+			var section: Dictionary = _configData[sectionOrKey]
+			if section.has(key):
+				return section[key]
 		# Try flattened default
 		if DEFAULTS.has(key):
 			return DEFAULTS[key]
 		return fallback
 
-	# One-arg mode
-	# 1. Direct namespace lookup
+	# One-arg mode: direct key lookup in flattened namespace
 	if _configData.has(sectionOrKey):
-		var val: Variant = _configData[sectionOrKey]
-		# If it's a dictionary with a single key that matches the namespace, unwrap it
-		if val is Dictionary and val.has(sectionOrKey) and val.size() == 1:
-			return val[sectionOrKey]
-		return val
-
-	# 2. Scan namespaces for the key or deeper sections
-	for ns: Variant in _configData.values():
-		if ns is Dictionary:
-			if ns.has(sectionOrKey):
-				return ns[sectionOrKey]
-			# One level deeper (e.g. game_config -> ap_economy)
-			for sub: Variant in ns.values():
-				if sub is Dictionary and sub.has(sectionOrKey):
-					return sub[sectionOrKey]
-
+		return _configData[sectionOrKey]
+	# Scan sub-sections for key
+	for section: Variant in _configData.values():
+		if section is Dictionary and section.has(sectionOrKey):
+			return section[sectionOrKey]
 	if DEFAULTS.has(sectionOrKey):
 		return DEFAULTS[sectionOrKey]
 	return fallback
@@ -192,3 +184,31 @@ func isLoaded() -> bool:
 		if not _loadedFiles[path]:
 			return false
 	return true
+
+
+func _validateGridVisuals() -> void:
+	if not _configData.has("highlights"):
+		return
+
+	var rawHighlights: Variant = _configData["highlights"]
+	if not rawHighlights is Dictionary:
+		return
+	var highlightsDict: Dictionary = rawHighlights as Dictionary
+
+	for key: Variant in highlightsDict.keys():
+		var styleRef: Variant = highlightsDict[key]
+		if styleRef is Dictionary:
+			var style: Dictionary = styleRef as Dictionary
+			if style.has("pulse"):
+				var pulseRef: Variant = style["pulse"]
+				if pulseRef is Dictionary:
+					var pulse: Dictionary = pulseRef as Dictionary
+					var minA: float = float(pulse.get("min_alpha", 0.0))
+					var maxA: float = float(pulse.get("max_alpha", 1.0))
+					if minA > maxA:
+						push_error(
+							(
+								"ConfigLoader: Grid visual style '%s' has min_alpha (%.2f) > max_alpha (%.2f)!"
+								% [str(key), minA, maxA]
+							)
+						)
