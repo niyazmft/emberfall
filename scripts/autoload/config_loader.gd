@@ -82,8 +82,8 @@ var _loadedFiles: Dictionary = {
 	AMBIENT_NARRATOR_PATH: false,
 	REWARDS_PATH: false,
 	UNLOCKS_PATH: false,
-  ENCOUNTER_SCALER_PATH: false,
-  HUD_CONFIG_PATH: false,
+	ENCOUNTER_SCALER_PATH: false,
+	HUD_CONFIG_PATH: false,
 	UI_AUDIO_MANIFEST_PATH: false,
 	SETTINGS_HELP_PATH: false,
 	HAPTICS_CONFIG_PATH: false,
@@ -118,17 +118,17 @@ func _loadConfig() -> void:
 	_loadJsonToConfig(AMBIENT_NARRATOR_PATH)
 	_loadJsonToConfig(REWARDS_PATH)
 	_loadJsonToConfig(UNLOCKS_PATH)
-  _loadJsonToConfig(ENCOUNTER_SCALER_PATH)
-  _loadJsonToConfig(HUD_CONFIG_PATH)
-  _loadJsonToConfig(UI_AUDIO_MANIFEST_PATH)
-  _loadJsonToConfig(SETTINGS_HELP_PATH)
-  _loadJsonToConfig(HAPTICS_CONFIG_PATH)
-  _loadJsonToConfig(PROGRESSION_PATH)
-  _loadJsonToConfig(XP_ECONOMY_PATH)
-  _loadJsonToConfig(ELITE_MODIFIERS_PATH)
-  _loadJsonToConfig(FEEDBACK_PATH)
-  _loadJsonToConfig(HOTBAR_BINDINGS_PATH)
-  _validateGridVisuals()
+	_loadJsonToConfig(ENCOUNTER_SCALER_PATH)
+	_loadJsonToConfig(HUD_CONFIG_PATH)
+	_loadJsonToConfig(UI_AUDIO_MANIFEST_PATH)
+	_loadJsonToConfig(SETTINGS_HELP_PATH)
+	_loadJsonToConfig(HAPTICS_CONFIG_PATH)
+	_loadJsonToConfig(PROGRESSION_PATH)
+	_loadJsonToConfig(XP_ECONOMY_PATH)
+	_loadJsonToConfig(ELITE_MODIFIERS_PATH)
+	_loadJsonToConfig(FEEDBACK_PATH)
+	_loadJsonToConfig(HOTBAR_BINDINGS_PATH)
+	_validateGridVisuals()
 
 
 func _loadJsonToConfig(filePath: String) -> void:
