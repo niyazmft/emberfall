@@ -51,9 +51,7 @@ func _on_room_entered(_room_index: int, room_data: Dictionary) -> void:
 	for child in entity_container.get_children():
 		child.queue_free()
 
-	_enemies_node = Node2D.new()
-	_enemies_node.name = "Enemies"
-	entity_container.add_child(_enemies_node)
+	_create_enemies_node()
 
 	# Configure grid
 	RoomLoader.configure_grid(room_data)
@@ -104,6 +102,13 @@ func _setup_turn_manager() -> void:
 		_turn_manager.start_combat(_player, enemies)
 
 
+func _create_enemies_node() -> void:
+	_enemies_node = Node2D.new()
+	_enemies_node.name = "Enemies"
+	_enemies_node.y_sort_enabled = true
+	entity_container.add_child(_enemies_node)
+
+
 func _spawn_test_encounter() -> void:
 	_spawn_player()
 	_spawn_enemies()
@@ -138,9 +143,7 @@ func _spawn_player() -> void:
 func _spawn_enemies() -> void:
 	var grunt_scene: PackedScene = load(GRUNT_SCENE_PATH)
 
-	_enemies_node = Node2D.new()
-	_enemies_node.name = "Enemies"
-	entity_container.add_child(_enemies_node)
+	_create_enemies_node()
 
 	for i: int in range(3):  # Spawn 3 grunts
 		var grunt: Node2D = grunt_scene.instantiate() as Node2D
