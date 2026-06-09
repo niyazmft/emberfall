@@ -48,6 +48,13 @@ func _exit_tree() -> void:
 	if SafeZoneManager.aspect_ratio_changed.is_connected(_on_aspect_ratio_changed):
 		SafeZoneManager.aspect_ratio_changed.disconnect(_on_aspect_ratio_changed)
 
+	if move_button.pressed.is_connected(_on_move_pressed):
+		move_button.pressed.disconnect(_on_move_pressed)
+	if attack_button.pressed.is_connected(_on_attack_pressed):
+		attack_button.pressed.disconnect(_on_attack_pressed)
+	if end_turn_button.pressed.is_connected(_on_end_turn_pressed):
+		end_turn_button.pressed.disconnect(_on_end_turn_pressed)
+
 	if _player_entity:
 		if _player_entity.hp_changed.is_connected(_on_hp_changed):
 			_player_entity.hp_changed.disconnect(_on_hp_changed)

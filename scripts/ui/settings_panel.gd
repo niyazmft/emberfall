@@ -27,6 +27,7 @@ signal back_pressed
 @onready var helpLabel: Label = %HelpLabel
 
 var settingsHelp: Dictionary = {}
+var _bound_callables: Dictionary = {}
 var _resolutions: Array[Vector2i] = [
 	Vector2i(1920, 1080),
 	Vector2i(1600, 900),
@@ -118,19 +119,113 @@ func _exit_tree() -> void:
 	if SafeZoneManager.safe_area_changed.is_connected(_on_safe_area_changed):
 		SafeZoneManager.safe_area_changed.disconnect(_on_safe_area_changed)
 
+	# Audio
+	if (
+		_bound_callables.has("master_volume")
+		and _master_slider.value_changed.is_connected(_bound_callables["master_volume"])
+	):
+		_master_slider.value_changed.disconnect(_bound_callables["master_volume"])
+	if (
+		_bound_callables.has("music_volume")
+		and _music_slider.value_changed.is_connected(_bound_callables["music_volume"])
+	):
+		_music_slider.value_changed.disconnect(_bound_callables["music_volume"])
+	if (
+		_bound_callables.has("sfx_volume")
+		and _sfx_slider.value_changed.is_connected(_bound_callables["sfx_volume"])
+	):
+		_sfx_slider.value_changed.disconnect(_bound_callables["sfx_volume"])
+	if (
+		_bound_callables.has("mute")
+		and _mute_check.toggled.is_connected(_bound_callables["mute"])
+	):
+		_mute_check.toggled.disconnect(_bound_callables["mute"])
+
+	# Video & Accessibility
+	if _apply_button.pressed.is_connected(_on_apply_video_settings):
+		_apply_button.pressed.disconnect(_on_apply_video_settings)
+	if (
+		_bound_callables.has("screen_shake")
+		and _shake_slider.value_changed.is_connected(_bound_callables["screen_shake"])
+	):
+		_shake_slider.value_changed.disconnect(_bound_callables["screen_shake"])
+	if (
+		_bound_callables.has("cvd_sim")
+		and _cvd_option.item_selected.is_connected(_bound_callables["cvd_sim"])
+	):
+		_cvd_option.item_selected.disconnect(_bound_callables["cvd_sim"])
+
+	# Controls & Navigation
+	if (
+		_bound_callables.has("input_hints")
+		and _input_hints_option.item_selected.is_connected(_bound_callables["input_hints"])
+	):
+		_input_hints_option.item_selected.disconnect(_bound_callables["input_hints"])
+	if _reset_button.pressed.is_connected(_on_reset_pressed):
+		_reset_button.pressed.disconnect(_on_reset_pressed)
+	if _back_button.pressed.is_connected(_on_back_pressed):
+		_back_button.pressed.disconnect(_on_back_pressed)
+
+	# Help Listeners
+	var controls: Array[Control] = [
+		_master_slider,
+		_music_slider,
+		_sfx_slider,
+		_mute_check,
+		_resolution_option,
+		_fullscreen_check,
+		_vsync_check,
+		_apply_button,
+		_shake_slider,
+		_cvd_option,
+		_input_hints_option,
+		_reset_button,
+		_back_button
+	]
+	for control: Control in controls:
+		var bound_hover: Callable = _bound_callables.get("hover_" + control.name, Callable())
+		if bound_hover and control.mouse_entered.is_connected(bound_hover):
+			control.mouse_entered.disconnect(bound_hover)
+		if bound_hover and control.focus_entered.is_connected(bound_hover):
+			control.focus_entered.disconnect(bound_hover)
+
+		if control.mouse_exited.is_connected(_clearHelpText):
+			control.mouse_exited.disconnect(_clearHelpText)
+		if control.focus_exited.is_connected(_clearHelpText):
+			control.focus_exited.disconnect(_clearHelpText)
+
+		if control is Button or control is CheckBox or control is OptionButton:
+			if control.has_signal("pressed") and control.pressed.is_connected(_onControlClicked):
+				control.pressed.disconnect(_onControlClicked)
+			elif (
+				control.has_signal("item_selected")
+				and control.item_selected.is_connected(_onControlClicked)
+			):
+				control.item_selected.disconnect(_onControlClicked)
+		elif control is HSlider:
+			if control.drag_ended.is_connected(_onControlClicked):
+				control.drag_ended.disconnect(_onControlClicked)
+
 
 func _connect_signals() -> void:
-	_master_slider.value_changed.connect(_on_audio_changed.bind("master_volume"))
-	_music_slider.value_changed.connect(_on_audio_changed.bind("music_volume"))
-	_sfx_slider.value_changed.connect(_on_audio_changed.bind("sfx_volume"))
-	_mute_check.toggled.connect(_on_audio_changed.bind("mute"))
+	_bound_callables["master_volume"] = _on_audio_changed.bind("master_volume")
+	_master_slider.value_changed.connect(_bound_callables["master_volume"])
+	_bound_callables["music_volume"] = _on_audio_changed.bind("music_volume")
+	_music_slider.value_changed.connect(_bound_callables["music_volume"])
+	_bound_callables["sfx_volume"] = _on_audio_changed.bind("sfx_volume")
+	_sfx_slider.value_changed.connect(_bound_callables["sfx_volume"])
+	_bound_callables["mute"] = _on_audio_changed.bind("mute")
+	_mute_check.toggled.connect(_bound_callables["mute"])
 
 	_apply_button.pressed.connect(_on_apply_video_settings)
 
-	_shake_slider.value_changed.connect(_on_accessibility_changed.bind("screen_shake"))
-	_cvd_option.item_selected.connect(_on_accessibility_changed.bind("cvd_sim"))
+	_bound_callables["screen_shake"] = _on_accessibility_changed.bind("screen_shake")
+	_shake_slider.value_changed.connect(_bound_callables["screen_shake"])
+	_bound_callables["cvd_sim"] = _on_accessibility_changed.bind("cvd_sim")
+	_cvd_option.item_selected.connect(_bound_callables["cvd_sim"])
 
-	_input_hints_option.item_selected.connect(_on_controls_changed.bind("input_hints"))
+	_bound_callables["input_hints"] = _on_controls_changed.bind("input_hints")
+	_input_hints_option.item_selected.connect(_bound_callables["input_hints"])
 
 	_reset_button.pressed.connect(_on_reset_pressed)
 	_back_button.pressed.connect(_on_back_pressed)
@@ -222,8 +317,10 @@ func _setupHelpListeners() -> void:
 	]
 
 	for control: Control in controls:
-		control.mouse_entered.connect(_onControlHovered.bind(control.name))
-		control.focus_entered.connect(_onControlHovered.bind(control.name))
+		var bound_hover := _onControlHovered.bind(control.name)
+		_bound_callables["hover_" + control.name] = bound_hover
+		control.mouse_entered.connect(bound_hover)
+		control.focus_entered.connect(bound_hover)
 		control.mouse_exited.connect(_clearHelpText)
 		control.focus_exited.connect(_clearHelpText)
 
@@ -231,9 +328,9 @@ func _setupHelpListeners() -> void:
 			if control.has_signal("pressed"):
 				control.pressed.connect(_onControlClicked)
 			elif control.has_signal("item_selected"):
-				control.item_selected.connect(func(_idx: int) -> void: _onControlClicked())
+				control.item_selected.connect(_onControlClicked)
 		elif control is HSlider:
-			control.drag_ended.connect(func(_changed: bool) -> void: _onControlClicked())
+			control.drag_ended.connect(_onControlClicked)
 
 
 func _onControlHovered(control_name: String) -> void:
@@ -246,7 +343,7 @@ func _onControlHovered(control_name: String) -> void:
 		hm.triggerHaptic("hover")
 
 
-func _onControlClicked() -> void:
+func _onControlClicked(_extra: Variant = null) -> void:
 	var am: _UIAudioManager = AutoloadHelper.get_autoload("UIAudioManager")
 	if am:
 		am.playUiSound("click")

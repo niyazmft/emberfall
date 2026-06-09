@@ -8,6 +8,7 @@ extends Control
 
 var remapping_action: String = ""
 var remapping_button: Button = null
+var _conflict_timer: SceneTreeTimer
 
 
 func _ready() -> void:
@@ -25,6 +26,9 @@ func _exit_tree() -> void:
 		and InputRouter.device_changed.is_connected(_on_device_changed)
 	):
 		InputRouter.device_changed.disconnect(_on_device_changed)
+
+	if _conflict_timer and _conflict_timer.timeout.is_connected(conflict_toast.hide):
+		_conflict_timer.timeout.disconnect(conflict_toast.hide)
 
 
 func _focus_first_item() -> void:
@@ -205,8 +209,8 @@ func show_conflict_warning(other_action: StringName) -> void:
 			msg = "Conflict with " + String(other_action).capitalize()
 		conflict_toast.text = msg
 		conflict_toast.show()
-		var timer: SceneTreeTimer = get_tree().create_timer(2.0)
-		timer.timeout.connect(conflict_toast.hide)
+		_conflict_timer = get_tree().create_timer(2.0)
+		_conflict_timer.timeout.connect(conflict_toast.hide)
 
 
 func _on_device_changed(_device: _InputRouter.InputDevice) -> void:

@@ -36,6 +36,15 @@ func _ready() -> void:
 	new_game_btn.grab_focus.call_deferred()
 
 
+func _exit_tree() -> void:
+	if new_game_btn and new_game_btn.pressed.is_connected(_on_new_game_pressed):
+		new_game_btn.pressed.disconnect(_on_new_game_pressed)
+	if settings_btn and settings_btn.pressed.is_connected(_on_settings_pressed):
+		settings_btn.pressed.disconnect(_on_settings_pressed)
+	if quit_btn and quit_btn.pressed.is_connected(_on_quit_pressed):
+		quit_btn.pressed.disconnect(_on_quit_pressed)
+
+
 func _setup_focus_wrap() -> void:
 	var focusable: Array[Button] = []
 	for child: Node in button_container.get_children():
