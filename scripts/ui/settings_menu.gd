@@ -20,5 +20,10 @@ func _ready() -> void:
 	FocusManager.set_initial_focus(_panel)
 
 
+func _exit_tree() -> void:
+	if _panel and _panel.back_pressed.is_connected(_on_back_pressed):
+		_panel.back_pressed.disconnect(_on_back_pressed)
+
+
 func _on_back_pressed() -> void:
 	queue_free()

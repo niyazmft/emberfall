@@ -1,4 +1,4 @@
-extends Control
+extends _Modal
 ## VictoryModal
 ## Displayed when the player wins a combat encounter.
 
@@ -13,6 +13,12 @@ func _ready() -> void:
 	continue_button.pressed.connect(_on_continue_pressed)
 	_setup_from_config()
 	continue_button.text = tr("HUD_VICTORY_CONTINUE")
+
+
+func _exit_tree() -> void:
+	if continue_button and continue_button.pressed.is_connected(_on_continue_pressed):
+		continue_button.pressed.disconnect(_on_continue_pressed)
+	super._exit_tree()
 
 
 func setup(p_summary_data: Dictionary) -> void:

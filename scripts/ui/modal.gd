@@ -25,6 +25,11 @@ func setup(title_key: String, body_key: String) -> void:
 		body_label.text = tr(body_key)
 
 
+func _exit_tree() -> void:
+	if close_button and close_button.pressed.is_connected(dismiss):
+		close_button.pressed.disconnect(dismiss)
+
+
 func dismiss() -> void:
 	var tween: Tween = create_tween()
 	tween.tween_property(self, "modulate:a", 0.0, 0.2)

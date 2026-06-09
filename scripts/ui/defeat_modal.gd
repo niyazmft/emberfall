@@ -1,4 +1,4 @@
-extends Control
+extends _Modal
 ## DefeatModal
 ## Displayed when the player loses a combat encounter.
 
@@ -13,6 +13,12 @@ func _ready() -> void:
 	retry_button.pressed.connect(_on_retry_pressed)
 	_setup_from_config()
 	retry_button.text = tr("HUD_DEFEAT_RETRY")
+
+
+func _exit_tree() -> void:
+	if retry_button and retry_button.pressed.is_connected(_on_retry_pressed):
+		retry_button.pressed.disconnect(_on_retry_pressed)
+	super._exit_tree()
 
 
 func setup(p_summary_data: Dictionary) -> void:
