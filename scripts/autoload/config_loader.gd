@@ -215,7 +215,10 @@ func getString(sectionOrKey: String, arg2: Variant = null, arg3: Variant = null)
 		# Heuristic: If config is not yet loaded, OR if sectionOrKey is a known section,
 		# treat as (section, key) with empty fallback.
 		# Otherwise, treat as (key, fallback).
-		if _configData.is_empty() or (_configData.has(sectionOrKey) and _configData[sectionOrKey] is Dictionary):
+		if (
+			_configData.is_empty()
+			or (_configData.has(sectionOrKey) and _configData[sectionOrKey] is Dictionary)
+		):
 			var v: Variant = getValue(sectionOrKey, arg2, "")
 			return str(v) if v != null else ""
 		else:

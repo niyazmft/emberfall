@@ -64,8 +64,6 @@ var player_entity: Entity = null:
 # Delegated to AutoloadHelper — single source of truth for safe autoload access.
 
 
-
-
 func _update_burden_weight(flag: int) -> void:
 	var n: Node = AutoloadHelper.burden_manager()
 	if n != null and n.has_method("update_moral_weight"):
@@ -95,7 +93,9 @@ func apply_damage(attacker: Entity, defender: Entity, damage: int) -> void:
 		and defender.state != Entity.State.GHOST
 	):
 		_change_state(defender, Entity.State.DYING)
-		var dying_duration: int = AutoloadHelper.config_int("run_manager", "DYING_DURATION_TURNS", 1)
+		var dying_duration: int = AutoloadHelper.config_int(
+			"run_manager", "DYING_DURATION_TURNS", 1
+		)
 		_dying_turns[defender.get_instance_id()] = dying_duration
 
 

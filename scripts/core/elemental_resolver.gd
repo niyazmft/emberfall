@@ -16,8 +16,6 @@ class_name ElementalInteractionResolver
 ## Reference: DON-101 B3
 
 
-
-
 # ── Typed Element Queries ─────────────────────────────────────────────────
 static func _has_element(
 	effects: Array[ElementalTypes.TileEffect], elem: ElementalTypes.ElementType
@@ -190,7 +188,9 @@ static func process_turn_tick(
 				var fire_idx := _find_leftmost_element(working, ElementalTypes.ElementType.FIRE)
 				if fire_idx != -1 and fire_idx != i:
 					# Refresh fire duration
-					working[fire_idx].duration = AutoloadHelper.config_int("elemental", "FIRE_DURATION_TURNS", 1)
+					working[fire_idx].duration = AutoloadHelper.config_int(
+						"elemental", "FIRE_DURATION_TURNS", 1
+					)
 					working[fire_idx].applied_turn = current_turn
 					# Remove wind
 					working.remove_at(i)
@@ -214,7 +214,9 @@ static func process_turn_tick(
 					if oil_idx < i:
 						i -= 1
 					# Refresh fire duration after consuming oil
-					working[i].duration = AutoloadHelper.config_int("elemental", "FIRE_OIL_DURATION_TURNS", 1)
+					working[i].duration = AutoloadHelper.config_int(
+						"elemental", "FIRE_OIL_DURATION_TURNS", 1
+					)
 					working[i].applied_turn = current_turn
 
 		i += 1
