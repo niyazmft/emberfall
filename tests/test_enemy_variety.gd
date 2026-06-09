@@ -59,3 +59,38 @@ func test_enemy_tank_variety() -> void:
 	assert_that(tank.visual_proxy.modulate).is_equal(Color.BLUE)
 	assert_that(tank.visual_scale).is_equal(1.2)
 	assert_that(tank.visual_proxy.scale).is_equal(Vector2(1.2, 1.2))
+
+
+func test_enemy_mage_variety() -> void:
+	var mage_scene := load("res://scenes/enemies/enemy_mage.tscn")
+	var mage: EnemyMage = auto_free(mage_scene.instantiate()) as EnemyMage
+	mage._grid_system = _grid
+	add_child(mage)
+
+	assert_that(mage.entity.entity_name).is_equal("Mage")
+	assert_that(mage.entity.hp_max).is_equal(20)
+	assert_that(mage.entity.off).is_equal(12)
+	assert_that(mage.entity.def_).is_equal(2)
+	assert_that(mage.entity.spd).is_equal(4)
+
+	assert_that(mage.ai_controller.behavior).is_equal(EnemyAIController.BehaviorType.ARCHER)
+	assert_that(mage.debug_color).is_equal(Color.MAGENTA)
+	assert_that(mage.visual_proxy.modulate).is_equal(Color.MAGENTA)
+
+
+func test_enemy_boss_variety() -> void:
+	var boss_scene := load("res://scenes/enemies/enemy_boss.tscn")
+	var boss: EnemyBoss = auto_free(boss_scene.instantiate()) as EnemyBoss
+	boss._grid_system = _grid
+	add_child(boss)
+
+	assert_that(boss.entity.entity_name).is_equal("Boss")
+	assert_that(boss.entity.hp_max).is_equal(150)
+	assert_that(boss.entity.off).is_equal(20)
+	assert_that(boss.entity.def_).is_equal(10)
+	assert_that(boss.entity.spd).is_equal(3)
+
+	assert_that(boss.debug_color).is_equal(Color.RED)
+	assert_that(boss.visual_proxy.modulate).is_equal(Color.RED)
+	assert_that(boss.visual_scale).is_equal(1.5)
+	assert_that(boss.visual_proxy.scale).is_equal(Vector2(1.5, 1.5))
