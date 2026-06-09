@@ -16,6 +16,15 @@ class_name ElementalInteractionResolver
 ## Reference: DON-101 B3
 
 
+# ── Config Helpers ──────────────────────────────────────────────────────
+static func _config_float(key: String, fallback: float) -> float:
+	return AutoloadHelper.config_float(key, fallback)
+
+
+static func _config_int(key: String, fallback: int) -> int:
+	return AutoloadHelper.config_int(key, fallback)
+
+
 # ── Typed Element Queries ─────────────────────────────────────────────────
 static func _has_element(
 	effects: Array[ElementalTypes.TileEffect], elem: ElementalTypes.ElementType
@@ -72,15 +81,15 @@ static func compute_tile_damage_multiplier(
 
 	# Priority 1: Water extinguishes Fire → 0.5× (extinguish overrides amplification)
 	if has_water and has_fire:
-		return AutoloadHelper.config_float("elemental", "WATER_FIRE_MODIFIER", 0.5)
+		return _config_float("WATER_FIRE_MODIFIER", 0.5)
 
 	# Priority 2: Wind fans Fire → 1.5×
 	if has_wind and has_fire:
-		return AutoloadHelper.config_float("elemental", "WIND_FIRE_MODIFIER", 1.5)
+		return _config_float("WIND_FIRE_MODIFIER", 1.5)
 
 	# Priority 3: Fire burns Oil → 2.0×
 	if has_fire and has_oil:
-		return AutoloadHelper.config_float("elemental", "FIRE_OIL_MODIFIER", 2.0)
+		return _config_float("FIRE_OIL_MODIFIER", 2.0)
 
 	# Fallback: no recognised combo
 	return 1.0
@@ -94,7 +103,7 @@ static func calculate_movement_speed_multiplier(
 ) -> float:
 	var active: Array[ElementalTypes.TileEffect] = _filter_active(effects, current_turn)
 	if _has_element(active, ElementalTypes.ElementType.OIL):
-		return AutoloadHelper.config_float("elemental", "OIL_SLIP_SPEED_MULT", 0.8)
+		return _config_float("OIL_SLIP_SPEED_MULT", 0.8)
 	return 1.0
 
 
@@ -188,9 +197,7 @@ static func process_turn_tick(
 				var fire_idx := _find_leftmost_element(working, ElementalTypes.ElementType.FIRE)
 				if fire_idx != -1 and fire_idx != i:
 					# Refresh fire duration
-					working[fire_idx].duration = AutoloadHelper.config_int(
-						"elemental", "FIRE_DURATION_TURNS", 1
-					)
+					working[fire_idx].duration = _config_int("FIRE_DURATION_TURNS", 1)
 					working[fire_idx].applied_turn = current_turn
 					# Remove wind
 					working.remove_at(i)
@@ -214,9 +221,7 @@ static func process_turn_tick(
 					if oil_idx < i:
 						i -= 1
 					# Refresh fire duration after consuming oil
-					working[i].duration = AutoloadHelper.config_int(
-						"elemental", "FIRE_OIL_DURATION_TURNS", 1
-					)
+					working[i].duration = _config_int("FIRE_OIL_DURATION_TURNS", 1)
 					working[i].applied_turn = current_turn
 
 		i += 1

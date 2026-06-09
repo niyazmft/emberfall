@@ -135,10 +135,7 @@ func _exit_tree() -> void:
 		and _sfx_slider.value_changed.is_connected(_bound_callables["sfx_volume"])
 	):
 		_sfx_slider.value_changed.disconnect(_bound_callables["sfx_volume"])
-	if (
-		_bound_callables.has("mute")
-		and _mute_check.toggled.is_connected(_bound_callables["mute"])
-	):
+	if _bound_callables.has("mute") and _mute_check.toggled.is_connected(_bound_callables["mute"]):
 		_mute_check.toggled.disconnect(_bound_callables["mute"])
 
 	# Video & Accessibility
