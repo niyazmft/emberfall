@@ -177,27 +177,55 @@ func getValue(sectionOrKey: String, key: String = "", fallback: Variant = null) 
 
 
 ## Convenience typed getters for hot-path values.
-func getInt(key: String, fallback: int = 0) -> int:
-	var v: Variant = getValue(key, "", fallback)
-	if v is float:
-		return int(v)
-	if v is int:
-		return v
-	return fallback
+## Supports both (key, fallback) and (section, key, fallback) signatures.
+func getInt(sectionOrKey: String, arg2: Variant = null, arg3: Variant = null) -> int:
+	if arg2 is String:
+		# (section, key, fallback)
+		var f: int = int(arg3) if arg3 != null else 0
+		var v: Variant = getValue(sectionOrKey, arg2, f)
+		return int(v) if (v is float or v is int) else f
+	else:
+		# (key, fallback)
+		var f: int = int(arg2) if arg2 != null else 0
+		var v: Variant = getValue(sectionOrKey, "", f)
+		return int(v) if (v is float or v is int) else f
 
 
-func getFloat(key: String, fallback: float = 0.0) -> float:
-	var v: Variant = getValue(key, "", fallback)
-	if v is float or v is int:
-		return float(v)
-	return fallback
+func getFloat(sectionOrKey: String, arg2: Variant = null, arg3: Variant = null) -> float:
+	if arg2 is String:
+		# (section, key, fallback)
+		var f: float = float(arg3) if arg3 != null else 0.0
+		var v: Variant = getValue(sectionOrKey, arg2, f)
+		return float(v) if (v is float or v is int) else f
+	else:
+		# (key, fallback)
+		var f: float = float(arg2) if arg2 != null else 0.0
+		var v: Variant = getValue(sectionOrKey, "", f)
+		return float(v) if (v is float or v is int) else f
 
 
-func getString(key: String, fallback: String = "") -> String:
-	var v: Variant = getValue(key, "", fallback)
-	if v is String:
-		return v
-	return fallback
+func getString(sectionOrKey: String, arg2: Variant = null, arg3: Variant = null) -> String:
+	if arg3 != null:
+		# 3-arg mode: (section, key, fallback)
+		var v: Variant = getValue(sectionOrKey, str(arg2), str(arg3))
+		return str(v) if v != null else str(arg3)
+
+	if arg2 is String:
+		# Ambiguous 2-arg mode: (section, key) or (key, fallback)
+		# Heuristic: If config is not yet loaded, OR if sectionOrKey is a known section,
+		# treat as (section, key) with empty fallback.
+		# Otherwise, treat as (key, fallback).
+		if _configData.is_empty() or (_configData.has(sectionOrKey) and _configData[sectionOrKey] is Dictionary):
+			var v: Variant = getValue(sectionOrKey, arg2, "")
+			return str(v) if v != null else ""
+		else:
+			var v: Variant = getValue(sectionOrKey, "", arg2)
+			return str(v) if v != null else str(arg2)
+
+	# 1-arg or (key, null fallback)
+	var f: String = str(arg2) if arg2 != null else ""
+	var v: Variant = getValue(sectionOrKey, "", f)
+	return str(v) if v != null else f
 
 
 func isLoaded() -> bool:

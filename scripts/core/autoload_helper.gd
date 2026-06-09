@@ -111,28 +111,37 @@ static func secret_room_trigger() -> _SecretRoomTrigger:
 # ── Derived Helpers ───────────────────────────────────────────────────────────
 
 
-## Reads an int config value via ConfigLoader.get_int(), returning fallback
+## Reads an int config value via ConfigLoader.getInt(), returning fallback
 ## if ConfigLoader is unavailable or the key is not set.
-static func config_int(key: String, fallback: int) -> int:
+## Supports both (key, fallback) and (section, key, fallback) signatures.
+static func config_int(arg1: String, arg2: Variant = null, arg3: Variant = null) -> int:
 	var n: Node = config_loader()
 	if n != null and n.has_method("getInt"):
-		return n.getInt(key, fallback)
-	return fallback
+		return n.getInt(arg1, arg2, arg3)
+	if arg2 is String:
+		return int(arg3) if arg3 != null else 0
+	return int(arg2) if arg2 != null else 0
 
 
-## Reads a float config value via ConfigLoader.get_float(), returning fallback
+## Reads a float config value via ConfigLoader.getFloat(), returning fallback
 ## if ConfigLoader is unavailable or the key is not set.
-static func config_float(key: String, fallback: float) -> float:
+## Supports both (key, fallback) and (section, key, fallback) signatures.
+static func config_float(arg1: String, arg2: Variant = null, arg3: Variant = null) -> float:
 	var n: Node = config_loader()
 	if n != null and n.has_method("getFloat"):
-		return n.getFloat(key, fallback)
-	return fallback
+		return n.getFloat(arg1, arg2, arg3)
+	if arg2 is String:
+		return float(arg3) if arg3 != null else 0.0
+	return float(arg2) if arg2 != null else 0.0
 
 
-## Reads a String config value via ConfigLoader.get_string(), returning fallback
+## Reads a String config value via ConfigLoader.getString(), returning fallback
 ## if ConfigLoader is unavailable or the key is not set.
-static func config_string(key: String, fallback: String) -> String:
+## Supports both (key, fallback) and (section, key, fallback) signatures.
+static func config_string(arg1: String, arg2: Variant = null, arg3: Variant = null) -> String:
 	var n: Node = config_loader()
 	if n != null and n.has_method("getString"):
-		return n.getString(key, fallback)
-	return fallback
+		return n.getString(arg1, arg2, arg3)
+	if arg2 is String:
+		return str(arg3) if arg3 != null else ""
+	return str(arg2) if arg2 != null else ""

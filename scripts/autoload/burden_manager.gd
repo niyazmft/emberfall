@@ -201,13 +201,8 @@ func reset() -> void:
 # ---------------------------------------------------------------------------
 
 
-## Safe helper to access ConfigLoader via AutoloadHelper.
-func _config_int(key: String, fallback: int) -> int:
-	return AutoloadHelper.config_int(key, fallback)
-
-
 func update_moral_weight(moral_flag: int) -> void:
-	var threshold: int = _config_int("MWT", GameConstants.MWT)
+	var threshold: int = AutoloadHelper.config_int("entity", "MWT", GameConstants.MWT)
 
 	var old_level := current_mwt_level
 	## Map moral_flag to MWT level (0-3) as a ratio of threshold.

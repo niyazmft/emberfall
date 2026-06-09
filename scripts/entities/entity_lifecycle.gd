@@ -64,8 +64,6 @@ var player_entity: Entity = null:
 # Delegated to AutoloadHelper — single source of truth for safe autoload access.
 
 
-func _config_int(key: String, fallback: int) -> int:
-	return AutoloadHelper.config_int(key, fallback)
 
 
 func _update_burden_weight(flag: int) -> void:
@@ -97,7 +95,7 @@ func apply_damage(attacker: Entity, defender: Entity, damage: int) -> void:
 		and defender.state != Entity.State.GHOST
 	):
 		_change_state(defender, Entity.State.DYING)
-		var dying_duration: int = _config_int("DYING_DURATION_TURNS", 1)
+		var dying_duration: int = AutoloadHelper.config_int("run_manager", "DYING_DURATION_TURNS", 1)
 		_dying_turns[defender.get_instance_id()] = dying_duration
 
 
@@ -144,7 +142,9 @@ func process_kill(
 		apply_damage(attacker, defender, defender.hp)
 
 	var delta: int = (
-		_config_int("MORAL_DELTA_KILL", 1) if sentient else _config_int("MORAL_DELTA_ENV", 0)
+		AutoloadHelper.config_int("entity", "MORAL_DELTA_KILL", 1)
+		if sentient
+		else AutoloadHelper.config_int("entity", "MORAL_DELTA_ENV", 0)
 	)
 	var record: MoralDeltaRecord = MoralDeltaRecord.new(
 		delta, enemy_id, enemy_name, sentient, "kill"
@@ -174,7 +174,7 @@ func spare_entity(player: Entity, target: Entity) -> bool:
 
 	player.ap = DeterministicMath.clampi(player.ap - 1, 0, player.ap)
 
-	var delta: int = _config_int("MORAL_DELTA_SPARE", -1)
+	var delta: int = AutoloadHelper.config_int("entity", "MORAL_DELTA_SPARE", -1)
 	var record: MoralDeltaRecord = MoralDeltaRecord.new(
 		delta, target.entity_name, target.entity_name, true, "spare"
 	)
