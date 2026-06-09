@@ -86,10 +86,10 @@ func setup_state_machine() -> void:
 func _load_config_values() -> void:
 	if Engine.is_editor_hint():
 		return
-	biome_count = AutoloadHelper.config_int("BIOME_COUNT", 3)
-	rooms_per_biome_min = AutoloadHelper.config_int("ROOMS_PER_BIOME_MIN", 8)
-	rooms_per_biome_max = AutoloadHelper.config_int("ROOMS_PER_BIOME_MAX", 12)
-	_dying_duration = float(AutoloadHelper.config_int("DYING_DURATION_TURNS", 1))
+	biome_count = AutoloadHelper.config_int("run_manager", "BIOME_COUNT", 3)
+	rooms_per_biome_min = AutoloadHelper.config_int("run_manager", "ROOMS_PER_BIOME_MIN", 8)
+	rooms_per_biome_max = AutoloadHelper.config_int("run_manager", "ROOMS_PER_BIOME_MAX", 12)
+	_dying_duration = float(AutoloadHelper.config_int("run_manager", "DYING_DURATION_TURNS", 1))
 
 
 # ---------------------------------------------------------------------------
