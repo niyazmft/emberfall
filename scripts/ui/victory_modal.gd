@@ -18,7 +18,6 @@ func _ready() -> void:
 func _exit_tree() -> void:
 	if continue_button and continue_button.pressed.is_connected(_on_continue_pressed):
 		continue_button.pressed.disconnect(_on_continue_pressed)
-	super._exit_tree()
 
 
 func setup(p_summary_data: Dictionary) -> void:
