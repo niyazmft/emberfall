@@ -51,10 +51,18 @@ jobs:
           version: 'v6.1.3'
           paths: 'res://tests'
 
+      - name: Verify export templates
+        run: |
+          echo "=== Export template directory contents ==="
+          ls -la /home/runner/.local/share/godot/export_templates/4.6.3.stable/
+          echo "=== Godot binary ==="
+          which godot
+          godot --version
+
       - name: Export Windows build
         run: |
           mkdir -p build/windows
-          godot --headless --export-release "Windows Desktop" build/windows/Emberfall.exe
+          godot --headless --verbose --export-release "Windows Desktop" build/windows/Emberfall.exe
           cd build/windows
           zip -r ../../emberfall-windows.zip Emberfall.exe Emberfall.pck
 
