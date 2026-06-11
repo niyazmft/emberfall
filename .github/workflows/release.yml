@@ -33,6 +33,7 @@ jobs:
           version: 4.6.3
           use-dotnet: false
           include-templates: true
+          cache: false
 
       - name: Run validation tests
         run: |
