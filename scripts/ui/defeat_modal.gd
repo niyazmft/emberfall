@@ -1,4 +1,4 @@
-extends _Modal
+extends Control
 ## DefeatModal
 ## Displayed when the player loses a combat encounter.
 

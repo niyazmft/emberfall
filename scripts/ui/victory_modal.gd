@@ -1,4 +1,4 @@
-extends _Modal
+extends Control
 ## VictoryModal
 ## Displayed when the player wins a combat encounter.
 
