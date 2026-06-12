@@ -67,21 +67,21 @@ jobs:
       - name: Export Windows build
         run: |
           mkdir -p build/windows
-          xvfb-run --auto-servernum godot --headless --verbose --export-release "Windows Desktop" build/windows/Emberfall.exe
+          xvfb-run --auto-servernum godot --export-release "Windows Desktop" build/windows/Emberfall.exe
           cd build/windows
           zip -r ../../emberfall-windows.zip Emberfall.exe Emberfall.pck
 
       - name: Export Linux build
         run: |
           mkdir -p build/linux
-          xvfb-run --auto-servernum godot --headless --export-release "Linux/X11" build/linux/Emberfall.x86_64
+          xvfb-run --auto-servernum godot --export-release "Linux/X11" build/linux/Emberfall.x86_64
           cd build/linux
           zip -r ../../emberfall-linux.zip Emberfall.x86_64 Emberfall.pck
 
       - name: Export macOS build
         run: |
           mkdir -p build/macos
-          xvfb-run --auto-servernum godot --headless --export-release "macOS" build/macos/Emberfall.zip
+          xvfb-run --auto-servernum godot --export-release "macOS" build/macos/Emberfall.zip
           cp build/macos/Emberfall.zip emberfall-macos.zip
 
       - name: Create GitHub Release
