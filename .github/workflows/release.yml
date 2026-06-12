@@ -59,12 +59,14 @@ jobs:
           which godot
           godot --version
 
-      - name: Export Windows build
-        run: |
-          mkdir -p build/windows
-          godot --headless --verbose --export-release "Windows Desktop" build/windows/Emberfall.exe
-          cd build/windows
-          zip -r ../../emberfall-windows.zip Emberfall.exe Emberfall.pck
+      # Windows export temporarily disabled — SIGABRT crash on headless Linux CI (rcedit issue)
+      # See release history v0.1.2 for diagnostics. Re-enable once Godot Windows export is stable.
+      # - name: Export Windows build
+      #   run: |
+      #     mkdir -p build/windows
+      #     godot --headless --verbose --export-release "Windows Desktop" build/windows/Emberfall.exe
+      #     cd build/windows
+      #     zip -r ../../emberfall-windows.zip Emberfall.exe Emberfall.pck
 
       - name: Export Linux build
         run: |
@@ -86,6 +88,5 @@ jobs:
           name: Project Emberfall — ${{ github.event.inputs.tag || github.ref_name }}
           body_path: CHANGELOG.md
           files: |
-            emberfall-windows.zip
             emberfall-linux.zip
             emberfall-macos.zip
