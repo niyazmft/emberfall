@@ -67,21 +67,32 @@ jobs:
       - name: Export Windows build
         run: |
           mkdir -p build/windows
-          xvfb-run --auto-servernum godot --rendering-method gl_compatibility --export-release "Windows Desktop" build/windows/Emberfall.exe
+          xvfb-run --auto-servernum godot --rendering-method gl_compatibility --export-release "Windows Desktop" build/windows/Emberfall.exe || true
+          echo "=== Verifying Windows export artifacts ==="
+          ls -la build/windows/
+          test -f build/windows/Emberfall.exe || { echo "ERROR: Windows .exe missing"; exit 1; }
+          test -f build/windows/Emberfall.pck || { echo "ERROR: Windows .pck missing"; exit 1; }
           cd build/windows
           zip -r ../../emberfall-windows.zip Emberfall.exe Emberfall.pck
 
       - name: Export Linux build
         run: |
           mkdir -p build/linux
-          xvfb-run --auto-servernum godot --rendering-method gl_compatibility --export-release "Linux/X11" build/linux/Emberfall.x86_64
+          xvfb-run --auto-servernum godot --rendering-method gl_compatibility --export-release "Linux/X11" build/linux/Emberfall.x86_64 || true
+          echo "=== Verifying Linux export artifacts ==="
+          ls -la build/linux/
+          test -f build/linux/Emberfall.x86_64 || { echo "ERROR: Linux binary missing"; exit 1; }
+          test -f build/linux/Emberfall.pck || { echo "ERROR: Linux .pck missing"; exit 1; }
           cd build/linux
           zip -r ../../emberfall-linux.zip Emberfall.x86_64 Emberfall.pck
 
       - name: Export macOS build
         run: |
           mkdir -p build/macos
-          xvfb-run --auto-servernum godot --rendering-method gl_compatibility --export-release "macOS" build/macos/Emberfall.zip
+          xvfb-run --auto-servernum godot --rendering-method gl_compatibility --export-release "macOS" build/macos/Emberfall.zip || true
+          echo "=== Verifying macOS export artifacts ==="
+          ls -la build/macos/
+          test -f build/macos/Emberfall.zip || { echo "ERROR: macOS .zip missing"; exit 1; }
           cp build/macos/Emberfall.zip emberfall-macos.zip
 
       - name: Create GitHub Release
