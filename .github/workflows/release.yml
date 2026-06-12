@@ -89,11 +89,12 @@ jobs:
       - name: Export macOS build
         run: |
           mkdir -p build/macos
-          xvfb-run --auto-servernum godot --rendering-method gl_compatibility --export-release "macOS" build/macos/Emberfall.zip || true
+          xvfb-run --auto-servernum godot --rendering-method gl_compatibility --export-release "macOS" build/macos/Emberfall.app || true
           echo "=== Verifying macOS export artifacts ==="
           ls -la build/macos/
-          test -f build/macos/Emberfall.zip || { echo "ERROR: macOS .zip missing"; exit 1; }
-          cp build/macos/Emberfall.zip emberfall-macos.zip
+          test -d build/macos/Emberfall.app || { echo "ERROR: macOS .app bundle missing"; exit 1; }
+          cd build/macos
+          zip -r ../../emberfall-macos.zip Emberfall.app
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3
