@@ -26,9 +26,15 @@ var _astar: AStar3D
 ## Cache to avoid rebuilding graph when the room topology is unchanged.
 var _cached_room_id: String = ""
 
+## Cached GridSystem reference to avoid repeated get_node tree traversals
+## in the hot path (20+ calls per path query).
+var _grid_system: _GridSystem
+
 
 func _init() -> void:
 	_astar = AStar3D.new()
+	_grid_system = AutoloadHelper.grid_system()
+	assert(_grid_system != null, "AStarGrid: GridSystem autoload not found")
 
 	## Register every grid cell once. Positions are scaled by COST_STRAIGHT
 	## so that Euclidean distance yields the desired cost model:
@@ -54,26 +60,24 @@ func _reset_search() -> void:
 ## Threading: main thread ONLY.
 func find_path(start: Vector2i, goal: Vector2i) -> Array[Vector2i]:
 	if (
-		not Engine.get_main_loop().root.get_node("GridSystem").is_in_bounds(start.x, start.y)
-		or not Engine.get_main_loop().root.get_node("GridSystem").is_in_bounds(goal.x, goal.y)
+		not _grid_system.is_in_bounds(start.x, start.y)
+		or not _grid_system.is_in_bounds(goal.x, goal.y)
 	):
 		return []
 	if start == goal:
 		return [start]
 
-	var goal_i: int = Engine.get_main_loop().root.get_node("GridSystem").index(goal.x, goal.y)
-	var goal_tile: TacTileData = (
-		Engine.get_main_loop().root.get_node("GridSystem").get_tile_by_index(goal_i)
-	)
+	var goal_i: int = _grid_system.index(goal.x, goal.y)
+	var goal_tile: TacTileData = _grid_system.get_tile_by_index(goal_i)
 	if goal_tile == null or goal_tile.blocks_movement:
 		return []
 
 	## Sync graph topology with GridSystem when the room has changed.
-	if _cached_room_id != Engine.get_main_loop().root.get_node("GridSystem").room_id:
+	if _cached_room_id != _grid_system.room_id:
 		_rebuild_graph()
-		_cached_room_id = Engine.get_main_loop().root.get_node("GridSystem").room_id
+		_cached_room_id = _grid_system.room_id
 
-	var start_i: int = Engine.get_main_loop().root.get_node("GridSystem").index(start.x, start.y)
+	var start_i: int = _grid_system.index(start.x, start.y)
 	var ids: PackedInt64Array = _astar.get_id_path(start_i, goal_i)
 	if ids.is_empty():
 		return []
@@ -102,50 +106,34 @@ func _rebuild_graph() -> void:
 	## - diagonals require both intermediate cardinal cells to be passable
 	for x: int in range(GRID_SIZE):
 		for y: int in range(GRID_SIZE):
-			var i: int = Engine.get_main_loop().root.get_node("GridSystem").index(x, y)
-			var tile: TacTileData = (
-				Engine.get_main_loop().root.get_node("GridSystem").get_tile_by_index(i)
-			)
+			var i: int = _grid_system.index(x, y)
+			var tile: TacTileData = _grid_system.get_tile_by_index(i)
 			if tile == null or tile.blocks_movement:
 				continue
 			for d: Vector2i in DIRS:
 				var nx: int = x + d.x
 				var ny: int = y + d.y
-				if not Engine.get_main_loop().root.get_node("GridSystem").is_in_bounds(nx, ny):
+				if not _grid_system.is_in_bounds(nx, ny):
 					continue
-				var ni: int = Engine.get_main_loop().root.get_node("GridSystem").index(nx, ny)
-				var ntile: TacTileData = (
-					Engine.get_main_loop().root.get_node("GridSystem").get_tile_by_index(ni)
-				)
+				var ni: int = _grid_system.index(nx, ny)
+				var ntile: TacTileData = _grid_system.get_tile_by_index(ni)
 				if ntile == null or ntile.blocks_movement:
 					continue
 				## Prevent corner-cutting: diagonals require both adjacent
 				## cardinal cells to be passable from the start tile.
-				var forward_ok: bool = Engine.get_main_loop().root.get_node("GridSystem").can_move(
-					x, y, nx, ny
-				)
-				var reverse_ok: bool = Engine.get_main_loop().root.get_node("GridSystem").can_move(
-					nx, ny, x, y
-				)
+				var forward_ok: bool = _grid_system.can_move(x, y, nx, ny)
+				var reverse_ok: bool = _grid_system.can_move(nx, ny, x, y)
 				if d.x != 0 and d.y != 0:
 					if forward_ok:
 						if (
-							not Engine.get_main_loop().root.get_node("GridSystem").can_move(
-								x, y, x + d.x, y
-							)
-							or not Engine.get_main_loop().root.get_node("GridSystem").can_move(
-								x, y, x, y + d.y
-							)
+							not _grid_system.can_move(x, y, x + d.x, y)
+							or not _grid_system.can_move(x, y, x, y + d.y)
 						):
 							forward_ok = false
 					if reverse_ok:
 						if (
-							not Engine.get_main_loop().root.get_node("GridSystem").can_move(
-								nx, ny, x + d.x, y
-							)
-							or not Engine.get_main_loop().root.get_node("GridSystem").can_move(
-								nx, ny, x, y + d.y
-							)
+							not _grid_system.can_move(nx, ny, x + d.x, y)
+							or not _grid_system.can_move(nx, ny, x, y + d.y)
 						):
 							reverse_ok = false
 

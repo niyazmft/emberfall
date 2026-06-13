@@ -254,8 +254,9 @@ func _update_recoil(delta: float, _elapsed: float) -> void:
 	_recoil_timer += delta
 	var r: Node2D = _renderer.get_ref() as Node2D
 	if r:
-		# Slight horizontal jitter during recoil
-		var jitter: float = (randf() - 0.5) * 3.0
+		# Slight horizontal jitter during recoil — deterministic seed based on entity position
+		var jitter_seed: int = int(r.position.x * 1000.0) + int(r.position.y * 1000.0)
+		var jitter: float = (SeedGovernance.fract_from_seed(jitter_seed) - 0.5) * 3.0
 		r.position.x += jitter * delta * 60.0
 	if _recoil_timer >= _recoil_duration:
 		cmd_transition_if_guarded(ApparitionState.IDLE)

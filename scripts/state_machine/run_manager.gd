@@ -57,9 +57,10 @@ func _ready() -> void:
 	setup_state_machine()
 
 	_load_config_values()
-	if has_node("/root/EntityLifecycle"):
-		_entity_lifecycle = get_node("/root/EntityLifecycle")
-		if _entity_lifecycle and _entity_lifecycle.has_signal("mwt_reached"):
+	var el: _EntityLifecycle = AutoloadHelper.entity_lifecycle()
+	if el != null:
+		_entity_lifecycle = el
+		if _entity_lifecycle.has_signal("mwt_reached"):
 			_entity_lifecycle.connect("mwt_reached", _on_mwt_reached)
 
 

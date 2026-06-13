@@ -1,4 +1,5 @@
 extends Node
+class_name _InventoryManager
 
 ## Autoload: InventoryManager
 ## Manages player inventory, equipment, and item persistence.

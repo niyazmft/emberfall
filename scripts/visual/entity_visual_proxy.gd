@@ -27,11 +27,16 @@ var _hit_flash_timer: float = 0.0
 var _hit_flash_duration: float = 0.1
 var _hit_stop_remaining: int = 0
 
+## Reference to the CombatRoom node (set by parent scene; NOT an autoload).
+## Use export to avoid fragile /root/ lookup.
+var _combat_room: Node = null
+
 
 func _ready() -> void:
-	var combat_room: Node = get_node_or_null("/root/CombatRoom")
-	if combat_room:
-		for child: Node in combat_room.get_children():
+	if not _combat_room:
+		_combat_room = get_node_or_null("/root/CombatRoom")
+	if _combat_room:
+		for child: Node in _combat_room.get_children():
 			if child is GridRenderer:
 				_grid_renderer = child as GridRenderer
 				break
@@ -233,9 +238,8 @@ func _triggerHitEffects(p_damage: int, p_damage_type: String = "PHYSICAL") -> vo
 					_hit_stop_remaining = tier.get("frames", 0)
 
 	# Screen Shake
-	var combat_room: Node = get_node_or_null("/root/CombatRoom")
-	if combat_room and combat_room.get("camera") and combat_room.camera.has_method("add_shake"):
-		combat_room.camera.call("add_shake", clampf(float(p_damage) / 20.0, 0.1, 0.5))
+	if _combat_room and _combat_room.get("camera") and _combat_room.camera.has_method("add_shake"):
+		_combat_room.camera.call("add_shake", clampf(float(p_damage) / 20.0, 0.1, 0.5))
 
 	# Floating Text
 	_spawnDamageNumber(p_damage, p_damage_type)

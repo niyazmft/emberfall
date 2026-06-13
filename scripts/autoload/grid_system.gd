@@ -347,8 +347,8 @@ func clear_elemental_overlay() -> void:
 func has_los(observer_x: int, observer_y: int, target_x: int, target_y: int) -> bool:
 	if not is_in_bounds(observer_x, observer_y) or not is_in_bounds(target_x, target_y):
 		return false
-	var dx: int = abs(target_x - observer_x)
-	var dy: int = abs(target_y - observer_y)
+	var dx: int = DeterministicMath.absi(target_x - observer_x)
+	var dy: int = DeterministicMath.absi(target_y - observer_y)
 	var sx: int = 1 if observer_x < target_x else -1
 	var sy: int = 1 if observer_y < target_y else -1
 	var err: int = dx - dy
@@ -413,8 +413,8 @@ func _recompute_cover_cache() -> void:
 					var target: Resource = _tiles[ti]
 					if target != null and target.has_cover():
 						if has_los(ox, oy, tx, ty):
-							var dx: int = abs(ox - tx)
-							var dy: int = abs(oy - ty)
+							var dx: int = DeterministicMath.absi(ox - tx)
+							var dy: int = DeterministicMath.absi(oy - ty)
 							if dx == 1 and dy == 1:
 								var side1: Resource = _tiles[oy * GRID_SIZE + tx]
 								var side2: Resource = _tiles[ty * GRID_SIZE + ox]

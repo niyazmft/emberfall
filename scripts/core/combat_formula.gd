@@ -94,9 +94,9 @@ static func _direction(from_x: int, from_y: int, to_x: int, to_y: int) -> Vector
 	## Exact mirror of prototype direction() in core_mechanic_prototype.py.
 	var dx: int = to_x - from_x
 	var dy: int = to_y - from_y
-	if abs(dx) >= abs(dy):
-		return Vector2i(sign(dx), 0)
-	return Vector2i(0, sign(dy))
+	if DeterministicMath.absi(dx) >= DeterministicMath.absi(dy):
+		return Vector2i(DeterministicMath.sgn(float(dx)), 0)
+	return Vector2i(0, DeterministicMath.sgn(float(dy)))
 
 
 static func _is_backstab(attacker: Entity, defender: Entity) -> bool:
