@@ -48,7 +48,7 @@ func _exit_tree() -> void:
 
 func _on_room_entered(_room_index: int, room_data: Dictionary) -> void:
 	# Clear existing entities if any
-	for child in entity_container.get_children():
+	for child: Node in entity_container.get_children():
 		child.queue_free()
 
 	_create_enemies_node()
@@ -94,7 +94,7 @@ func _setup_turn_manager() -> void:
 		return
 
 	var enemies: Array[Node2D] = []
-	for child in _enemies_node.get_children():
+	for child: Node in _enemies_node.get_children():
 		if child is Node2D:
 			enemies.append(child)
 
