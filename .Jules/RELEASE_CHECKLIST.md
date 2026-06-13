@@ -16,7 +16,7 @@ Use this checklist before every tag-driven release. No stage may be skipped.
 
 - [ ] `project.godot` `config/version` matches the intended tag version.
 - [ ] `CHANGELOG.md` is updated for the new version.
-- [ ] Tag follows semver/prototype convention: `v{major}.{minor}.{patch}[-sprint{N}]`.
+- [ ] Tag follows semver/staging convention: `v{major}.{minor}.{patch}[-sprint{N}]`.
 
 ## 3. Build Generation
 
@@ -43,7 +43,7 @@ Use this checklist before every tag-driven release. No stage may be skipped.
 ## 6. Launch Coordination
 
 - [ ] Rollback plan prepared (instructions to delete/republish release tag).
-- [ ] Crash-rate monitoring plan in place (manual player reports acceptable for prototype).
+- [ ] Crash-rate monitoring plan in place (manual player reports acceptable for development).
 - [ ] Hotfix branch ready from latest release tag (`hotfix/vX.Y.Z`).
 - [ ] **Producer sign-off required before public announcement.**
 

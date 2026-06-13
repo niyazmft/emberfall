@@ -39,7 +39,7 @@ func _on_caption_display_requested(event: Resource) -> void:
 	if not str(event.get("localization_key")).is_empty():
 		label.text = tr(str(event.get("localization_key")))
 
-	## Styling (minimal for prototype)
+	## Styling (minimal for current version)
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 
