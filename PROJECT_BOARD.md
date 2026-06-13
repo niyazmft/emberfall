@@ -2,7 +2,7 @@
 
 **Project:** Emberfall Tactical Combat Game
 **Repository:** <https://github.com/niyazmft/emberfall>
-**Last Updated:** 2026-06-06
+**Last Updated:** 2026-06-13
 **Current Phase:** Phase 5 (Polish & Content Expansion)
 
 ---
@@ -275,6 +275,42 @@ Narrative, dialogue, localization.
 **Critical path:** #151 → #152 (dialogue before UI).
 
 ---
+
+
+### 5.7 MVP Gaps: Story & Economy (5 issues)
+
+| Task | Issue | Status | Priority | Estimate | Blocked By |
+|----|-----|------|--------|--------|----------|
+| Populate missing room JSONs (18 files to reach 12 per biome) | #294 | ⏳ Ready | P1 | 2d | None |
+| Expand narrative data: ambient narrator, biome echoes, moral outcomes | #295 | ⏳ Ready | P2 | 2d | None |
+| Populate boss room encounter data (boss_overgrown_guardian.json) | #296 | ⏳ Ready | P1 | 2d | None |
+| Replace placeholder economy data with tuned rewards and unlock tables | #297 | ⏳ Ready | P2 | 2d | None |
+| Localization expansion: add second locale (CJK or Spanish) | #298 | ⏳ Ready | P2 | 2d | None |
+
+### 5.6 Bugs & Refactoring (9 issues)
+
+| Task | Issue | Status | Priority | Estimate | Blocked By |
+|----|-----|------|--------|--------|----------|
+| CombatRoom._input() intercepts UI input — should use _unhandled_input() | #308 | ⏳ Ready | P1 | 1d | None |
+| AStarGrid uses raw get_node('GridSystem') instead of AutoloadHelper | #309 | ⏳ Ready | P1 | 1d | None |
+| Replace .call() / has_method() anti-pattern with typed interfaces | #311 | ⏳ Ready | P1 | 1d | None |
+| EntityVisualProxy uses get_node instead of @onready for ApparitionRenderer | #312 | ⏳ Ready | P1 | 1d | None |
+| LevelUpManager evaluates formulas without whitelist validation | #313 | ⏳ Ready | P1 | 1d | None |
+| Add unit tests for SaveManager, GridSystem, BurdenManager, Audio Middleware | #314 | 📋 Backlog | P2 | 1d | None |
+| FocusManager polls _process every frame instead of using signals | #315 | ⏳ Ready | P2 | 1d | None |
+| BaseEnemy syncs apparition position every frame even when stationary | #316 | ⏳ Ready | P2 | 1d | None |
+| EntityVisualProxy loads status bar scene at runtime with load() | #317 | ⏳ Ready | P2 | 1d | None |
+
+### 5.8 Playability & Infrastructure (6 issues)
+
+| Task | Issue | Status | Priority | Estimate | Blocked By |
+|----|-----|------|--------|--------|----------|
+| Title Screen → CombatRoom scene flow | #288 | ⏳ Ready | P0 | 1d | None |
+| Enable Continue button on Title Screen | #289 | ⏳ Ready | P0 | 1d | None |
+| Remove orphaned MainMenu scene | #291 | ⏳ Ready | P1 | 1d | None |
+| Create missing config placeholder files | #290 | ⏳ Ready | P1 | 1d | None |
+| Bump project version to 0.1.2 | #292 | ⏳ Ready | P1 | 1d | None |
+| Project version still shows 0.1.0-sprint1 in version_label.gd | #307 | ⏳ Ready | P2 | 1d | None |
 
 ## Infrastructure Completed (Recent)
 
