@@ -86,12 +86,17 @@ func _update_highlights() -> void:
 	_grid_renderer.clear_highlights()
 	for i: int in range(_valid_targets.size()):
 		var enemy: Node2D = _valid_targets[i]
-		var enemy_ent: RefCounted = enemy.get("entity") as RefCounted
+		var enemy_ent: Entity = null
+		if enemy is BaseEnemy:
+			enemy_ent = (enemy as BaseEnemy).entity
+		elif enemy is Keeper:
+			enemy_ent = (enemy as Keeper).entity
+
 		if enemy_ent:
 			var color: Color = Color.RED
 			if i == _target_index:
 				color = Color.YELLOW
-			_grid_renderer.highlight_tile(enemy_ent.get("x"), enemy_ent.get("y"), color)
+			_grid_renderer.highlight_tile(enemy_ent.x, enemy_ent.y, color)
 
 
 func _find_valid_targets() -> void:
@@ -99,21 +104,31 @@ func _find_valid_targets() -> void:
 	if not _player or not _enemies_node:
 		return
 
-	var player_ent: RefCounted = _player.get("entity") as RefCounted
+	var player_ent: Entity = null
+	if _player is Keeper:
+		player_ent = (_player as Keeper).entity
+	elif _player is BaseEnemy:
+		player_ent = (_player as BaseEnemy).entity
+
 	if not player_ent:
 		return
 
-	var px: int = player_ent.get("x")
-	var py: int = player_ent.get("y")
+	var px: int = player_ent.x
+	var py: int = player_ent.y
 
 	for enemy: Node in _enemies_node.get_children():
 		if not enemy is Node2D:
 			continue
 		var enemy_node: Node2D = enemy as Node2D
-		var enemy_ent: RefCounted = enemy_node.get("entity") as RefCounted
-		if enemy_ent and enemy_ent.get("hp") > 0:  # simplified alive check for stability
-			var dx: int = abs(int(enemy_ent.get("x")) - px)
-			var dy: int = abs(int(enemy_ent.get("y")) - py)
+		var enemy_ent: Entity = null
+		if enemy_node is BaseEnemy:
+			enemy_ent = (enemy_node as BaseEnemy).entity
+		elif enemy_node is Keeper:
+			enemy_ent = (enemy_node as Keeper).entity
+
+		if enemy_ent and enemy_ent.hp > 0:  # simplified alive check for stability
+			var dx: int = abs(enemy_ent.x - px)
+			var dy: int = abs(enemy_ent.y - py)
 			# Melee range: adjacent including diagonals
 			if dx <= 1 and dy <= 1 and (dx != 0 or dy != 0):
 				_valid_targets.append(enemy_node)
@@ -123,16 +138,26 @@ func _execute_attack() -> void:
 	if _target_index < 0 or _target_index >= _valid_targets.size():
 		return
 
-	var player_ent: RefCounted = _player.get("entity") as RefCounted
+	var player_ent: Entity = null
+	if _player is Keeper:
+		player_ent = (_player as Keeper).entity
+	elif _player is BaseEnemy:
+		player_ent = (_player as BaseEnemy).entity
+
 	if not player_ent:
 		return
 
 	var cost: int = CombatFormula.action_cost("attack_basic")
-	if int(player_ent.get("ap")) < cost:
+	if player_ent.ap < cost:
 		return
 
 	var target: Node2D = _valid_targets[_target_index]
-	var target_ent: RefCounted = target.get("entity") as RefCounted
+	var target_ent: Entity = null
+	if target is BaseEnemy:
+		target_ent = (target as BaseEnemy).entity
+	elif target is Keeper:
+		target_ent = (target as Keeper).entity
+
 	if not target_ent:
 		return
 
@@ -146,20 +171,24 @@ func _execute_attack() -> void:
 
 	# Calculate and apply damage
 	var damage: int = CombatFormula.compute_damage_from_entities(
-		player_ent as Entity, target_ent as Entity, cover_tiles
+		player_ent, target_ent, cover_tiles
 	)
 
 	var lifecycle: _EntityLifecycle = AutoloadHelper.entity_lifecycle()
 	if lifecycle:
-		lifecycle.apply_damage(player_ent as Entity, target_ent as Entity, damage)
-	elif target_ent is Entity:
-		(target_ent as Entity).apply_damage(damage)
+		lifecycle.apply_damage(player_ent, target_ent, damage)
+	else:
+		target_ent.apply_damage(damage)
 
 	# Consume AP
 	var new_ap: int = DeterministicMath.clampi(
-		int(player_ent.get("ap")) - cost, 0, GameConstants.AP_MAX
+		player_ent.ap - cost, 0, GameConstants.AP_MAX
 	)
-	player_ent.set("ap", new_ap)
+	player_ent.ap = new_ap
 
 	attack_executed.emit(target, damage)
 	_stop_targeting()
+
+
+func enter_targeting_mode() -> bool:
+	return _start_targeting()

@@ -25,6 +25,7 @@ const STATUS_BAR_SCENE: PackedScene = preload("res://scenes/ui/entity_status_bar
 var _target_position: Vector2
 var _grid_renderer: GridRenderer
 var _status_bar: EntityStatusBar
+var _apparition_renderer: ApparitionRenderer = null
 var _hit_flash_timer: float = 0.0
 var _hit_flash_duration: float = 0.1
 var _hit_stop_remaining: int = 0
@@ -32,17 +33,18 @@ var _damage_label_pool: Array[Label] = []
 
 ## Reference to the CombatRoom node (set by parent scene; NOT an autoload).
 ## Use export to avoid fragile /root/ lookup.
-var _combat_room: Node = null
+var _combat_room: CombatRoom = null
 
 
 func _ready() -> void:
 	if not _combat_room:
-		_combat_room = get_node_or_null("/root/CombatRoom")
+		_combat_room = get_node_or_null("/root/CombatRoom") as CombatRoom
 	if _combat_room:
-		for child: Node in _combat_room.get_children():
-			if child is GridRenderer:
-				_grid_renderer = child as GridRenderer
-				break
+		_grid_renderer = _combat_room.grid_renderer
+
+	_apparition_renderer = get_node_or_null("ApparitionRenderer") as ApparitionRenderer
+	if not _apparition_renderer and get_parent():
+		_apparition_renderer = get_parent().get_node_or_null("ApparitionRenderer") as ApparitionRenderer
 
 	if not _grid_renderer:
 		# Fallback: search the tree by type instead of string name
@@ -143,14 +145,8 @@ func _on_entity_state_changed(state: Entity.State) -> void:
 
 func _on_entity_hp_changed(new_hp: int, old_hp: int) -> void:
 	if new_hp < old_hp:
-		var app: Node = null
-		if has_node("ApparitionRenderer"):
-			app = get_node("ApparitionRenderer")
-		elif get_parent() and get_parent().has_node("ApparitionRenderer"):
-			app = get_parent().get_node("ApparitionRenderer")
-
-		if app and app.has_method("trigger_damage_effect"):
-			app.call("trigger_damage_effect")
+		if _apparition_renderer:
+			_apparition_renderer.trigger_damage_effect()
 
 	if _status_bar:
 		_status_bar.updateHp(new_hp, entity.hp_max)
@@ -240,7 +236,7 @@ func _triggerHitEffects(p_damage: int, p_damage_type: String = "PHYSICAL") -> vo
 					_hit_stop_remaining = tier.get("frames", 0)
 
 	# Screen Shake
-	if _combat_room and _combat_room.get("camera") and _combat_room.camera.has_method("add_shake"):
+	if _combat_room and _combat_room.camera and _combat_room.camera.has_method("add_shake"):
 		_combat_room.camera.call("add_shake", clampf(float(p_damage) / 20.0, 0.1, 0.5))
 
 	# Floating Text
