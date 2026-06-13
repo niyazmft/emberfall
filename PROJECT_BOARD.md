@@ -153,11 +153,11 @@ Every task in the phase tables below should have a **Priority** and **Blocked By
 **Phase 5 Goal:** Build out the full feature set beyond MVP. Add visual/audio
 feedback, tutorial, advanced content, and the full roguelike loop.
 
-**Total Open Issues:** 41 (across 5 sub-areas)
+**Total Open Issues:** 49 (across 5 sub-areas + 8 wiring gaps)
 
 ---
 
-### 5.1 Creative Assets (10 issues)
+### 5.1 Creative Assets — Original Issues (10 issues)
 
 Visual, audio, and animation assets needed for game feel.
 
@@ -176,6 +176,28 @@ Visual, audio, and animation assets needed for game feel.
 
 **Can parallelize:** Most are independent. Group 1 (shake, hit flash, damage
 numbers, health bars) forms a "combat feedback" subset that can ship together.
+
+---
+
+### 5.1b Creative Assets — Codebase Audit Wiring Issues (8 issues)
+
+**Audit Date:** 2026-06-13  
+**Auditor:** creative-assets-agent  
+**Finding:** Many Phase 5.1 tasks have scenes/scripts partially implemented but not wired into the active gameplay pipeline. These new issues bridge the gap between existing stubs and playable demo requirements.
+
+| Task | Issue | Status | Priority | Estimate | Blocked By | Notes |
+|------|-------|--------|----------|----------|------------|-------|
+| Wire EntityVisualProxy Hit Effects | #301 | ⏳ Ready | P0 | 1d | None | Existing stubs (`_triggerHitEffects`, `_spawnDamageNumber`) never called |
+| Add Scene Transition CanvasLayer | #300 | ⏳ Ready | P0 | 1.5d | None | Hard cuts between title → combat and combat → victory/defeat |
+| Create Asset Directory Structure | #302 | ⏳ Ready | P0 | 0.5d | None | `assets/` missing `sprites/`, `audio/sfx/`, `textures/`, etc. |
+| Add SFX Playback Nodes | #304 | ⏳ Ready | P0 | 1.5d | None | `AudioMiddleware` has stems but no SFX; no `AudioStreamPlayer` in combat scenes |
+| Wire TurnBanner into CombatRoom | #303 | ⏳ Ready | P1 | 0.5d | None | Scene exists but not instantiated in `CombatRoom` tree |
+| Polish EntityStatusBar Visuals | #299 | ⏳ Ready | P1 | 1d | None | Bare default styling; lerp not working; needs theme |
+| Fix Damage Number Z-Sorting | #306 | ⏳ Ready | P1 | 0.5d | None | Spawned as child of `EntityVisualProxy` instead of `EntityContainer` |
+| Polish Victory/Defeat Modals | #305 | ⏳ Ready | P1 | 1d | None | Instant appearance; no fade-in; default Godot styling |
+
+**Critical path for demo:** #302 → #304 → #301 → #300 (audio dirs → SFX nodes → hit effects wired → transitions working).
+**Can parallelize:** #303, #299, #306, #305 are independent polish items.
 
 ---
 
@@ -270,18 +292,18 @@ Outside the numbered phases, recent infrastructure work:
 
 ---
 
-## Current Sprint Status: 5.1 Creative Assets
+## Current Sprint Status: Playability Fixes + Creative Assets Wiring + Story Content
 
-**Focus:** Build the visual + audio foundation for "game feel."
+**Focus:** Resolve critical playability issues (#288-#292), wire existing creative asset stubs into active gameplay (#299-#306), and unblock story-level-agent P0 content gaps.
 
 **Parallel Work:**
 
-- **Visual feedback batch** (#185, #186, #188, #189): Combat feedback — ship together
-- **Audio infrastructure** (#190): SFX bus for the rest of the audio work
-- **Asset organization** (#194): Foundation for everything that follows
+- **Playability fixes** (#288, #289, #291, #292): Title screen → combat flow, Continue button, config files, version bump
+- **Creative Assets wiring** (#299-#306): Hit effects, transitions, asset dirs, SFX, TurnBanner, StatusBar polish, damage number Z-sort, modal theming
+- **Room library completion** (#294): Create 18 missing room JSONs (biome1 +6, biome2 +8, biome3 +8)
+- **Boss encounter data** (#295): Fill boss_overgrown_guardian.json encounter array
 
-**Next Milestone:** Tutorial Manager (#175) — unblocks onboarding for the
-minimum-viable game.
+**Next Milestone:** Demo MVP playable end-to-end with visual/audio feedback — requires #288 + #301 + #300 + #304 to ship first.
 
 ---
 
@@ -349,8 +371,11 @@ minimum-viable game.
 | 2026-06-06 | Risk tracking updated for Phase 5 |
 | 2026-06-06 | **Issue Triage Methodology added** (Priority P0/P1/P2, Size XS–XL, Status rules) |
 | 2026-06-06 | GitHub Project board backfilled with Priority + Size for all 80 issues |
+| 2026-06-13 | **Story-level-agent issues reconciled** — legacy issues #151-#179 are Done; new issues #294-#298 created for actual MVP gaps |
+| 2026-06-13 | **Codebase audit complete** — 8 new wiring issues found (#293-#297 + #299-#306) for demo playability |
+| 2026-06-13 | **Agent task boards created** — `.agents/*/TASK_BOARD.md` for all 3 agents |
 
 ---
 
-*Last Updated: 2026-06-06*
-*Next Review: When 5.1 Creative Assets completes (~2-3 weeks)*
+*Last Updated: 2026-06-13*
+*Next Review: After playability fixes ship (#288, #289, #294, #296)*

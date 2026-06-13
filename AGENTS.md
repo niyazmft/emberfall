@@ -588,7 +588,10 @@ gh project field-list 1 --owner niyazmft --format json
 - **Setup Script:** `tools/setup_hooks.sh`
 - **Full Validation:** `tools/pre_push_check.sh`
 - **Tests:** `tests/` directory
-- **Jules Protocol:** `docs/JULES_PROTOCOL.md`
-- **Jules QA Checklist:** `docs/JULES_QA_CHECKLIST.md`
-- **Learnings:** `.Jules/bolt.md`, `.Jules/palette.md` (create `integrations.md` and `gotchas.md` as new topics emerge)
+- **Jules Protocol:** `.Jules/JULES_PROTOCOL.md`
+- **Jules QA Checklist:** `.Jules/JULES_QA_CHECKLIST.md`
+- **Release Checklist:** `.Jules/RELEASE_CHECKLIST.md`
+- **Learnings:** `.Jules/bolt.md`, `.Jules/palette.md`, `.Jules/integrations.md`, `.Jules/gotchas.md`
 - **Config:** `config/game_config.json`
+- **Apparition Specs:** `docs/apparition_animation_lead_notes.md`, `docs/apparition_composite_spec.md`, `docs/apparition_material_pipeline.md`
+- **Shader Budget:** `docs/SHADER_BUDGET_DON-253.md`
