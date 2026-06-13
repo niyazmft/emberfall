@@ -15,7 +15,7 @@ unlock proper lighting capabilities.
 
 ---
 
-## 2026-06-13 - Local task boards can be stale; always verify against GitHub before creating issues
+## 2026-06-13 - Verify against GitHub before creating issues
 
 **Learning:** `AGENT_ASSIGNMENTS.md` and `PROJECT_BOARD.md` listed issues #151-#179 as current tasks for story-level-agent. When cross-checked against the GitHub API, every single one of those issues was already **CLOSED** (completed in past sprints). Acting on the local boards alone would have led to duplicate issue creation and wasted effort.
 

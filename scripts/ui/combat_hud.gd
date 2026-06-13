@@ -153,30 +153,22 @@ func _on_targeting_started() -> void:
 
 func _on_attack_executed(target: Node2D, damage: int) -> void:
 	var target_name: String = "Enemy"
-	if target.has_method("get_entity_name"):
-		target_name = target.call("get_entity_name")
-	elif target.get("entity"):
-		target_name = target.get("entity").entity_name
+	if target is BaseEnemy:
+		target_name = (target as BaseEnemy).entity.name
+	elif target.get("entity") and target.get("entity") is Entity:
+		target_name = (target.get("entity") as Entity).name
 
 	_log_from_config("damage_dealt", [damage, target_name])
 
 
 func _on_move_pressed() -> void:
-	if _combat_input:
-		if _combat_input.has_method("on_move_pressed"):
-			_combat_input.call("on_move_pressed")
-		elif _combat_input.has_method("_on_move_pressed"):
-			_combat_input.call("_on_move_pressed")
+	# Not implemented
+	pass
 
 
 func _on_attack_pressed() -> void:
 	if _combat_input:
-		# Use public signal-triggering method if it exists,
-		# otherwise we must use the internal one for now.
-		if _combat_input.has_method("enter_targeting_mode"):
-			_combat_input.call("enter_targeting_mode")
-		elif _combat_input.has_method("_start_targeting"):
-			_combat_input.call("_start_targeting")
+		_combat_input.enter_targeting_mode()
 
 
 func _on_end_turn_pressed() -> void:

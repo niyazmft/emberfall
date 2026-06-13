@@ -15,7 +15,7 @@ var current_state: State = State.IDLE
 var _player: Node2D
 var _enemies_node: Node2D
 var _grid_renderer: GridRenderer
-var _grid_system: Node
+var _grid_system: _GridSystem
 var _valid_targets: Array[Node2D] = []
 var _target_index: int = -1
 
@@ -139,21 +139,21 @@ func _execute_attack() -> void:
 	# Gather cover tiles for damage formula
 	var cover_tiles: Array[Vector2i] = []
 	if _grid_system:
-		var all_tiles: Array = _grid_system.call("all_tiles")
-		for tile: Resource in all_tiles:
-			if tile.has_method("has_cover") and tile.call("has_cover"):
-				cover_tiles.append(tile.get("coords"))
+		var all_tiles: Array[TacTileData] = _grid_system.all_tiles()
+		for tile: TacTileData in all_tiles:
+			if tile.has_cover():
+				cover_tiles.append(tile.coords)
 
 	# Calculate and apply damage
 	var damage: int = CombatFormula.compute_damage_from_entities(
 		player_ent as Entity, target_ent as Entity, cover_tiles
 	)
 
-	var lifecycle: Node = AutoloadHelper.entity_lifecycle()
+	var lifecycle: _EntityLifecycle = AutoloadHelper.entity_lifecycle()
 	if lifecycle:
-		lifecycle.call("apply_damage", player_ent, target_ent, damage)
-	else:
-		target_ent.call("apply_damage", damage)
+		lifecycle.apply_damage(player_ent as Entity, target_ent as Entity, damage)
+	elif target_ent is Entity:
+		(target_ent as Entity).apply_damage(damage)
 
 	# Consume AP
 	var new_ap: int = DeterministicMath.clampi(
