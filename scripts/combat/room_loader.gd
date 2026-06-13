@@ -119,7 +119,7 @@ static func _assign_default_positions(room_data: Dictionary, p_seed: int) -> voi
 
 		while positions.size() < target_count:
 			var found := false
-			for attempt: int in range(200):
+			for attempt in range(200):
 				var rx := rng.randi_range(0, 11)
 				var ry := rng.randi_range(0, 11)
 				var rpos := Vector2i(rx, ry)
@@ -143,7 +143,7 @@ static func _assign_default_positions(room_data: Dictionary, p_seed: int) -> voi
 				break
 			if not found:
 				# Last resort: just pick first available
-				for idx: int in range(144):
+				for idx in range(144):
 					var rx := idx % 12
 					var ry := idx / 12
 					var rpos := Vector2i(rx, ry)
