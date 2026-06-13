@@ -25,8 +25,68 @@ import hashlib, json, math, random, sys, os
 HERE: str = os.path.dirname(os.path.abspath(__file__))
 REPO_ROOT: str = os.path.join(HERE, "..")
 
-sys.path.insert(0, os.path.join(REPO_ROOT, "prototype"))
-from core_mechanic_prototype import Entity, position_modifier, compute_damage, dist
+# NOTE: prototype/ directory removed; Entity and helper functions inlined below
+# to keep this validation script self-contained.
+
+# ── Inline Prototype Helpers (prototype/ removed in repo cleanup) ──
+class Entity:
+    """Minimal Entity mirror from removed prototype/core_mechanic_prototype.py"""
+    def __init__(self, name: str, x: int, y: int, hp: int, off: int, def_: int, facing: tuple = (1, 0), elevation: int = 0):
+        self.name: str = name
+        self.x: int = x
+        self.y: int = y
+        self.hp: int = hp
+        self.off: int = off
+        self.def_: int = def_
+        self.facing: tuple = facing
+        self.elevation: int = elevation
+
+
+def _direction(from_x: int, from_y: int, to_x: int, to_y: int) -> tuple:
+    dx = to_x - from_x
+    dy = to_y - from_y
+    if abs(dx) >= abs(dy):
+        return (1 if dx > 0 else -1 if dx < 0 else 0, 0)
+    return (0, 1 if dy > 0 else -1 if dy < 0 else 0)
+
+
+def _is_backstab(attacker: Entity, defender: Entity) -> bool:
+    atk_vec = _direction(attacker.x, attacker.y, defender.x, defender.y)
+    def_facing = defender.facing
+    dot = atk_vec[0] * def_facing[0] + atk_vec[1] * def_facing[1]
+    return dot < -0.7
+
+
+def position_modifier(attacker: Entity, defender: Entity, cover_tiles: set) -> float:
+    """Mirror of prototype position_modifier() for validation."""
+    modifier: float = 1.0
+    if _is_backstab(attacker, defender):
+        modifier += BACKSTAB_BONUS
+    elev_diff: int = attacker.elevation - defender.elevation
+    if elev_diff >= 2:
+        modifier += ELEVATION_BONUS_TIER_2
+    elif elev_diff >= 1:
+        modifier += ELEVATION_BONUS_TIER_1
+    elif elev_diff <= -2:
+        modifier -= ELEVATION_BONUS_TIER_2
+    elif elev_diff <= -1:
+        modifier -= ELEVATION_BONUS_TIER_1
+    if (defender.x, defender.y) in cover_tiles:
+        modifier -= LIGHT_COVER_PENALTY
+    return clampf(modifier, POSITION_MODIFIER_MIN, POSITION_MODIFIER_MAX)
+
+
+def dist(x1: int, y1: int, x2: int, y2: int) -> float:
+    return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+
+
+def compute_damage(attacker: Entity, defender: Entity, cover_tiles: set) -> tuple:
+    """Mirror of prototype compute_damage() for validation."""
+    raw: float = float(D_BASE + attacker.off - defender.def_)
+    raw *= position_modifier(attacker, defender, cover_tiles)
+    dmg: int = damage_floor(raw)
+    return dmg, raw
+
 
 # ── Constants (mirror GameConstants) ───────────────────────────────
 GOLDEN_SEED: int = 0xDEADBEEF
@@ -116,22 +176,6 @@ def compute_damage_gd(
     raw *= elemental_modifier
     raw *= (1.0 + memory_synergy)
     return damage_floor(raw)
-
-
-def _direction(from_x: int, from_y: int, to_x: int, to_y: int):
-    dx = to_x - from_x
-    dy = to_y - from_y
-    if abs(dx) >= abs(dy):
-        return (1 if dx > 0 else -1 if dx < 0 else 0, 0)
-    return (0, 1 if dy > 0 else -1 if dy < 0 else 0)
-
-
-def _is_backstab(attacker: Entity, defender: Entity) -> bool:
-    """Mirror of prototype position_modifier backstab check."""
-    atk_vec = _direction(attacker.x, attacker.y, defender.x, defender.y)
-    def_facing = defender.facing
-    dot = atk_vec[0] * def_facing[0] + atk_vec[1] * def_facing[1]
-    return dot < -0.7
 
 
 def calculate_position_modifier_proto(attacker: Entity, defender: Entity, cover_tiles: set) -> float:

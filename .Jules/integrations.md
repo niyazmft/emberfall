@@ -15,4 +15,12 @@ unlock proper lighting capabilities.
 
 ---
 
+## 2026-06-13 - Local task boards can be stale; always verify against GitHub before creating issues
+
+**Learning:** `AGENT_ASSIGNMENTS.md` and `PROJECT_BOARD.md` listed issues #151-#179 as current tasks for story-level-agent. When cross-checked against the GitHub API, every single one of those issues was already **CLOSED** (completed in past sprints). Acting on the local boards alone would have led to duplicate issue creation and wasted effort.
+
+**Action:** Before creating new issues or scheduling sprints, always run `gh issue list --state all --json number,title,state` to cross-check the actual GitHub state against local board entries. If the local board references issues that are closed on GitHub, reconcile immediately — mark them as Done locally and identify the actual remaining gaps before creating new issues.
+
+---
+
 *Append-only file. Newest entries go at the bottom.*

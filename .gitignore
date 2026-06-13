@@ -33,3 +33,16 @@ __pycache__/
 # agents Skills
 .agents/
 skills-lock.json
+
+# Local GitHub issue drafts (issues live on GitHub, not in repo)
+.github/issues/
+
+# Addon structural files (tracked explicitly below)
+!addons/**/*.uid
+!addons/**/*.gd
+!addons/**/*.tscn
+!addons/**/*.tres
+
+# Addon local cache (ignored)
+addons/**/.config/
+addons/**/.data/
