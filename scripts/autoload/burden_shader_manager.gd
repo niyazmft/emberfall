@@ -90,6 +90,13 @@ func register_pp_rect(rect: ColorRect) -> void:
 		_pp_rect.visible = BurdenManager.burden_active
 
 
+## Stub for color-vision-deficiency (CVD) simulation mode.
+## Currently a no-op placeholder; will be implemented when the shader pipeline
+## supports daltonism simulation (DON-263 follow-up).
+func set_cvd_mode(mode: int) -> void:
+	_print_debug("CVD mode set to %d (stub — shader pipeline not yet implemented)" % mode)
+
+
 func _print_debug(msg: String) -> void:
 	if OS.is_debug_build():
 		print("BurdenShaderManager: %s" % msg)

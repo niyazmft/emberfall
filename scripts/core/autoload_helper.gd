@@ -78,9 +78,14 @@ static func grid_system() -> _GridSystem:
 	return get_autoload("GridSystem") as _GridSystem
 
 
+## Returns the BurdenShaderManager autoload, or null.
+static func burden_shader_manager() -> _BurdenShaderManager:
+	return get_autoload("BurdenShaderManager") as _BurdenShaderManager
+
+
 ## Returns the InventoryManager autoload, or null.
-static func inventory_manager() -> Node:
-	return get_autoload("InventoryManager")
+static func inventory_manager() -> _InventoryManager:
+	return get_autoload("InventoryManager") as _InventoryManager
 
 
 ## Returns the SettingsManager autoload, or null.

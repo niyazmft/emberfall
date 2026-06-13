@@ -40,7 +40,7 @@ func _setup_pp_rect() -> void:
 
 	add_child(_pp_rect)
 
-	var bsm: Node = get_node_or_null("/root/BurdenShaderManager")
+	var bsm: _BurdenShaderManager = AutoloadHelper.burden_shader_manager()
 	if bsm and bsm.has_method("register_pp_rect"):
 		bsm.call("register_pp_rect", _pp_rect)
 

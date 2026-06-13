@@ -45,6 +45,14 @@ static func modulo_from_seed(seed: int, salt: String, modulus: int) -> int:
 	return mod
 
 
+static func fract_from_seed(seed: int) -> float:
+	## Returns a deterministic float in [0.0, 1.0) derived from seed.
+	## Uses hash_int with a fixed salt, normalized by the 63-bit max.
+	const MAX_63: float = float(0x7FFFFFFFFFFFFFFF)
+	var h: int = hash_int(seed, "FRACT")
+	return float(h) / MAX_63
+
+
 # ── Room & Encounter Generation ──────────────────────────────────
 static func seed_room_topology(seed: int, room_index: int, template_count: int) -> int:
 	## §6.2: seed_room_topology(K) = hash(seed + "TOPO" + K) mod N_TEMPLATES
