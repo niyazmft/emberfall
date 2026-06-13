@@ -1,5 +1,6 @@
 extends GdUnitTestSuite
 
+
 func test_get_value_with_fallbacks() -> void:
 	var cl: _ConfigLoader = ConfigLoader
 
@@ -10,6 +11,7 @@ func test_get_value_with_fallbacks() -> void:
 
 	# Value that doesn't exist anywhere
 	assert_that(cl.getValue("NON_EXISTENT", "", 999)).is_equal(999)
+
 
 func test_typed_getters() -> void:
 	var cl: _ConfigLoader = ConfigLoader
@@ -24,6 +26,7 @@ func test_typed_getters() -> void:
 
 	# String getter
 	assert_str(cl.getString("AP_MAX", "fallback")).is_equal("fallback")
+
 
 func test_is_loaded() -> void:
 	var cl: _ConfigLoader = ConfigLoader
