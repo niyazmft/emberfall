@@ -114,7 +114,7 @@ static func validate_golden_seed() -> bool:
 	var h1: int = SeedGovernance.hash_int(golden, "TEST")
 	ok = ok and (h1 == SeedGovernance.hash_int(golden, "TEST"))
 
-	# Floor tests from prototype edge case bank
+	# Floor tests from validated edge case bank
 	ok = ok and (floori(14.0) == 14)
 	ok = ok and (floori(17.5) == 17)
 	ok = ok and (floori(21.7) == 21)
