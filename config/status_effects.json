@@ -1,0 +1,34 @@
+{
+  "status_effects": {
+    "_description": "Status effect definitions for Emberfall combat.",
+    "poison": {
+      "id": "poison",
+      "name_key": "STATUS_POISON_NAME",
+      "description_key": "STATUS_POISON_DESC",
+      "duration_turns": 3,
+      "tick_damage": 5,
+      "stackable": true,
+      "max_stacks": 5,
+      "icon": "res://assets/icons/status_poison.png"
+    },
+    "stun": {
+      "id": "stun",
+      "name_key": "STATUS_STUN_NAME",
+      "description_key": "STATUS_STUN_DESC",
+      "duration_turns": 1,
+      "stackable": false,
+      "max_stacks": 1,
+      "icon": "res://assets/icons/status_stun.png"
+    },
+    "armor_up": {
+      "id": "armor_up",
+      "name_key": "STATUS_ARMOR_UP_NAME",
+      "description_key": "STATUS_ARMOR_UP_DESC",
+      "duration_turns": 2,
+      "def_bonus": 4,
+      "stackable": true,
+      "max_stacks": 3,
+      "icon": "res://assets/icons/status_armor.png"
+    }
+  }
+}

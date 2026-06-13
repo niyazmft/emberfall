@@ -1,0 +1,34 @@
+{
+  "grid_visuals": {
+    "_description": "Grid highlight colors and pulse styles.",
+    "highlights": {
+      "move": {
+        "color": "#4A90D9",
+        "alpha": 0.35,
+        "pulse": {
+          "min_alpha": 0.25,
+          "max_alpha": 0.45,
+          "speed": 1.5
+        }
+      },
+      "attack": {
+        "color": "#D94A4A",
+        "alpha": 0.40,
+        "pulse": {
+          "min_alpha": 0.30,
+          "max_alpha": 0.50,
+          "speed": 2.0
+        }
+      },
+      "select": {
+        "color": "#FFFFFF",
+        "alpha": 0.50,
+        "pulse": {
+          "min_alpha": 0.40,
+          "max_alpha": 0.60,
+          "speed": 1.0
+        }
+      }
+    }
+  }
+}

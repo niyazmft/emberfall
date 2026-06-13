@@ -1,0 +1,14 @@
+{
+  "encounter_scaler": {
+    "_description": "Deterministic encounter scaling per room index.",
+    "hp_mult_base": 1.0,
+    "hp_mult_per_room": 0.05,
+    "off_mult_base": 1.0,
+    "off_mult_per_room": 0.03,
+    "def_mult_base": 1.0,
+    "def_mult_per_room": 0.02,
+    "elite_chance_base": 0.0,
+    "elite_chance_per_room": 0.02,
+    "elite_chance_max": 0.35
+  }
+}
