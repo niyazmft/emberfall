@@ -126,13 +126,22 @@ func _process_current_state() -> void:
 			_isProcessingState = false
 
 
+func _is_actor_alive(actor: Node2D) -> bool:
+	if not is_instance_valid(actor):
+		return false
+	var ent: Variant = actor.get("entity")
+	if ent is Entity:
+		return (ent as Entity).hp > 0
+	return false
+
+
 func _calculate_initiative() -> void:
 	turn_order.clear()
-	if is_instance_valid(_player) and _player.has_method("alive") and _player.call("alive"):
+	if _is_actor_alive(_player):
 		turn_order.append(_player)
 
 	for enemy: Node2D in _enemies:
-		if is_instance_valid(enemy) and enemy.has_method("alive") and enemy.call("alive"):
+		if _is_actor_alive(enemy):
 			turn_order.append(enemy)
 
 	turn_order.sort_custom(
@@ -153,11 +162,7 @@ func _start_next_turn_logic() -> void:
 		return
 
 	var current_actor: Node2D = turn_order[current_turn_index]
-	if (
-		not is_instance_valid(current_actor)
-		or not current_actor.has_method("alive")
-		or not current_actor.call("alive")
-	):
+	if not _is_actor_alive(current_actor):
 		_advance_turn_logic()
 		return
 
@@ -212,12 +217,10 @@ func _regen_current_actor_ap() -> void:
 
 
 func _is_combat_over() -> bool:
-	var player_alive: bool = (
-		is_instance_valid(_player) and _player.has_method("alive") and _player.call("alive")
-	)
+	var player_alive: bool = _is_actor_alive(_player)
 	var enemies_alive: bool = false
 	for enemy: Node2D in _enemies:
-		if is_instance_valid(enemy) and enemy.has_method("alive") and enemy.call("alive"):
+		if _is_actor_alive(enemy):
 			enemies_alive = true
 			break
 

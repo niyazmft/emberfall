@@ -13,12 +13,15 @@ extends Node2D
 
 var _grid_system: _GridSystem
 var _combat_system: Node  ## Placeholder for future combat system
+var _apparition_renderer: Node = null
 
 
 func _ready() -> void:
 	add_to_group("enemies")
 	if _grid_system == null:
 		_grid_system = AutoloadHelper.grid_system()
+
+	_apparition_renderer = get_node_or_null("ApparitionRenderer")
 
 	# In Godot, properties are set BEFORE _ready().
 	# So archetype_id should already be what was set in _init() or in the inspector.
@@ -29,13 +32,14 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	# Sync apparition position to the visual proxy's position (which interpolates)
-	if has_node("ApparitionRenderer"):
-		var renderer: Node = get_node("ApparitionRenderer")
-		if renderer.has_method("sync_to_owner"):
-			if visual_proxy:
-				renderer.call("sync_to_owner", visual_proxy.global_position)
-			else:
-				renderer.call("sync_to_owner", global_position)
+	if _apparition_renderer == null:
+		_apparition_renderer = get_node_or_null("ApparitionRenderer")
+
+	if _apparition_renderer != null and _apparition_renderer.has_method("sync_to_owner"):
+		if visual_proxy:
+			_apparition_renderer.call("sync_to_owner", visual_proxy.global_position)
+		else:
+			_apparition_renderer.call("sync_to_owner", global_position)
 
 
 func _setup_entity() -> void:
@@ -266,10 +270,11 @@ func apply_damage(damage: int, attacker: Entity = null) -> void:
 
 	## Trigger visual effect
 	## NOTE: ApparitionRenderer is not fully implemented yet. Use a safe fallback check.
-	if has_node("ApparitionRenderer"):
-		var renderer: Node = get_node("ApparitionRenderer")
-		if renderer.has_method("trigger_damage_effect"):
-			renderer.call("trigger_damage_effect")
+	if _apparition_renderer == null:
+		_apparition_renderer = get_node_or_null("ApparitionRenderer")
+
+	if _apparition_renderer != null and _apparition_renderer.has_method("trigger_damage_effect"):
+		_apparition_renderer.call("trigger_damage_effect")
 
 
 func alive() -> bool:

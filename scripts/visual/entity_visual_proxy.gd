@@ -5,6 +5,8 @@ extends Node2D
 ## Bridges Entity data to visual representation.
 ## Handles: positioning, elevation, facing direction, state effects.
 
+const STATUS_BAR_SCENE: PackedScene = preload("res://scenes/ui/entity_status_bar.tscn")
+
 @export var entity: Entity:
 	set(p_value):
 		if entity != p_value:
@@ -26,6 +28,7 @@ var _status_bar: EntityStatusBar
 var _hit_flash_timer: float = 0.0
 var _hit_flash_duration: float = 0.1
 var _hit_stop_remaining: int = 0
+var _damage_label_pool: Array[Label] = []
 
 ## Reference to the CombatRoom node (set by parent scene; NOT an autoload).
 ## Use export to avoid fragile /root/ lookup.
@@ -208,9 +211,8 @@ func grid_to_world(p_x: int, p_y: int, p_elevation: int) -> Vector2:
 
 
 func _setupStatusBar() -> void:
-	var bar_scene: PackedScene = load("res://scenes/ui/entity_status_bar.tscn")
-	if bar_scene:
-		_status_bar = bar_scene.instantiate() as EntityStatusBar
+	if STATUS_BAR_SCENE:
+		_status_bar = STATUS_BAR_SCENE.instantiate() as EntityStatusBar
 		add_child(_status_bar)
 		_status_bar.position = Vector2(-32, -60)  # Position above entity
 		if entity:
@@ -261,16 +263,26 @@ func _spawnDamageNumber(p_damage: int, p_damage_type: String) -> void:
 			if offset_arr is Array and offset_arr.size() >= 2:
 				offset_vec = Vector2(float(offset_arr[0]), float(offset_arr[1]))
 
-	var label: Label = Label.new()
+	var label: Label
+	if _damage_label_pool.is_empty():
+		label = Label.new()
+		add_child(label)
+	else:
+		label = _damage_label_pool.pop_back()
+
 	label.text = str(p_damage)
 	label.modulate = color
-	add_child(label)
 	label.position = offset_vec
+	label.visible = true
 
 	var tween: Tween = create_tween()
 	tween.tween_property(label, "position", label.position + Vector2(0, -20), duration)
 	tween.parallel().tween_property(label, "modulate:a", 0.0, duration)
-	tween.tween_callback(label.queue_free)
+	tween.tween_callback(
+		func() -> void:
+			label.visible = false
+			_damage_label_pool.append(label)
+	)
 
 
 func _setup_greybox() -> void:

@@ -16,7 +16,7 @@ Google Jules is an autonomous coding agent used to offload programming-heavy tas
 4. **No Core Interface Changes**: Modifications to core system signatures (e.g., `CombatFormula`, `DeterministicMath`, `SeedGovernance`, `Entity` base classes) are prohibited for Jules. Such changes require Technical Director (TD) pre-approval.
 5. **Release Manager Gate**: The **Release Manager (RM)** or **Technical Director (TD)** are the sole authorities for applying and removing the `jules` label.
 6. **Concurrent Limit**: A maximum of **3 concurrent Jules PRs** are allowed at any given time to prevent merge-conflict "storms".
-7. **QA Validation Required**: All Jules-generated PRs must pass the mandatory validation checklist in `docs/JULES_QA_CHECKLIST.md` before merging.
+7. **QA Validation Required**: All Jules-generated PRs must pass the mandatory validation checklist in `.Jules/JULES_QA_CHECKLIST.md` before merging.
 
 ## Procedure for Applying Label
 
