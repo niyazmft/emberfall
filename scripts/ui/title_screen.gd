@@ -17,10 +17,16 @@ func _ready() -> void:
 	settings_btn.text = tr("menu.title.settings")
 	quit_btn.text = tr("menu.title.quit")
 
-	# Initial state
-	continue_btn.disabled = true
+	# Enable Continue if a save exists
+	var save_manager: _SaveManager = AutoloadHelper.save_manager()
+	if save_manager != null and save_manager.has_save():
+		continue_btn.disabled = false
+	else:
+		continue_btn.disabled = true
 
 	# Connect signals
+	if not continue_btn.disabled:
+		continue_btn.pressed.connect(_on_continue_pressed)
 	new_game_btn.pressed.connect(_on_new_game_pressed)
 	settings_btn.pressed.connect(_on_settings_pressed)
 	quit_btn.pressed.connect(_on_quit_pressed)
@@ -32,11 +38,16 @@ func _ready() -> void:
 	# Setup dynamic vertical wrap-around focus
 	_setup_focus_wrap()
 
-	# Initial focus
-	new_game_btn.grab_focus.call_deferred()
+	# Initial focus: Continue if enabled, otherwise New Game
+	if not continue_btn.disabled:
+		continue_btn.grab_focus.call_deferred()
+	else:
+		new_game_btn.grab_focus.call_deferred()
 
 
 func _exit_tree() -> void:
+	if continue_btn and continue_btn.pressed.is_connected(_on_continue_pressed):
+		continue_btn.pressed.disconnect(_on_continue_pressed)
 	if new_game_btn and new_game_btn.pressed.is_connected(_on_new_game_pressed):
 		new_game_btn.pressed.disconnect(_on_new_game_pressed)
 	if settings_btn and settings_btn.pressed.is_connected(_on_settings_pressed):
@@ -64,9 +75,33 @@ func _setup_focus_wrap() -> void:
 
 
 func _on_new_game_pressed() -> void:
-	# For now just print, as actual game start logic depends on other systems
 	_print_debug("New Game pressed")
-	get_tree().change_scene_to_file("res://scenes/main.tscn")
+	var run_manager: _RunManager = AutoloadHelper.run_manager()
+	if run_manager != null:
+		run_manager.cmd_start_run()
+		# Delete existing save so Continue doesn't re-offer it on a fresh run
+		var save_manager: _SaveManager = AutoloadHelper.save_manager()
+		if save_manager != null:
+			save_manager.delete_save()
+	get_tree().change_scene_to_file("res://scenes/combat_room.tscn")
+
+
+func _on_continue_pressed() -> void:
+	_print_debug("Continue pressed")
+	var save_manager: _SaveManager = AutoloadHelper.save_manager()
+	if save_manager == null:
+		push_error("TitleScreen: SaveManager not available for Continue.")
+		return
+	var data: Dictionary = save_manager.load_game()
+	if data.is_empty():
+		push_warning("TitleScreen: Continue pressed but no valid save found.")
+		return
+	var run_manager: _RunManager = AutoloadHelper.run_manager()
+	if run_manager != null and data.has("run_state"):
+		run_manager.load_run_state(data["run_state"])
+		get_tree().change_scene_to_file("res://scenes/combat_room.tscn")
+	else:
+		push_warning("TitleScreen: No run_state in save data.")
 
 
 func _on_settings_pressed() -> void:

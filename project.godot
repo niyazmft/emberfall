@@ -4,7 +4,7 @@
 
 [application]
 config/name="Emberfall"
-config/version="0.1.0-sprint1"
+config/version="0.1.2"
 config/description="Tactical grid combat with deterministic AP economy"
 config/icon="res://assets/icons/icon.png"
 run/main_scene="res://scenes/title_screen.tscn"

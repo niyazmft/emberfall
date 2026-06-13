@@ -1,0 +1,19 @@
+{
+  "rewards": {
+    "_description": "Combat reward tables and drop chances.",
+    "defeat_reward": {
+      "shards_min": 5,
+      "shards_max": 15,
+      "xp_min": 10,
+      "xp_max": 30
+    },
+    "victory_reward": {
+      "shards_min": 20,
+      "shards_max": 50,
+      "xp_min": 50,
+      "xp_max": 150
+    },
+    "elite_bonus_mult": 1.5,
+    "boss_bonus_mult": 3.0
+  }
+}
