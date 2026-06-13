@@ -162,7 +162,7 @@ func _setup_camera() -> void:
 
 
 func _input(event: InputEvent) -> void:
-	if _turn_manager.current_state != TurnManager.CombatState.PLAYER_TURN:
+	if _turn_manager == null or _turn_manager.current_state != TurnManager.CombatState.PLAYER_TURN:
 		return
 
 	# Delegate to combat input handler
