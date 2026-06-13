@@ -276,7 +276,6 @@ Narrative, dialogue, localization.
 
 ---
 
-
 ### 5.7 MVP Gaps: Story & Economy (5 issues)
 
 | Task | Issue | Status | Priority | Estimate | Blocked By |
@@ -291,15 +290,15 @@ Narrative, dialogue, localization.
 
 | Task | Issue | Status | Priority | Estimate | Blocked By |
 |----|-----|------|--------|--------|----------|
-| CombatRoom._input() intercepts UI input — should use _unhandled_input() | #308 | ⏳ Ready | P1 | 1d | None |
-| AStarGrid uses raw get_node('GridSystem') instead of AutoloadHelper | #309 | ⏳ Ready | P1 | 1d | None |
-| Replace .call() / has_method() anti-pattern with typed interfaces | #311 | ⏳ Ready | P1 | 1d | None |
-| EntityVisualProxy uses get_node instead of @onready for ApparitionRenderer | #312 | ⏳ Ready | P1 | 1d | None |
-| LevelUpManager evaluates formulas without whitelist validation | #313 | ⏳ Ready | P1 | 1d | None |
-| Add unit tests for SaveManager, GridSystem, BurdenManager, Audio Middleware | #314 | 📋 Backlog | P2 | 1d | None |
-| FocusManager polls _process every frame instead of using signals | #315 | ⏳ Ready | P2 | 1d | None |
-| BaseEnemy syncs apparition position every frame even when stationary | #316 | ⏳ Ready | P2 | 1d | None |
-| EntityVisualProxy loads status bar scene at runtime with load() | #317 | ⏳ Ready | P2 | 1d | None |
+| `CombatRoom._input()` intercepts UI input — should use `_unhandled_input()` | #308 | ⏳ Ready | P1 | 1d | None |
+| `AStarGrid` uses raw `get_node('GridSystem')` instead of `AutoloadHelper` | #309 | ⏳ Ready | P1 | 1d | None |
+| Replace `.call()` / `has_method()` anti-pattern with typed interfaces | #311 | ⏳ Ready | P1 | 1d | None |
+| `EntityVisualProxy` uses `get_node` instead of `@onready` for `ApparitionRenderer` | #312 | ⏳ Ready | P1 | 1d | None |
+| `LevelUpManager` evaluates formulas without whitelist validation | #313 | ⏳ Ready | P1 | 1d | None |
+| Add unit tests for `SaveManager`, `GridSystem`, `BurdenManager`, `AudioMiddleware` | #314 | 📋 Backlog | P2 | 1d | None |
+| `FocusManager` polls `_process` every frame instead of using signals | #315 | ⏳ Ready | P2 | 1d | None |
+| `BaseEnemy` syncs apparition position every frame even when stationary | #316 | ⏳ Ready | P2 | 1d | None |
+| `EntityVisualProxy` loads status bar scene at runtime with `load()` | #317 | ⏳ Ready | P2 | 1d | None |
 
 ### 5.8 Playability & Infrastructure (6 issues)
 
