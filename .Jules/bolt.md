@@ -27,3 +27,21 @@
 **Learning:** Caching dictionary lookups (e.g. `config.get("key", {})`) inside `_process` prevents per-frame allocations and dictionary hashing overhead.
 
 **Action:** Extract nested config properties to cached variables populated at init-time for frequently executing methods like `_process`.
+
+## 2026-06-04 - Callable.bind() creates unique instances
+
+**Learning:** In Godot 4, `Callable.bind()` returns a new `Callable` object each time it is called. Using `.bind()` directly in `connect()` and then trying to `disconnect()` with a new `.bind()` call will fail to find the original connection.
+
+**Action:** Store the result of `.bind()` in a member variable or dictionary if you need to disconnect it later, specifically in `_exit_tree()` to avoid signal leakage.
+
+## 2026-06-10 - DeterministicMath is a static utility
+
+**Learning:** `DeterministicMath` is defined as a global `class_name` that does not extend `Node`. It is a pure static utility and should never be added to the scene tree or instantiated as a node.
+
+**Action:** Accessed `DeterministicMath` methods directly via the class name instead of attempting to use `get_node()` or `instance()`.
+
+## 2026-06-11 - RunManager room data encapsulation
+
+**Learning:** To maintain proper encapsulation, the `RunManager` should expose room metadata via a public `get_current_room_data()` method instead of internal private variables, ensuring combat modules have a stable API for environment state.
+
+**Action:** Refactored `CombatRoom` and `RoomLoader` to use the new public `get_current_room_data()` method.
