@@ -99,7 +99,6 @@ emberfall/
 ├── config/              # JSON-driven tunable constants
 ├── localization/        # CSV + compiled .translation files (EN/DE/ES/FR)
 ├── schemas/             # JSON schema validation files
-├── prototype/           # Throwaway Python research — see below
 └── tests/
     └── benchmark/       # Performance benchmarks (not in CI)
 ```
@@ -112,24 +111,6 @@ emberfall/
   integers via SHA-256 → truncation
 - **Cross-Platform:** Validation script mirrors GDScript logic in Python;
   both must agree bit-for-bit
-
-## Prototype Archive
-
-The `prototype/` directory contains **throwaway Python research scripts** used
-during pre-production (DON-1). They validated the core AP-economy and
-grid-positioning formulas before porting to GDScript.
-
-> **Do not carry code forward from `prototype/` into production.** All findings
-> are documented in [`prototype/FINDINGS.md`](prototype/FINDINGS.md). The
-> Python scripts have served their purpose and exist only as a reference audit
-> trail.
-
-| File | Purpose |
-|------|---------|
-| `core_mechanic_prototype.py` | Playable terminal prototype (AP economy + positioning) |
-| `grid_system.py` | Python grid/pathfinding reference implementation |
-| `batch_simulation.py` | Quantitative scenario runner |
-| `FINDINGS.md` | Full prototype report with results and recommendations |
 
 ## Roadmap
 

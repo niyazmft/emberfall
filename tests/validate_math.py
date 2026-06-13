@@ -5,8 +5,7 @@ Issue: DON-31 A1
 
 This script replicates the GDScript Tier-1 math functions in Python and
 compares them against:
-  1. The Python prototype (`prototype/core_mechanic_prototype.py`) for 100
-     edge-case scenarios seeded by golden seed 0xDEADBEEF.
+  1. Reference edge-case scenarios seeded by golden seed 0xDEADBEEF.
   2. SHA-256 hash outputs to ensure they match the Godot HashingContext
      implementation (with the 63-bit positive mask).
 
@@ -25,12 +24,12 @@ import hashlib, json, math, random, sys, os
 HERE: str = os.path.dirname(os.path.abspath(__file__))
 REPO_ROOT: str = os.path.join(HERE, "..")
 
-# NOTE: prototype/ directory removed; Entity and helper functions inlined below
-# to keep this validation script self-contained.
+# NOTE: Entity and helper functions inlined below to keep this validation
+# script self-contained.
 
-# ── Inline Prototype Helpers (prototype/ removed in repo cleanup) ──
+# ── Inline Reference Helpers ──
 class Entity:
-    """Minimal Entity mirror from removed prototype/core_mechanic_prototype.py"""
+    """Minimal Entity mirror for validation."""
     def __init__(self, name: str, x: int, y: int, hp: int, off: int, def_: int, facing: tuple = (1, 0), elevation: int = 0):
         self.name: str = name
         self.x: int = x
@@ -58,7 +57,7 @@ def _is_backstab(attacker: Entity, defender: Entity) -> bool:
 
 
 def position_modifier(attacker: Entity, defender: Entity, cover_tiles: set) -> float:
-    """Mirror of prototype position_modifier() for validation."""
+    """Mirror of reference position_modifier() for validation."""
     modifier: float = 1.0
     if _is_backstab(attacker, defender):
         modifier += BACKSTAB_BONUS
@@ -81,7 +80,7 @@ def dist(x1: int, y1: int, x2: int, y2: int) -> float:
 
 
 def compute_damage(attacker: Entity, defender: Entity, cover_tiles: set) -> tuple:
-    """Mirror of prototype compute_damage() for validation."""
+    """Mirror of reference compute_damage() for validation."""
     raw: float = float(D_BASE + attacker.off - defender.def_)
     raw *= position_modifier(attacker, defender, cover_tiles)
     dmg: int = damage_floor(raw)
@@ -178,8 +177,8 @@ def compute_damage_gd(
     return damage_floor(raw)
 
 
-def calculate_position_modifier_proto(attacker: Entity, defender: Entity, cover_tiles: set) -> float:
-    """Exact mirror of prototype position_modifier().
+def calculate_position_modifier_ref(attacker: Entity, defender: Entity, cover_tiles: set) -> float:
+    """Exact mirror of reference position_modifier().
     Light cover only (-0.15); no heavy-cover logic."""
     modifier: float = 1.0
     if _is_backstab(attacker, defender):
@@ -296,7 +295,7 @@ class Validator:
             dmg2: int = compute_damage_gd(off, def_stat, pos, elem, mem)
             self.assert_eq(f"edge_determinism_{i}", dmg_gd, dmg2)
 
-        # Reference cases from prototype batch_simulation.py
+        # Reference cases from historical simulations.
         # NOTE: §9.1 reference scenarios use Player OFF=12, Enemy DEF=8.
         self.assert_eq("ref_baseline", compute_damage_gd(12, 8, 1.0, 1.0, 0.0), 14)
         self.assert_eq("ref_backstab", compute_damage_gd(12, 8, 1.25, 1.0, 0.0), 17)
@@ -347,16 +346,16 @@ class Validator:
         e = Entity("E", 2, 1, 10, 5, 3, facing=(1, 0), elevation=0)
 
         # Frontal
-        mod_gd = calculate_position_modifier_proto(p, e, cover)
+        mod_gd = calculate_position_modifier_ref(p, e, cover)
         mod_ref = position_modifier(p, e, cover)
         self.assert_eqf("pm_frontal_gd", mod_gd, 1.0)
         self.assert_eqf("pm_frontal_ref", mod_ref, 1.0)
 
-        # Backstab (matches test_core_mechanic.py setup)
+        # Backstab (matches test suite setup)
         p.x, p.y = 1, 1
         e.x, e.y = 2, 1
         e.facing = (-1, 0)
-        mod_gd = calculate_position_modifier_proto(p, e, cover)
+        mod_gd = calculate_position_modifier_ref(p, e, cover)
         mod_ref = position_modifier(p, e, cover)
         self.assert_eqf("pm_backstab_gd", mod_gd, 1.25)
         self.assert_eqf("pm_backstab_ref", mod_ref, 1.25)
@@ -366,14 +365,14 @@ class Validator:
         e.elevation = 0
         p.facing = (1, 0)
         e.facing = (1, 0)
-        mod_gd = calculate_position_modifier_proto(p, e, cover)
+        mod_gd = calculate_position_modifier_ref(p, e, cover)
         mod_ref = position_modifier(p, e, cover)
         self.assert_eqf("pm_elev1_gd", mod_gd, 1.15)
         self.assert_eqf("pm_elev1_ref", mod_ref, 1.15)
 
         # Elevation +2
         p.elevation = 2
-        mod_gd = calculate_position_modifier_proto(p, e, cover)
+        mod_gd = calculate_position_modifier_ref(p, e, cover)
         mod_ref = position_modifier(p, e, cover)
         self.assert_eqf("pm_elev2_gd", mod_gd, 1.25)
         self.assert_eqf("pm_elev2_ref", mod_ref, 1.25)
@@ -381,7 +380,7 @@ class Validator:
         # Light cover
         p.elevation = 0
         cover = {(2, 1)}
-        mod_gd = calculate_position_modifier_proto(p, e, cover)
+        mod_gd = calculate_position_modifier_ref(p, e, cover)
         mod_ref = position_modifier(p, e, cover)
         self.assert_eqf("pm_light_cover_gd", mod_gd, 0.85)
         self.assert_eqf("pm_light_cover_ref", mod_ref, 0.85)
@@ -390,12 +389,12 @@ class Validator:
         cover = set()
         p.elevation = 0
         e.elevation = 2
-        mod_gd = calculate_position_modifier_proto(p, e, cover)
+        mod_gd = calculate_position_modifier_ref(p, e, cover)
         mod_ref = position_modifier(p, e, cover)
         self.assert_eqf("pm_elev_penalty_gd", mod_gd, 0.75)
         self.assert_eqf("pm_elev_penalty_ref", mod_ref, 0.75)
 
-        # Spec-only: heavy cover (not in prototype, validated against spec constant)
+        # Spec-only: heavy cover (validated against spec constant)
         cover = {(2, 1), (3, 1)}
         p.elevation = 0
         e.elevation = 0
@@ -427,10 +426,10 @@ class Validator:
         self.assert_eqf("elem_water_to_fire", elemental_modifier_gd("water_to_fire"), 0.5)
         self.assert_eqf("elem_unknown", elemental_modifier_gd("none"), 1.0)
 
-    # ── 7. Entity Stat Clamping (via prototype Entity) ───────────
+    # ── 7. Entity Stat Clamping ───────────
     def test_entity_stat_clamping(self) -> None:
         ent = Entity("Test", 0, 0, 500, 50, 30)
-        # Note: the prototype Entity does not auto-clamp, so we test our
+        # Note: the validation Entity does not auto-clamp, so we test our
         # own clamp functions directly.
         self.assert_eq("clamp_hp_mid", clampi(100, 0, 500), 100)
         self.assert_eq("clamp_hp_neg", clampi(-10, 0, 500), 0)
@@ -461,10 +460,10 @@ class Validator:
         for k, v in known.items():
             self.assert_eq(f"sha256_known_{k}", hash_seed(k), v)
 
-    # ── 9. GDScript vs Prototype Consistency ────────────────────
-    def test_gdscript_vs_prototype(self) -> None:
-        """Verifies that our Python GDScript mirror and the Python prototype
-        produce identical damage values for a shared scenario bank."""
+    # ── 9. GDScript vs Reference Consistency ────────────────────
+    def test_gdscript_vs_reference(self) -> None:
+        """Verifies that our Python GDScript mirror and the reference
+        implementation produce identical damage values for a shared scenario bank."""
         rng = random.Random(GOLDEN_SEED)
         for i in range(50):
             p = Entity("P", rng.randint(0, 11), rng.randint(0, 11),
@@ -479,10 +478,10 @@ class Validator:
 
             dmg_proto, _ = compute_damage(p, e, cover)
             dmg_gd = compute_damage_gd(p.off, e.def_,
-                                     calculate_position_modifier_proto(p, e, cover),
+                                     calculate_position_modifier_ref(p, e, cover),
                                      1.0, 0.0)
             self.assert_eq(
-                f"gd_vs_proto_{i}", dmg_gd, dmg_proto,
+                f"gd_vs_ref_{i}", dmg_gd, dmg_proto,
             )
 
     def run_all(self) -> None:
@@ -495,7 +494,7 @@ class Validator:
         self.test_elemental_modifiers()
         self.test_entity_stat_clamping()
         self.test_sha256_cross_platform()
-        self.test_gdscript_vs_prototype()
+        self.test_gdscript_vs_reference()
 
         print("\n=== RESULTS ===")
         print(f"Passed: {self.passed}")
