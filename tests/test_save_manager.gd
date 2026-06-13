@@ -2,10 +2,12 @@ extends GdUnitTestSuite
 
 const TEST_SAVE_PATH = "user://save_state.json"
 
+
 func before() -> void:
 	# Backup existing save if it exists
 	if FileAccess.file_exists(TEST_SAVE_PATH):
 		DirAccess.copy_absolute(TEST_SAVE_PATH, TEST_SAVE_PATH + ".bak")
+
 
 func after() -> void:
 	# Restore backup
@@ -14,6 +16,7 @@ func after() -> void:
 		DirAccess.remove_absolute(TEST_SAVE_PATH + ".bak")
 	elif FileAccess.file_exists(TEST_SAVE_PATH):
 		DirAccess.remove_absolute(TEST_SAVE_PATH)
+
 
 func test_save_load_cycle() -> void:
 	var sm: _SaveManager = SaveManager
@@ -32,6 +35,7 @@ func test_save_load_cycle() -> void:
 	assert_that(loaded_data["memory_state"]["moral_flag_lifetime"]).is_equal(100)
 	assert_that(loaded_data["version"]).is_equal(sm.SAVE_VERSION)
 
+
 func test_delete_save() -> void:
 	var sm: _SaveManager = SaveManager
 	sm.save_game({"test": 1})
@@ -39,6 +43,7 @@ func test_delete_save() -> void:
 
 	sm.delete_save()
 	assert_that(sm.has_save()).is_false()
+
 
 func test_load_non_existent() -> void:
 	var sm: _SaveManager = SaveManager

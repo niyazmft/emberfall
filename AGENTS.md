@@ -101,20 +101,17 @@ emberfall/
 │   │   ├── keeper.gd          # Player scene
 │   │   ├── base_enemy.gd      # Enemy base class
 │   │   └── entity_lifecycle.gd # State management autoload
-│   ├── autoload/              # 26 global systems
+│   ├── autoload/              # 15 global systems
 │   │   ├── grid_system.gd     # 12x12 tactical grid
 │   │   ├── run_manager.gd     # Game state machine
 │   │   ├── burden_manager.gd  # Moral weight system
-│   │   └── [23 more...]
-│   ├── ai/                    # Enemy decision logic
-│   ├── burden/                # Moral weight events
-│   ├── combat/                # Room loading, turn management
-│   ├── inventory/             # Item and inventory systems
-│   ├── skills/                # Ability definitions
+│   │   └── [12 more...]
 │   ├── state_machine/         # FSM framework
-│   ├── ui/                    # UI script logic
-│   └── visual/                # Rendering and FX
-├── ui/                        # UI scenes and layouts
+│   │   ├── base_state_machine.gd
+│   │   └── run_manager.gd
+│   ├── ui/                    # UI components
+│   ├── shaders/               # Shader logic
+│   └── burden/                # Moral weight events
 ├── scenes/                    # TSCN files
 ├── tests/                     # Unit tests
 ├── config/                    # JSON configurations
@@ -206,7 +203,7 @@ func _ready():
 
 ---
 
-## Autoload Systems (26 Total)
+## Autoload Systems (15 Total)
 
 Key systems Jules interacts with:
 
@@ -217,27 +214,9 @@ Key systems Jules interacts with:
 | `RunManager` | Game phase flow | `cmd_start_run()`, `transition_to()` |
 | `BurdenManager` | Moral weight system | `record_sentient_kill()`, `update_moral_weight()` |
 | `CaptionManager` | Subtitle system | `schedule()`, `cancel_channel()` |
-| `LocalizationManager` | Language management | `set_locale()`, `tr()` |
+| `LocalizationManager` | Language management | `set_locale()`, translation loading |
 | `EventBus` | Centralized signaling | `combat_started.emit()`, `entity_died` |
 | `SaveManager` | Data persistence | `save_game()`, `load_game()`, schema validation |
-| `AbilityManager` | Ability registration and lookup | `getAbility()`, `getAllAbilities()` |
-| `InventoryManager` | Player inventory and items | `add_item()`, `remove_item()`, `get_item_data()` |
-| `FocusManager` | UI focus trapping for modals | `push_modal_focus()`, `pop_modal_focus()` |
-| `ConfigLoader` | JSON configuration access | `getValue()`, `getInt()`, `getString()` |
-| `LevelUpManager` | XP and leveling orchestration | `grant_experience()` |
-| `LayerManager` | UI layer and modal management | `add_modal()` |
-| `ToastManager` | Toast notification queue | `show_toast()` |
-| `SettingsManager` | User settings persistence | `save_settings()`, `load_settings()` |
-| `UIAudioManager` | UI sound effect management | `playUiSound()` |
-| `HapticsManager` | Haptic feedback presets | `triggerHaptic()` |
-| `SafeZoneManager` | Responsive UI safe margins | `get_safe_margins()` |
-| `AudioMiddleware` | Burden audio stem management | `play_stem()`, `stop_all()` |
-| `InputRouter` | Input device detection | `device_changed` (signal) |
-| `AmbientNarrator` | Environmental flavor text | `trigger_narrative()` |
-| `BurdenCaptionDriver` | Stem-triggered captions | (internal logic) |
-| `BurdenEventCoordinator` | Burden audio coordination | (internal logic) |
-| `BurdenShaderManager` | Global shader state | (internal logic) |
-| `SecretRoomTrigger` | Secret room unlock conditions | (internal logic) |
 
 **Access Pattern:**
 
@@ -378,14 +357,12 @@ class_name ConfigLoader   # ❌ Shadows the autoload singleton
 
 ### Autoload Co-location Exceptions
 
-All autoloads are in `scripts/autoload/` **except** documented exceptions:
+All autoloads are in `scripts/autoload/` **except** two documented exceptions:
 
 | Autoload | Actual Path | Reason |
 |---|---|---|
 | `EntityLifecycle` | `scripts/entities/entity_lifecycle.gd` | Co-located with `Entity` data class; moving breaks Godot UIDs |
 | `RunManager` | `scripts/state_machine/run_manager.gd` | Owns `BaseStateMachine`; co-location is intentional |
-| `FocusManager` | `ui/framework/focus_manager.gd` | Centralizes UI input handling; placed in UI framework |
-| `InventoryManager` | `scripts/inventory/inventory_manager.gd` | Close coupling with Item resources and inventory logic |
 
 **Do NOT move these files** — all `.uid` sidecar files and `preload()` references would break.
 If adding a new autoload, place it in `scripts/autoload/` unless it has an equally strong co-location justification documented here.

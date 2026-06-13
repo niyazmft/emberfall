@@ -1,5 +1,6 @@
 extends GdUnitTestSuite
 
+
 func test_kill_tracking() -> void:
 	var bm: _BurdenManager = BurdenManager
 	bm.reset()
@@ -15,7 +16,10 @@ func test_kill_tracking() -> void:
 	assert_int(bm.total_sentient_kills).is_equal(4)
 	# Queue cap is 3
 	assert_int(bm.get_kill_queue().size()).is_equal(3)
-	assert_array(bm.get_last_enemy_ids()).is_equal(PackedStringArray(["grunt_2", "grunt_3", "grunt_4"]))
+	assert_array(bm.get_last_enemy_ids()).is_equal(
+		PackedStringArray(["grunt_2", "grunt_3", "grunt_4"])
+	)
+
 
 func test_moral_weight_threshold() -> void:
 	var bm: _BurdenManager = BurdenManager
@@ -37,6 +41,7 @@ func test_moral_weight_threshold() -> void:
 	assert_bool(bm.burden_active).is_true()
 	assert_int(bm.current_mwt_level).is_equal(3)
 
+
 func test_numbness_logic() -> void:
 	var bm: _BurdenManager = BurdenManager
 	bm.reset()
@@ -49,16 +54,12 @@ func test_numbness_logic() -> void:
 	bm.trigger_burden_event(0, 0, 4, 0, false)
 	assert_bool(bm.is_numb()).is_true()
 
+
 func test_memory_state_persistence() -> void:
 	var bm: _BurdenManager = BurdenManager
 	bm.reset()
 
-	var state: Dictionary = {
-		"echo_flags": {
-			"burden_noun_index": 2,
-			"burden_trigger_history": 10
-		}
-	}
+	var state: Dictionary = {"echo_flags": {"burden_noun_index": 2, "burden_trigger_history": 10}}
 	bm.load_memory_state(state)
 	assert_int(bm._burden_noun_index).is_equal(2)
 	assert_int(bm._lifetime_trigger_count).is_equal(10)
@@ -66,6 +67,7 @@ func test_memory_state_persistence() -> void:
 	var saved: Dictionary = bm.save_memory_state()
 	assert_int(saved["burden_noun_index"]).is_equal(2)
 	assert_int(saved["burden_trigger_history"]).is_equal(10)
+
 
 func test_silhouette_management() -> void:
 	var bm: _BurdenManager = BurdenManager

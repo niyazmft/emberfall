@@ -155,7 +155,7 @@ func get_kill_queue() -> Array[BurdenKillRecord]:
 func get_last_kills(count: int) -> Array[BurdenKillRecord]:
 	var out: Array[BurdenKillRecord] = []
 	var start := maxi(0, _kill_queue.size() - count)
-	for i: int in range(start, _kill_queue.size()):
+	for i in range(start, _kill_queue.size()):
 		out.append(_kill_queue[i])
 	return out
 
@@ -163,7 +163,7 @@ func get_last_kills(count: int) -> Array[BurdenKillRecord]:
 func get_last_enemy_ids(count: int = KILL_HISTORY_CAP) -> PackedStringArray:
 	var out := PackedStringArray()
 	var records := get_last_kills(count)
-	for r: BurdenKillRecord in records:
+	for r in records:
 		out.append(r.enemy_id)
 	return out
 

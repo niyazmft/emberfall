@@ -1,5 +1,6 @@
 extends GdUnitTestSuite
 
+
 func test_room_loader_integration() -> void:
 	var room_data: Dictionary = {
 		"room_id": "room_standard_01",

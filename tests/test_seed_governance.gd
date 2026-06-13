@@ -1,5 +1,6 @@
 extends GdUnitTestSuite
 
+
 func test_seed_hashing() -> void:
 	var seed_val := 12345
 	var salt := "TEST"
@@ -13,6 +14,7 @@ func test_seed_hashing() -> void:
 	var h3 := SeedGovernance.hash_int(seed_val + 1, salt)
 	assert_that(h1).is_not_equal(h3)
 
+
 func test_modulo_from_seed() -> void:
 	var seed_val := 98765
 	var mod := 10
@@ -22,6 +24,7 @@ func test_modulo_from_seed() -> void:
 
 	# Consistency
 	assert_that(SeedGovernance.modulo_from_seed(seed_val, "MOD", mod)).is_equal(result)
+
 
 func test_fract_from_seed() -> void:
 	var seed_val := 42
@@ -33,8 +36,10 @@ func test_fract_from_seed() -> void:
 	# Consistency
 	assert_that(SeedGovernance.fract_from_seed(seed_val)).is_equal(f1)
 
+
 func test_seed_validation() -> void:
 	assert_that(SeedGovernance.validate_seed(GameConstants.GOLDEN_SEED, {})).is_true()
+
 
 func test_room_seeds() -> void:
 	var seed_val := 1234

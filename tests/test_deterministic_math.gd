@@ -1,5 +1,6 @@
 extends GdUnitTestSuite
 
+
 func test_floor_clamp_edge_cases() -> void:
 	assert_that(DeterministicMath.floori(14.0)).is_equal(14)
 	assert_that(DeterministicMath.floori(17.5)).is_equal(17)
@@ -14,6 +15,7 @@ func test_floor_clamp_edge_cases() -> void:
 	assert_that(DeterministicMath.damage_floor(14.0)).is_equal(14)
 	assert_that(DeterministicMath.damage_floor(0.0)).is_equal(1)
 	assert_that(DeterministicMath.damage_floor(-3.0)).is_equal(1)
+
 
 func test_entity_stat_clamping() -> void:
 	var ent: Entity = Entity.new("Test", 0, 0, 500, 50, 30)

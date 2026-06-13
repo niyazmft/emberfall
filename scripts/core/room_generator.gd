@@ -48,7 +48,7 @@ static func augmentRoom(roomData: Dictionary, biomeId: String, topologySeed: int
 	# Keep track of reserved positions (player start and explicitly placed enemies)
 	var reservedPositions: Array[Vector2i] = _getReservedPositions(roomData)
 
-	for i: int in range(144):
+	for i in range(144):
 		var x := i % 12
 		var y := i / 12
 		var pos := Vector2i(x, y)
@@ -115,7 +115,7 @@ static func _ensureLayoutSize(arr: Array, defaultVal: Variant) -> void:
 	if arr.size() < 144:
 		var oldSize: int = arr.size()
 		arr.resize(144)
-		for i: int in range(oldSize, 144):
+		for i in range(oldSize, 144):
 			arr[i] = defaultVal
 
 

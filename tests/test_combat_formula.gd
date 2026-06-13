@@ -1,5 +1,6 @@
 extends GdUnitTestSuite
 
+
 func test_compute_damage() -> void:
 	# Baseline: 10 + 12 - 8 = 14
 	var baseline := CombatFormula.compute_damage(12, 8, 1.0, 1.0, 0.0)
@@ -22,6 +23,7 @@ func test_compute_damage() -> void:
 
 	# Heavy Cover: 14 * 0.70 = 9.8 -> 9
 	assert_that(CombatFormula.compute_damage(12, 8, 0.70, 1.0, 0.0)).is_equal(9)
+
 
 func test_calculate_position_modifier() -> void:
 	var attacker := Entity.new("Attacker", 1, 1, 10, 5, 3, 1, 0, 0)
@@ -73,14 +75,16 @@ func test_calculate_position_modifier() -> void:
 	mod = CombatFormula.calculate_position_modifier(attacker, defender, cover_tiles)
 	assert_that(is_equal_approx(mod, 0.70)).is_true()
 
+
 func test_compute_damage_from_entities() -> void:
 	var attacker := Entity.new("Attacker", 1, 1, 10, 12, 6, 1, 0, 0)
-	var defender := Entity.new("Defender", 2, 1, 10, 10, 8, -1, 0, 0) # Defender facing attacker -> backstab
+	var defender := Entity.new("Defender", 2, 1, 10, 10, 8, -1, 0, 0)  # Defender facing attacker -> backstab
 	var cover_tiles: Array[Vector2i] = []
 
 	# Damage: (10 + 12 - 8) * 1.25 = 14 * 1.25 = 17.5 -> 17
 	var dmg := CombatFormula.compute_damage_from_entities(attacker, defender, cover_tiles)
 	assert_that(dmg).is_equal(17)
+
 
 func test_elemental_modifier() -> void:
 	assert_that(is_equal_approx(CombatFormula.elemental_modifier("fire_to_oil"), 2.0)).is_true()
@@ -88,6 +92,7 @@ func test_elemental_modifier() -> void:
 	assert_that(is_equal_approx(CombatFormula.elemental_modifier("oil_slip"), 0.8)).is_true()
 	assert_that(is_equal_approx(CombatFormula.elemental_modifier("water_to_fire"), 0.5)).is_true()
 	assert_that(is_equal_approx(CombatFormula.elemental_modifier("none"), 1.0)).is_true()
+
 
 func test_damage_formula_randomized() -> void:
 	var rng := RandomNumberGenerator.new()

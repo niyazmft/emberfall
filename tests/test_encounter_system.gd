@@ -1,5 +1,6 @@
 extends GdUnitTestSuite
 
+
 func test_build_encounters_deterministic() -> void:
 	var biome_id := "biome1"
 	var seed_val := 12345
@@ -10,10 +11,10 @@ func test_build_encounters_deterministic() -> void:
 	assert_that(encounters1).is_not_empty()
 	assert_that(encounters1).is_equal(encounters2)
 
+
 func test_weighted_group_selection() -> void:
 	var compositions: Array[Dictionary] = [
-		{"group_id": "groupA", "weight": 1.0},
-		{"group_id": "groupB", "weight": 0.0}
+		{"group_id": "groupA", "weight": 1.0}, {"group_id": "groupB", "weight": 0.0}
 	]
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 42
@@ -21,9 +22,11 @@ func test_weighted_group_selection() -> void:
 	var selected := EncounterSystem._selectWeightedGroup(compositions, rng)
 	assert_that(selected).is_equal("groupA")
 
+
 func test_build_encounters_invalid_biome() -> void:
 	var encounters := EncounterSystem.buildEncounters("non_existent_biome", 12345)
 	assert_that(encounters).is_empty()
+
 
 func test_encounter_content_structure() -> void:
 	var encounters := EncounterSystem.buildEncounters("biome1", 12345)

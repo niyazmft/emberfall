@@ -2,30 +2,32 @@ extends GdUnitTestSuite
 
 const COMBAT_ROOM_SCENE = "res://scenes/combat_room.tscn"
 
+
 func test_room_initialization() -> void:
 	var runner: GdUnitSceneRunner = scene_runner(COMBAT_ROOM_SCENE)
 	var room: Node = runner.scene()
 
-	assert_that(room.get_node("GridRenderer")).is_not_null()
-	assert_that(room.get_node("EntityContainer")).is_not_null()
-	assert_that(room.get_node("UIOverlay")).is_not_null()
-	assert_that(room.get_node("Camera2D")).is_not_null()
+	assert_that(room.get_node_or_null("GridRenderer")).is_not_null()
+	assert_that(room.get_node_or_null("EntityContainer")).is_not_null()
+	assert_that(room.get_node_or_null("UIOverlay")).is_not_null()
+	assert_that(room.get_node_or_null("Camera2D")).is_not_null()
+
 
 func test_entity_spawning() -> void:
 	var runner: GdUnitSceneRunner = scene_runner(COMBAT_ROOM_SCENE)
-	# Wait a frame for _ready to trigger _spawn_test_encounter
-	runner.simulate_frames(1)
 	var room: Node = runner.scene()
 
-	# In test_mode (default), it spawns 1 player and 3 enemies
+	# Manually trigger test encounter to ensure entities exist regardless of RunManager state
+	room.call("_spawn_test_encounter")
+
 	var entity_container: Node2D = room.get_node("EntityContainer") as Node2D
 	assert_int(entity_container.get_child_count()).is_greater(0)
 
-	# _enemies_node is private but reachable via get()
 	var enemies_node: Node2D = room.get("_enemies_node") as Node2D
 	assert_that(enemies_node).is_not_null()
 	if enemies_node:
 		assert_int(enemies_node.get_child_count()).is_equal(3)
+
 
 func test_camera_setup() -> void:
 	var runner: GdUnitSceneRunner = scene_runner(COMBAT_ROOM_SCENE)
@@ -37,22 +39,16 @@ func test_camera_setup() -> void:
 	var camera: Camera2D = room.get_node("Camera2D") as Camera2D
 	assert_that(camera.position).is_equal(center_pos)
 
+
 func test_manual_room_entry() -> void:
 	var runner: GdUnitSceneRunner = scene_runner(COMBAT_ROOM_SCENE)
 	var room: Node = runner.scene()
 
 	var room_data: Dictionary = {
 		"room_id": "test_room",
-		"layout": {
-			"elevation": [],
-			"cover": [],
-			"blocked": [],
-			"vision_blocked": []
-		},
+		"layout": {"elevation": [], "cover": [], "blocked": [], "vision_blocked": []},
 		"player_start": {"x": 2, "y": 2},
-		"encounters": [
-			{"enemy_type": "grunt", "positions": [{"x": 5, "y": 5}]}
-		]
+		"encounters": [{"enemy_type": "grunt", "positions": [{"x": 5, "y": 5}]}]
 	}
 	# Initialize layout arrays
 	for i: int in range(144):
