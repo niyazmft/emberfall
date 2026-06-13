@@ -91,7 +91,7 @@ static func calculate_position_modifier(
 
 static func _direction(from_x: int, from_y: int, to_x: int, to_y: int) -> Vector2i:
 	## Cardinal-normalised direction vector from (from_x, from_y) to (to_x, to_y).
-	## Exact mirror of validated direction() implementation.
+	## Exact mirror of prototype direction() in core_mechanic_prototype.py.
 	var dx: int = to_x - from_x
 	var dy: int = to_y - from_y
 	if DeterministicMath.absi(dx) >= DeterministicMath.absi(dy):
@@ -103,8 +103,8 @@ static func _is_backstab(attacker: Entity, defender: Entity) -> bool:
 	## Backstab: dot product of attacker→defender vector with defender
 	## facing vector < –0.7.
 	##
-	## NOTE: this uses the standard direction() semantics (vector FROM
-	## attacker TO defender), matching test suite requirements.
+	## NOTE: this uses the prototype's direction() semantics (vector FROM
+	## attacker TO defender), matching test_core_mechanic.py exactly.
 	var atk_vec: Vector2i = _direction(attacker.x, attacker.y, defender.x, defender.y)
 	var def_facing: Vector2i = Vector2i(defender.facing_x, defender.facing_y)
 	var dot: float = float(atk_vec.x * def_facing.x + atk_vec.y * def_facing.y)

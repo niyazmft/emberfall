@@ -44,7 +44,9 @@ func _ready() -> void:
 
 	_apparition_renderer = get_node_or_null("ApparitionRenderer") as ApparitionRenderer
 	if not _apparition_renderer and get_parent():
-		_apparition_renderer = get_parent().get_node_or_null("ApparitionRenderer") as ApparitionRenderer
+		_apparition_renderer = (
+			get_parent().get_node_or_null("ApparitionRenderer") as ApparitionRenderer
+		)
 
 	if not _grid_renderer:
 		# Fallback: search the tree by type instead of string name
