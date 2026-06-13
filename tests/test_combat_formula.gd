@@ -78,7 +78,7 @@ func test_calculate_position_modifier() -> void:
 
 func test_compute_damage_from_entities() -> void:
 	var attacker := Entity.new("Attacker", 1, 1, 10, 12, 6, 1, 0, 0)
-	var defender := Entity.new("Defender", 2, 1, 10, 10, 8, -1, 0, 0)  # Defender facing attacker -> backstab
+	var defender := Entity.new("Defender", 2, 1, 10, 10, 8, -1, 0, 0)  # Backstab
 	var cover_tiles: Array[Vector2i] = []
 
 	# Damage: (10 + 12 - 8) * 1.25 = 14 * 1.25 = 17.5 -> 17
