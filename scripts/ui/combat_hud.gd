@@ -154,9 +154,9 @@ func _on_targeting_started() -> void:
 func _on_attack_executed(target: Node2D, damage: int) -> void:
 	var target_name: String = "Enemy"
 	if target is BaseEnemy:
-		target_name = (target as BaseEnemy).entity.name
-	elif target.get("entity") and target.get("entity") is Entity:
-		target_name = (target.get("entity") as Entity).name
+		target_name = (target as BaseEnemy).entity.entity_name
+	elif target is Keeper:
+		target_name = (target as Keeper).entity.entity_name
 
 	_log_from_config("damage_dealt", [damage, target_name])
 

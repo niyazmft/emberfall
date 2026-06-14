@@ -19,6 +19,17 @@ func test_visual_proxy() -> void:
 	var entity: Resource = EntityClass.new("TestEntity", 1, 1, 10, 5, 5, 1, 0, 0)
 	var proxy: Node2D = EntityVisualProxyClass.new()
 	proxy.set("entity", entity)
+
+	# Add ApparitionRenderer mock BEFORE adding proxy to tree so _ready() finds it
+	var app_mock := Node2D.new()
+	app_mock.name = "ApparitionRenderer"
+	var app_script := GDScript.new()
+	# Inherit to pass the 'as ApparitionRenderer' cast in EntityVisualProxy
+	app_script.source_code = "extends 'res://scripts/entities/apparition_renderer.gd'\nvar damage_triggered: bool = false\nfunc trigger_damage_effect() -> void:\n\tdamage_triggered = true\nfunc _ready() -> void:\n\tpass\nfunc _process(_delta: float) -> void:\n\tpass"
+	app_script.reload()
+	app_mock.set_script(app_script)
+	proxy.add_child(app_mock)
+
 	combat_room.add_child(proxy)
 
 	# Wait for ready (one frame)
@@ -61,18 +72,5 @@ func test_visual_proxy() -> void:
 	assert_that(proxy.modulate).is_equal(Color(1.0, 0.4, 0.4))
 
 	# 7. Verify Damage Signal -> Apparition Effect
-	var app_mock := Node2D.new()
-	app_mock.name = "ApparitionRenderer"
-	var app_script := GDScript.new()
-	app_script.source_code = """
-extends Node2D
-var damage_triggered := false
-func trigger_damage_effect() -> void:
-	damage_triggered = true
-"""
-	app_script.reload()
-	app_mock.set_script(app_script)
-	proxy.add_child(app_mock)
-
 	entity.set("hp", 5)  # Damage from 10 to 5
 	assert_that(app_mock.get("damage_triggered")).is_true()
