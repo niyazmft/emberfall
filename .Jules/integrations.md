@@ -22,5 +22,3 @@ unlock proper lighting capabilities.
 **Action:** Before creating new issues or scheduling sprints, always run `gh issue list --state all --json number,title,state` to cross-check the actual GitHub state against local board entries. If the local board references issues that are closed on GitHub, reconcile immediately — mark them as Done locally and identify the actual remaining gaps before creating new issues.
 
 ---
-
-*Append-only file. Newest entries go at the bottom.*

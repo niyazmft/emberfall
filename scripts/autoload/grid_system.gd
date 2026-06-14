@@ -196,7 +196,7 @@ func can_move(from_x: int, from_y: int, to_x: int, to_y: int) -> bool:
 		to_elev = 1
 	elif (to_tile.cover_flags & 16) != 0:
 		to_elev = 2
-	return abs(from_elev - to_elev) <= MAX_ELEVATION_DELTA
+	return DeterministicMath.absi(from_elev - to_elev) <= MAX_ELEVATION_DELTA
 
 
 ## ------------------------------------------------------------------

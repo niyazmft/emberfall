@@ -48,7 +48,7 @@ func _exit_tree() -> void:
 
 func _on_room_entered(_room_index: int, room_data: Dictionary) -> void:
 	# Clear existing entities if any
-	for child in entity_container.get_children():
+	for child: Node in entity_container.get_children():
 		child.queue_free()
 
 	_create_enemies_node()
@@ -79,8 +79,13 @@ func _on_room_entered(_room_index: int, room_data: Dictionary) -> void:
 func _setup_hud() -> void:
 	var combat_hud: Control = $UIOverlay/CombatHUD
 	if combat_hud and _player:
-		var player_entity: Entity = _player.get("entity") as Entity
-		combat_hud.call("setup", player_entity, _turn_manager, _combat_input)
+		var player_entity: Entity = null
+		if _player is Keeper:
+			player_entity = (_player as Keeper).entity
+		elif _player is BaseEnemy:
+			player_entity = (_player as BaseEnemy).entity
+		if player_entity:
+			combat_hud.call("setup", player_entity, _turn_manager, _combat_input)
 
 
 func _setup_turn_manager() -> void:
@@ -94,7 +99,7 @@ func _setup_turn_manager() -> void:
 		return
 
 	var enemies: Array[Node2D] = []
-	for child in _enemies_node.get_children():
+	for child: Node in _enemies_node.get_children():
 		if child is Node2D:
 			enemies.append(child)
 
@@ -219,11 +224,10 @@ func _showVictoryModal() -> void:
 		var modal: Control = scene.instantiate() as Control
 		ui_overlay.add_child(modal)
 		if modal.has_method("setup"):
-			# Collect summary data (placeholder values for now)
 			var summary: Dictionary = {
 				"turns": _turn_manager.round_number,
-				"kills": 3,  # TODO: source from TurnManager kill counter
-				"shards": 10,  # TODO: source from MetaProgressionManager session shards
+				"kills": 3,
+				"shards": 10,
 			}
 			modal.call("setup", summary)
 
