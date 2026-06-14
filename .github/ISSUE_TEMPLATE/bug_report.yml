@@ -11,6 +11,32 @@ body:
         Thanks for reporting a bug. Please fill out the template below so we can reproduce and fix it.
 
   - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: "Priority heuristic: P0=Critical path/Blocks work, P1=Important/Polish, P2=Nice-to-have/Optional."
+      options:
+        - P0
+        - P1
+        - P2
+    validations:
+      required: true
+
+  - type: dropdown
+    id: size
+    attributes:
+      label: Size
+      description: "Estimated effort: XS=0.5d, S=1-2d, M=3-5d, L=1-2w, XL=2w+."
+      options:
+        - XS
+        - S
+        - M
+        - L
+        - XL
+    validations:
+      required: true
+
+  - type: dropdown
     id: severity
     attributes:
       label: Severity
