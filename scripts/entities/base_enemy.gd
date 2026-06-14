@@ -13,7 +13,7 @@ extends Node2D
 
 var _grid_system: _GridSystem
 var _combat_system: Node  ## Placeholder for future combat system
-var _apparition_renderer: Node = null
+var _apparition_renderer: ApparitionRenderer = null
 
 
 func _ready() -> void:
@@ -21,7 +21,7 @@ func _ready() -> void:
 	if _grid_system == null:
 		_grid_system = AutoloadHelper.grid_system()
 
-	_apparition_renderer = get_node_or_null("ApparitionRenderer")
+	_apparition_renderer = get_node_or_null("ApparitionRenderer") as ApparitionRenderer
 
 	# In Godot, properties are set BEFORE _ready().
 	# So archetype_id should already be what was set in _init() or in the inspector.
@@ -32,14 +32,11 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	# Sync apparition position to the visual proxy's position (which interpolates)
-	if _apparition_renderer == null:
-		_apparition_renderer = get_node_or_null("ApparitionRenderer")
-
-	if _apparition_renderer != null and _apparition_renderer.has_method("sync_to_owner"):
+	if _apparition_renderer != null:
 		if visual_proxy:
-			_apparition_renderer.call("sync_to_owner", visual_proxy.global_position)
+			_apparition_renderer.sync_to_owner(visual_proxy.global_position)
 		else:
-			_apparition_renderer.call("sync_to_owner", global_position)
+			_apparition_renderer.sync_to_owner(global_position)
 
 
 func _setup_entity() -> void:
@@ -176,8 +173,8 @@ func _setup_visual_proxy() -> void:
 ## Combat API
 func take_turn() -> void:
 	## Called by combat system when it's this enemy's turn
-	if ai_controller and ai_controller.has_method("decide_action"):
-		var action: Dictionary = ai_controller.call("decide_action", entity)
+	if ai_controller is EnemyAIController:
+		var action: Dictionary = (ai_controller as EnemyAIController).decide_action(entity)
 		_execute_action(action)
 
 
@@ -225,7 +222,12 @@ func _handle_attack(action: Dictionary) -> void:
 	if target_node == null:
 		return
 
-	var target_entity: Entity = target_node.get("entity") as Entity
+	var target_entity: Entity = null
+	if target_node is BaseEnemy:
+		target_entity = (target_node as BaseEnemy).entity
+	elif target_node is Keeper:
+		target_entity = (target_node as Keeper).entity
+
 	if target_entity == null:
 		return
 
@@ -252,14 +254,21 @@ func _handle_attack(action: Dictionary) -> void:
 		target_entity.apply_damage(damage)
 
 	# Trigger visual recoil on target if it exposes the hook
-	if target_node.has_method("trigger_damage_effect"):
-		target_node.call("trigger_damage_effect")
+	if target_node is BaseEnemy:
+		(target_node as BaseEnemy).trigger_damage_effect()
+	elif target_node is Keeper:
+		(target_node as Keeper).trigger_damage_effect()
 
 	# Deduct AP
 	entity.ap = DeterministicMath.clampi(entity.ap - cost, 0, GameConstants.AP_MAX)
 
 
 ## Damage API
+func trigger_damage_effect() -> void:
+	if _apparition_renderer != null:
+		_apparition_renderer.trigger_damage_effect()
+
+
 func apply_damage(damage: int, attacker: Entity = null) -> void:
 	## Apply damage through EntityLifecycle via AutoloadHelper
 	var lifecycle: _EntityLifecycle = AutoloadHelper.entity_lifecycle()
@@ -269,12 +278,7 @@ func apply_damage(damage: int, attacker: Entity = null) -> void:
 		entity.apply_damage(damage)
 
 	## Trigger visual effect
-	## NOTE: ApparitionRenderer is not fully implemented yet. Use a safe fallback check.
-	if _apparition_renderer == null:
-		_apparition_renderer = get_node_or_null("ApparitionRenderer")
-
-	if _apparition_renderer != null and _apparition_renderer.has_method("trigger_damage_effect"):
-		_apparition_renderer.call("trigger_damage_effect")
+	trigger_damage_effect()
 
 
 func alive() -> bool:
