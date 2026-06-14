@@ -237,10 +237,6 @@ func _triggerHitEffects(p_damage: int, p_damage_type: String = "PHYSICAL") -> vo
 				if p_damage >= tier.get("threshold", 0):
 					_hit_stop_remaining = tier.get("frames", 0)
 
-	# Screen Shake
-	if _combat_room and _combat_room.camera and _combat_room.camera.has_method("add_shake"):
-		_combat_room.camera.call("add_shake", clampf(float(p_damage) / 20.0, 0.1, 0.5))
-
 	# Floating Text
 	_spawnDamageNumber(p_damage, p_damage_type)
 

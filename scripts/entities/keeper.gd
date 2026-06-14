@@ -104,7 +104,7 @@ func alive() -> bool:
 
 
 func _find_or_create_apparition() -> ApparitionRenderer:
-	for child in get_children():
+	for child: Node in get_children():
 		if child is ApparitionRenderer:
 			return child
 	var app := ApparitionRenderer.new()

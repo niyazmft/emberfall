@@ -127,8 +127,8 @@ func _find_valid_targets() -> void:
 			enemy_ent = (enemy_node as Keeper).entity
 
 		if enemy_ent and enemy_ent.hp > 0:  # simplified alive check for stability
-			var dx: int = abs(enemy_ent.x - px)
-			var dy: int = abs(enemy_ent.y - py)
+			var dx: int = DeterministicMath.absi(enemy_ent.x - px)
+			var dy: int = DeterministicMath.absi(enemy_ent.y - py)
 			# Melee range: adjacent including diagonals
 			if dx <= 1 and dy <= 1 and (dx != 0 or dy != 0):
 				_valid_targets.append(enemy_node)
