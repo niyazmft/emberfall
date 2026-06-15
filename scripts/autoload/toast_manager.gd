@@ -14,13 +14,10 @@ var _is_displaying: bool = false
 
 
 func _ready() -> void:
-	LayerManager.modal_opened.connect(_on_modal_opened)
 	LayerManager.modal_closed.connect(_on_modal_closed)
 
 
 func _exit_tree() -> void:
-	if LayerManager.modal_opened.is_connected(_on_modal_opened):
-		LayerManager.modal_opened.disconnect(_on_modal_opened)
 	if LayerManager.modal_closed.is_connected(_on_modal_closed):
 		LayerManager.modal_closed.disconnect(_on_modal_closed)
 
@@ -48,11 +45,6 @@ func _process_queue() -> void:
 func _on_toast_finished() -> void:
 	_is_displaying = false
 	_process_queue()
-
-
-func _on_modal_opened() -> void:
-	# Toast queue is paused by LayerManager check in _process_queue
-	pass
 
 
 func _on_modal_closed() -> void:

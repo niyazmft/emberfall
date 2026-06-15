@@ -45,12 +45,6 @@ func _init() -> void:
 		_astar.add_point(i, Vector3(fx, fy, 0.0), 1.0)
 
 
-## Backward-compatibility stub. The old interpreted A* needed an explicit
-## buffer reset; the native backend manages its own state.
-func _reset_search() -> void:
-	pass
-
-
 ## ------------------------------------------------------------------
 ## Public API
 ## ------------------------------------------------------------------
