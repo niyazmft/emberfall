@@ -38,7 +38,7 @@ func decide_action(p_entity: Entity = null) -> Dictionary:
 	):
 		return {"type": "wait"}
 
-	var player_entity: Entity = _player_node.get("entity") as Entity
+	var player_entity := CombatEntity.get_entity(_player_node)
 	if player_entity == null:
 		return {"type": "wait"}
 
@@ -158,7 +158,7 @@ func _get_occupied_coords() -> Array[Vector2i]:
 	# Player
 	var player: Node2D = tree.get_first_node_in_group("player") as Node2D
 	if player:
-		var pent: Entity = player.get("entity") as Entity
+		var pent := CombatEntity.get_entity(player)
 		if pent:
 			occupied.append(Vector2i(pent.x, pent.y))
 
@@ -168,7 +168,7 @@ func _get_occupied_coords() -> Array[Vector2i]:
 			continue
 		var e_node: Node2D = enemy as Node2D
 		if e_node:
-			var e_ent: Entity = e_node.get("entity") as Entity
+			var e_ent := CombatEntity.get_entity(e_node)
 			if e_ent and e_ent.alive():
 				occupied.append(Vector2i(e_ent.x, e_ent.y))
 

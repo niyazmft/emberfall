@@ -1,5 +1,5 @@
 class_name Keeper
-extends Node2D
+extends CombatEntity
 
 ## Keeper
 ## Player entity scene root. Composes an Entity data block, handles
@@ -8,7 +8,6 @@ extends Node2D
 ##
 ## Scene: res://scenes/keeper.tscn
 
-@export var entity: Entity
 @export var visual_proxy: EntityVisualProxy
 
 ## Configurable properties

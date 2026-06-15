@@ -3,8 +3,7 @@ const __source = "res://scripts/combat/turn_manager.gd"
 
 
 class MockCombatant:
-	extends Node2D
-	var entity: Entity
+	extends CombatEntity
 
 	func _init(p_entity: Entity) -> void:
 		entity = p_entity
