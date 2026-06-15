@@ -21,18 +21,25 @@ func _ready() -> void:
 	_settings_button.pressed.connect(_on_settings_requested)
 	_quit_button.pressed.connect(_on_quit_pressed)
 
-	InputRouter.device_changed.connect(_on_device_changed)
-	_update_hints(InputRouter.current_device)
+	var ir: _InputRouter = AutoloadHelper.input_router()
+	if ir:
+		ir.device_changed.connect(_on_device_changed)
+		_update_hints(ir.current_device)
 
-	SafeZoneManager.safe_area_changed.connect(_on_safe_area_changed)
+	var sz: _SafeZoneManager = AutoloadHelper.safe_zone_manager()
+	if sz:
+		sz.safe_area_changed.connect(_on_safe_area_changed)
 	_apply_safe_area()
 
 
 func _exit_tree() -> void:
-	if InputRouter.device_changed.is_connected(_on_device_changed):
-		InputRouter.device_changed.disconnect(_on_device_changed)
-	if SafeZoneManager.safe_area_changed.is_connected(_on_safe_area_changed):
-		SafeZoneManager.safe_area_changed.disconnect(_on_safe_area_changed)
+	var ir: _InputRouter = AutoloadHelper.input_router()
+	if ir and ir.device_changed.is_connected(_on_device_changed):
+		ir.device_changed.disconnect(_on_device_changed)
+
+	var sz: _SafeZoneManager = AutoloadHelper.safe_zone_manager()
+	if sz and sz.safe_area_changed.is_connected(_on_safe_area_changed):
+		sz.safe_area_changed.disconnect(_on_safe_area_changed)
 
 
 func _on_safe_area_changed(_rect: Rect2) -> void:
@@ -40,7 +47,10 @@ func _on_safe_area_changed(_rect: Rect2) -> void:
 
 
 func _apply_safe_area() -> void:
-	var margins: Dictionary = SafeZoneManager.get_safe_margins() as Dictionary
+	var sz: _SafeZoneManager = AutoloadHelper.safe_zone_manager()
+	if sz == null:
+		return
+	var margins: Dictionary = sz.get_safe_margins() as Dictionary
 	margin_container.add_theme_constant_override("margin_left", int(margins.get("left", 0)))
 	margin_container.add_theme_constant_override("margin_top", int(margins.get("top", 0)))
 	margin_container.add_theme_constant_override("margin_right", int(margins.get("right", 0)))
@@ -68,7 +78,9 @@ func toggle_pause() -> void:
 		if is_instance_valid(_resume_button):
 			_resume_button.grab_focus.call_deferred()
 
-		FocusManager.push_modal_focus(self)
+		var fm: Node = AutoloadHelper.focus_manager()
+		if fm and fm.has_method("push_modal_focus"):
+			fm.call("push_modal_focus", self)
 
 
 func _on_restart_pressed() -> void:
@@ -88,11 +100,14 @@ func _on_quit_pressed() -> void:
 		var modal: Node = scene.instantiate()
 		modal.call("setup", "CONFIRM_RETURN_TITLE", "CONFIRM_RETURN_BODY")
 		modal.connect("confirmed", _on_quit_confirmed)
-		LayerManager.add_modal(modal)
+		var lm: _LayerManager = AutoloadHelper.layer_manager()
+		if lm:
+			lm.add_modal(modal)
 
 
 func _on_quit_confirmed() -> void:
 	get_tree().paused = false
-	if RunManager.has_method("cmd_return_to_sanctum"):
-		RunManager.call("cmd_return_to_sanctum")
+	var rm: _RunManager = AutoloadHelper.run_manager()
+	if rm:
+		rm.cmd_return_to_sanctum()
 	hide()

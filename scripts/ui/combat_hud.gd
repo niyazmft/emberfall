@@ -32,8 +32,10 @@ var _combat_input: CombatInput
 
 
 func _ready() -> void:
-	SafeZoneManager.safe_area_changed.connect(_on_safe_area_changed)
-	SafeZoneManager.aspect_ratio_changed.connect(_on_aspect_ratio_changed)
+	var sz: _SafeZoneManager = AutoloadHelper.safe_zone_manager()
+	if sz:
+		sz.safe_area_changed.connect(_on_safe_area_changed)
+		sz.aspect_ratio_changed.connect(_on_aspect_ratio_changed)
 	_apply_safe_area()
 	_reflow_bottom_chrome()
 	_setup_tooltips()
@@ -45,10 +47,12 @@ func _ready() -> void:
 
 
 func _exit_tree() -> void:
-	if SafeZoneManager.safe_area_changed.is_connected(_on_safe_area_changed):
-		SafeZoneManager.safe_area_changed.disconnect(_on_safe_area_changed)
-	if SafeZoneManager.aspect_ratio_changed.is_connected(_on_aspect_ratio_changed):
-		SafeZoneManager.aspect_ratio_changed.disconnect(_on_aspect_ratio_changed)
+	var sz: _SafeZoneManager = AutoloadHelper.safe_zone_manager()
+	if sz:
+		if sz.safe_area_changed.is_connected(_on_safe_area_changed):
+			sz.safe_area_changed.disconnect(_on_safe_area_changed)
+		if sz.aspect_ratio_changed.is_connected(_on_aspect_ratio_changed):
+			sz.aspect_ratio_changed.disconnect(_on_aspect_ratio_changed)
 
 	if move_button.pressed.is_connected(_on_move_pressed):
 		move_button.pressed.disconnect(_on_move_pressed)
@@ -188,12 +192,15 @@ func _on_safe_area_changed(_rect: Rect2) -> void:
 	_apply_safe_area()
 
 
-func _on_aspect_ratio_changed(_mode: SafeZoneManager.AspectMode) -> void:
+func _on_aspect_ratio_changed(_mode: _SafeZoneManager.AspectMode) -> void:
 	_reflow_bottom_chrome()
 
 
 func _apply_safe_area() -> void:
-	var margins: Dictionary = SafeZoneManager.get_safe_margins()
+	var sz: _SafeZoneManager = AutoloadHelper.safe_zone_manager()
+	if sz == null:
+		return
+	var margins: Dictionary = sz.get_safe_margins()
 	margin_container.add_theme_constant_override("margin_left", margins.left)
 	margin_container.add_theme_constant_override("margin_top", margins.top)
 	margin_container.add_theme_constant_override("margin_right", margins.right)
@@ -246,7 +253,8 @@ func _reflow_bottom_chrome() -> void:
 	bottom_chrome.move_child(hotbar, 3)
 
 	# If viewport is very tight (SHRINK mode), we might want to hide status icons
-	if SafeZoneManager.current_aspect_mode == SafeZoneManager.AspectMode.SHRINK:
+	var sz: _SafeZoneManager = AutoloadHelper.safe_zone_manager()
+	if sz and sz.current_aspect_mode == _SafeZoneManager.AspectMode.SHRINK:
 		status_icons.hide()
 	else:
 		status_icons.show()

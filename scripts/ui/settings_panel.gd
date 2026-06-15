@@ -37,7 +37,9 @@ var _resolutions: Array[Vector2i] = [
 
 
 func _ready() -> void:
-	SafeZoneManager.safe_area_changed.connect(_on_safe_area_changed)
+	var sz: _SafeZoneManager = AutoloadHelper.safe_zone_manager()
+	if sz:
+		sz.safe_area_changed.connect(_on_safe_area_changed)
 	_apply_safe_area()
 
 	_loadHelpData()
@@ -116,8 +118,9 @@ func _load_ui_from_settings() -> void:
 
 
 func _exit_tree() -> void:
-	if SafeZoneManager.safe_area_changed.is_connected(_on_safe_area_changed):
-		SafeZoneManager.safe_area_changed.disconnect(_on_safe_area_changed)
+	var sz: _SafeZoneManager = AutoloadHelper.safe_zone_manager()
+	if sz and sz.safe_area_changed.is_connected(_on_safe_area_changed):
+		sz.safe_area_changed.disconnect(_on_safe_area_changed)
 
 	# Audio
 	if (
@@ -238,10 +241,10 @@ func _on_audio_changed(value: Variant, key: String) -> void:
 
 
 func _on_apply_video_settings() -> void:
-	var am: _UIAudioManager = AutoloadHelper.get_autoload("UIAudioManager")
+	var am: _UIAudioManager = AutoloadHelper.ui_audio_manager()
 	if am:
 		am.playUiSound("apply")
-	var hm: _HapticsManager = AutoloadHelper.get_autoload("HapticsManager")
+	var hm: _HapticsManager = AutoloadHelper.haptics_manager()
 	if hm:
 		hm.triggerHaptic("apply")
 
@@ -286,7 +289,9 @@ func _on_reset_pressed() -> void:
 		var modal: Node = scene.instantiate()
 		modal.call("setup", "CONFIRM_RESET_SETTINGS_TITLE", "CONFIRM_RESET_SETTINGS_BODY")
 		modal.connect("confirmed", _on_reset_confirmed)
-		LayerManager.add_modal(modal)
+		var lm: _LayerManager = AutoloadHelper.layer_manager()
+		if lm:
+			lm.add_modal(modal)
 
 
 func _on_reset_confirmed() -> void:
@@ -332,19 +337,19 @@ func _setupHelpListeners() -> void:
 
 func _onControlHovered(control_name: String) -> void:
 	_updateHelpText(control_name)
-	var am: _UIAudioManager = AutoloadHelper.get_autoload("UIAudioManager")
+	var am: _UIAudioManager = AutoloadHelper.ui_audio_manager()
 	if am:
 		am.playUiSound("hover")
-	var hm: _HapticsManager = AutoloadHelper.get_autoload("HapticsManager")
+	var hm: _HapticsManager = AutoloadHelper.haptics_manager()
 	if hm:
 		hm.triggerHaptic("hover")
 
 
 func _onControlClicked(_extra: Variant = null) -> void:
-	var am: _UIAudioManager = AutoloadHelper.get_autoload("UIAudioManager")
+	var am: _UIAudioManager = AutoloadHelper.ui_audio_manager()
 	if am:
 		am.playUiSound("click")
-	var hm: _HapticsManager = AutoloadHelper.get_autoload("HapticsManager")
+	var hm: _HapticsManager = AutoloadHelper.haptics_manager()
 	if hm:
 		hm.triggerHaptic("click")
 
@@ -359,10 +364,10 @@ func _clearHelpText() -> void:
 
 
 func _on_back_pressed() -> void:
-	var am: _UIAudioManager = AutoloadHelper.get_autoload("UIAudioManager")
+	var am: _UIAudioManager = AutoloadHelper.ui_audio_manager()
 	if am:
 		am.playUiSound("cancel")
-	var hm: _HapticsManager = AutoloadHelper.get_autoload("HapticsManager")
+	var hm: _HapticsManager = AutoloadHelper.haptics_manager()
 	if hm:
 		hm.triggerHaptic("cancel")
 
@@ -379,7 +384,10 @@ func _on_safe_area_changed(_rect: Rect2) -> void:
 
 
 func _apply_safe_area() -> void:
-	var margins: Dictionary = SafeZoneManager.get_safe_margins() as Dictionary
+	var sz: _SafeZoneManager = AutoloadHelper.safe_zone_manager()
+	if sz == null:
+		return
+	var margins: Dictionary = sz.get_safe_margins() as Dictionary
 	_margin_container.add_theme_constant_override("margin_left", int(margins.get("left", 0)))
 	_margin_container.add_theme_constant_override("margin_top", int(margins.get("top", 0)))
 	_margin_container.add_theme_constant_override("margin_right", int(margins.get("right", 0)))

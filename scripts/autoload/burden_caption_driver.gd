@@ -24,7 +24,7 @@ func _ready() -> void:
 
 
 func _exit_tree() -> void:
-	var am: _AudioMiddleware = AutoloadHelper.get_autoload("AudioMiddleware") as _AudioMiddleware
+	var am: _AudioMiddleware = AutoloadHelper.audio_middleware()
 	if am != null and am.is_connected("stem_event_detected", _on_stem_event):
 		am.stem_event_detected.disconnect(_on_stem_event)
 
@@ -48,7 +48,7 @@ func _process(delta: float) -> void:
 
 
 func _connect_middleware() -> void:
-	var am: _AudioMiddleware = AutoloadHelper.get_autoload("AudioMiddleware") as _AudioMiddleware
+	var am: _AudioMiddleware = AutoloadHelper.audio_middleware()
 	if am != null and am.has_signal("stem_event_detected"):
 		am.stem_event_detected.connect(_on_stem_event)
 
@@ -102,7 +102,7 @@ func _map_and_trigger_caption(stem_id: String, event_type: String, intensity: fl
 				duration = 2.0
 
 	if not caption_text.is_empty():
-		var cm: Node = AutoloadHelper.get_autoload("CaptionManager")
+		var cm: Node = AutoloadHelper.caption_manager()
 		if cm != null and cm.has_method("schedule"):
 			# Channel.BURDEN = 1
 			# CaptionCurve.LINEAR = 1

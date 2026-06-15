@@ -44,8 +44,9 @@ static func burden_manager() -> _BurdenManager:
 
 
 ## Returns the CaptionManager autoload, or null.
-static func caption_manager() -> _CaptionManager:
-	return get_autoload("CaptionManager") as _CaptionManager
+## NOTE: Returns Node instead of _CaptionManager to prevent engine Parse Errors.
+static func caption_manager() -> Node:
+	return get_autoload("CaptionManager")
 
 
 ## Returns the EntityLifecycle autoload, or null.
@@ -111,6 +112,62 @@ static func ambient_narrator() -> _AmbientNarrator:
 ## Returns the SecretRoomTrigger autoload, or null.
 static func secret_room_trigger() -> _SecretRoomTrigger:
 	return get_autoload("SecretRoomTrigger") as _SecretRoomTrigger
+
+
+## Returns the SafeZoneManager autoload, or null.
+static func safe_zone_manager() -> _SafeZoneManager:
+	return get_autoload("SafeZoneManager") as _SafeZoneManager
+
+
+## Returns the LayerManager autoload, or null.
+static func layer_manager() -> _LayerManager:
+	return get_autoload("LayerManager") as _LayerManager
+
+
+## Returns the InputRouter autoload, or null.
+static func input_router() -> _InputRouter:
+	return get_autoload("InputRouter") as _InputRouter
+
+
+## Returns the AudioMiddleware autoload, or null.
+static func audio_middleware() -> _AudioMiddleware:
+	return get_autoload("AudioMiddleware") as _AudioMiddleware
+
+
+## Returns the AbilityManager autoload, or null.
+static func ability_manager() -> _AbilityManager:
+	return get_autoload("AbilityManager") as _AbilityManager
+
+
+## Returns the BurdenCaptionDriver autoload, or null.
+static func burden_caption_driver() -> _BurdenCaptionDriver:
+	return get_autoload("BurdenCaptionDriver") as _BurdenCaptionDriver
+
+
+## Returns the BurdenEventCoordinator autoload, or null.
+static func burden_event_coordinator() -> _BurdenEventCoordinator:
+	return get_autoload("BurdenEventCoordinator") as _BurdenEventCoordinator
+
+
+## Returns the ToastManager autoload, or null.
+static func toast_manager() -> _ToastManager:
+	return get_autoload("ToastManager") as _ToastManager
+
+
+## Returns the FocusManager autoload, or null.
+## NOTE: Returns Node instead of _FocusManager to prevent engine Parse Errors.
+static func focus_manager() -> Node:
+	return get_autoload("FocusManager")
+
+
+## Returns the UIAudioManager autoload, or null.
+static func ui_audio_manager() -> _UIAudioManager:
+	return get_autoload("UIAudioManager") as _UIAudioManager
+
+
+## Returns the HapticsManager autoload, or null.
+static func haptics_manager() -> _HapticsManager:
+	return get_autoload("HapticsManager") as _HapticsManager
 
 
 # ── Derived Helpers ───────────────────────────────────────────────────────────
