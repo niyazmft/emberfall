@@ -5,5 +5,5 @@ func _init() -> void:
     grid_system.name = "GridSystem"
     root.add_child(grid_system)
 
-    var bench: Node = load("res://scripts/tests/benchmark_pathfinding.gd").new()
+    var bench: Node = load("res://tests/benchmark/benchmark_pathfinding.gd").new()
     root.add_child(bench)
