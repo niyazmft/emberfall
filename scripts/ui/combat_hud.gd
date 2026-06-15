@@ -2,6 +2,8 @@ extends Control
 ## CombatHUD (DON-196)
 ## Manages HUD layout and bottom chrome reflow.
 
+signal move_pressed
+
 var _player_entity: Entity
 var _turn_manager: TurnManager
 var _combat_input: CombatInput
@@ -162,8 +164,8 @@ func _on_attack_executed(target: Node2D, damage: int) -> void:
 
 
 func _on_move_pressed() -> void:
-	# Not implemented
-	pass
+	move_pressed.emit()
+	_log_from_config("move_hint")
 
 
 func _on_attack_pressed() -> void:

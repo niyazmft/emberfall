@@ -115,3 +115,4 @@ biome.3.name,Crystal Spires,Kristallspitzen,Pináculos de Cristal,Pinacles de Cr
 biome.3.elev.0,[Shimmering shards underfoot],[Schimmernde Scherben unter den Füßen],[Fragmentos brillantes bajo tus pies],[Éclats chatoyants sous vos pieds]
 biome.3.elev.1,[The crystals grow denser],[Die Kristalle werden dichter],[Los cristales se vuelven más densos],[Les cristaux deviennent plus denses]
 biome.3.elev.2,[Light refracts through the spires],[Licht bricht sich in den Spitzen],[La luz se refracta a través de los pináculos],[La lumière se réfracte à travers les pinacles]
+HUD_LOG_MOVE_HINT,Use Arrow Keys or WASD to move,,,
