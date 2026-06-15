@@ -129,10 +129,7 @@ func _create_enemies_node() -> void:
 
 func _spawn_test_encounter() -> void:
 	_room_kills = 0
-	_current_room_data = {
-		"encounter_seed": 12345,
-		"biome": 0
-	}
+	_current_room_data = {"encounter_seed": 12345, "biome": 0}
 
 	_spawn_player()
 	_spawn_enemies()
@@ -237,14 +234,12 @@ func _on_combat_ended(victory: bool) -> void:
 		_showDefeatModal()
 
 
-func _on_entity_state_changed(entity: Entity, old_state: Entity.State, new_state: Entity.State) -> void:
+func _on_entity_state_changed(
+	entity: Entity, old_state: Entity.State, new_state: Entity.State
+) -> void:
 	# Only increment kills if transitioning from a non-dead/non-ghost state to DEAD or GHOST
-	var was_alive := (
-		old_state != Entity.State.DEAD and old_state != Entity.State.GHOST
-	)
-	var is_now_dead := (
-		new_state == Entity.State.DEAD or new_state == Entity.State.GHOST
-	)
+	var was_alive := old_state != Entity.State.DEAD and old_state != Entity.State.GHOST
+	var is_now_dead := new_state == Entity.State.DEAD or new_state == Entity.State.GHOST
 
 	if not entity.is_player and was_alive and is_now_dead:
 		_room_kills += 1

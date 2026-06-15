@@ -10,7 +10,7 @@ func test_victory_data_aggregation() -> void:
 	# 1. Setup room with specific encounter seed for deterministic shards
 	var room_data: Dictionary = {
 		"room_id": "test_room",
-		"encounter_seed": 12345, # This seed should produce a specific shard count
+		"encounter_seed": 12345,  # This seed should produce a specific shard count
 		"biome": 0,
 		"layout": {"elevation": [], "cover": [], "blocked": [], "vision_blocked": []},
 		"player_start": {"x": 2, "y": 2},
