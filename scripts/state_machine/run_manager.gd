@@ -109,13 +109,7 @@ func _register_states() -> void:
 		Callable(),
 		Callable(self, "_update_biome_generation")
 	)
-	register_state(
-		RunState.ROOM,
-		&"ROOM",
-		Callable(self, "_enter_room"),
-		Callable(),
-		Callable(self, "_update_room")
-	)
+	register_state(RunState.ROOM, &"ROOM", Callable(self, "_enter_room"), Callable(), Callable())
 	register_state(
 		RunState.MORAL_EVAL,
 		&"MORAL_EVAL",
@@ -181,10 +175,7 @@ func _register_transitions() -> void:
 		Callable(self, "_action_increment_room")
 	)
 	register_transition(
-		RunState.ROOM,
-		RunState.RUN_RESOLUTION,
-		Callable(self, "_guard_run_end"),
-		Callable(self, "_action_record_result")
+		RunState.ROOM, RunState.RUN_RESOLUTION, Callable(self, "_guard_run_end"), Callable()
 	)
 
 	# MORAL_EVAL → ROOM (guard: flag processing done)
@@ -332,11 +323,6 @@ func _enter_room(_ctx: Dictionary) -> void:
 
 	# Emit event for UI / encounter spawner
 	room_entered.emit(room_index, room_data)
-
-
-func _update_room(_delta: float, _elapsed: float) -> void:
-	# Frame-rate independent room logic stub.
-	pass
 
 
 func _enter_moral_eval(_ctx: Dictionary) -> void:
@@ -515,10 +501,6 @@ func _action_generate_rooms(_ctx: Dictionary) -> void:
 
 func _action_increment_room(_ctx: Dictionary) -> void:
 	room_index += 1
-
-
-func _action_record_result(_ctx: Dictionary) -> void:
-	pass
 
 
 func _action_reset_run(_ctx: Dictionary) -> void:
