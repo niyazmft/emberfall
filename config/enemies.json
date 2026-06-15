@@ -7,7 +7,6 @@
       "spd": 4,
       "ai_behavior": "GRUNT",
       "biome_affinity": "ANY",
-      "loot_table_id": "grunt_loot",
       "min_range": 1,
       "max_range": 1,
       "retreat_hp_threshold": 0.0,
@@ -20,7 +19,6 @@
       "spd": 5,
       "ai_behavior": "ARCHER",
       "biome_affinity": "ANY",
-      "loot_table_id": "archer_loot",
       "min_range": 2,
       "max_range": 3,
       "retreat_hp_threshold": 0.3,
@@ -33,7 +31,6 @@
       "spd": 2,
       "ai_behavior": "TANK",
       "biome_affinity": "ANY",
-      "loot_table_id": "tank_loot",
       "min_range": 1,
       "max_range": 1,
       "retreat_hp_threshold": 0.0,
@@ -53,7 +50,6 @@
       "spd": 4,
       "ai_behavior": "ARCHER",
       "biome_affinity": "ANY",
-      "loot_table_id": "archer_loot",
       "min_range": 2,
       "max_range": 4,
       "retreat_hp_threshold": 0.2,
@@ -66,7 +62,6 @@
       "spd": 3,
       "ai_behavior": "GRUNT",
       "biome_affinity": "ANY",
-      "loot_table_id": "grunt_loot",
       "min_range": 1,
       "max_range": 1,
       "retreat_hp_threshold": 0.1,
@@ -78,8 +73,7 @@
       "def_": 15,
       "spd": 2,
       "ai_behavior": "OVERGROWN_GUARDIAN",
-      "biome_affinity": "biome1",
-      "loot_table_id": "boss_loot"
+      "biome_affinity": "biome1"
     }
   }
 }
