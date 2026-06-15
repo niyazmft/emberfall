@@ -23,7 +23,7 @@ func _input(event: InputEvent) -> void:
 		# Filter out small stick drift
 		if event is InputEventJoypadMotion:
 			var motion: InputEventJoypadMotion = event as InputEventJoypadMotion
-			if abs(motion.axis_value) < 0.3:
+			if DeterministicMath.absf(motion.axis_value) < 0.3:
 				return
 		new_device = InputDevice.GAMEPAD
 
