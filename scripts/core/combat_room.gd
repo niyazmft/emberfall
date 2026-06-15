@@ -18,6 +18,8 @@ var _player: Node2D  # Type will be Keeper
 var _enemies_node: Node2D
 var _combat_input: CombatInput
 var _turn_manager: TurnManager
+var _room_kills: int = 0
+var _current_room_data: Dictionary = {}
 
 @onready var grid_renderer: GridRenderer = $GridRenderer
 @onready var entity_container: Node2D = $EntityContainer
@@ -37,6 +39,10 @@ func _ready() -> void:
 	elif test_mode:
 		_spawn_test_encounter()
 
+	var eb := AutoloadHelper.event_bus()
+	if eb:
+		eb.entity_state_changed.connect(_on_entity_state_changed)
+
 	_setup_camera()
 
 
@@ -45,8 +51,15 @@ func _exit_tree() -> void:
 	if run_manager and run_manager.room_entered.is_connected(_on_room_entered):
 		run_manager.room_entered.disconnect(_on_room_entered)
 
+	var eb := AutoloadHelper.event_bus()
+	if eb and eb.entity_state_changed.is_connected(_on_entity_state_changed):
+		eb.entity_state_changed.disconnect(_on_entity_state_changed)
+
 
 func _on_room_entered(_room_index: int, room_data: Dictionary) -> void:
+	_current_room_data = room_data
+	_room_kills = 0
+
 	# Clear existing entities if any
 	for child: Node in entity_container.get_children():
 		child.queue_free()
@@ -115,6 +128,9 @@ func _create_enemies_node() -> void:
 
 
 func _spawn_test_encounter() -> void:
+	_room_kills = 0
+	_current_room_data = {"encounter_seed": 12345, "biome": 0}
+
 	_spawn_player()
 	_spawn_enemies()
 
@@ -218,6 +234,32 @@ func _on_combat_ended(victory: bool) -> void:
 		_showDefeatModal()
 
 
+func _on_entity_state_changed(
+	entity: Entity, old_state: Entity.State, new_state: Entity.State
+) -> void:
+	# Only increment kills if transitioning from a non-dead/non-ghost state to DEAD or GHOST
+	var was_alive := old_state != Entity.State.DEAD and old_state != Entity.State.GHOST
+	var is_now_dead := new_state == Entity.State.DEAD or new_state == Entity.State.GHOST
+
+	if not entity.is_player and was_alive and is_now_dead:
+		_room_kills += 1
+
+
+func _calculate_shards() -> int:
+	var config := AutoloadHelper.config_loader()
+	if not config:
+		return 0
+
+	var rewards: Dictionary = config.getValue("rewards", "victory_reward", {})
+	var min_shards: int = int(rewards.get("shards_min", 20))
+	var max_shards: int = int(rewards.get("shards_max", 50))
+	var shard_range: int = max_shards - min_shards + 1
+
+	var enc_seed: int = int(_current_room_data.get("encounter_seed", 0))
+	var bonus: int = SeedGovernance.modulo_from_seed(enc_seed, "VICTORY_SHARDS", shard_range)
+	return min_shards + bonus
+
+
 func _showVictoryModal() -> void:
 	var scene: PackedScene = load(VICTORY_MODAL_SCENE_PATH)
 	if scene:
@@ -226,8 +268,8 @@ func _showVictoryModal() -> void:
 		if modal.has_method("setup"):
 			var summary: Dictionary = {
 				"turns": _turn_manager.round_number,
-				"kills": 3,
-				"shards": 10,
+				"kills": _room_kills,
+				"shards": _calculate_shards(),
 			}
 			modal.call("setup", summary)
 
