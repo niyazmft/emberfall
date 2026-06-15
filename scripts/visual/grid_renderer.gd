@@ -187,8 +187,8 @@ func _generate_diamond_texture() -> Texture2D:
 	for py: int in range(h):
 		for px: int in range(w):
 			# Distance from center in normalized 0-1 range
-			var dx: float = abs(float(px) + 0.5 - hw) / hw
-			var dy: float = abs(float(py) + 0.5 - hh) / hh
+			var dx: float = DeterministicMath.absf(float(px) + 0.5 - hw) / hw
+			var dy: float = DeterministicMath.absf(float(py) + 0.5 - hh) / hh
 
 			# Diamond check (Manhattan distance <= 1)
 			if dx + dy <= 1.0:

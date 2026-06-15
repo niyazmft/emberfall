@@ -336,4 +336,4 @@ class CaptionEvent:
 
 	## Validate that timing falls within the configured tolerance.
 	func is_timing_accurate(expected_offset_sec: float, tolerance_sec: float) -> bool:
-		return absf(offset_sec - expected_offset_sec) <= tolerance_sec
+		return DeterministicMath.absf(offset_sec - expected_offset_sec) <= tolerance_sec
