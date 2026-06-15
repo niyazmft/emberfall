@@ -28,4 +28,4 @@ The rig consists of 9 potential sprites:
 
 ## Configuration
 
-Controlled via `char_apparition_rig.json`.
+Controlled via `data/char_apparition_rig.json`.
