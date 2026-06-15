@@ -12,7 +12,8 @@
       "enemy_turn": "HUD_LOG_ENEMY_TURN",
       "round_start": "HUD_LOG_ROUND_START",
       "select_target": "HUD_LOG_SELECT_TARGET",
-      "damage_dealt": "HUD_LOG_DAMAGE_DEALT"
+      "damage_dealt": "HUD_LOG_DAMAGE_DEALT",
+      "move_hint": "HUD_LOG_MOVE_HINT"
     }
   },
   "ap_bar": {

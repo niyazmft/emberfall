@@ -86,6 +86,8 @@ func _setup_hud() -> void:
 			player_entity = (_player as BaseEnemy).entity
 		if player_entity:
 			combat_hud.call("setup", player_entity, _turn_manager, _combat_input)
+			if not combat_hud.move_pressed.is_connected(_on_hud_move_pressed):
+				combat_hud.move_pressed.connect(_on_hud_move_pressed)
 
 
 func _setup_turn_manager() -> void:
@@ -209,6 +211,13 @@ func _try_move_player(dx: int, dy: int) -> void:
 		entity.set_facing(dx, dy)
 		# Deduct AP
 		entity.ap -= cost
+
+
+func _on_hud_move_pressed() -> void:
+	# For Sprint 1, movement is direct via WASD/Arrows.
+	# The HUD button provides feedback to the player.
+	if _combat_input and _combat_input.current_state == CombatInput.State.TARGETING:
+		_combat_input._stop_targeting()
 
 
 func _on_combat_ended(victory: bool) -> void:
