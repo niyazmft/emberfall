@@ -11,7 +11,7 @@ static func decide_action(
 	p_grid_system: _GridSystem,
 	p_controller: EnemyAIController
 ) -> Dictionary:
-	var player_entity: Entity = p_player_node.get("entity") as Entity
+	var player_entity := CombatEntity.get_entity(p_player_node)
 	if player_entity == null:
 		return {"type": "wait"}
 
@@ -22,8 +22,8 @@ static func decide_action(
 	# Get Tank-specific properties from the entity's controller node (BaseEnemy or child)
 	var tank_node: Node = p_controller.get_parent()
 	var taunt_radius: int = 3
-	if tank_node and tank_node.get("taunt_radius"):
-		taunt_radius = int(tank_node.get("taunt_radius"))
+	if tank_node is EnemyTank:
+		taunt_radius = (tank_node as EnemyTank).taunt_radius
 
 	# 1. Attack if adjacent
 	if dist <= 1:

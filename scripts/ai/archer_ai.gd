@@ -50,7 +50,7 @@ func decide_action(p_entity: Entity = null) -> Dictionary:
 	):
 		return {"type": "wait"}
 
-	var player_entity: Entity = _player_node.get("entity") as Entity
+	var player_entity := CombatEntity.get_entity(_player_node)
 	if player_entity == null:
 		return {"type": "wait"}
 

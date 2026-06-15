@@ -1,11 +1,10 @@
 class_name BaseEnemy
-extends Node2D
+extends CombatEntity
 ## Enemy scene root with configurable AI behavior
 
 @export var archetype_id: String = ""
 @export var elite_type: String = ""
 @export var behavior_override: String = ""
-@export var entity: Entity
 @export var ai_controller: Node  ## Will integrate with behavior tree
 @export var visual_proxy: EntityVisualProxy
 @export var debug_color: Color = Color.WHITE

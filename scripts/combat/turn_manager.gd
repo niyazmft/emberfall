@@ -105,7 +105,7 @@ func _process_current_state() -> void:
 		CombatState.PLAYER_TURN:
 			_regen_current_actor_ap()
 			var actor: Node2D = turn_order[current_turn_index]
-			var entity: Entity = actor.get("entity") as Entity
+			var entity := CombatEntity.get_entity(actor)
 			turn_started.emit(entity, true)
 			if _eventBus:
 				_eventBus.turn_started.emit(entity, true)
@@ -113,7 +113,7 @@ func _process_current_state() -> void:
 		CombatState.ENEMY_TURN:
 			_regen_current_actor_ap()
 			var enemy: Node2D = turn_order[current_turn_index]
-			var entity: Entity = enemy.get("entity") as Entity
+			var entity := CombatEntity.get_entity(enemy)
 			turn_started.emit(entity, false)
 			if _eventBus:
 				_eventBus.turn_started.emit(entity, false)
@@ -129,9 +129,9 @@ func _process_current_state() -> void:
 func _is_actor_alive(actor: Node2D) -> bool:
 	if not is_instance_valid(actor):
 		return false
-	var ent: Variant = actor.get("entity")
-	if ent is Entity:
-		return (ent as Entity).hp > 0
+	var entity := CombatEntity.get_entity(actor)
+	if entity:
+		return entity.hp > 0
 	return false
 
 
@@ -146,8 +146,8 @@ func _calculate_initiative() -> void:
 
 	turn_order.sort_custom(
 		func(a: Node2D, b: Node2D) -> bool:
-			var a_ent: Entity = a.get("entity") as Entity
-			var b_ent: Entity = b.get("entity") as Entity
+			var a_ent := CombatEntity.get_entity(a)
+			var b_ent := CombatEntity.get_entity(b)
 			if not a_ent or not b_ent:
 				return false
 			if a_ent.spd == b_ent.spd:
@@ -166,7 +166,7 @@ func _start_next_turn_logic() -> void:
 		_advance_turn_logic()
 		return
 
-	var entity: Entity = current_actor.get("entity") as Entity
+	var entity := CombatEntity.get_entity(current_actor)
 	if not entity:
 		_advance_turn_logic()
 		return
@@ -183,7 +183,7 @@ func _end_current_turn() -> void:
 		return
 
 	var current_actor: Node2D = turn_order[current_turn_index]
-	var entity: Entity = current_actor.get("entity") as Entity
+	var entity := CombatEntity.get_entity(current_actor)
 
 	if is_instance_valid(_lifecycle):
 		_lifecycle.process_end_of_turn()
@@ -212,7 +212,7 @@ func _regen_current_actor_ap() -> void:
 	if current_turn_index < 0 or current_turn_index >= turn_order.size():
 		return
 	var actor: Node2D = turn_order[current_turn_index]
-	var entity: Entity = actor.get("entity") as Entity
+	var entity := CombatEntity.get_entity(actor)
 	if entity:
 		entity.ap = DeterministicMath.clampi(
 			entity.ap + GameConstants.AP_REGEN, 0, GameConstants.AP_MAX

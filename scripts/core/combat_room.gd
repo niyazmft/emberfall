@@ -92,11 +92,7 @@ func _on_room_entered(_room_index: int, room_data: Dictionary) -> void:
 func _setup_hud() -> void:
 	var combat_hud: Control = $UIOverlay/CombatHUD
 	if combat_hud and _player:
-		var player_entity: Entity = null
-		if _player is Keeper:
-			player_entity = (_player as Keeper).entity
-		elif _player is BaseEnemy:
-			player_entity = (_player as BaseEnemy).entity
+		var player_entity := CombatEntity.get_entity(_player)
 		if player_entity:
 			combat_hud.call("setup", player_entity, _turn_manager, _combat_input)
 			if not combat_hud.move_pressed.is_connected(_on_hud_move_pressed):
@@ -151,15 +147,15 @@ func _spawn_player() -> void:
 	entity_resource.is_player = true
 
 	# Assigning entity to keeper before adding to tree if possible
-	if keeper.has_method("set"):
-		keeper.set("entity", entity_resource)
+	if keeper is CombatEntity:
+		(keeper as CombatEntity).entity = entity_resource
 
 	_player = keeper
 	entity_container.add_child(keeper)
 
 	# Explicitly set position after adding to tree to trigger visual proxy if needed
-	if _player.get("entity"):
-		var entity: Entity = _player.get("entity") as Entity
+	var entity := CombatEntity.get_entity(_player)
+	if entity:
 		entity.set_grid_position(5, 5)
 
 
@@ -173,7 +169,7 @@ func _spawn_enemies() -> void:
 		_enemies_node.add_child(grunt)
 
 		# Position grunts
-		var entity: Entity = grunt.get("entity") as Entity
+		var entity := CombatEntity.get_entity(grunt)
 		if entity:
 			entity.set_grid_position(8 + i, 3 + i)
 
@@ -208,10 +204,9 @@ func _input(event: InputEvent) -> void:
 
 
 func _try_move_player(dx: int, dy: int) -> void:
-	if not _player or not _player.get("entity"):
+	var entity := CombatEntity.get_entity(_player)
+	if not entity:
 		return
-
-	var entity: Entity = _player.get("entity") as Entity
 
 	# Consume AP for movement
 	var cost: int = CombatFormula.action_cost("move_cardinal")
