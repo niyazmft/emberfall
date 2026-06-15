@@ -149,7 +149,7 @@ func _analyze_climb() -> void:
 	if mag_low > 0.0:
 		width = clampf(mag_high / mag_low, 0.0, 1.0)
 
-	if absf(width - _climb_width) > 0.05:
+	if DeterministicMath.absf(width - _climb_width) > 0.05:
 		_climb_width = width
 		feature_updated.emit("width", _climb_width)
 

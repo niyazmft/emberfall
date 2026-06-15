@@ -24,7 +24,7 @@ func _load_config() -> void:
 
 
 func _process(delta: float) -> void:
-	if abs(hp_bar.value - _target_hp) > 0.1:
+	if DeterministicMath.absf(hp_bar.value - _target_hp) > 0.1:
 		hp_bar.value = lerpf(hp_bar.value, _target_hp, _lerp_speed * delta)
 	else:
 		hp_bar.value = _target_hp

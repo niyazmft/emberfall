@@ -137,7 +137,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		event is InputEventKey
 		or event is InputEventMouseButton
 		or event is InputEventJoypadButton
-		or (event is InputEventJoypadMotion and abs(event.axis_value) > 0.5)
+		or (event is InputEventJoypadMotion and DeterministicMath.absf(event.axis_value) > 0.5)
 	)
 
 	if is_valid_input:
