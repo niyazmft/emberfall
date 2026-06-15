@@ -11,13 +11,17 @@ static func show_modal() -> void:
 	var scene: PackedScene = load("res://scenes/ui/settings_menu.tscn") as PackedScene
 	if scene:
 		var instance: Node = scene.instantiate()
-		LayerManager.add_modal(instance)
+		var lm: _LayerManager = AutoloadHelper.layer_manager()
+		if lm:
+			lm.add_modal(instance)
 
 
 func _ready() -> void:
 	_panel.back_pressed.connect(_on_back_pressed)
 	_panel.show()
-	FocusManager.set_initial_focus(_panel)
+	var fm: Node = AutoloadHelper.focus_manager()
+	if fm and fm.has_method("set_initial_focus"):
+		fm.call("set_initial_focus", _panel)
 
 
 func _exit_tree() -> void:

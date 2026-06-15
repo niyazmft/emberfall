@@ -13,19 +13,18 @@ var _conflict_timer: SceneTreeTimer
 
 func _ready() -> void:
 	create_action_list()
-	if InputRouter.has_signal("device_changed"):
-		InputRouter.device_changed.connect(_on_device_changed)
+	var ir: _InputRouter = AutoloadHelper.input_router()
+	if ir:
+		ir.device_changed.connect(_on_device_changed)
 
 	# Focus the first item for keyboard/gamepad accessibility when the list is populated
 	call_deferred("_focus_first_item")
 
 
 func _exit_tree() -> void:
-	if (
-		InputRouter.has_signal("device_changed")
-		and InputRouter.device_changed.is_connected(_on_device_changed)
-	):
-		InputRouter.device_changed.disconnect(_on_device_changed)
+	var ir: _InputRouter = AutoloadHelper.input_router()
+	if ir and ir.device_changed.is_connected(_on_device_changed):
+		ir.device_changed.disconnect(_on_device_changed)
 
 	if _conflict_timer and _conflict_timer.timeout.is_connected(conflict_toast.hide):
 		_conflict_timer.timeout.disconnect(conflict_toast.hide)
@@ -73,7 +72,8 @@ func get_action_text(action: StringName) -> String:
 	if events.is_empty():
 		return "None"
 
-	var current_device: int = int(InputRouter.current_device)
+	var ir: _InputRouter = AutoloadHelper.input_router()
+	var current_device: int = int(ir.current_device) if ir else 0
 
 	for event: InputEvent in events:
 		if current_device == 0:  # KEYBOARD_MOUSE
@@ -91,7 +91,8 @@ func get_action_icon(action: StringName) -> Texture2D:
 	if events.is_empty():
 		return null
 
-	var current_device: int = int(InputRouter.current_device)
+	var ir: _InputRouter = AutoloadHelper.input_router()
+	var current_device: int = int(ir.current_device) if ir else 0
 
 	for event: InputEvent in events:
 		if current_device == 0:  # KEYBOARD_MOUSE
