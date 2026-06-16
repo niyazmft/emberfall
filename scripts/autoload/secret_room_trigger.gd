@@ -88,9 +88,9 @@ func _unlock_secret(cond: Dictionary) -> void:
 	print("SecretRoomTrigger: UNLOCKED secret with tile %s" % spawn_tile_id)
 
 	# Interaction with GridSystem to spawn the exit
-	var gs: _GridSystem = AutoloadHelper.grid_system()
-	if gs and gs.has_method("spawn_special_tile"):
-		gs.call("spawn_special_tile", spawn_tile_id)
+	var gs := AutoloadHelper.grid_system()
+	if gs:
+		gs.spawn_special_tile(spawn_tile_id)
 
 	# Narrative feedback
 	if not flavor_key.is_empty():

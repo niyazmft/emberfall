@@ -72,7 +72,7 @@ func schedule_mwt_state_caption(level: int) -> void:
 		data.get("curve"),
 		data.get("localization_key")
 	)
-		_print_debug("scheduled MWT state caption for level %d" % level)
+	_print_debug("scheduled MWT state caption for level %d" % level)
 
 
 ## Public API: explicitly schedule a named transition caption (for emergency 3→0 override).
