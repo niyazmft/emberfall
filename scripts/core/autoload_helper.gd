@@ -44,9 +44,8 @@ static func burden_manager() -> _BurdenManager:
 
 
 ## Returns the CaptionManager autoload, or null.
-## NOTE: Returns Node instead of _CaptionManager to prevent engine Parse Errors.
-static func caption_manager() -> Node:
-	return get_autoload("CaptionManager")
+static func caption_manager() -> _CaptionManager:
+	return get_autoload("CaptionManager") as _CaptionManager
 
 
 ## Returns the EntityLifecycle autoload, or null.
@@ -90,18 +89,13 @@ static func inventory_manager() -> _InventoryManager:
 
 
 ## Returns the SettingsManager autoload, or null.
-## NOTE: Returns Node instead of _SettingsManager to prevent engine Parse Errors
-## and circularities in headless Godot environments.
-static func settings_manager() -> Node:
-	return get_autoload("SettingsManager")
+static func settings_manager() -> _SettingsManager:
+	return get_autoload("SettingsManager") as _SettingsManager
 
 
 ## Returns the LocalizationManager autoload, or null.
-## NOTE: Returns Node instead of _LocalizationManager to prevent engine Parse Errors
-## and circularities in headless Godot environments where class_name resolution
-## may fail during early initialization.
-static func localization_manager() -> Node:
-	return get_autoload("LocalizationManager")
+static func localization_manager() -> _LocalizationManager:
+	return get_autoload("LocalizationManager") as _LocalizationManager
 
 
 ## Returns the AmbientNarrator autoload, or null.
@@ -155,9 +149,8 @@ static func toast_manager() -> _ToastManager:
 
 
 ## Returns the FocusManager autoload, or null.
-## NOTE: Returns Node instead of _FocusManager to prevent engine Parse Errors.
-static func focus_manager() -> Node:
-	return get_autoload("FocusManager")
+static func focus_manager() -> _FocusManager:
+	return get_autoload("FocusManager") as _FocusManager
 
 
 ## Returns the UIAudioManager autoload, or null.
@@ -176,8 +169,8 @@ static func haptics_manager() -> _HapticsManager:
 ## Reads an int config value via ConfigLoader.get_int(), returning fallback
 ## if ConfigLoader is unavailable or the key is not set.
 static func config_int(key: String, fallback: int) -> int:
-	var n: Node = config_loader()
-	if n != null and n.has_method("getInt"):
+	var n: _ConfigLoader = config_loader()
+	if n != null:
 		return n.getInt(key, fallback)
 	return fallback
 
@@ -185,8 +178,8 @@ static func config_int(key: String, fallback: int) -> int:
 ## Reads a float config value via ConfigLoader.get_float(), returning fallback
 ## if ConfigLoader is unavailable or the key is not set.
 static func config_float(key: String, fallback: float) -> float:
-	var n: Node = config_loader()
-	if n != null and n.has_method("getFloat"):
+	var n: _ConfigLoader = config_loader()
+	if n != null:
 		return n.getFloat(key, fallback)
 	return fallback
 
@@ -194,7 +187,7 @@ static func config_float(key: String, fallback: float) -> float:
 ## Reads a String config value via ConfigLoader.get_string(), returning fallback
 ## if ConfigLoader is unavailable or the key is not set.
 static func config_string(key: String, fallback: String) -> String:
-	var n: Node = config_loader()
-	if n != null and n.has_method("getString"):
+	var n: _ConfigLoader = config_loader()
+	if n != null:
 		return n.getString(key, fallback)
 	return fallback

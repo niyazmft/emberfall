@@ -88,11 +88,11 @@ func _on_room_entered(_room_index: int, room_data: Dictionary) -> void:
 
 
 func _setup_hud() -> void:
-	var combat_hud: Control = $UIOverlay/CombatHUD
+	var combat_hud := $UIOverlay/CombatHUD as _CombatHUD
 	if combat_hud and _player:
 		var player_entity := CombatEntity.get_entity(_player)
 		if player_entity:
-			combat_hud.call("setup", player_entity, _turn_manager, _combat_input)
+			combat_hud.setup(player_entity, _turn_manager, _combat_input)
 			if not combat_hud.move_pressed.is_connected(_on_hud_move_pressed):
 				combat_hud.move_pressed.connect(_on_hud_move_pressed)
 
@@ -236,26 +236,26 @@ func _calculate_shards() -> int:
 func _showVictoryModal() -> void:
 	var scene: PackedScene = load(VICTORY_MODAL_SCENE_PATH)
 	if scene:
-		var modal: Control = scene.instantiate() as Control
+		var modal := scene.instantiate() as _VictoryModal
 		ui_overlay.add_child(modal)
-		if modal.has_method("setup"):
+		if modal:
 			var summary: Dictionary = {
 				"turns": _turn_manager.round_number,
 				"kills": _room_kills,
 				"shards": _calculate_shards(),
 			}
-			modal.call("setup", summary)
+			modal.setup(summary)
 
 
 func _showDefeatModal() -> void:
 	var scene: PackedScene = load(DEFEAT_MODAL_SCENE_PATH)
 	if scene:
-		var modal: Control = scene.instantiate() as Control
+		var modal := scene.instantiate() as _DefeatModal
 		ui_overlay.add_child(modal)
-		if modal.has_method("setup"):
+		if modal:
 			var rm: _RunManager = AutoloadHelper.run_manager()
 			var summary: Dictionary = {
 				"turns": _turn_manager.round_number,
 				"rooms": rm.room_index if rm else 0,
 			}
-			modal.call("setup", summary)
+			modal.setup(summary)

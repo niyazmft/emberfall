@@ -20,10 +20,10 @@ static func decide_action(
 	var dist: int = p_controller._grid_distance(enemy_pos, player_pos)
 
 	# Get Tank-specific properties from the entity's controller node (BaseEnemy or child)
-	var tank_node: Node = p_controller.get_parent()
+	var tank_node := p_controller.get_parent() as EnemyTank
 	var taunt_radius: int = 3
-	if tank_node is EnemyTank:
-		taunt_radius = (tank_node as EnemyTank).taunt_radius
+	if tank_node:
+		taunt_radius = tank_node.taunt_radius
 
 	# 1. Attack if adjacent
 	if dist <= 1:

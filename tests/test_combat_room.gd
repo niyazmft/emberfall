@@ -68,7 +68,7 @@ func test_manual_room_entry() -> void:
 	var player: Node2D = room.get("_player") as Node2D
 	assert_that(player).is_not_null()
 	if player:
-		var player_entity: Entity = player.get("entity") as Entity
+		var player_entity := CombatEntity.get_entity(player)
 		assert_that(player_entity).is_not_null()
 		if player_entity:
 			assert_int(player_entity.x).is_equal(2)

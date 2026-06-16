@@ -237,17 +237,17 @@ func _update_idle(_delta: float, elapsed: float) -> void:
 func _enter_recoil(_ctx: Dictionary) -> void:
 	_recoil_timer = 0.0
 	_recoil_promotion_active = true
-	var r: Node2D = _renderer.get_ref() as Node2D
-	if r and r.has_method("promote_z_index"):
-		r.call("promote_z_index")
+	var r := _renderer.get_ref() as ApparitionRenderer
+	if r:
+		r.promote_z_index()
 	recoiled.emit()
 
 
 func _exit_recoil(_ctx: Dictionary) -> void:
 	_recoil_promotion_active = false
-	var r: Node2D = _renderer.get_ref() as Node2D
-	if r and r.has_method("restore_z_index"):
-		r.call("restore_z_index")
+	var r := _renderer.get_ref() as ApparitionRenderer
+	if r:
+		r.restore_z_index()
 
 
 func _update_recoil(delta: float, _elapsed: float) -> void:
@@ -312,9 +312,9 @@ func _guard_absorb_done(_ctx: Dictionary) -> bool:
 
 
 func _set_renderer_opacity(alpha: float) -> void:
-	var r: Node2D = _renderer.get_ref() as Node2D
-	if r and r.has_method("set_stack_opacity"):
-		r.call("set_stack_opacity", clampf(alpha, 0.0, 1.0))
+	var r := _renderer.get_ref() as ApparitionRenderer
+	if r:
+		r.set_stack_opacity(clampf(alpha, 0.0, 1.0))
 
 
 ## Convenience so guards can trigger transitions safely.

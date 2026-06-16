@@ -48,11 +48,11 @@ func _on_room_entered(_room_index: int, _room_data: Dictionary) -> void:
 
 ## Public API to trigger a narrative caption.
 func trigger_narrative(loc_key: String) -> void:
-	var cm: Node = AutoloadHelper.caption_manager()
+	var cm := AutoloadHelper.caption_manager()
 	if cm:
 		# Using tr() to get localized text
 		var text: String = tr(loc_key)
-		cm.call("schedule", text, 2, 0.5, 3.0)  # Channel.AMBIENT = 2
+		cm.schedule(text, 2, 0.5, 3.0)  # Channel.AMBIENT = 2
 	else:
 		push_error("AmbientNarrator: CaptionManager not found")
 

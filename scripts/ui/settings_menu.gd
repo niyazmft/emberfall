@@ -20,8 +20,8 @@ func _ready() -> void:
 	_panel.back_pressed.connect(_on_back_pressed)
 	_panel.show()
 	var fm: Node = AutoloadHelper.focus_manager()
-	if fm and fm.has_method("set_initial_focus"):
-		fm.call("set_initial_focus", _panel)
+	if fm:
+		fm.set_initial_focus(_panel)
 
 
 func _exit_tree() -> void:

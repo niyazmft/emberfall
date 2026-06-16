@@ -11,7 +11,7 @@ signal stem_event_detected(stem_id: String, event_type: String, intensity: float
 
 # ── Properties ────────────────────────────────────────────────────────────
 var _stems: Dictionary = {}
-var _stem_router: Node
+var _stem_router: _BurdenStemCaptionRouter
 var _climb_expanded: bool = false
 var _climb_converged: bool = false
 
@@ -99,7 +99,7 @@ func _on_stem_transient_detected(type: String, intensity: float, stem_id: String
 	stem_event_detected.emit(stem_id, type, intensity)
 
 	if _stem_router:
-		_stem_router.call("dispatch_event", stem_id, type)
+		_stem_router.dispatch_event(stem_id, type)
 
 	_print_debug("Stem event: %s | %s | %.2f" % [stem_id, type, intensity])
 
@@ -113,12 +113,12 @@ func _on_stem_feature_updated(feature: String, value: float, stem_id: String) ->
 				if not _climb_expanded:
 					_climb_expanded = true
 					_climb_converged = false
-					_stem_router.call("dispatch_event", stem_id, "expand")
+					_stem_router.dispatch_event(stem_id, "expand")
 			elif value < 0.3:
 				if not _climb_converged:
 					_climb_converged = true
 					_climb_expanded = false
-					_stem_router.call("dispatch_event", stem_id, "converge")
+					_stem_router.dispatch_event(stem_id, "converge")
 			else:
 				_climb_expanded = false
 				_climb_converged = false
@@ -126,7 +126,7 @@ func _on_stem_feature_updated(feature: String, value: float, stem_id: String) ->
 		if value > 0.8:
 			stem_event_detected.emit(stem_id, "high_stress", value)
 			if _stem_router:
-				_stem_router.call("dispatch_event", stem_id, "swell_start")
+				_stem_router.dispatch_event(stem_id, "swell_start")
 
 
 func _print_debug(msg: String) -> void:

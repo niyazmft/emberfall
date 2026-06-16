@@ -111,7 +111,7 @@ func test_cancel_targeting() -> void:
 
 func test_execute_attack() -> void:
 	var enemy := _create_mock_enemy("Enemy1", ENEMY_ADJ_X, ENEMY_ADJ_Y)
-	var enemy_ent: Entity = enemy.get("entity")
+	var enemy_ent := CombatEntity.get_entity(enemy)
 	enemy_ent.hp = 20
 	_enemies_node.add_child(enemy)
 
@@ -121,7 +121,7 @@ func test_execute_attack() -> void:
 	confirm_event.action = "combat_confirm"
 	confirm_event.pressed = true
 
-	var player_ent: Entity = _player.get("entity")
+	var player_ent := CombatEntity.get_entity(_player)
 	var initial_ap: int = player_ent.ap
 
 	assert_bool(_combat_input.call("handle_input", confirm_event)).is_true()
@@ -134,7 +134,7 @@ func test_insufficient_ap() -> void:
 	var enemy := _create_mock_enemy("Enemy1", ENEMY_ADJ_X, ENEMY_ADJ_Y)
 	_enemies_node.add_child(enemy)
 
-	var player_ent: Entity = _player.get("entity")
+	var player_ent := CombatEntity.get_entity(_player)
 	player_ent.ap = 1
 	_combat_input.call("_start_targeting")
 

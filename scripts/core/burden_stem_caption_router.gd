@@ -76,7 +76,7 @@ func dispatch_event(stem_id: String, event_id: String) -> void:
 			_presenter = presenter
 
 	if presenter and presenter.has_method("present_caption"):
-		presenter.call("present_caption", marker)
+		presenter.present_caption(marker)
 
 	_print_debug("Dispatched event: %s/%s" % [stem_id, event_id])
 

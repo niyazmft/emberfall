@@ -69,14 +69,14 @@ func _config_int(key: String, fallback: int) -> int:
 
 
 func _update_burden_weight(flag: int) -> void:
-	var n: Node = AutoloadHelper.burden_manager()
-	if n != null and n.has_method("update_moral_weight"):
+	var n := AutoloadHelper.burden_manager()
+	if n != null:
 		n.update_moral_weight(flag)
 
 
 func _record_kill(enemy_id: String, enemy_name: String) -> void:
-	var n: Node = AutoloadHelper.burden_manager()
-	if n != null and n.has_method("record_sentient_kill"):
+	var n := AutoloadHelper.burden_manager()
+	if n != null:
 		n.record_sentient_kill(enemy_id, enemy_name)
 
 

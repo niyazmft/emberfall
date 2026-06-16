@@ -1,3 +1,4 @@
+class_name _VictoryModal
 extends Control
 ## VictoryModal
 ## Displayed when the player wins a combat encounter.
