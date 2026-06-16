@@ -6,8 +6,6 @@ extends Node2D
 ##   - EntityContainer (YSort): Depth-sorted game entities
 ##   - UIOverlay: CanvasLayer for HUD and menus
 
-const KEEPER_SCENE_PATH: String = "res://scenes/keeper.tscn"
-const GRUNT_SCENE_PATH: String = "res://scenes/enemies/enemy_grunt.tscn"
 const VICTORY_MODAL_SCENE_PATH: String = "res://scenes/ui/victory_modal.tscn"
 const DEFEAT_MODAL_SCENE_PATH: String = "res://scenes/ui/defeat_modal.tscn"
 
@@ -127,51 +125,22 @@ func _create_enemies_node() -> void:
 
 func _spawn_test_encounter() -> void:
 	_room_kills = 0
-	_current_room_data = {"encounter_seed": 12345, "biome": 0}
+	var room_data := RoomLoader.load_room_data("room_standard_01")
+	if room_data.is_empty():
+		# Fallback if file not found
+		room_data = {
+			"encounter_seed": 12345,
+			"biome": 0,
+			"room_in_biome": 0,
+			"player_start": {"x": 5, "y": 5}
+		}
+	else:
+		room_data["encounter_seed"] = 12345
+		room_data["biome"] = 0
+		room_data["room_in_biome"] = 0
 
-	_spawn_player()
-	_spawn_enemies()
-
-	_combat_input = CombatInput.new(_player, _enemies_node, grid_renderer)
-	add_child(_combat_input)
-	_setup_turn_manager()
-	_setup_hud()
-
-
-func _spawn_player() -> void:
-	var keeper_scene: PackedScene = load(KEEPER_SCENE_PATH)
-	var keeper: Node2D = keeper_scene.instantiate() as Node2D
-
-	# Initializing entity data block
-	var entity_resource: Entity = Entity.new("Keeper", 5, 5, 40, 12, 6)
-	entity_resource.is_player = true
-
-	# Assigning entity to keeper before adding to tree if possible
-	if keeper is CombatEntity:
-		(keeper as CombatEntity).entity = entity_resource
-
-	_player = keeper
-	entity_container.add_child(keeper)
-
-	# Explicitly set position after adding to tree to trigger visual proxy if needed
-	var entity := CombatEntity.get_entity(_player)
-	if entity:
-		entity.set_grid_position(5, 5)
-
-
-func _spawn_enemies() -> void:
-	var grunt_scene: PackedScene = load(GRUNT_SCENE_PATH)
-
-	_create_enemies_node()
-
-	for i: int in range(3):  # Spawn 3 grunts
-		var grunt: Node2D = grunt_scene.instantiate() as Node2D
-		_enemies_node.add_child(grunt)
-
-		# Position grunts
-		var entity := CombatEntity.get_entity(grunt)
-		if entity:
-			entity.set_grid_position(8 + i, 3 + i)
+	RoomLoader.augment_room_procedurally(room_data)
+	_on_room_entered(0, room_data)
 
 
 func _setup_camera() -> void:

@@ -38,3 +38,21 @@ func test_encounter_content_structure() -> void:
 		assert_that(enc.has("count")).is_true()
 		assert_that(enc.has("positions")).is_true()
 		assert_int(enc["count"]).is_greater(0)
+
+
+func test_encounter_scaling_with_budget() -> void:
+	var biome_id := "biome1"
+	var seed_val := 12345
+
+	var encounters_low := EncounterSystem.buildEncounters(biome_id, seed_val, 1)
+	var encounters_high := EncounterSystem.buildEncounters(biome_id, seed_val, 10)
+
+	var count_low := 0
+	for enc: Dictionary in encounters_low:
+		count_low += int(enc["count"])
+
+	var count_high := 0
+	for enc: Dictionary in encounters_high:
+		count_high += int(enc["count"])
+
+	assert_int(count_high).is_greater(count_low)

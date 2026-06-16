@@ -69,16 +69,31 @@ static func augment_room_procedurally(room_data: Dictionary) -> void:
 	var enc_seed: int = int(room_data.get("encounter_seed", 0))
 	var biome_idx: int = int(room_data.get("biome", 0))
 	var biome_id := "biome%d" % (biome_idx + 1)
+	var room_in_biome: int = int(room_data.get("room_in_biome", 0))
 
 	# 1. Topology Augmentation (Idempotent)
 	if applied_topo_seed != topo_seed:
 		RoomGenerator.augmentRoom(room_data, biome_id, topo_seed)
 		room_data["topology_seed_applied"] = topo_seed
 
-	# 2. Encounter Generation
+	# 2. Encounter Generation and Scaling
+	var target_difficulty: int = 1 + room_in_biome / 3
+
 	if not room_data.has("encounters") or (room_data["encounters"] as Array).is_empty():
-		var generated_encounters := EncounterSystem.buildEncounters(biome_id, enc_seed)
+		var generated_encounters := EncounterSystem.buildEncounters(
+			biome_id, enc_seed, target_difficulty
+		)
 		room_data["encounters"] = generated_encounters
+	else:
+		# Scale authored encounters
+		var encounters: Array = room_data["encounters"]
+		var scale_factor: float = 1.0 + float(room_in_biome) / 5.0
+		for encounter_v: Variant in encounters:
+			if encounter_v is Dictionary:
+				var encounter := encounter_v as Dictionary
+				var original_count: int = int(encounter.get("count", 1))
+				var new_count: int = clampi(int(roundf(original_count * scale_factor)), 1, 10)
+				encounter["count"] = new_count
 
 	# 3. Always assign positions for backfilling and reservation
 	_assign_default_positions(room_data, enc_seed)

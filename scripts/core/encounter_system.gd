@@ -7,8 +7,10 @@ extends Node
 const ENCOUNTERS_CONFIG_PATH := "res://config/encounters.json"
 
 
-## Builds a list of encounters for the given biome and seed.
-static func buildEncounters(biomeId: String, encounterSeed: int) -> Array:
+## Builds a list of encounters for the given biome and seed, scaled by difficulty budget.
+static func buildEncounters(
+	biomeId: String, encounterSeed: int, difficulty_budget: int = 1
+) -> Array:
 	var config: Dictionary = _getConfig()
 	if config.is_empty():
 		return []
@@ -22,19 +24,46 @@ static func buildEncounters(biomeId: String, encounterSeed: int) -> Array:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = encounterSeed
 
-	# Select a group template based on weights
-	var selectedGroupId: String = _selectWeightedGroup(compositions, rng)
-	if selectedGroupId == "":
-		return []
+	var allEnemyTypes: Array = []
+	var remaining_budget := difficulty_budget
 
-	var enemyTypes: Array = groupTemplates.get(selectedGroupId, []) as Array
-	if enemyTypes.is_empty():
+	# Budget-based loop to pick multiple groups if budget allows
+	while remaining_budget > 0:
+		var possible_comps: Array = []
+		for comp_v: Variant in compositions:
+			var comp := comp_v as Dictionary
+			if int(comp.get("difficulty", 1)) <= remaining_budget:
+				possible_comps.append(comp)
+
+		if possible_comps.is_empty():
+			break
+
+		var selectedGroupId: String = _selectWeightedGroup(possible_comps, rng)
+		if selectedGroupId == "":
+			break
+
+		# Find the selected composition to deduct its difficulty
+		var selected_comp: Dictionary = {}
+		for comp_v: Variant in possible_comps:
+			var comp := comp_v as Dictionary
+			if str(comp.get("group_id", "")) == selectedGroupId:
+				selected_comp = comp
+				break
+
+		if not selected_comp.is_empty():
+			remaining_budget -= int(selected_comp.get("difficulty", 1))
+			var enemyTypes: Array = groupTemplates.get(selectedGroupId, []) as Array
+			allEnemyTypes.append_array(enemyTypes)
+		else:
+			break
+
+	if allEnemyTypes.is_empty():
 		return []
 
 	var encounters: Array = []
 	var typeCounts: Dictionary = {}
 
-	for type_v: Variant in enemyTypes:
+	for type_v: Variant in allEnemyTypes:
 		var type: String = str(type_v)
 		if not typeCounts.has(type):
 			typeCounts[type] = 0
