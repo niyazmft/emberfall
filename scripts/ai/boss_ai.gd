@@ -19,13 +19,13 @@ static func decide_action(
 			)
 		_:
 			# Fallback to simple grunt behavior if behavior name not recognized
+			var player_entity: Entity = CombatEntity.get_entity(p_player_node)
+			if player_entity == null:
+				return {"type": "wait"}
 			return p_controller._grunt_behavior(
 				p_entity.grid_position(),
-				(p_player_node.get("entity") as Entity).grid_position(),
-				p_controller._grid_distance(
-					p_entity.grid_position(),
-					(p_player_node.get("entity") as Entity).grid_position()
-				)
+				player_entity.grid_position(),
+				p_controller._grid_distance(p_entity.grid_position(), player_entity.grid_position())
 			)
 
 
@@ -35,7 +35,7 @@ static func _overgrown_guardian_behavior(
 	p_grid_system: _GridSystem,
 	p_controller: EnemyAIController
 ) -> Dictionary:
-	var player_entity: Entity = p_player_node.get("entity") as Entity
+	var player_entity: Entity = CombatEntity.get_entity(p_player_node)
 	if player_entity == null:
 		return {"type": "wait"}
 

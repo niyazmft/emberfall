@@ -1,3 +1,4 @@
+class_name _SparseEventMarker
 extends RefCounted
 
 ## SparseEventMarker

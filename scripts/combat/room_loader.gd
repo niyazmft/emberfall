@@ -237,7 +237,7 @@ static func _spawn_encounter(encounter: Dictionary, container: Node, enemies_nod
 		else:
 			container.add_child(enemy)
 
-		var entity: Entity = enemy.get("entity") as Entity
+		var entity: Entity = CombatEntity.get_entity(enemy)
 		if entity:
 			entity.set_grid_position(x, y)
 		else:

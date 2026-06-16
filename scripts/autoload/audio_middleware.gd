@@ -33,9 +33,9 @@ func get_stem_router() -> Node:
 
 func play_stem(stem_id: String, stream: AudioStream) -> void:
 	if _stems.has(stem_id):
-		var playback: Node = _stems[stem_id] as Node
-		if playback.has_method("play_stream"):
-			playback.call("play_stream", stream)
+		var playback: _StemPlayback = _stems[stem_id] as _StemPlayback
+		if playback != null:
+			playback.play_stream(stream)
 		_print_debug("Playing stem: %s" % stem_id)
 	else:
 		push_warning("AudioMiddleware: Unknown stem_id '%s'" % stem_id)
@@ -43,17 +43,19 @@ func play_stem(stem_id: String, stream: AudioStream) -> void:
 
 func stop_stem(stem_id: String) -> void:
 	if _stems.has(stem_id):
-		var playback: Node = _stems[stem_id] as Node
-		if playback.has_method("stop"):
-			playback.call("stop")
+		var playback: _StemPlayback = _stems[stem_id] as _StemPlayback
+		if playback != null:
+			playback.stop()
 		_print_debug("Stopped stem: %s" % stem_id)
+	else:
+		push_warning("AudioMiddleware: Unknown stem_id '%s'" % stem_id)
 
 
 func stop_all() -> void:
 	for stem_id: String in _stems.keys():
-		var playback: Node = _stems[stem_id] as Node
-		if playback.has_method("stop"):
-			playback.call("stop")
+		var playback: _StemPlayback = _stems[stem_id] as _StemPlayback
+		if playback != null:
+			playback.stop()
 	_print_debug("Stopped all stems")
 
 

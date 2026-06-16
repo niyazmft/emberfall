@@ -114,7 +114,7 @@ func _load_ui_from_settings() -> void:
 	var controls_cfg: Dictionary = s.get("controls", {}) as Dictionary
 	_input_hints_option.selected = controls_cfg.get("input_hints", 0)
 	if _remap_panel.has_method("refresh"):
-		_remap_panel.call("refresh")
+		_remap_panel.refresh()
 
 
 func _exit_tree() -> void:
@@ -232,12 +232,12 @@ func _connect_signals() -> void:
 
 
 func _on_audio_changed(value: Variant, key: String) -> void:
-	var sm: Node = AutoloadHelper.settings_manager()
+	var sm: _SettingsManager = AutoloadHelper.settings_manager()
 	if sm != null:
 		var settings: Dictionary = sm.get("settings")
 		if settings.has("audio"):
 			settings["audio"][key] = value
-			sm.call("apply_audio_settings")
+			sm.apply_audio_settings()
 
 
 func _on_apply_video_settings() -> void:
@@ -262,17 +262,17 @@ func _on_apply_video_settings() -> void:
 		settings["video"]["resolution_height"] = res.y
 	settings["video"]["fullscreen"] = _fullscreen_check.button_pressed
 	settings["video"]["vsync"] = _vsync_check.button_pressed
-	sm.call("apply_video_settings")
-	sm.call("save_settings")
+	sm.apply_video_settings()
+	sm.save_settings()
 
 
 func _on_accessibility_changed(value: Variant, key: String) -> void:
-	var sm: Node = AutoloadHelper.settings_manager()
+	var sm: _SettingsManager = AutoloadHelper.settings_manager()
 	if sm != null:
 		var settings: Dictionary = sm.get("settings")
 		if settings.has("accessibility"):
 			settings["accessibility"][key] = value
-			sm.call("apply_accessibility_settings")
+			sm.apply_accessibility_settings()
 
 
 func _on_controls_changed(index: int, key: String) -> void:
@@ -286,8 +286,9 @@ func _on_controls_changed(index: int, key: String) -> void:
 func _on_reset_pressed() -> void:
 	var scene: PackedScene = load("res://scenes/ui/confirm_modal.tscn") as PackedScene
 	if scene:
-		var modal: Node = scene.instantiate()
-		modal.call("setup", "CONFIRM_RESET_SETTINGS_TITLE", "CONFIRM_RESET_SETTINGS_BODY")
+		var modal: _Modal = scene.instantiate() as _Modal
+		if modal != null:
+			modal.setup("CONFIRM_RESET_SETTINGS_TITLE", "CONFIRM_RESET_SETTINGS_BODY")
 		modal.connect("confirmed", _on_reset_confirmed)
 		var lm: _LayerManager = AutoloadHelper.layer_manager()
 		if lm:
@@ -295,9 +296,9 @@ func _on_reset_pressed() -> void:
 
 
 func _on_reset_confirmed() -> void:
-	var sm: Node = AutoloadHelper.settings_manager()
+	var sm: _SettingsManager = AutoloadHelper.settings_manager()
 	if sm != null:
-		sm.call("reset_to_defaults")
+		sm.reset_to_defaults()
 		_load_ui_from_settings()
 
 
@@ -371,10 +372,10 @@ func _on_back_pressed() -> void:
 	if hm:
 		hm.triggerHaptic("cancel")
 
-	var sm: Node = AutoloadHelper.settings_manager()
+	var sm: _SettingsManager = AutoloadHelper.settings_manager()
 	if sm != null:
-		sm.call("sync_bindings_to_settings")
-		sm.call("save_settings")
+		sm.sync_bindings_to_settings()
+		sm.save_settings()
 	back_pressed.emit()
 	hide()
 
