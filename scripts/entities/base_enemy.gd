@@ -12,7 +12,9 @@ extends CombatEntity
 
 var _grid_system: _GridSystem
 var _combat_system: Node  ## Placeholder for future combat system
-@onready var _apparition_renderer: ApparitionRenderer = get_node_or_null("ApparitionRenderer") as ApparitionRenderer
+@onready var _apparition_renderer: ApparitionRenderer = (
+	get_node_or_null("ApparitionRenderer") as ApparitionRenderer
+)
 
 
 func _ready() -> void:
