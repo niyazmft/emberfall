@@ -1,3 +1,4 @@
+class_name _SubtitleManager
 extends Control
 
 ## SubtitleManager
@@ -60,7 +61,7 @@ func _on_caption_completed(event: Variant) -> void:
 
 
 ## ICaptionPresenter implementation
-func present_caption(marker: RefCounted) -> void:
+func present_caption(marker: _SparseEventMarker) -> void:
 	if not CaptionManager:
 		return
 
