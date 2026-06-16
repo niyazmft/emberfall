@@ -1,3 +1,4 @@
+class_name _StemCaptionConfig
 extends RefCounted
 
 ## StemCaptionConfig
