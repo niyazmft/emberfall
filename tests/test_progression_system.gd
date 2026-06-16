@@ -85,3 +85,20 @@ func test_formula_evaluation() -> void:
 
 	result_val = _level_up_manager._evaluate_formula("base_xp + 50", context_map)
 	assert_that(result_val).is_equal(150)
+
+
+func test_formula_security() -> void:
+	var context_map: Dictionary = {"base_xp": 100}
+
+	# These should be rejected by _is_formula_safe
+	var unsafe_formulas: Array[String] = [
+		"print('HACKED') or base_xp",
+		"OS.get_name()",
+		"base_xp; print(1)",
+		"base_xp + get_node('/root/RunManager').experience"
+	]
+
+	for formula: String in unsafe_formulas:
+		var result_val: int = _level_up_manager._evaluate_formula(formula, context_map)
+		# Should return base_xp (fallback) and NOT execute the injected code
+		assert_that(result_val).is_equal(100)

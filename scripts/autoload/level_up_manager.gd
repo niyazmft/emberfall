@@ -133,18 +133,47 @@ func _on_biome_echo_triggered(_biome_index: int) -> void:
 
 
 func _evaluate_formula(formula: String, context: Dictionary) -> int:
+	if not _is_formula_safe(formula, context.keys()):
+		push_error("LevelUpManager: Formula failed safety check: " + formula)
+		return int(context.get("base_xp", 0))
+
 	var expr := Expression.new()
 	var error := expr.parse(formula, context.keys())
 	if error != OK:
 		push_error("LevelUpManager: Formula parse error: " + expr.get_error_text())
 		return int(context.get("base_xp", 0))
 
-	var result: Variant = expr.execute(context.values())
+	# Use const_calls_only = true for extra safety
+	var result: Variant = expr.execute(context.values(), null, true, true)
 	if expr.has_execute_failed():
 		push_error("LevelUpManager: Formula execution failed: " + expr.get_error_text())
 		return int(context.get("base_xp", 0))
 
 	return DeterministicMath.floori(float(result))
+
+
+func _is_formula_safe(formula: String, allowed_variables: Array) -> bool:
+	# 1. Check for unauthorized characters
+	# Allowed: a-z, A-Z, 0-9, _, +, -, *, /, %, (, ), ., space
+	var regex_chars := RegEx.new()
+	regex_chars.compile("^[a-zA-Z0-9_\\+\\-\\*\\/\\%\\(\\)\\.\\s]*$")
+	if not regex_chars.search(formula):
+		return false
+
+	# 2. Check identifiers
+	# Identifiers start with a letter or underscore and contain letters, numbers, or underscores.
+	var regex_id := RegEx.new()
+	regex_id.compile("[a-zA-Z_][a-zA-Z0-9_]*")
+	var matches: Array[RegExMatch] = regex_id.search_all(formula)
+	for m: RegExMatch in matches:
+		var identifier: String = m.get_string()
+		if not identifier in allowed_variables:
+			# Also allow common boolean/null literals if they somehow appear
+			if identifier in ["true", "false", "null"]:
+				continue
+			return false
+
+	return true
 
 
 func _get_player_entity() -> Entity:
