@@ -180,7 +180,7 @@ func _setup_camera() -> void:
 		camera.position = grid_renderer.grid_to_world(5, 5, 0)
 
 
-func _input(event: InputEvent) -> void:
+func _unhandled_input(event: InputEvent) -> void:
 	if _turn_manager == null or _turn_manager.current_state != TurnManager.CombatState.PLAYER_TURN:
 		return
 
