@@ -12,15 +12,13 @@ extends CombatEntity
 
 var _grid_system: _GridSystem
 var _combat_system: Node  ## Placeholder for future combat system
-var _apparition_renderer: ApparitionRenderer = null
+@onready var _apparition_renderer: ApparitionRenderer = get_node_or_null("ApparitionRenderer") as ApparitionRenderer
 
 
 func _ready() -> void:
 	add_to_group("enemies")
 	if _grid_system == null:
 		_grid_system = AutoloadHelper.grid_system()
-
-	_apparition_renderer = get_node_or_null("ApparitionRenderer") as ApparitionRenderer
 
 	# In Godot, properties are set BEFORE _ready().
 	# So archetype_id should already be what was set in _init() or in the inspector.
