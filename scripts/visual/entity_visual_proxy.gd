@@ -25,7 +25,7 @@ const STATUS_BAR_SCENE: PackedScene = preload("res://scenes/ui/entity_status_bar
 var _target_position: Vector2
 var _grid_renderer: GridRenderer
 var _status_bar: EntityStatusBar
-var _apparition_renderer: ApparitionRenderer = null
+@onready var _apparition_renderer: ApparitionRenderer = _find_apparition_renderer()
 var _hit_flash_timer: float = 0.0
 var _hit_flash_duration: float = 0.1
 var _hit_stop_remaining: int = 0
@@ -41,12 +41,6 @@ func _ready() -> void:
 		_combat_room = get_node_or_null("/root/CombatRoom") as CombatRoom
 	if _combat_room:
 		_grid_renderer = _combat_room.grid_renderer
-
-	_apparition_renderer = get_node_or_null("ApparitionRenderer") as ApparitionRenderer
-	if not _apparition_renderer and get_parent():
-		_apparition_renderer = (
-			get_parent().get_node_or_null("ApparitionRenderer") as ApparitionRenderer
-		)
 
 	if not _grid_renderer:
 		# Fallback: search the tree by type instead of string name
@@ -81,6 +75,13 @@ func _find_grid_renderer(node: Node) -> GridRenderer:
 		if result != null:
 			return result
 	return null
+
+
+func _find_apparition_renderer() -> ApparitionRenderer:
+	var ar := get_node_or_null("ApparitionRenderer") as ApparitionRenderer
+	if not ar and get_parent():
+		ar = get_parent().get_node_or_null("ApparitionRenderer") as ApparitionRenderer
+	return ar
 
 
 func _sync_to_entity() -> void:
