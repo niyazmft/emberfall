@@ -72,7 +72,6 @@ func test_archer_moves_away_when_too_close() -> void:
 	assert_str(action["type"]).is_equal("move")
 	# Distance is 1, Archer wants 2-3. Should move away.
 	# (7,5) or (7,6) or (7,4) etc.
-	# _get_next_tile_towards(player, true)
 	var dist_after: int = max(abs(action["target_x"] - 5), abs(action["target_y"] - 5))
 	assert_int(dist_after).is_greater(dist_before)
 

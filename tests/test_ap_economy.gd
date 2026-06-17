@@ -2,7 +2,6 @@ extends GdUnitTestSuite
 
 
 func test_start_phase() -> void:
-	# AP_START = min(AP_MAX, AP_CARRIED_OVER + AP_REGEN)
 	# Max is 6, Regen is 2
 	assert_that(APEconomy.start_phase(0)).is_equal(2)
 	assert_that(APEconomy.start_phase(2)).is_equal(4)
@@ -23,7 +22,6 @@ func test_can_afford() -> void:
 
 
 func test_end_phase() -> void:
-	# AP_CARRIED_OVER = clamp(AP_PREVIOUS_END - AP_SPENT, 0, AP_MAX)
 	# AP_MAX is 6
 	assert_that(APEconomy.end_phase(6, 4)).is_equal(2)
 	assert_that(APEconomy.end_phase(6, 0)).is_equal(6)
