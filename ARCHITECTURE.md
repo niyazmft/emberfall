@@ -142,7 +142,7 @@ emberfall/
 ├── scenes/            # TSCN files
 ├── tests/             # Unit tests
 ├── config/            # JSON configs
-└── .Jules/            # Historical learning memories
+└── .jules/            # Historical learning memories
 ```
 
 ## Testing Strategy
