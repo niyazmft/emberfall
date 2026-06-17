@@ -1,8 +1,10 @@
 extends GdUnitTestSuite
 
+
 func test_set_initial_focus_exists() -> void:
 	var fm: Node = AutoloadHelper.focus_manager()
 	assert_bool(fm.has_method("set_initial_focus")).is_true()
+
 
 func test_focus_ring_visibility() -> void:
 	if OS.has_feature("headless"):
