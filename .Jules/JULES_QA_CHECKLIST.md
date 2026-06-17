@@ -18,6 +18,7 @@ All PRs submitted by Google Jules must pass this checklist before being consider
 - [ ] **GDScript Style**: Adheres to the project's GDScript style guide.
 - [ ] **Type Safety**: All variables and functions must have explicit type hints where possible.
 - [ ] **Static Analysis**: No new warnings or errors in the Godot script editor/LSP.
+- [ ] **Dynamic Dispatch Cleanup**: Verify no residual `.call("method", ...)` or `has_method("...")` pairs remain in non-architectural code. Architectural exceptions (dictionary-based state machines, generic Node presenters without class_name) must be explicitly noted in the PR description.
 
 ## 4. Documentation & PR Description
 
