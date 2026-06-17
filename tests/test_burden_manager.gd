@@ -2,7 +2,7 @@ extends GdUnitTestSuite
 
 
 func test_kill_tracking() -> void:
-	var bm: _BurdenManager = BurdenManager
+	var bm: _BurdenManager = AutoloadHelper.burden_manager()
 	bm.reset()
 
 	bm.record_sentient_kill("grunt_1", "Grunt")
@@ -22,7 +22,7 @@ func test_kill_tracking() -> void:
 
 
 func test_moral_weight_threshold() -> void:
-	var bm: _BurdenManager = BurdenManager
+	var bm: _BurdenManager = AutoloadHelper.burden_manager()
 	bm.reset()
 
 	# MWT threshold is 3
@@ -43,7 +43,7 @@ func test_moral_weight_threshold() -> void:
 
 
 func test_numbness_logic() -> void:
-	var bm: _BurdenManager = BurdenManager
+	var bm: _BurdenManager = AutoloadHelper.burden_manager()
 	bm.reset()
 
 	# numbness cap is 5
@@ -56,7 +56,7 @@ func test_numbness_logic() -> void:
 
 
 func test_memory_state_persistence() -> void:
-	var bm: _BurdenManager = BurdenManager
+	var bm: _BurdenManager = AutoloadHelper.burden_manager()
 	bm.reset()
 
 	var state: Dictionary = {"echo_flags": {"burden_noun_index": 2, "burden_trigger_history": 10}}
@@ -70,7 +70,7 @@ func test_memory_state_persistence() -> void:
 
 
 func test_silhouette_management() -> void:
-	var bm: _BurdenManager = BurdenManager
+	var bm: _BurdenManager = AutoloadHelper.burden_manager()
 	var tex: PlaceholderTexture2D = PlaceholderTexture2D.new()
 
 	bm.register_silhouette("test_enemy", tex)

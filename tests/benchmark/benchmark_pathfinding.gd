@@ -14,12 +14,12 @@ func _ready() -> void:
 	print("")
 
 	## Setup worst-case room: partial wall forcing detour.
+	var gs := AutoloadHelper.grid_system()
 	var wall_tiles: Array[Dictionary] = []
 	for x: int in range(2, 10):
 		wall_tiles.append({"x": x, "y": 6, "blocks_movement": true, "blocks_vision": true})
-	Engine.get_main_loop().root.get_node("GridSystem").load_room(
-		{"id": "bench_wall", "tiles": wall_tiles}
-	)
+	if gs:
+		gs.load_room({"id": "bench_wall", "tiles": wall_tiles})
 
 	var astar: AStarGrid = AStarGrid.new()
 	var path: PackedVector2Array = astar.find_path(Vector2i(0, 0), Vector2i(11, 11))

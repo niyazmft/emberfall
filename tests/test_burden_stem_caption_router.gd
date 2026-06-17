@@ -31,9 +31,9 @@ func test_would_dispatch_true() -> void:
 	var router: Node = auto_free(RouterScript.new())
 	get_tree().root.add_child(router)
 	router.call("_ready")
-	var bm: Node = get_tree().root.get_node_or_null("BurdenManager")
+	var bm := AutoloadHelper.burden_manager()
 	if bm:
-		bm.set("current_mwt_level", 3)
+		bm.current_mwt_level = 3
 	var result: bool = bool(router.call("would_dispatch", "BD-BASS", "impact"))
 	assert_that(result).is_true()
 
@@ -42,9 +42,9 @@ func test_would_dispatch_cooldown() -> void:
 	var router: Node = auto_free(RouterScript.new())
 	get_tree().root.add_child(router)
 	router.call("_ready")
-	var bm: Node = get_tree().root.get_node_or_null("BurdenManager")
+	var bm := AutoloadHelper.burden_manager()
 	if bm:
-		bm.set("current_mwt_level", 3)
+		bm.current_mwt_level = 3
 	router.call("dispatch_event", "BD-BASS", "impact")
 	var result: bool = bool(router.call("would_dispatch", "BD-BASS", "impact"))
 	assert_that(result).is_false()
@@ -54,9 +54,9 @@ func test_would_dispatch_mwt_binding() -> void:
 	var router: Node = auto_free(RouterScript.new())
 	get_tree().root.add_child(router)
 	router.call("_ready")
-	var bm: Node = get_tree().root.get_node_or_null("BurdenManager")
+	var bm := AutoloadHelper.burden_manager()
 	if bm:
-		bm.set("current_mwt_level", 0)
+		bm.current_mwt_level = 0
 	var result: bool = bool(router.call("would_dispatch", "BD-BASS", "impact"))
 	assert_that(result).is_false()
 
@@ -73,9 +73,9 @@ func test_dispatch_event_triggers_presenter() -> void:
 	var router: Node = auto_free(RouterScript.new())
 	get_tree().root.add_child(router)
 	router.call("_ready")
-	var bm: Node = get_tree().root.get_node_or_null("BurdenManager")
+	var bm := AutoloadHelper.burden_manager()
 	if bm:
-		bm.set("current_mwt_level", 3)
+		bm.current_mwt_level = 3
 
 	var presenter: MockPresenter = auto_free(MockPresenter.new())
 	router.call("set_presenter", presenter)
@@ -88,9 +88,9 @@ func test_dispatch_event_applies_cooldown() -> void:
 	var router: Node = auto_free(RouterScript.new())
 	get_tree().root.add_child(router)
 	router.call("_ready")
-	var bm: Node = get_tree().root.get_node_or_null("BurdenManager")
+	var bm := AutoloadHelper.burden_manager()
 	if bm:
-		bm.set("current_mwt_level", 3)
+		bm.current_mwt_level = 3
 
 	router.call("dispatch_event", "BD-BASS", "impact")
 	var cooldowns: Dictionary = router.get("_cooldowns") as Dictionary
@@ -103,9 +103,9 @@ func test_reset_cooldowns() -> void:
 	var router: Node = auto_free(RouterScript.new())
 	get_tree().root.add_child(router)
 	router.call("_ready")
-	var bm: Node = get_tree().root.get_node_or_null("BurdenManager")
+	var bm := AutoloadHelper.burden_manager()
 	if bm:
-		bm.set("current_mwt_level", 3)
+		bm.current_mwt_level = 3
 
 	router.call("dispatch_event", "BD-BASS", "impact")
 	router.call("reset_cooldowns")
@@ -119,9 +119,9 @@ func test_logical_event_volume_agnostic() -> void:
 	var router: Node = auto_free(RouterScript.new())
 	get_tree().root.add_child(router)
 	router.call("_ready")
-	var bm: Node = get_tree().root.get_node_or_null("BurdenManager")
+	var bm := AutoloadHelper.burden_manager()
 	if bm:
-		bm.set("current_mwt_level", 3)
+		bm.current_mwt_level = 3
 
 	var presenter: MockPresenter = auto_free(MockPresenter.new())
 	router.call("set_presenter", presenter)
@@ -135,9 +135,9 @@ func test_climb_feature_mapping() -> void:
 	var router: Node = auto_free(RouterScript.new())
 	get_tree().root.add_child(router)
 	router.call("_ready")
-	var bm: Node = get_tree().root.get_node_or_null("BurdenManager")
+	var bm := AutoloadHelper.burden_manager()
 	if bm:
-		bm.set("current_mwt_level", 3)
+		bm.current_mwt_level = 3
 
 	var result_expand: bool = bool(router.call("would_dispatch", "BD-CLIMB", "expand"))
 	var result_converge: bool = bool(router.call("would_dispatch", "BD-CLIMB", "converge"))
