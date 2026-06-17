@@ -115,7 +115,7 @@ emberfall/
 ├── scenes/                    # TSCN files
 ├── tests/                     # Unit tests
 ├── config/                    # JSON configurations
-└── .Jules/                    # Learning memory
+└── .jules/                    # Learning memory
     ├── bolt.md                # Performance learnings
     ├── palette.md             # UI/UX learnings
     ├── integrations.md        # External tools, CI, git hooks (create as needed)
@@ -162,7 +162,7 @@ var clamped: int = clamp(value, 0, 100)  # Use clampi instead
 
 ### 3. Grid System Performance
 
-Learned from `.Jules/bolt.md`:
+Learned from `.jules/bolt.md`:
 
 - Use direct array access: `_tiles[ti]` not `get_tile()`
 - Cast to typed: `var tile: TacTileData = _tiles[i]`
@@ -391,16 +391,16 @@ GitHub Actions (`.github/workflows/ci.yml`) runs **exactly the same checks** as 
 
 ---
 
-## Learnings from .Jules/
+## Learnings from .jules/
 
-The `.Jules/` directory is the **cumulative knowledge base** for this project.
+The `.jules/` directory is the **cumulative knowledge base** for this project.
 It contains past discoveries, optimizations, gotchas, and patterns that every
 agent should consult before starting work — and every agent is **required**
 to contribute to it as new learnings emerge.
 
-### ⚠️ REQUIRED: Update `.Jules/` When You Learn Something New
+### ⚠️ REQUIRED: Update `.jules/` When You Learn Something New
 
-**Every agent working on this repo MUST append new learnings to `.Jules/` files**
+**Every agent working on this repo MUST append new learnings to `.jules/` files**
 when they encounter non-obvious findings. This is not optional — it is the
 primary mechanism by which knowledge is preserved between agent sessions.
 
@@ -427,11 +427,11 @@ Create or append to the file that best matches the topic:
 
 | File | Topic |
 |------|-------|
-| `.Jules/bolt.md` | Performance, hot paths, optimization |
-| `.Jules/palette.md` | UI, UX, accessibility, theming |
-| `.Jules/integrations.md` | (create if needed) External tools, CI, git hooks |
-| `.Jules/gotchas.md` | (create if needed) Godot-specific quirks, autoload issues |
-| `.Jules/<topic>.md` | Create a new file if the topic is distinct |
+| `.jules/bolt.md` | Performance, hot paths, optimization |
+| `.jules/palette.md` | UI, UX, accessibility, theming |
+| `.jules/integrations.md` | (create if needed) External tools, CI, git hooks |
+| `.jules/gotchas.md` | (create if needed) Godot-specific quirks, autoload issues |
+| `.jules/<topic>.md` | Create a new file if the topic is distinct |
 
 If a file doesn't exist for your topic, **create it** with the same format
 shown below. Don't shoehorn content into unrelated files.
@@ -457,7 +457,7 @@ Not "be careful" — say exactly what to write or avoid.
 - Title is a single line, ≤ 80 chars, no trailing punctuation.
 - Append to the bottom of the file (chronological order is loose but newer = later).
 - No code blocks in the Learning/Action prose — keep it scannable.
-- Run `markdownlint .Jules/<file>.md --fix` after editing.
+- Run `markdownlint .jules/<file>.md --fix` after editing.
 
 #### Example entry
 
@@ -476,31 +476,31 @@ relying on `.append()` growth.
 
 #### When to add the learning
 
-Update `.Jules/` as part of your **task-completion workflow**, not after every commit:
+Update `.jules/` as part of your **task-completion workflow**, not after every commit:
 
 1. **Before opening your PR** — review what you learned this task
 2. **If you found something non-obvious** — add an entry
 3. **If the PR reviewer flags a pattern** — that counts too
 4. **If you had to ask "why does this work this way?"** — that's a learning
 
-The Human Director reviews `.Jules/` at sprint boundaries. Stale or noisy
+The Human Director reviews `.jules/` at sprint boundaries. Stale or noisy
 entries get pruned; high-signal entries stay.
 
 ### Existing Learnings Reference
 
-**Performance (`.Jules/bolt.md`):**
+**Performance (`.jules/bolt.md`):**
 
 - **GridSystem optimization:** Reduced O(N²) inner loops by inlining and direct array access
 - **Type casting:** Cast `_tiles` to `TacTileData` in hot loops for 10x speedup
 - **CI compliance:** All new scripts require strict typing
 
-**UI Accessibility (`.Jules/palette.md`):**
+**UI Accessibility (`.jules/palette.md`):**
 
 - **Focus management:** Use `grab_focus.call_deferred()` on primary buttons
 - Applies to: `main_menu.gd`, `pause_menu.gd`, `settings_menu.gd`
 
-**Before starting any task:** Read the relevant `.Jules/*.md` file first.
-Then check `git log --oneline .Jules/` for the most recent additions.
+**Before starting any task:** Read the relevant `.jules/*.md` file first.
+Then check `git log --oneline .jules/` for the most recent additions.
 
 ---
 
@@ -511,7 +511,7 @@ When picking up or completing a task, agents **MUST** keep the local tracker up 
 1. **Check the Board**: Always consult `PROJECT_BOARD.md` for current sprint goals and active tasks.
 2. **Update Status**: When starting or finishing a task, you must update the task's status in `PROJECT_BOARD.md` (e.g., from ⏳ "Ready" to 🔄 "In Progress", or to ✅ "Done").
 3. **Hybrid Tracking**: Ensure you also create or reference the matching GitHub Issue as per global rules. The user manages the visual GitHub Project board, but `PROJECT_BOARD.md` is the primary map for AI agents.
-4. **Add Learnings to `.Jules/`**: If you discovered anything non-obvious during the task (performance gotcha, Godot quirk, CI issue), append a dated entry to the appropriate `.Jules/*.md` file. See the **"Learnings from .Jules/"** section below for the required format. This is required, not optional.
+4. **Add Learnings to `.jules/`**: If you discovered anything non-obvious during the task (performance gotcha, Godot quirk, CI issue), append a dated entry to the appropriate `.jules/*.md` file. See the **"Learnings from .jules/"** section below for the required format. This is required, not optional.
 
 ### GitHub Issue Creation — Required Fields
 
@@ -657,10 +657,10 @@ gh project field-list 1 --owner niyazmft --format json
 - **Setup Script:** `tools/setup_hooks.sh`
 - **Full Validation:** `tools/pre_push_check.sh`
 - **Tests:** `tests/` directory
-- **Jules Protocol:** `.Jules/JULES_PROTOCOL.md`
-- **Jules QA Checklist:** `.Jules/JULES_QA_CHECKLIST.md`
-- **Release Checklist:** `.Jules/RELEASE_CHECKLIST.md`
-- **Learnings:** `.Jules/bolt.md`, `.Jules/palette.md`, `.Jules/integrations.md`, `.Jules/gotchas.md`
+- **Jules Protocol:** `.jules/JULES_PROTOCOL.md`
+- **Jules QA Checklist:** `.jules/JULES_QA_CHECKLIST.md`
+- **Release Checklist:** `.jules/RELEASE_CHECKLIST.md`
+- **Learnings:** `.jules/bolt.md`, `.jules/palette.md`, `.jules/integrations.md`, `.jules/gotchas.md`
 - **Config:** `config/game_config.json`
 - **Apparition Specs:** `docs/apparition_animation_lead_notes.md`, `docs/apparition_composite_spec.md`, `docs/apparition_material_pipeline.md`
 - **Shader Budget:** `docs/SHADER_BUDGET_DON-253.md`

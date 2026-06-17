@@ -42,10 +42,10 @@ func _on_burden_event_triggered(result: Variant) -> void:
 
 	# Start stems. In production, these paths would be defined in a config or constants.
 	var stems: Dictionary = {
-		"BD-BASS": "res://assets/audio/stems/bd_drone.ogg",
-		"BD-MECH": "res://assets/audio/stems/bd_bells.ogg",
-		"BD-STRESS": "res://assets/audio/stems/bd_voices.ogg",
-		"BD-CLIMB": "res://assets/audio/stems/bd_wind.ogg"
+		"BD-BASS": "res://assets/audio/stems/bd_drone.wav",
+		"BD-MECH": "res://assets/audio/stems/bd_bells.wav",
+		"BD-STRESS": "res://assets/audio/stems/bd_voices.wav",
+		"BD-CLIMB": "res://assets/audio/stems/bd_wind.wav"
 	}
 
 	for stem_id: String in stems.keys():
