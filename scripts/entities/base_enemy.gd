@@ -12,6 +12,7 @@ extends CombatEntity
 
 var _grid_system: _GridSystem
 var _combat_system: Node  ## Placeholder for future combat system
+var _last_synced_apparition_pos: Vector2 = Vector2.INF
 @onready var _apparition_renderer: ApparitionRenderer = (
 	get_node_or_null("ApparitionRenderer") as ApparitionRenderer
 )
@@ -32,10 +33,10 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	# Sync apparition position to the visual proxy's position (which interpolates)
 	if _apparition_renderer != null:
-		if visual_proxy:
-			_apparition_renderer.sync_to_owner(visual_proxy.global_position)
-		else:
-			_apparition_renderer.sync_to_owner(global_position)
+		var target_pos: Vector2 = visual_proxy.global_position if visual_proxy else global_position
+		if not target_pos.is_equal_approx(_last_synced_apparition_pos):
+			_apparition_renderer.sync_to_owner(target_pos)
+			_last_synced_apparition_pos = target_pos
 
 
 func _setup_entity() -> void:
