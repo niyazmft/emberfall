@@ -1,3 +1,4 @@
+class_name _ToastWidget
 extends Control
 
 signal finished

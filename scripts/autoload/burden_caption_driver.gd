@@ -102,16 +102,16 @@ func _map_and_trigger_caption(stem_id: String, event_type: String, intensity: fl
 				duration = 2.0
 
 	if not caption_text.is_empty():
-		var cm: Node = AutoloadHelper.caption_manager()
-		if cm != null and cm.has_method("schedule"):
+		var cm := AutoloadHelper.caption_manager()
+		if cm != null:
 			# Channel.BURDEN = 1
 			# CaptionCurve.LINEAR = 1
-			cm.call("schedule", caption_text, 1, 0.0, duration, 1, loc_key)
+			cm.schedule(caption_text, 1, 0.0, duration, 1, loc_key)
 			_print_debug("Triggered caption: %s (intensity=%.2f)" % [caption_text, intensity])
 
 		# Also report to CaptionManager for screen readers/internal tracking
-		if cm != null and cm.has_method("report_stem_transient"):
-			cm.call("report_stem_transient", stem_id, event_type, intensity)
+		if cm != null:
+			cm.report_stem_transient(stem_id, event_type, intensity)
 
 
 func _print_debug(msg: String) -> void:

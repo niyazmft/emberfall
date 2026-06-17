@@ -1,3 +1,4 @@
+class_name _DefeatModal
 extends Control
 ## DefeatModal
 ## Displayed when the player loses a combat encounter.

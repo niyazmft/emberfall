@@ -1,3 +1,4 @@
+class_name _ConfirmModal
 extends _Modal
 
 signal confirmed

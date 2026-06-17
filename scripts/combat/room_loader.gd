@@ -205,8 +205,8 @@ static func _spawn_player(start_pos: Dictionary, container: Node) -> Node2D:
 	var entity_resource := Entity.new("Keeper", 5, 5, 40, 12, 6)
 	entity_resource.is_player = true
 
-	if keeper.has_method("set"):
-		keeper.set("entity", entity_resource)
+	if keeper is Keeper:
+		(keeper as Keeper).entity = entity_resource
 
 	container.add_child(keeper)
 

@@ -31,11 +31,16 @@ func decide_action(p_entity: Entity = null) -> Dictionary:
 		return {"type": "wait"}
 
 	_player_node = tree.get_first_node_in_group("player") as Node2D
-	if (
-		_player_node == null
-		or not _player_node.has_method("alive")
-		or not _player_node.call("alive")
-	):
+	if _player_node == null:
+		return {"type": "wait"}
+
+	var is_alive := false
+	if _player_node is Keeper:
+		is_alive = (_player_node as Keeper).alive()
+	elif _player_node is BaseEnemy:
+		is_alive = (_player_node as BaseEnemy).alive()
+
+	if not is_alive:
 		return {"type": "wait"}
 
 	var player_entity := CombatEntity.get_entity(_player_node)

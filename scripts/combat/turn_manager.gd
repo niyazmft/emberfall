@@ -199,11 +199,8 @@ func _advance_turn_logic() -> void:
 
 
 func _execute_enemy_turn(p_enemy: Node2D) -> void:
-	if p_enemy.has_method("take_turn"):
-		if p_enemy is BaseEnemy:
-			(p_enemy as BaseEnemy).take_turn()
-		else:
-			p_enemy.take_turn()
+	if p_enemy is BaseEnemy:
+		(p_enemy as BaseEnemy).take_turn()
 
 	_change_state(CombatState.CHECK_END_CONDITIONS)
 

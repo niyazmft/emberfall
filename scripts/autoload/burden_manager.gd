@@ -191,8 +191,8 @@ func reset() -> void:
 	_burden_trigger_count = 0
 	## Flush any pending Burden captions on reset
 	var cm := _caption_node()
-	if cm and cm.has_method("cancel_channel"):
-		cm.call("cancel_channel", 1)  ## CaptionManager.Channel.BURDEN
+	if cm:
+		cm.cancel_channel(1)  ## CaptionManager.Channel.BURDEN
 	_print_debug("reset run-local state (persisted noun_index=%d)" % _burden_noun_index)
 
 
@@ -299,7 +299,7 @@ func trigger_burden_event(
 # ---------------------------------------------------------------------------
 
 
-func _caption_node() -> Node:
+func _caption_node() -> _CaptionManager:
 	return _caption_bridge.get_caption_node()
 
 

@@ -21,14 +21,14 @@ func initialize(config: Dictionary, mwt_matrix: _MWTCaptionMatrix) -> void:
 	_mwt_matrix = mwt_matrix
 
 
-func get_caption_node() -> Node:
+func get_caption_node() -> _CaptionManager:
 	return AutoloadHelper.caption_manager()
 
 
 func schedule_mwt_transition_caption(
 	from_level: int, to_level: int, is_emergency: bool = false
 ) -> void:
-	var cm: Node = get_caption_node()
+	var cm := get_caption_node()
 	if cm == null or _mwt_matrix == null:
 		return
 
@@ -38,9 +38,8 @@ func schedule_mwt_transition_caption(
 	if data == null:
 		return
 
-	if cm.has_method("schedule") and not str(data.get("text")).is_empty():
-		cm.call(
-			"schedule",
+	if not str(data.get("text")).is_empty():
+		cm.schedule(
 			data.get("text"),
 			1,
 			data.get("offset_sec"),
@@ -57,7 +56,7 @@ func schedule_mwt_transition_caption(
 
 
 func schedule_mwt_state_caption(level: int) -> void:
-	var cm: Node = get_caption_node()
+	var cm := get_caption_node()
 	if cm == null or _mwt_matrix == null:
 		return
 
@@ -65,17 +64,15 @@ func schedule_mwt_state_caption(level: int) -> void:
 	if data == null:
 		return
 
-	if cm.has_method("schedule"):
-		cm.call(
-			"schedule",
-			data.get("text"),
-			1,
-			0.0,
-			data.get("duration_sec"),
-			data.get("curve"),
-			data.get("localization_key")
-		)
-		_print_debug("scheduled MWT state caption for level %d" % level)
+	cm.schedule(
+		data.get("text"),
+		1,
+		0.0,
+		data.get("duration_sec"),
+		data.get("curve"),
+		data.get("localization_key")
+	)
+	_print_debug("scheduled MWT state caption for level %d" % level)
 
 
 ## Public API: explicitly schedule a named transition caption (for emergency 3→0 override).
@@ -95,9 +92,8 @@ func schedule_transition_caption_explicit(transition_key: String) -> void:
 	var curve_str: String = str(data.get("curve", "LINEAR"))
 	var loc_key: String = str(data.get("localization_key", ""))
 	var curve: int = _curve_from_string(curve_str)
-	if cm.has_method("schedule"):
-		cm.call("schedule", text, 1, offset_sec, duration_sec, curve, loc_key)
-		_print_debug("scheduled explicit transition caption %s" % transition_key)
+	cm.schedule(text, 1, offset_sec, duration_sec, curve, loc_key)
+	_print_debug("scheduled explicit transition caption %s" % transition_key)
 
 
 ## Schedule captions tied to a BurdenEventResult phases.
@@ -106,10 +102,9 @@ func schedule_burden_event_captions(result: BurdenEventResult) -> void:
 	if cm == null:
 		return
 	## Phase A: stillness caption (BURDEN channel, per DON-222 requirement)
-	if not result.phase_a_localization_key.is_empty() and cm.has_method("schedule"):
+	if not result.phase_a_localization_key.is_empty():
 		## Per DON-222: Phase A caption fires at the exact moment control is seized.
-		cm.call(
-			"schedule",
+		cm.schedule(
 			"[The world stills]",
 			1,
 			0.0,
@@ -119,14 +114,13 @@ func schedule_burden_event_captions(result: BurdenEventResult) -> void:
 		)  ## Channel.BURDEN = 1
 
 	## Numbness cap caption
-	if result.numbness_cap_reached and cm.has_method("schedule"):
-		cm.call("schedule", "[The burden is silent]", 1, 0.0, 4.0, 1, "BE_CAP_NUMBNESS")
+	if result.numbness_cap_reached:
+		cm.schedule("[The burden is silent]", 1, 0.0, 4.0, 1, "BE_CAP_NUMBNESS")
 
 	## Phase B: the witness text (BURDEN channel)
-	if not result.phase_b_text.is_empty() and cm.has_method("schedule"):
+	if not result.phase_b_text.is_empty():
 		var b_curve: int = 2  ## EXPONENTIAL for first and repeat
-		cm.call(
-			"schedule",
+		cm.schedule(
 			result.phase_b_text,
 			1,
 			0.0,
@@ -136,9 +130,8 @@ func schedule_burden_event_captions(result: BurdenEventResult) -> void:
 		)
 
 	## Phase C: choiceless choice (BURDEN channel)
-	if not result.phase_c_text.is_empty() and cm.has_method("schedule"):
-		cm.call(
-			"schedule",
+	if not result.phase_c_text.is_empty():
+		cm.schedule(
 			result.phase_c_text,
 			1,
 			0.0,
@@ -148,9 +141,8 @@ func schedule_burden_event_captions(result: BurdenEventResult) -> void:
 		)  ## LINEAR
 
 	## Phase D: return (BURDEN channel, short fade)
-	if not result.phase_d_text.is_empty() and cm.has_method("schedule"):
-		cm.call(
-			"schedule",
+	if not result.phase_d_text.is_empty():
+		cm.schedule(
 			result.phase_d_text,
 			1,
 			0.0,
@@ -163,23 +155,23 @@ func schedule_burden_event_captions(result: BurdenEventResult) -> void:
 ## Public API: report BD-CLIMB width from audio middleware so per-stem captions align.
 func report_bd_climb_width(width_norm: float) -> void:
 	var cm := get_caption_node()
-	if cm and cm.has_method("report_bd_climb_width"):
-		cm.call("report_bd_climb_width", width_norm)
+	if cm:
+		cm.report_bd_climb_width(width_norm)
 		_print_debug("reported BD-CLIMB width=%.3f" % width_norm)
 
 
 ## Public API: report explicit BD-CLIMB loop phase.
 func report_bd_climb_phase(phase_norm: float) -> void:
 	var cm := get_caption_node()
-	if cm and cm.has_method("report_bd_climb_phase"):
-		cm.call("report_bd_climb_phase", phase_norm)
+	if cm:
+		cm.report_bd_climb_phase(phase_norm)
 
 
 ## Public API: enable/disable BD-CLIMB loop tracking.
 func set_bd_climb_enabled(enabled: bool) -> void:
 	var cm := get_caption_node()
-	if cm and cm.has_method("set_bd_climb_enabled"):
-		cm.call("set_bd_climb_enabled", enabled)
+	if cm:
+		cm.set_bd_climb_enabled(enabled)
 
 
 ## Returns the current BD-CLIMB width caption strings from config.

@@ -1,3 +1,4 @@
+class_name _SubtitleManager
 extends Control
 
 ## SubtitleManager
@@ -27,24 +28,24 @@ func _process(_delta: float) -> void:
 
 	## Update opacities for active captions
 	# ⚡ Bolt: Iterate over dictionary directly to avoid Array allocation every frame.
-	for event: Resource in _active_labels:
+	for event: Variant in _active_labels:
 		var label: Label = _active_labels[event] as Label
 		if event.has_method("opacity"):
-			label.modulate.a = float(event.call("opacity"))
+			label.modulate.a = float(event.opacity())
 
 
-func _on_caption_display_requested(event: Resource) -> void:
+func _on_caption_display_requested(event: Variant) -> void:
 	var label: Label = Label.new()
-	label.text = str(event.get("text"))
-	if not str(event.get("localization_key")).is_empty():
-		label.text = tr(str(event.get("localization_key")))
+	label.text = str(event.text)
+	if not str(event.localization_key).is_empty():
+		label.text = tr(str(event.localization_key))
 
 	## Styling (minimal for prototype)
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 
 	var target_surface: Control = surface_dialogue
-	if int(event.get("surface_group")) == 1:  ## BURDEN isolated surface
+	if int(event.surface_group) == 1:  ## BURDEN isolated surface
 		target_surface = surface_burden
 		label.add_theme_color_override("font_color", Color.VIOLET)  ## Distinct color for Burden
 
@@ -52,7 +53,7 @@ func _on_caption_display_requested(event: Resource) -> void:
 	_active_labels[event] = label
 
 
-func _on_caption_completed(event: Resource) -> void:
+func _on_caption_completed(event: Variant) -> void:
 	if _active_labels.has(event):
 		var label: Label = _active_labels[event] as Label
 		_active_labels.erase(event)
@@ -60,7 +61,7 @@ func _on_caption_completed(event: Resource) -> void:
 
 
 ## ICaptionPresenter implementation
-func present_caption(marker: RefCounted) -> void:
+func present_caption(marker: _SparseEventMarker) -> void:
 	if not CaptionManager:
 		return
 

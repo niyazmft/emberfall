@@ -1,3 +1,4 @@
+class_name _CombatHUD
 extends Control
 ## CombatHUD (DON-196)
 ## Manages HUD layout and bottom chrome reflow.

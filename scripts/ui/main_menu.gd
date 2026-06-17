@@ -33,9 +33,9 @@ func _ready() -> void:
 	if is_instance_valid(_new_run_button):
 		_new_run_button.grab_focus.call_deferred()
 
-	var fm: Node = AutoloadHelper.focus_manager()
-	if fm and fm.has_method("push_modal_focus"):
-		fm.call("push_modal_focus", self)
+	var fm := AutoloadHelper.focus_manager()
+	if fm:
+		fm.push_modal_focus(self)
 
 
 func _on_safe_area_changed(_rect: Rect2) -> void:
@@ -88,12 +88,13 @@ func _on_settings_pressed() -> void:
 func _on_quit_pressed() -> void:
 	var scene: PackedScene = load("res://scenes/ui/confirm_modal.tscn") as PackedScene
 	if scene:
-		var modal: Node = scene.instantiate()
-		modal.call("setup", "CONFIRM_QUIT_TITLE", "CONFIRM_QUIT_BODY")
-		modal.connect("confirmed", _on_quit_confirmed)
-		var lm: _LayerManager = AutoloadHelper.layer_manager()
-		if lm:
-			lm.add_modal(modal)
+		var modal := scene.instantiate() as _ConfirmModal
+		if modal:
+			modal.setup("CONFIRM_QUIT_TITLE", "CONFIRM_QUIT_BODY")
+			modal.confirmed.connect(_on_quit_confirmed)
+			var lm: _LayerManager = AutoloadHelper.layer_manager()
+			if lm:
+				lm.add_modal(modal)
 
 
 func _on_quit_confirmed() -> void:

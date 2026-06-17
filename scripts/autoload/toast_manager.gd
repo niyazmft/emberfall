@@ -33,10 +33,10 @@ func _process_queue() -> void:
 
 	_is_displaying = true
 	var data: Dictionary = _queue.pop_front() as Dictionary
-	var toast: Node = TOAST_SCENE.instantiate()
+	var toast := TOAST_SCENE.instantiate() as _ToastWidget
 	LayerManager.add_child(toast)
-	if toast.has_method("display"):
-		toast.call("display", str(data.get("key", "")), int(data.get("type", 1)), DISMISS_TIME)
+	if toast:
+		toast.display(str(data.get("key", "")), int(data.get("type", 1)), DISMISS_TIME)
 
 	if toast.has_signal("finished"):
 		toast.connect("finished", _on_toast_finished)

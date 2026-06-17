@@ -78,9 +78,9 @@ func toggle_pause() -> void:
 		if is_instance_valid(_resume_button):
 			_resume_button.grab_focus.call_deferred()
 
-		var fm: Node = AutoloadHelper.focus_manager()
-		if fm and fm.has_method("push_modal_focus"):
-			fm.call("push_modal_focus", self)
+		var fm := AutoloadHelper.focus_manager()
+		if fm:
+			fm.push_modal_focus(self)
 
 
 func _on_restart_pressed() -> void:
@@ -97,12 +97,13 @@ func _on_settings_requested() -> void:
 func _on_quit_pressed() -> void:
 	var scene: PackedScene = load("res://scenes/ui/confirm_modal.tscn") as PackedScene
 	if scene:
-		var modal: Node = scene.instantiate()
-		modal.call("setup", "CONFIRM_RETURN_TITLE", "CONFIRM_RETURN_BODY")
-		modal.connect("confirmed", _on_quit_confirmed)
-		var lm: _LayerManager = AutoloadHelper.layer_manager()
-		if lm:
-			lm.add_modal(modal)
+		var modal := scene.instantiate() as _ConfirmModal
+		if modal:
+			modal.setup("CONFIRM_RETURN_TITLE", "CONFIRM_RETURN_BODY")
+			modal.confirmed.connect(_on_quit_confirmed)
+			var lm: _LayerManager = AutoloadHelper.layer_manager()
+			if lm:
+				lm.add_modal(modal)
 
 
 func _on_quit_confirmed() -> void:

@@ -1,3 +1,4 @@
+class_name _RemapPanel
 extends Control
 
 ## RemapPanel

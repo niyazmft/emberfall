@@ -53,12 +53,16 @@ func test_caption_driver_mapping() -> void:
 
 	var script: GDScript = GDScript.new()
 	script.source_code = (
-		"extends Node\n"
+		"extends _CaptionManager\n"
 		+ "signal scheduled(text: String)\n"
-		+ "func schedule(text: String, _channel: int, _offset: float, "
-		+ "_duration: float, _curve: int, _loc_key: String) -> void:\n"
-		+ "	scheduled.emit(text)\n"
-		+ "func report_stem_transient(_a: String, _b: String, _c: float) -> void: pass"
+		+ "func schedule(p_text: String, p_channel: int, p_offset_sec: float, "
+		+ "p_duration_sec: float, p_curve: int = 1, p_localization_key: String = '') -> CaptionEvent:\n"
+		+ "	scheduled.emit(p_text)\n"
+		+ "	return null\n"
+		+ "func report_stem_transient(stem_id: String, event_id: String, intensity: float = 1.0) -> void: pass\n"
+		+ "func report_bd_climb_width(_w: float) -> void: pass\n"
+		+ "func report_bd_climb_phase(_p: float) -> void: pass\n"
+		+ "func set_bd_climb_enabled(_e: bool) -> void: pass"
 	)
 	script.reload()
 	cm.set_script(script)
@@ -95,11 +99,16 @@ func test_caption_driver_cooldown() -> void:
 
 	var script: GDScript = GDScript.new()
 	script.source_code = (
-		"extends Node\n"
+		"extends _CaptionManager\n"
 		+ "signal scheduled\n"
-		+ "func schedule(_a: String, _b: int, _c: float, _d: float, _e: int, _f: String) -> void:\n"
+		+ "func schedule(p_text: String, p_channel: int, p_offset_sec: float, "
+		+ "p_duration_sec: float, p_curve: int = 1, p_localization_key: String = '') -> CaptionEvent:\n"
 		+ "	scheduled.emit()\n"
-		+ "func report_stem_transient(_a: String, _b: String, _c: float) -> void: pass"
+		+ "	return null\n"
+		+ "func report_stem_transient(stem_id: String, event_id: String, intensity: float = 1.0) -> void: pass\n"
+		+ "func report_bd_climb_width(_w: float) -> void: pass\n"
+		+ "func report_bd_climb_phase(_p: float) -> void: pass\n"
+		+ "func set_bd_climb_enabled(_e: bool) -> void: pass"
 	)
 	script.reload()
 	cm.set_script(script)
