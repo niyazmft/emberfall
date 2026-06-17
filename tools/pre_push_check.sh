@@ -80,7 +80,7 @@ for log in tools/godot_lint.log tools/test_suite.log; do
             echo "❌ Critical error found in $log"
             FAILED=1
         fi
-        if grep "ERROR:" "$log" 2>/dev/null | grep -ivE "resources still in use|objectdb instances leaked|caller thread can't call this function|statemachine: attempted to change to unregistered state"; then
+        if grep "ERROR:" "$log" 2>/dev/null | grep -ivE "resources still in use|objectdb instances leaked|caller thread can't call this function|statemachine: attempted to change to unregistered state|Formula failed safety check"; then
             echo ""
             echo "❌ Unexpected ERROR in $log"
             FAILED=1
