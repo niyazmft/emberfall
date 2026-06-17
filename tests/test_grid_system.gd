@@ -1,5 +1,6 @@
 extends GdUnitTestSuite
 
+
 func test_initialization() -> void:
 	var gs: _GridSystem = GridSystem
 	assert_int(gs.GRID_SIZE).is_equal(12)
@@ -11,6 +12,7 @@ func test_initialization() -> void:
 		assert_that(tiles[i]).is_not_null()
 		assert_int(tiles[i].coords.x).is_equal(i % 12)
 		assert_int(tiles[i].coords.y).is_equal(i / 12)
+
 
 func test_coordinate_helpers() -> void:
 	var gs: _GridSystem = GridSystem
@@ -30,11 +32,13 @@ func test_coordinate_helpers() -> void:
 	assert_that(gs.get_tile_by_index(143)).is_not_null()
 	assert_that(gs.get_tile_by_index(144)).is_null()
 
+
 func test_load_room_layout() -> void:
 	var gs: _GridSystem = GridSystem
 	var layout_data: Dictionary = {
 		"id": "test_room",
-		"layout": {
+		"layout":
+		{
 			"elevation": [0, 1, 2],
 			"cover": [0, 1, 2],
 			"blocked": [false, true, false],
@@ -56,13 +60,13 @@ func test_load_room_layout() -> void:
 	assert_bool(t1.blocks_movement).is_true()
 	assert_bool(t1.blocks_vision).is_false()
 
+
 func test_load_room_legacy() -> void:
 	var gs: _GridSystem = GridSystem
 	var legacy_data: Dictionary = {
 		"id": "legacy_room",
-		"tiles": [
-			{"x": 5, "y": 5, "elevation": 2, "cover": 1, "blocks_movement": true, "tags": ["spawner"]}
-		]
+		"tiles":
+		[{"x": 5, "y": 5, "elevation": 2, "cover": 1, "blocks_movement": true, "tags": ["spawner"]}]
 	}
 	gs.load_room(legacy_data)
 	var t: TacTileData = gs.get_tile(5, 5)
@@ -70,6 +74,7 @@ func test_load_room_legacy() -> void:
 	assert_int(t.cover).is_equal(1)
 	assert_bool(t.blocks_movement).is_true()
 	assert_array(t.tags).contains(["spawner"])
+
 
 func test_can_move_logic() -> void:
 	var gs: _GridSystem = GridSystem
@@ -83,6 +88,7 @@ func test_can_move_logic() -> void:
 	# Blocked movement
 	gs.load_room({"id": "block_test", "layout": {"blocked": [false, true]}})
 	assert_bool(gs.can_move(0, 0, 1, 0)).is_false()
+
 
 func test_movement_cost_oil() -> void:
 	var gs: _GridSystem = GridSystem
@@ -98,11 +104,12 @@ func test_movement_cost_oil() -> void:
 	gs.set_oil_tile(1, 1, false)
 	assert_int(gs.get_movement_cost(1, 1)).is_equal(1)
 
+
 func test_elemental_overlay_management() -> void:
 	var gs: _GridSystem = GridSystem
 	gs.clear_elemental_overlay()
 
-	gs.apply_tile_element(2, 2, 1, 3, 10) # 1 = FIRE (assuming ElementalTypes)
+	gs.apply_tile_element(2, 2, 1, 3, 10)  # 1 = FIRE (assuming ElementalTypes)
 	var effects: Array = gs.get_tile_effects(2, 2)
 	assert_int(effects.size()).is_equal(1)
 	assert_int(int(effects[0]["element"])).is_equal(1)
@@ -111,10 +118,11 @@ func test_elemental_overlay_management() -> void:
 	gs.remove_tile_element(2, 2, 1)
 	assert_int(gs.get_tile_effects(2, 2).size()).is_equal(0)
 
+
 func test_tick_tile_effects() -> void:
 	var gs: _GridSystem = GridSystem
 	gs.clear_elemental_overlay()
-	gs.apply_tile_element(3, 3, 2, 2, 1) # duration 2
+	gs.apply_tile_element(3, 3, 2, 2, 1)  # duration 2
 
 	var expired: int = gs.tick_tile_effects()
 	assert_int(expired).is_equal(0)
@@ -123,6 +131,7 @@ func test_tick_tile_effects() -> void:
 	expired = gs.tick_tile_effects()
 	assert_int(expired).is_equal(1)
 	assert_int(gs.get_tile_effects(3, 3).size()).is_equal(0)
+
 
 func test_line_of_sight() -> void:
 	var gs: _GridSystem = GridSystem
@@ -141,13 +150,14 @@ func test_line_of_sight() -> void:
 
 	assert_bool(gs.has_los(0, 0, 5, 0)).is_false()
 
+
 func test_cover_cache_logic() -> void:
 	var gs: _GridSystem = GridSystem
 	# Heavy cover at (1, 0)
 	var cover_data: Array = []
 	cover_data.resize(144)
 	cover_data.fill(0)
-	cover_data[gs.index(1, 0)] = 2 # HEAVY
+	cover_data[gs.index(1, 0)] = 2  # HEAVY
 	var layout: Dictionary = {"cover": cover_data}
 	gs.load_room({"id": "cover_test", "layout": layout})
 

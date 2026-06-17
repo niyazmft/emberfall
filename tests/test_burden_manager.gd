@@ -79,10 +79,11 @@ func test_silhouette_management() -> void:
 	bm.unregister_silhouette("test_enemy")
 	assert_that(bm.get_silhouette_texture("test_enemy")).is_null()
 
+
 func test_reset_functionality() -> void:
 	var bm: _BurdenManager = BurdenManager
 	bm.record_sentient_kill("test", "Test")
-	bm.update_moral_weight(5) # burden active
+	bm.update_moral_weight(5)  # burden active
 	bm.trigger_burden_event(0, 0, 0, 0, true)
 
 	assert_int(bm.total_sentient_kills).is_equal(1)
@@ -93,6 +94,7 @@ func test_reset_functionality() -> void:
 	assert_bool(bm.burden_active).is_false()
 	assert_int(bm.current_mwt_level).is_equal(0)
 	assert_int(bm.get_kill_queue().size()).is_equal(0)
+
 
 func test_collective_noun_determinism() -> void:
 	var bm: _BurdenManager = BurdenManager
@@ -106,6 +108,7 @@ func test_collective_noun_determinism() -> void:
 	# (In a real test we'd check if they are different, but determinism is the key here)
 	assert_str(noun1).is_not_equal("")
 
+
 func test_event_trigger_signals() -> void:
 	var bm: _BurdenManager = BurdenManager
 	var signal_data: Dictionary = {"emitted": false}
@@ -118,6 +121,7 @@ func test_event_trigger_signals() -> void:
 	bm.trigger_burden_event(0, 0, 0, 0, true)
 	assert_bool(signal_data.emitted).is_true()
 	bm.burden_event_triggered.disconnect(cb)
+
 
 func test_phase_b_window_validation() -> void:
 	var bm: _BurdenManager = BurdenManager

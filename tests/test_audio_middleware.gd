@@ -1,5 +1,6 @@
 extends GdUnitTestSuite
 
+
 func test_stem_playback_controls() -> void:
 	var am: _AudioMiddleware = AudioMiddleware
 	var stream: AudioStream = AudioStreamPolyphonic.new()
@@ -11,10 +12,12 @@ func test_stem_playback_controls() -> void:
 	# Verify unknown stem ID handling (should push_warning but not crash)
 	am.play_stem("UNKNOWN", stream)
 
+
 func test_stop_all_stems() -> void:
 	var am: _AudioMiddleware = AudioMiddleware
 	am.stop_all()
 	# Basic smoke test for the stop_all method
+
 
 func test_stem_event_forwarding() -> void:
 	var am: _AudioMiddleware = AudioMiddleware
@@ -37,11 +40,11 @@ func test_stem_event_forwarding() -> void:
 
 	am.stem_event_detected.disconnect(cb)
 
+
 func test_climb_feature_processing() -> void:
 	var am: _AudioMiddleware = AudioMiddleware
 	var events: Array = []
-	var cb: Callable = func(sid: String, type: String, val: float) -> void:
-		events.append(type)
+	var cb: Callable = func(sid: String, type: String, val: float) -> void: events.append(type)
 	if not am.stem_event_detected.is_connected(cb):
 		am.stem_event_detected.connect(cb)
 
@@ -62,6 +65,7 @@ func test_climb_feature_processing() -> void:
 
 	am.stem_event_detected.disconnect(cb)
 
+
 func test_stress_swell_processing() -> void:
 	var am: _AudioMiddleware = AudioMiddleware
 	var events: Array = []
@@ -74,11 +78,13 @@ func test_stress_swell_processing() -> void:
 
 	am.stem_event_detected.disconnect(cb)
 
+
 func test_router_integration() -> void:
 	var am: _AudioMiddleware = AudioMiddleware
 	var router: Node = am.get_stem_router()
 	assert_that(router).is_not_null()
 	assert_str(router.name).is_equal("BurdenStemCaptionRouter")
+
 
 func test_bus_assignment_logic() -> void:
 	var am: _AudioMiddleware = AudioMiddleware
@@ -86,11 +92,13 @@ func test_bus_assignment_logic() -> void:
 	var bass: Node = am.get_node_or_null("BD_BASS")
 	assert_that(bass).is_not_null()
 
+
 func test_invalid_stem_id_handling() -> void:
 	var am: _AudioMiddleware = AudioMiddleware
 	# Should not crash
 	am.play_stem("INVALID_ID", null)
 	am.stop_stem("INVALID_ID")
+
 
 func test_stem_node_structure() -> void:
 	var am: _AudioMiddleware = AudioMiddleware

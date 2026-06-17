@@ -52,6 +52,7 @@ func test_load_non_existent() -> void:
 	var data: Dictionary = sm.load_game()
 	assert_that(data).is_empty()
 
+
 func test_version_stamping() -> void:
 	var sm: _SaveManager = SaveManager
 	var test_data: Dictionary = {"some": "data"}
@@ -63,6 +64,7 @@ func test_version_stamping() -> void:
 
 	var parsed: Variant = JSON.parse_string(content)
 	assert_int(int(parsed["version"])).is_equal(sm.SAVE_VERSION)
+
 
 func test_version_mismatch_handling() -> void:
 	var sm: _SaveManager = SaveManager
@@ -78,6 +80,7 @@ func test_version_mismatch_handling() -> void:
 	assert_str(loaded["foo"]).is_equal("bar")
 	assert_int(int(loaded["version"])).is_equal(0)
 
+
 func test_signal_emissions() -> void:
 	var sm: _SaveManager = SaveManager
 	var signals: Dictionary = {"save": false, "load": false}
@@ -90,6 +93,7 @@ func test_signal_emissions() -> void:
 
 	sm.load_game()
 	assert_bool(signals.load).is_true()
+
 
 func test_malformed_json_handling() -> void:
 	var sm: _SaveManager = SaveManager
@@ -105,6 +109,7 @@ func test_malformed_json_handling() -> void:
 	assert_that(loaded).is_empty()
 	assert_bool(signals.fail).is_true()
 
+
 func test_save_game_fail_signal() -> void:
 	var sm: _SaveManager = SaveManager
 	var signals: Dictionary = {"fail": false}
@@ -115,6 +120,7 @@ func test_save_game_fail_signal() -> void:
 	# For unit test completeness, we'll just verify the success path doesn't emit fail.
 	sm.save_game({"test": "ok"})
 	assert_bool(signals.fail).is_false()
+
 
 func test_has_save_consistency() -> void:
 	var sm: _SaveManager = SaveManager
