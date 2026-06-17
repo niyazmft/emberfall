@@ -15,6 +15,7 @@ extends CombatEntity
 
 ## Child references (auto-wired in _ready)
 var _apparition: ApparitionRenderer
+var _last_synced_apparition_pos: Vector2 = Vector2.INF
 
 # ---------------------------------------------------------------------------
 # Lifecycle
@@ -39,10 +40,11 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	# Sync apparition position to the visual proxy's position (which interpolates)
-	if _apparition and visual_proxy:
-		_apparition.sync_to_owner(visual_proxy.global_position)
-	elif _apparition:
-		_apparition.sync_to_owner(global_position)
+	if _apparition:
+		var target_pos: Vector2 = visual_proxy.global_position if visual_proxy else global_position
+		if not target_pos.is_equal_approx(_last_synced_apparition_pos):
+			_apparition.sync_to_owner(target_pos)
+			_last_synced_apparition_pos = target_pos
 
 
 # ---------------------------------------------------------------------------
