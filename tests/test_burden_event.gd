@@ -3,7 +3,7 @@ extends GdUnitTestSuite
 
 # ── AC-1: Config loads and schema validates ──────────────────────────────
 func test_config_loads() -> void:
-	var bm: Node = BurdenManager
+	var bm: _BurdenManager = AutoloadHelper.burden_manager()
 	# _ready() will attempt to load config automatically
 	bm._ready()
 
@@ -16,7 +16,7 @@ func test_config_loads() -> void:
 
 # ── AC-2: Save schema round-trip ─────────────────────────────────────────
 func test_save_roundtrip() -> void:
-	var bm: Node = BurdenManager
+	var bm: _BurdenManager = AutoloadHelper.burden_manager()
 	bm._ready()
 	bm.reset()
 
@@ -54,7 +54,7 @@ func test_save_roundtrip() -> void:
 
 # ── AC-3: Numbness cap triggers at exactly N=5 with silent Phase B ───────
 func test_numbness_cap_exactly_five() -> void:
-	var bm: Node = BurdenManager
+	var bm: _BurdenManager = AutoloadHelper.burden_manager()
 	bm._ready()
 	bm.reset()
 
@@ -78,7 +78,7 @@ func test_numbness_cap_exactly_five() -> void:
 
 # ── AC-4: Noun rotation deterministic per seed and persists ─────────────
 func test_noun_rotation_deterministic() -> void:
-	var bm1: Node = BurdenManager
+	var bm1: _BurdenManager = AutoloadHelper.burden_manager()
 	bm1._ready()
 	bm1.reset()
 
@@ -90,7 +90,7 @@ func test_noun_rotation_deterministic() -> void:
 	assert_that(noun1).is_equal(noun2)
 
 	## Different topology seed → potentially different noun
-	var bm2: Node = BurdenManager
+	var bm2: _BurdenManager = AutoloadHelper.burden_manager()
 	bm2._ready()
 	bm2.reset()
 	var noun3: String = bm2.select_collective_noun(topo + 1, 0)
@@ -105,7 +105,7 @@ func test_noun_rotation_deterministic() -> void:
 
 # ── Variant selection fallback ────────────────────────────────────────────
 func test_variant_selection_fallback() -> void:
-	var bm: Node = BurdenManager
+	var bm: _BurdenManager = AutoloadHelper.burden_manager()
 	bm._ready()
 	bm.reset()
 
@@ -121,7 +121,7 @@ func test_variant_selection_fallback() -> void:
 
 # ── AC-5: Localization keys unique ───────────────────────────────────────
 func test_localization_keys_unique() -> void:
-	var bm: Node = BurdenManager
+	var bm: _BurdenManager = AutoloadHelper.burden_manager()
 	bm._ready()
 	bm.reset()
 
@@ -146,7 +146,7 @@ func test_localization_keys_unique() -> void:
 
 # ── Phase B timing window verification ────────────────────────────────────
 func test_phase_b_timing_window() -> void:
-	var bm: Node = BurdenManager
+	var bm: _BurdenManager = AutoloadHelper.burden_manager()
 	bm._ready()
 	bm.reset()
 

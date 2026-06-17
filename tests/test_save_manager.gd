@@ -19,7 +19,7 @@ func after() -> void:
 
 
 func test_save_load_cycle() -> void:
-	var sm: _SaveManager = SaveManager
+	var sm: _SaveManager = AutoloadHelper.save_manager()
 	var test_data: Dictionary = {
 		"player_profile": {"player_id": "test_user", "total_runs": 5},
 		"memory_state": {"moral_flag_lifetime": 100}
@@ -38,7 +38,7 @@ func test_save_load_cycle() -> void:
 
 
 func test_delete_save() -> void:
-	var sm: _SaveManager = SaveManager
+	var sm: _SaveManager = AutoloadHelper.save_manager()
 	sm.save_game({"test": 1})
 	assert_that(sm.has_save()).is_true()
 
@@ -47,7 +47,7 @@ func test_delete_save() -> void:
 
 
 func test_load_non_existent() -> void:
-	var sm: _SaveManager = SaveManager
+	var sm: _SaveManager = AutoloadHelper.save_manager()
 	sm.delete_save()
 	var data: Dictionary = sm.load_game()
 	assert_that(data).is_empty()

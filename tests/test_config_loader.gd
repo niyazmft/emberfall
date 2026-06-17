@@ -2,7 +2,7 @@ extends GdUnitTestSuite
 
 
 func test_get_value_with_fallbacks() -> void:
-	var cl: _ConfigLoader = ConfigLoader
+	var cl: _ConfigLoader = AutoloadHelper.config_loader()
 
 	# Value from DEFAULTS
 	# ConfigLoader.getValue returns Variant, JSON/Dictionary might store as float
@@ -14,7 +14,7 @@ func test_get_value_with_fallbacks() -> void:
 
 
 func test_typed_getters() -> void:
-	var cl: _ConfigLoader = ConfigLoader
+	var cl: _ConfigLoader = AutoloadHelper.config_loader()
 
 	# Int getter
 	assert_int(cl.getInt("AP_MAX")).is_equal(6)
@@ -29,6 +29,6 @@ func test_typed_getters() -> void:
 
 
 func test_is_loaded() -> void:
-	var cl: _ConfigLoader = ConfigLoader
+	var cl: _ConfigLoader = AutoloadHelper.config_loader()
 	# In a real environment, it should be loaded after _ready
 	assert_bool(cl.isLoaded()).is_true()

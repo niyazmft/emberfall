@@ -25,7 +25,7 @@ func test_inventory_add_remove() -> void:
 	if configLoader != null and not configLoader.isLoaded():
 		configLoader._loadConfig()
 
-	var inv: Node = AutoloadHelper.get_autoload("InventoryManager")
+	var inv: _InventoryManager = AutoloadHelper.inventory_manager()
 	# Clear inventory
 	inv.inventory.clear()
 
@@ -49,7 +49,7 @@ func test_equipment() -> void:
 	var configLoader: _ConfigLoader = AutoloadHelper.config_loader()
 	if configLoader != null and not configLoader.isLoaded():
 		configLoader._loadConfig()
-	var inv: Node = AutoloadHelper.get_autoload("InventoryManager")
+	var inv: _InventoryManager = AutoloadHelper.inventory_manager()
 	inv._initialize_from_config()
 
 	inv.inventory.clear()
@@ -78,7 +78,7 @@ func test_equipment_type_restriction() -> void:
 	var configLoader: _ConfigLoader = AutoloadHelper.config_loader()
 	if configLoader != null and not configLoader.isLoaded():
 		configLoader._loadConfig()
-	var inv: Node = AutoloadHelper.get_autoload("InventoryManager")
+	var inv: _InventoryManager = AutoloadHelper.inventory_manager()
 	inv._initialize_from_config()
 
 	inv.inventory.clear()
@@ -91,7 +91,7 @@ func test_equipment_type_restriction() -> void:
 
 
 func test_snapshot() -> void:
-	var inv: Node = AutoloadHelper.get_autoload("InventoryManager")
+	var inv: _InventoryManager = AutoloadHelper.inventory_manager()
 	inv.inventory.clear()
 	inv.inventory.append({"item_id": "test", "quantity": 1})
 	inv.equipment["weapon"] = "sword"

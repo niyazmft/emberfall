@@ -12,6 +12,7 @@ render_mode unshaded;
 
 // Global skip-gate logic
 global uniform bool u_burden_active;
+global uniform int u_cvd_mode; // 0: None, 1: Protanopia, 2: Deuteranopia, 3: Tritanopia
 global uniform sampler2D u_burden_scratch_buffer;
 
 // Godot 4 Screen Texture
@@ -62,17 +63,50 @@ vec3 lut_sample(sampler3D lut_tex, vec3 colour) {
 	return texture(lut_tex, uvw).rgb;
 }
 
+vec3 apply_cvd(vec3 colour, int mode) {
+	// Linearize RGB for more accurate simulation
+	vec3 rgb_linear = colour * colour;
+	vec3 sim;
+
+	if (mode == 1) { // Protanopia
+		const mat3 prot_mat = mat3(
+			vec3(0.152, 0.115, -0.004),
+			vec3(1.053, 0.786, -0.048),
+			vec3(-0.205, 0.099, 1.052)
+		);
+		sim = prot_mat * rgb_linear;
+	} else if (mode == 2) { // Deuteranopia
+		const mat3 deut_mat = mat3(
+			vec3(0.367, 0.280, -0.012),
+			vec3(0.861, 0.673, 0.043),
+			vec3(-0.228, 0.047, 0.969)
+		);
+		sim = deut_mat * rgb_linear;
+	} else if (mode == 3) { // Tritanopia
+		const mat3 trit_mat = mat3(
+			vec3(1.016, 0.006, 0.023),
+			vec3(0.054, 0.951, -0.156),
+			vec3(-0.071, 0.043, 1.133)
+		);
+		sim = trit_mat * rgb_linear;
+	} else {
+		return colour;
+	}
+
+	return sqrt(clamp(sim, 0.0, 1.0));
+}
+
 void fragment() {
 	vec4 screen_col = texture(SCREEN_TEXTURE, SCREEN_UV);
+	vec3 working_col = screen_col.rgb;
 
-	// Skip-gate check (rest of logic only runs if burden is active)
+	// 1. Burden Post-Process Stack
 	if (u_burden_active) {
 		vec2 uv = SCREEN_UV;
-		// Use SCREEN_PIXEL_SIZE for resolution in Godot 4.x canvas_item shaders
 		vec2 resolution = 1.0 / SCREEN_PIXEL_SIZE;
 		vec2 aspect = vec2(1.0, resolution.y / resolution.x);
 
-		// 1. Chromatic Aberration (Resolve pass 1, 2, 3 - merged into coordinated texture fetches)
+		// --- Chromatic Aberration ---
 		vec2 centre = mix(vec2(0.5), u_keeper_screen_pos, float(ca_direction_mode));
 		vec2 dir = (uv - centre) * aspect;
 		float dist = length(dir);
@@ -80,7 +114,6 @@ void fragment() {
 		float wave = ca_wave > 0.0 ? ca_wave * sin(TIME * ca_wave_freq_hz * 6.28318530718) : 0.0;
 		float ca_falloff = 1.0;
 		if (ca_edge_falloff > 0.0) {
-			// Inverted falloff logic: keep center sharp, distort edges.
 			float cos_val = pow(cos(clamp(dist * 1.57079632679, 0.0, 1.57079632679)), ca_edge_power);
 			ca_falloff = mix(1.0, 1.0 - cos_val, ca_edge_falloff);
 		}
@@ -96,15 +129,14 @@ void fragment() {
 		float b = texture(SCREEN_TEXTURE, b_uv).b;
 		vec3 raw_col = vec3(r, g, b);
 
-		// 2. Colour Grading
+		// --- Colour Grading ---
 		vec3 base_lut = lut_sample(u_lut_base, raw_col);
 		vec3 burden_lut = lut_sample(u_lut_burden, raw_col);
 		float w_total = max(lut_weight_base + lut_weight_burden, 0.001);
 		vec3 graded_col = (base_lut * lut_weight_base + burden_lut * lut_weight_burden) / w_total;
 
-		// 3. Vignette
+		// --- Vignette ---
 		float t = TIME;
-		// Guard against division by zero in cycle uniforms
 		float opacity_final = vig_opacity + vig_opacity_amp * sin(t * 6.28318530718 / max(vig_opacity_cycle_s, 0.0001));
 		float radius_final = vig_radius + vig_radius_amp * sin(t * 6.28318530718 / max(vig_radius_cycle_s, 0.0001));
 
@@ -112,12 +144,14 @@ void fragment() {
 		vignette = clamp(vignette, 0.0, 1.0);
 
 		vec3 vigged_col = mix(vig_color, graded_col, vignette);
-		vec3 final_col = mix(graded_col, vigged_col, opacity_final);
+		working_col = mix(graded_col, vigged_col, opacity_final);
+	}
 
-		COLOR = vec4(final_col, 1.0);
+	// 2. CVD Simulation (Accessibility Resolve)
+	if (u_cvd_mode > 0) {
+		working_col = apply_cvd(working_col, u_cvd_mode);
 	}
-	else {
-		COLOR = screen_col;
-	}
+
+	COLOR = vec4(working_col, 1.0);
 }
 
