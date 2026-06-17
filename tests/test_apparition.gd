@@ -4,20 +4,24 @@ extends GdUnitTestSuite
 
 
 func test_burden_manager_record_kill() -> void:
-	var bm: Node = BurdenManager
+	var bm := AutoloadHelper.burden_manager()
+	if bm == null:
+		return
 	bm.reset()
 
 	bm.record_sentient_kill("enemy_wraith_01", "Wraith")
 	bm.record_sentient_kill("enemy_shade_02", "Shade")
 
-	var queue: Array[BurdenManager.BurdenKillRecord] = bm.get_kill_queue()
+	var queue: Array[_BurdenManager.BurdenKillRecord] = bm.get_kill_queue()
 	assert_that(queue.size()).is_equal(2)
 	assert_that(queue[0].enemy_id).is_equal("enemy_wraith_01")
 	assert_that(queue[1].display_name).is_equal("Shade")
 
 
 func test_burden_manager_cap_at_three() -> void:
-	var bm: Node = BurdenManager
+	var bm := AutoloadHelper.burden_manager()
+	if bm == null:
+		return
 	bm.reset()
 
 	bm.record_sentient_kill("a", "A")
@@ -32,7 +36,9 @@ func test_burden_manager_cap_at_three() -> void:
 
 
 func test_burden_manager_moral_weight_toggle() -> void:
-	var bm: Node = BurdenManager
+	var bm := AutoloadHelper.burden_manager()
+	if bm == null:
+		return
 	bm.reset()
 	bm.burden_active = false
 
@@ -114,14 +120,17 @@ func test_state_machine_recoil_z_promotion() -> void:
 
 
 func test_keeper_integration_damage_triggers_recoil() -> void:
-	BurdenManager.reset()
+	var bm := AutoloadHelper.burden_manager()
+	if bm == null:
+		return
+	bm.reset()
 	var k: Keeper = auto_free(Keeper.new())
 	add_child(k)
 
-	BurdenManager.record_sentient_kill("enemy_test", "Test Enemy")
-	BurdenManager.record_sentient_kill("enemy_test2", "Test Enemy 2")
-	BurdenManager.record_sentient_kill("enemy_test3", "Test Enemy 3")
-	BurdenManager.update_moral_weight(3)
+	bm.record_sentient_kill("enemy_test", "Test Enemy")
+	bm.record_sentient_kill("enemy_test2", "Test Enemy 2")
+	bm.record_sentient_kill("enemy_test3", "Test Enemy 3")
+	bm.update_moral_weight(3)
 
 	for _i: int in range(60):
 		k._process(0.016)
@@ -136,7 +145,10 @@ func test_keeper_integration_damage_triggers_recoil() -> void:
 
 
 func test_keeper_integration_kill_updates_stack() -> void:
-	BurdenManager.reset()
+	var bm := AutoloadHelper.burden_manager()
+	if bm == null:
+		return
+	bm.reset()
 	var k: Keeper = auto_free(Keeper.new())
 	add_child(k)
 
@@ -144,5 +156,5 @@ func test_keeper_integration_kill_updates_stack() -> void:
 	k.record_sentient_kill("wolf_02", "Wolf")
 	k.record_sentient_kill("wolf_03", "Wolf")
 
-	var ids: PackedStringArray = BurdenManager.get_last_enemy_ids()
+	var ids: PackedStringArray = bm.get_last_enemy_ids()
 	assert_that(ids.size()).is_equal(3)

@@ -43,7 +43,7 @@ func test_caption_driver_mapping() -> void:
 	var cm: Node = auto_free(Node.new())
 	cm.name = "CaptionManager"
 
-	var existing_cm: Node = get_tree().root.get_node_or_null("CaptionManager")
+	var existing_cm: Node = AutoloadHelper.get_autoload("CaptionManager")
 	if existing_cm:
 		get_tree().root.remove_child(existing_cm)
 
@@ -91,7 +91,7 @@ func test_caption_driver_cooldown() -> void:
 	var cm: Node = auto_free(Node.new())
 	cm.name = "CaptionManager"
 
-	var existing_cm: Node = get_tree().root.get_node_or_null("CaptionManager")
+	var existing_cm: Node = AutoloadHelper.get_autoload("CaptionManager")
 	if existing_cm:
 		get_tree().root.remove_child(existing_cm)
 

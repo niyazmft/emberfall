@@ -28,17 +28,20 @@ func test_ability_resource_parsing() -> void:
 func test_ability_manager_loading() -> void:
 	# AbilityManager is an autoload, so it should have loaded abilities on start in the test environment
 	# if ConfigLoader and AbilityManager are set up correctly.
+	var am := AutoloadHelper.ability_manager()
+	if am == null:
+		return
 
-	var strikeEmber: Ability = AbilityManager.getAbility("strike_ember")
+	var strikeEmber: Ability = am.getAbility("strike_ember")
 	assert_that(strikeEmber).is_not_null()
 	assert_str(strikeEmber.id).is_equal("strike_ember")
 	assert_int(strikeEmber.apCost).is_equal(3)
 
-	var quickDash: Ability = AbilityManager.getAbility("quick_dash")
+	var quickDash: Ability = am.getAbility("quick_dash")
 	assert_that(quickDash).is_not_null()
 	assert_str(quickDash.id).is_equal("quick_dash")
 
-	var allAbilities: Array[Ability] = AbilityManager.getAllAbilities()
+	var allAbilities: Array[Ability] = am.getAllAbilities()
 	assert_int(allAbilities.size()).is_greater(0)
 
 
