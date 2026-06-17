@@ -51,3 +51,78 @@ func test_load_non_existent() -> void:
 	sm.delete_save()
 	var data: Dictionary = sm.load_game()
 	assert_that(data).is_empty()
+
+func test_version_stamping() -> void:
+	var sm: _SaveManager = SaveManager
+	var test_data: Dictionary = {"some": "data"}
+	sm.save_game(test_data)
+
+	var file: FileAccess = FileAccess.open(TEST_SAVE_PATH, FileAccess.READ)
+	var content: String = file.get_as_text()
+	file.close()
+
+	var parsed: Variant = JSON.parse_string(content)
+	assert_int(int(parsed["version"])).is_equal(sm.SAVE_VERSION)
+
+func test_version_mismatch_handling() -> void:
+	var sm: _SaveManager = SaveManager
+	var data_with_old_version: Dictionary = {"version": 0, "foo": "bar"}
+
+	# Manually write old version
+	var file: FileAccess = FileAccess.open(TEST_SAVE_PATH, FileAccess.WRITE)
+	file.store_string(JSON.stringify(data_with_old_version))
+	file.close()
+
+	# load_game should still work but might push a warning (we can't easily assert warnings here)
+	var loaded: Dictionary = sm.load_game()
+	assert_str(loaded["foo"]).is_equal("bar")
+	assert_int(int(loaded["version"])).is_equal(0)
+
+func test_signal_emissions() -> void:
+	var sm: _SaveManager = SaveManager
+	var signals: Dictionary = {"save": false, "load": false}
+
+	sm.save_completed.connect(func() -> void: signals.save = true)
+	sm.load_completed.connect(func(data: Dictionary) -> void: signals.load = true)
+
+	sm.save_game({"test": "signals"})
+	assert_bool(signals.save).is_true()
+
+	sm.load_game()
+	assert_bool(signals.load).is_true()
+
+func test_malformed_json_handling() -> void:
+	var sm: _SaveManager = SaveManager
+	var signals: Dictionary = {"fail": false}
+	sm.load_failed.connect(func(reason: String) -> void: signals.fail = true)
+
+	# Write garbage to save file
+	var file: FileAccess = FileAccess.open(TEST_SAVE_PATH, FileAccess.WRITE)
+	file.store_string("NOT JSON {")
+	file.close()
+
+	var loaded: Dictionary = sm.load_game()
+	assert_that(loaded).is_empty()
+	assert_bool(signals.fail).is_true()
+
+func test_save_game_fail_signal() -> void:
+	var sm: _SaveManager = SaveManager
+	var signals: Dictionary = {"fail": false}
+	sm.save_failed.connect(func(reason: String) -> void: signals.fail = true)
+
+	# We can't easily force FileAccess.WRITE to fail on "user://" without OS-level locks
+	# but we can check if it handles it.
+	# For unit test completeness, we'll just verify the success path doesn't emit fail.
+	sm.save_game({"test": "ok"})
+	assert_bool(signals.fail).is_false()
+
+func test_has_save_consistency() -> void:
+	var sm: _SaveManager = SaveManager
+	sm.delete_save()
+	assert_bool(sm.has_save()).is_false()
+
+	sm.save_game({"t": 1})
+	assert_bool(sm.has_save()).is_true()
+
+	sm.delete_save()
+	assert_bool(sm.has_save()).is_false()
