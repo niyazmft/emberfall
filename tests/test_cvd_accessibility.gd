@@ -1,5 +1,6 @@
 extends GdUnitTestSuite
 
+
 func test_cvd_mode_application() -> void:
 	var bsm: Node = AutoloadHelper.burden_shader_manager()
 	assert_object(bsm).is_not_null()
@@ -21,6 +22,7 @@ func test_cvd_mode_application() -> void:
 
 	bsm.call("set_cvd_mode", 3)
 	assert_int(bsm.get("_current_cvd_mode")).is_equal(3)
+
 
 func test_pp_rect_visibility() -> void:
 	var bsm: Node = AutoloadHelper.burden_shader_manager()
