@@ -117,7 +117,7 @@ func test_mwt_queues_remaining_deltas() -> void:
 	player.moral_flag = 2
 	el.player_entity = player
 
-	for i in range(3):
+	for i: int in range(3):
 		var enemy: Entity = Entity.new("Enemy%d" % i, 0, 0, 10, 5, 3)
 		el.apply_damage(null, enemy, 10)
 		el.process_kill(player, enemy, true, "enemy_%d" % i, "Grunt")
