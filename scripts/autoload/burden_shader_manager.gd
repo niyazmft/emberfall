@@ -10,6 +10,7 @@ const SCRATCH_BUFFER_HEIGHT: int = 256  # 512 * 256 * 4 bytes (RGBA8) = 512 KB
 
 var _scratch_texture: ImageTexture
 var _pp_rect: ColorRect = null
+var _current_cvd_mode: int = 0
 
 
 func _ready() -> void:
@@ -51,16 +52,24 @@ func _setup_global_parameters() -> void:
 	var globals: Array[StringName] = RenderingServer.global_shader_parameter_get_list()
 	var has_active: bool = false
 	var has_scratch: bool = false
+	var has_cvd: bool = false
 
 	for g: StringName in globals:
 		if g == &"u_burden_active":
 			has_active = true
 		if g == &"u_burden_scratch_buffer":
 			has_scratch = true
+		if g == &"u_cvd_mode":
+			has_cvd = true
 
 	if not has_active:
 		RenderingServer.global_shader_parameter_add(
 			"u_burden_active", RenderingServer.GLOBAL_VAR_TYPE_BOOL, false
+		)
+
+	if not has_cvd:
+		RenderingServer.global_shader_parameter_add(
+			"u_cvd_mode", RenderingServer.GLOBAL_VAR_TYPE_INT, 0
 		)
 
 	if not has_scratch:
@@ -75,26 +84,34 @@ func _setup_global_parameters() -> void:
 func _on_burden_active_changed(active: bool) -> void:
 	# Skip-gate logic: update global uniform
 	RenderingServer.global_shader_parameter_set("u_burden_active", active)
-
-	# Skip-gate logic: Toggle visibility of the resolve pass
-	if _pp_rect:
-		_pp_rect.visible = active
-
+	_update_pp_visibility()
 	_print_debug("u_burden_active set to %s" % str(active))
 
 
 ## Register the master post-process ColorRect for visibility gating.
 func register_pp_rect(rect: ColorRect) -> void:
 	_pp_rect = rect
-	if _pp_rect and BurdenManager:
-		_pp_rect.visible = BurdenManager.burden_active
+	_update_pp_visibility()
 
 
-## Stub for color-vision-deficiency (CVD) simulation mode.
-## Currently a no-op placeholder; will be implemented when the shader pipeline
-## supports daltonism simulation (DON-263 follow-up).
+## Sets the color-vision-deficiency (CVD) simulation mode.
+## 0: None, 1: Protanopia, 2: Deuteranopia, 3: Tritanopia
 func set_cvd_mode(mode: int) -> void:
-	_print_debug("CVD mode set to %d (stub — shader pipeline not yet implemented)" % mode)
+	_current_cvd_mode = mode
+	RenderingServer.global_shader_parameter_set("u_cvd_mode", mode)
+	_update_pp_visibility()
+	_print_debug("CVD mode set to %d" % mode)
+
+
+func _update_pp_visibility() -> void:
+	if not _pp_rect:
+		return
+
+	var burden_active: bool = false
+	if BurdenManager:
+		burden_active = BurdenManager.burden_active
+
+	_pp_rect.visible = burden_active or _current_cvd_mode > 0
 
 
 func _print_debug(msg: String) -> void:
