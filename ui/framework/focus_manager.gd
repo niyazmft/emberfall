@@ -15,8 +15,19 @@ func _ready() -> void:
 	get_viewport().gui_focus_changed.connect(_on_focus_changed)
 
 
-func _process(_delta: float) -> void:
-	_update_focus_ring_position()
+func _exit_tree() -> void:
+	if get_viewport() and get_viewport().gui_focus_changed.is_connected(_on_focus_changed):
+		get_viewport().gui_focus_changed.disconnect(_on_focus_changed)
+	_disconnect_signals(_current_focused)
+
+
+## Sets initial focus to the first focusable child within the given container.
+func set_initial_focus(container: Control) -> void:
+	if not is_instance_valid(container):
+		return
+	var first: Control = _find_first_focusable(container)
+	if first:
+		first.grab_focus.call_deferred()
 
 
 ## Disables focus on all controls outside the given modal and sets up internal wrap-around.
@@ -72,14 +83,42 @@ func _create_focus_ring() -> void:
 
 	# Add to a CanvasLayer to ensure it's on top
 	var canvas: CanvasLayer = CanvasLayer.new()
+	canvas.name = "FocusCanvas"
 	canvas.layer = 120  # Above most UI
 	add_child(canvas)
 	canvas.add_child(_focus_ring)
 
 
 func _on_focus_changed(control: Control) -> void:
+	_disconnect_signals(_current_focused)
 	_current_focused = control
+	_connect_signals(_current_focused)
 	_update_focus_ring_position()
+
+
+func _on_focused_exiting() -> void:
+	_current_focused = null
+	_update_focus_ring_position()
+
+
+func _connect_signals(control: Control) -> void:
+	if is_instance_valid(control):
+		if not control.item_rect_changed.is_connected(_update_focus_ring_position):
+			control.item_rect_changed.connect(_update_focus_ring_position)
+		if not control.visibility_changed.is_connected(_update_focus_ring_position):
+			control.visibility_changed.connect(_update_focus_ring_position)
+		if not control.tree_exiting.is_connected(_on_focused_exiting):
+			control.tree_exiting.connect(_on_focused_exiting)
+
+
+func _disconnect_signals(control: Control) -> void:
+	if is_instance_valid(control):
+		if control.item_rect_changed.is_connected(_update_focus_ring_position):
+			control.item_rect_changed.disconnect(_update_focus_ring_position)
+		if control.visibility_changed.is_connected(_update_focus_ring_position):
+			control.visibility_changed.disconnect(_update_focus_ring_position)
+		if control.tree_exiting.is_connected(_on_focused_exiting):
+			control.tree_exiting.disconnect(_on_focused_exiting)
 
 
 func _update_focus_ring_position() -> void:
