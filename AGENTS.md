@@ -497,7 +497,7 @@ entries get pruned; high-signal entries stay.
 **UI Accessibility (`.jules/palette.md`):**
 
 - **Focus management:** Use `grab_focus.call_deferred()` on primary buttons
-- Applies to: `main_menu.gd`, `pause_menu.gd`, `settings_menu.gd`
+- Applies to: `pause_menu.gd`, `settings_menu.gd`
 
 **Before starting any task:** Read the relevant `.jules/*.md` file first.
 Then check `git log --oneline .jules/` for the most recent additions.
