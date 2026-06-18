@@ -10,6 +10,19 @@
       "duration_seconds": 1.0,
       "font_size": 18
     },
+    "hit_stop": {
+      "tiers": [
+        { "threshold": 1, "frames": 2 },
+        { "threshold": 10, "frames": 5 },
+        { "threshold": 25, "frames": 10 }
+      ]
+    },
+    "floating_text": {
+      "PHYSICAL": { "color": "#FFFFFF" },
+      "MAGIC": { "color": "#5DADE2" },
+      "HEAL": { "color": "#58D68D" },
+      "CRITICAL": { "color": "#F4D03F" }
+    },
     "screen_shake": {
       "default_intensity": 4.0,
       "default_duration": 0.2
