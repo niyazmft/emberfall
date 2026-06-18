@@ -18,6 +18,8 @@ var _combat_input: CombatInput
 var _turn_manager: TurnManager
 var _room_kills: int = 0
 var _current_room_data: Dictionary = {}
+var _boss_entity: Entity = null
+var _reinforcements_spawned: bool = false
 
 @onready var grid_renderer: GridRenderer = $GridRenderer
 @onready var entity_container: Node2D = $EntityContainer
@@ -50,6 +52,9 @@ func _exit_tree() -> void:
 	if run_manager and run_manager.room_entered.is_connected(_on_room_entered):
 		run_manager.room_entered.disconnect(_on_room_entered)
 
+	if _boss_entity and _boss_entity.hp_changed.is_connected(_on_boss_hp_changed):
+		_boss_entity.hp_changed.disconnect(_on_boss_hp_changed)
+
 	var eb := AutoloadHelper.event_bus()
 	if eb and eb.entity_state_changed.is_connected(_on_entity_state_changed):
 		eb.entity_state_changed.disconnect(_on_entity_state_changed)
@@ -69,11 +74,24 @@ func _on_room_entered(p_room_index: int, room_data: Dictionary) -> void:
 
 	_create_enemies_node()
 
+	if _boss_entity and _boss_entity.hp_changed.is_connected(_on_boss_hp_changed):
+		_boss_entity.hp_changed.disconnect(_on_boss_hp_changed)
+
 	# Configure grid
 	RoomLoader.configure_grid(room_data)
 
 	# Spawn entities
 	_player = RoomLoader.spawn_entities(room_data, entity_container, _enemies_node)
+
+	# Boss and reinforcements setup
+	_boss_entity = null
+	_reinforcements_spawned = false
+	for child in _enemies_node.get_children():
+		var e := CombatEntity.get_entity(child)
+		if e and e.archetype_id == "overgrown_guardian":
+			_boss_entity = e
+			_boss_entity.hp_changed.connect(_on_boss_hp_changed)
+			break
 
 	# Setup combat systems
 	if _combat_input:
@@ -207,9 +225,73 @@ func _on_hud_move_pressed() -> void:
 
 func _on_combat_ended(victory: bool) -> void:
 	if victory:
+		if _boss_entity and _boss_entity.archetype_id == "overgrown_guardian":
+			var rm := AutoloadHelper.run_manager()
+			if rm:
+				rm.cmd_final_encounter_won()
 		_showVictoryModal()
 	else:
 		_showDefeatModal()
+
+
+func _on_boss_hp_changed(new_hp: int, _old_hp: int) -> void:
+	if _boss_entity == null or _reinforcements_spawned:
+		return
+
+	if float(new_hp) / float(_boss_entity.hp_max) <= 0.5:
+		_reinforcements_spawned = true
+		_spawn_reinforcements()
+
+
+func _spawn_reinforcements() -> void:
+	if not _current_room_data.has("reinforcements"):
+		return
+
+	var an := AutoloadHelper.ambient_narrator()
+	if an:
+		an.trigger_narrative("narrative.boss.reinforcements")
+
+	var reinforcements: Array = _current_room_data["reinforcements"] as Array
+	for encounter: Variant in reinforcements:
+		if encounter is Dictionary:
+			var enc := encounter as Dictionary
+			var enemy_type: String = enc.get("enemy_type", "grunt")
+			var positions: Array = enc.get("positions", []) as Array
+
+			var enemy_scene: PackedScene = RoomLoader.ENEMY_SCENES.get(
+				enemy_type, RoomLoader.ENEMY_SCENES["grunt"]
+			)
+			if enemy_scene == null:
+				continue
+
+			for pos_data: Variant in positions:
+				if not pos_data is Dictionary:
+					continue
+				var d := pos_data as Dictionary
+				var x: int = int(d.get("x", 0))
+				var y: int = int(d.get("y", 0))
+
+				var enemy := enemy_scene.instantiate() as Node2D
+				if "archetype_id" in enemy:
+					var arch_override: String = enc.get("archetype_override", "")
+					if not arch_override.is_empty():
+						enemy.set("archetype_id", arch_override)
+					else:
+						enemy.set("archetype_id", enemy_type)
+
+				if "elite_type" in enemy:
+					enemy.set("elite_type", enc.get("elite_type", ""))
+
+				if "behavior_override" in enemy:
+					enemy.set("behavior_override", enc.get("behavior_override", ""))
+
+				_enemies_node.add_child(enemy)
+
+				var entity: Entity = CombatEntity.get_entity(enemy)
+				if entity:
+					entity.set_grid_position(x, y)
+					if _turn_manager:
+						_turn_manager.add_enemy(enemy)
 
 
 func _on_entity_state_changed(

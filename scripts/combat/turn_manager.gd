@@ -49,6 +49,17 @@ func end_player_turn() -> void:
 		_end_current_turn()
 
 
+## Dynamically adds an enemy to the combat.
+func add_enemy(p_enemy: Node2D) -> void:
+	if p_enemy not in _enemies:
+		_enemies.append(p_enemy)
+		# If we are already in combat, we might need to add it to turn_order
+		# if the initiative phase for this round has already passed.
+		# However, it's safer to just let it be picked up in the next initiative phase
+		# OR manually insert it if we want it to act this round.
+		# For now, following simple addition to _enemies.
+
+
 # ── Internal Logic ──────────────────────────────────────────────────
 func _change_state(p_new_state: CombatState) -> void:
 	if current_state == CombatState.COMBAT_END and p_new_state != CombatState.IDLE:

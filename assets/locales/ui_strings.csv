@@ -46,3 +46,9 @@ CONFIRM_RESET_TITLE,Reset Controls?
 CONFIRM_RESET_BODY,Are you sure you want to reset all controls to their default bindings?
 CONFIRM_RESET_SETTINGS_TITLE,Reset Settings?
 CONFIRM_RESET_SETTINGS_BODY,Are you sure you want to reset ALL settings (audio, video, accessibility, controls) to their default values?
+narrative.boss.intro,The Overgrown Guardian awakens. Its stony limbs creaking with ancient power.
+narrative.boss.reinforcements,Vines writhe beneath the soil as reinforcements emerge!
+HUD_VICTORY_CONTINUE,Continue
+HUD_SUMMARY_TURNS,Turns: %d
+HUD_SUMMARY_KILLS,Kills: %d
+HUD_SUMMARY_SHARDS,Shards: %d

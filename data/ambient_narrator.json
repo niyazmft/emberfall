@@ -5,6 +5,13 @@
       "event_type": "room_entered",
       "localization_key": "narrative.room.entry",
       "channel": "AMBIENT"
+    },
+    {
+      "id": "boss_intro",
+      "event_type": "room_entered",
+      "room_id": "boss_overgrown_guardian",
+      "localization_key": "narrative.boss.intro",
+      "channel": "AMBIENT"
     }
   ]
 }

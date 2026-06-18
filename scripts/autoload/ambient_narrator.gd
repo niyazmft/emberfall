@@ -30,11 +30,17 @@ func _on_room_entered(_room_index: int, _room_data: Dictionary) -> void:
 	if cl == null:
 		return
 
-	# 1. Trigger generic room-entry triggers
+	var room_id: String = _room_data.get("room_id", "")
+
+	# 1. Trigger generic and room-specific room-entry triggers
 	var triggers: Variant = cl.getValue("triggers")
 	if triggers is Array:
 		for trigger: Variant in triggers:
 			if trigger is Dictionary and trigger.get("event_type") == "room_entered":
+				var trigger_room_id: String = trigger.get("room_id", "")
+				if not trigger_room_id.is_empty() and trigger_room_id != room_id:
+					continue
+
 				var loc_key: String = trigger.get("localization_key", "")
 				if not loc_key.is_empty():
 					trigger_narrative(loc_key)
