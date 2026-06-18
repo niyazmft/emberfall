@@ -149,6 +149,8 @@ func _on_entity_hp_changed(new_hp: int, old_hp: int) -> void:
 	if new_hp < old_hp:
 		if _apparition_renderer:
 			_apparition_renderer.trigger_damage_effect()
+		if _status_bar:
+			_status_bar.flash()
 
 	if _status_bar:
 		_status_bar.update_hp(new_hp, entity.hp_max)
@@ -212,7 +214,7 @@ func _setup_status_bar() -> void:
 	if status_bar_scene:
 		_status_bar = status_bar_scene.instantiate() as EntityStatusBar
 		add_child(_status_bar)
-		_status_bar.position = Vector2(-32, -60)  # Position above entity
+		# Position is now handled by status bar's own _process via top_level = true
 		if entity:
 			_status_bar.update_hp(entity.hp, entity.hp_max)
 			_status_bar.update_ap(entity.ap, GameConstants.AP_MAX)
