@@ -1,0 +1,73 @@
+[gd_resource type="Theme" load_steps=8 format=3]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ap_off"]
+bg_color = Color(0.15, 0.15, 0.15, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ap_on"]
+bg_color = Color(1, 0.8, 0, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.9, 0.4, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+shadow_color = Color(1, 0.8, 0, 0.4)
+shadow_size = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hp_bg"]
+bg_color = Color(0.05, 0.05, 0.05, 0.7)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hp_fill"]
+bg_color = Color(0.26, 0.71, 0.26, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0, 0, 0, 0)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_hp"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ghost_fill"]
+bg_color = Color(0.9, 0.3, 0.3, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[resource]
+APOff/base_type = &"Panel"
+APOff/styles/panel = SubResource("StyleBoxFlat_ap_off")
+APOn/base_type = &"Panel"
+APOn/styles/panel = SubResource("StyleBoxFlat_ap_on")
+GhostBar/base_type = &"ProgressBar"
+GhostBar/styles/background = SubResource("StyleBoxEmpty_hp")
+GhostBar/styles/fill = SubResource("StyleBoxFlat_ghost_fill")
+ProgressBar/styles/background = SubResource("StyleBoxFlat_hp_bg")
+ProgressBar/styles/fill = SubResource("StyleBoxFlat_hp_fill")
+TopBar/base_type = &"ProgressBar"
+TopBar/styles/background = SubResource("StyleBoxEmpty_hp")
+TopBar/styles/fill = SubResource("StyleBoxFlat_hp_fill")
