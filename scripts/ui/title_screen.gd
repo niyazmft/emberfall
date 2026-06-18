@@ -8,7 +8,6 @@ extends Control
 @onready var settings_btn: Button = %SettingsButton
 @onready var quit_btn: Button = %QuitButton
 @onready var button_container: VBoxContainer = %ButtonContainer
-@onready var transition_layer: TransitionLayer = %TransitionLayer
 
 
 func _ready() -> void:
@@ -18,18 +17,19 @@ func _ready() -> void:
 	settings_btn.text = tr("menu.title.settings")
 	quit_btn.text = tr("menu.title.quit")
 
-	# Setup button states
-	_update_continue_button_state()
+	# Enable Continue if a save exists
+	var save_manager: _SaveManager = AutoloadHelper.save_manager()
+	if save_manager != null and save_manager.has_save():
+		continue_btn.disabled = false
+	else:
+		continue_btn.disabled = true
 
 	# Connect signals
-	continue_btn.pressed.connect(_on_continue_pressed)
+	if not continue_btn.disabled:
+		continue_btn.pressed.connect(_on_continue_pressed)
 	new_game_btn.pressed.connect(_on_new_game_pressed)
 	settings_btn.pressed.connect(_on_settings_pressed)
 	quit_btn.pressed.connect(_on_quit_pressed)
-
-	var save_manager: _SaveManager = AutoloadHelper.save_manager()
-	if save_manager != null:
-		save_manager.save_changed.connect(_update_continue_button_state)
 
 	# Enforce touch targets
 	for btn: Button in [continue_btn, new_game_btn, settings_btn, quit_btn]:
@@ -37,9 +37,6 @@ func _ready() -> void:
 
 	# Setup dynamic vertical wrap-around focus
 	_setup_focus_wrap()
-
-	if transition_layer:
-		transition_layer.fade_in()
 
 	# Initial focus: Continue if enabled, otherwise New Game
 	if not continue_btn.disabled:
@@ -57,23 +54,6 @@ func _exit_tree() -> void:
 		settings_btn.pressed.disconnect(_on_settings_pressed)
 	if quit_btn and quit_btn.pressed.is_connected(_on_quit_pressed):
 		quit_btn.pressed.disconnect(_on_quit_pressed)
-
-	var save_manager: _SaveManager = AutoloadHelper.save_manager()
-	if (
-		save_manager != null
-		and save_manager.save_changed.is_connected(_update_continue_button_state)
-	):
-		save_manager.save_changed.disconnect(_update_continue_button_state)
-
-
-func _update_continue_button_state() -> void:
-	var save_manager: _SaveManager = AutoloadHelper.save_manager()
-	var has_save: bool = save_manager != null and save_manager.has_save()
-
-	continue_btn.disabled = not has_save
-
-	# Setup dynamic vertical wrap-around focus
-	_setup_focus_wrap()
 
 
 func _setup_focus_wrap() -> void:

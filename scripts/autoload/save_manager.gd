@@ -69,9 +69,6 @@ signal save_failed(reason: String)
 ## Emitted when load_game() cannot read or parse the file.
 signal load_failed(reason: String)
 
-## Emitted whenever a save is created or deleted.
-signal save_changed
-
 # ── Lifecycle ──────────────────────────────────────────────────────────────
 
 
@@ -107,7 +104,6 @@ func save_game(state: Dictionary) -> Error:
 
 	_print_debug("save_game: wrote %d bytes to %s" % [json_text.length(), SAVE_PATH])
 	save_completed.emit()
-	save_changed.emit()
 	return OK
 
 
@@ -187,7 +183,6 @@ func delete_save() -> void:
 		)
 	else:
 		_print_debug("delete_save: removed %s" % SAVE_PATH)
-		save_changed.emit()
 
 
 ## Returns true if a save file is present on disk.
