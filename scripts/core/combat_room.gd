@@ -237,7 +237,12 @@ func _showVictoryModal() -> void:
 	var scene: PackedScene = load(VICTORY_MODAL_SCENE_PATH)
 	if scene:
 		var modal := scene.instantiate() as _VictoryModal
-		ui_overlay.add_child(modal)
+		var lm: _LayerManager = AutoloadHelper.layer_manager()
+		if lm:
+			lm.add_modal(modal)
+		else:
+			ui_overlay.add_child(modal)
+
 		if modal:
 			var summary: Dictionary = {
 				"turns": _turn_manager.round_number,
@@ -251,7 +256,12 @@ func _showDefeatModal() -> void:
 	var scene: PackedScene = load(DEFEAT_MODAL_SCENE_PATH)
 	if scene:
 		var modal := scene.instantiate() as _DefeatModal
-		ui_overlay.add_child(modal)
+		var lm: _LayerManager = AutoloadHelper.layer_manager()
+		if lm:
+			lm.add_modal(modal)
+		else:
+			ui_overlay.add_child(modal)
+
 		if modal:
 			var rm: _RunManager = AutoloadHelper.run_manager()
 			var summary: Dictionary = {
