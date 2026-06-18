@@ -196,6 +196,10 @@ func _try_move_player(dx: int, dy: int) -> void:
 		# Deduct AP
 		entity.ap -= cost
 
+		var sfx := AutoloadHelper.sfx_manager()
+		if sfx:
+			sfx.play_sfx("move", _player.global_position)
+
 
 func _on_hud_move_pressed() -> void:
 	# For Sprint 1, movement is direct via WASD/Arrows.
