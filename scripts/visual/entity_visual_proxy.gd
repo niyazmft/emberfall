@@ -144,12 +144,17 @@ func _on_entity_facing_changed(fx: int, fy: int) -> void:
 
 func _on_entity_state_changed(state: Entity.State) -> void:
 	_update_state_visuals(state)
+	if state == Entity.State.DEAD:
+		var sfx := AutoloadHelper.sfx_manager()
+		if sfx:
+			sfx.play_sfx("death", global_position)
 
 
 func _on_entity_hp_changed(new_hp: int, old_hp: int) -> void:
 	if new_hp < old_hp:
 		if _apparition_renderer:
 			_apparition_renderer.trigger_damage_effect()
+		_triggerHitEffects(old_hp - new_hp)
 
 	if _status_bar:
 		_status_bar.updateHp(new_hp, entity.hp_max)
@@ -220,6 +225,10 @@ func _setupStatusBar() -> void:
 
 
 func _triggerHitEffects(p_damage: int, p_damage_type: String = "PHYSICAL") -> void:
+	var sfx := AutoloadHelper.sfx_manager()
+	if sfx:
+		sfx.play_sfx("hit", global_position)
+
 	var loader: _ConfigLoader = AutoloadHelper.config_loader()
 
 	# Hit Flash
