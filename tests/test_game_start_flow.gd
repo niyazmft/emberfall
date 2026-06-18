@@ -17,13 +17,9 @@ func test_new_game_flow() -> void:
 	# Execute new game command
 	coordinator.cmd_new_game()
 
-	# We need to wait for:
-	# 1. Scene transition (change_scene_to_file is async-ish in terms of when current_scene updates)
-	# 2. RunManager SANCTUM -> BIOME_GENERATION transition
-	# 3. RunManager BIOME_GENERATION -> ROOM transition (which has a small timer)
-
-	# 0.5s should be plenty for headless execution
-	await get_tree().create_timer(0.5).timeout
+	# Wait for the room_entered signal which happens at the end of run initialization
+	# Use a generous timeout for CI environments
+	await await_signal_on(run_manager, "room_entered", [], 5000)
 
 	# Verify RunManager state
 	assert_int(run_manager.current_state).is_equal(_RunManager.RunState.ROOM)
