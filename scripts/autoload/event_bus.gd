@@ -18,9 +18,6 @@ extends Node
 ## Fired when an entity transitions between gameplay states.
 signal entity_state_changed(entity: Entity, old_state: Entity.State, new_state: Entity.State)
 
-## Fired when an entity takes damage.
-signal entity_damaged(attacker: Entity, defender: Entity, amount: int, damage_type: String)
-
 ## Fired when an entity's moral flag bitmask changes.
 signal moral_flag_changed(entity: Entity, old_flag: int, new_flag: int)
 
@@ -101,9 +98,6 @@ signal modal_opened
 
 ## Fired when a modal layer closes.
 signal modal_closed
-
-## Fired to trigger screen shake.
-signal camera_shake_requested(intensity: float, duration: float)
 
 # ── SafeZoneManager ───────────────────────────────────────────────────────────
 

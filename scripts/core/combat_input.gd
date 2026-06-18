@@ -184,10 +184,6 @@ func _execute_attack() -> void:
 	var new_ap: int = DeterministicMath.clampi(player_ent.ap - cost, 0, GameConstants.AP_MAX)
 	player_ent.ap = new_ap
 
-	var sfx := AutoloadHelper.sfx_manager()
-	if sfx:
-		sfx.play_sfx("attack", _player.global_position)
-
 	attack_executed.emit(target, damage)
 	_stop_targeting()
 
