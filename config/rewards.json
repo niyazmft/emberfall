@@ -1,19 +1,45 @@
 {
   "rewards": {
     "_description": "Combat reward tables and drop chances.",
-    "defeat_reward": {
-      "shards_min": 5,
-      "shards_max": 15,
-      "xp_min": 10,
-      "xp_max": 30
-    },
-    "victory_reward": {
-      "shards_min": 20,
-      "shards_max": 50,
-      "xp_min": 50,
-      "xp_max": 150
+    "enemy_rewards": {
+      "grunt": {
+        "shards_min": 5,
+        "shards_max": 10,
+        "xp": 20
+      },
+      "archer": {
+        "shards_min": 8,
+        "shards_max": 15,
+        "xp": 25
+      },
+      "tank": {
+        "shards_min": 15,
+        "shards_max": 25,
+        "xp": 40
+      },
+      "mage": {
+        "shards_min": 12,
+        "shards_max": 20,
+        "xp": 35
+      },
+      "boss": {
+        "shards_min": 100,
+        "shards_max": 200,
+        "xp": 200
+      },
+      "overgrown_guardian": {
+        "shards_min": 200,
+        "shards_max": 400,
+        "xp": 500
+      }
     },
     "elite_bonus_mult": 1.5,
-    "boss_bonus_mult": 3.0
+    "boss_bonus_mult": 3.0,
+    "room_clear_reward": {
+      "shards_base": 20,
+      "shards_scale": 5,
+      "xp_base": 50,
+      "xp_scale": 10
+    }
   }
 }

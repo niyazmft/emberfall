@@ -17,6 +17,7 @@ var _enemies_node: Node2D
 var _combat_input: CombatInput
 var _turn_manager: TurnManager
 var _room_kills: int = 0
+var _killed_entities: Array[Dictionary] = []
 var _current_room_data: Dictionary = {}
 
 @onready var grid_renderer: GridRenderer = $GridRenderer
@@ -62,6 +63,7 @@ func _on_room_entered(p_room_index: int, room_data: Dictionary) -> void:
 		)
 	_current_room_data = room_data
 	_room_kills = 0
+	_killed_entities.clear()
 
 	# Clear existing entities if any
 	for child: Node in entity_container.get_children():
@@ -221,6 +223,25 @@ func _on_entity_state_changed(
 
 	if not entity.is_player and was_alive and is_now_dead:
 		_room_kills += 1
+		if not entity.archetype_id.is_empty():
+			var is_elite: bool = false
+
+			# Find the node associated with this entity to check for elite status
+			if is_instance_valid(_enemies_node):
+				for child in _enemies_node.get_children():
+					if child is CombatEntity and child.entity == entity:
+						if child is BaseEnemy:
+							is_elite = not child.elite_type.is_empty()
+						break
+
+			_killed_entities.append(
+				{
+					"archetype": entity.archetype_id,
+					"is_elite": is_elite,
+					"is_boss":
+					entity.archetype_id == "boss" or entity.archetype_id == "overgrown_guardian"
+				}
+			)
 
 
 func _calculate_shards() -> int:
@@ -228,14 +249,46 @@ func _calculate_shards() -> int:
 	if not config:
 		return 0
 
-	var rewards: Dictionary = config.getValue("rewards", "victory_reward", {})
-	var min_shards: int = int(rewards.get("shards_min", 20))
-	var max_shards: int = int(rewards.get("shards_max", 50))
-	var shard_range: int = max_shards - min_shards + 1
+	var rewards_config: Dictionary = config.getValue("rewards", "", {})
+	var enemy_rewards: Dictionary = rewards_config.get("enemy_rewards", {})
+	var room_reward_config: Dictionary = rewards_config.get("room_clear_reward", {})
+	var elite_mult: float = float(rewards_config.get("elite_bonus_mult", 1.5))
+	var boss_mult: float = float(rewards_config.get("boss_bonus_mult", 3.0))
 
+	var total_shards: int = 0
 	var enc_seed: int = int(_current_room_data.get("encounter_seed", 0))
-	var bonus: int = SeedGovernance.modulo_from_seed(enc_seed, "VICTORY_SHARDS", shard_range)
-	return min_shards + bonus
+	var i: int = 0
+
+	# 1. Sum up per-enemy rewards
+	for kill_data in _killed_entities:
+		var archetype: String = kill_data["archetype"]
+		var min_s: int = 5
+		var max_s: int = 10
+		if enemy_rewards.has(archetype):
+			var data: Dictionary = enemy_rewards[archetype]
+			min_s = int(data.get("shards_min", 5))
+			max_s = int(data.get("shards_max", 10))
+
+		var shard_range: int = max_s - min_s + 1
+		var salt: String = "ENEMY_SHARDS_" + str(i)
+		var base_roll: int = min_s + SeedGovernance.modulo_from_seed(enc_seed, salt, shard_range)
+
+		var final_val: float = float(base_roll)
+		if kill_data["is_boss"]:
+			final_val *= boss_mult
+		elif kill_data["is_elite"]:
+			final_val *= elite_mult
+
+		total_shards += DeterministicMath.floori(final_val)
+		i += 1
+
+	# 2. Add room clear bonus with scaling
+	var room_idx: int = int(_current_room_data.get("room_in_biome", 0))
+	var base_bonus: int = int(room_reward_config.get("shards_base", 20))
+	var scale_bonus: int = int(room_reward_config.get("shards_scale", 5))
+	total_shards += base_bonus + (room_idx * scale_bonus)
+
+	return total_shards
 
 
 func _showVictoryModal() -> void:
