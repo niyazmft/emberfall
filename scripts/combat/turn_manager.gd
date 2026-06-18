@@ -22,14 +22,12 @@ var current_turn_index: int = -1
 var _player: Node2D
 var _enemies: Array[Node2D] = []
 var _lifecycle: Node
-var _eventBus: _EventBus
 var _isProcessingState: bool = false
 
 
 # ── Lifecycle ───────────────────────────────────────────────────────
 func _ready() -> void:
 	_lifecycle = AutoloadHelper.entity_lifecycle()
-	_eventBus = AutoloadHelper.event_bus()
 	if _lifecycle and _lifecycle.has_signal("entity_state_changed"):
 		_lifecycle.connect("entity_state_changed", _on_entity_state_changed)
 
@@ -91,14 +89,16 @@ func _process_current_state() -> void:
 			if turn_order.is_empty():
 				current_state = CombatState.COMBAT_END
 				combat_ended.emit(false)
-				if _eventBus:
-					_eventBus.combat_ended.emit(false)
+				var eb := AutoloadHelper.event_bus()
+				if eb:
+					eb.combat_ended.emit(false)
 				return
 
 			round_number += 1
 			round_started.emit(round_number)
-			if _eventBus:
-				_eventBus.round_started.emit(round_number)
+			var eb := AutoloadHelper.event_bus()
+			if eb:
+				eb.round_started.emit(round_number)
 			current_turn_index = 0
 			_start_next_turn_logic()
 
@@ -107,16 +107,18 @@ func _process_current_state() -> void:
 			var actor: Node2D = turn_order[current_turn_index]
 			var entity := CombatEntity.get_entity(actor)
 			turn_started.emit(entity, true)
-			if _eventBus:
-				_eventBus.turn_started.emit(entity, true)
+			var eb := AutoloadHelper.event_bus()
+			if eb:
+				eb.turn_started.emit(entity, true)
 
 		CombatState.ENEMY_TURN:
 			_regen_current_actor_ap()
 			var enemy: Node2D = turn_order[current_turn_index]
 			var entity := CombatEntity.get_entity(enemy)
 			turn_started.emit(entity, false)
-			if _eventBus:
-				_eventBus.turn_started.emit(entity, false)
+			var eb := AutoloadHelper.event_bus()
+			if eb:
+				eb.turn_started.emit(entity, false)
 			_execute_enemy_turn(enemy)
 
 		CombatState.CHECK_END_CONDITIONS:
@@ -227,15 +229,17 @@ func _is_combat_over() -> bool:
 	if not player_alive:
 		_change_state(CombatState.COMBAT_END)
 		combat_ended.emit(false)
-		if _eventBus:
-			_eventBus.combat_ended.emit(false)
+		var eb := AutoloadHelper.event_bus()
+		if eb:
+			eb.combat_ended.emit(false)
 		return true
 
 	if not enemies_alive:
 		_change_state(CombatState.COMBAT_END)
 		combat_ended.emit(true)
-		if _eventBus:
-			_eventBus.combat_ended.emit(true)
+		var eb := AutoloadHelper.event_bus()
+		if eb:
+			eb.combat_ended.emit(true)
 		return true
 
 	return false

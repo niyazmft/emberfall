@@ -332,6 +332,9 @@ func _enter_room(_ctx: Dictionary) -> void:
 
 	# Emit event for UI / encounter spawner
 	room_entered.emit(room_index, room_data)
+	var eb: _EventBus = AutoloadHelper.event_bus()
+	if eb:
+		eb.room_entered.emit(room_index, room_data)
 
 
 func _enter_moral_eval(_ctx: Dictionary) -> void:
