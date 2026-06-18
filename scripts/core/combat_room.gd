@@ -21,6 +21,7 @@ var _current_room_data: Dictionary = {}
 
 @onready var grid_renderer: GridRenderer = $GridRenderer
 @onready var entity_container: Node2D = $EntityContainer
+@onready var floating_text_container: Node2D = $EntityContainer/FloatingTextContainer
 @onready var ui_overlay: CanvasLayer = $UIOverlay
 @onready var camera: Camera2D = $Camera2D
 
@@ -195,10 +196,6 @@ func _try_move_player(dx: int, dy: int) -> void:
 		entity.set_facing(dx, dy)
 		# Deduct AP
 		entity.ap -= cost
-
-		var sfx := AutoloadHelper.sfx_manager()
-		if sfx:
-			sfx.play_sfx("move", _player.global_position)
 
 
 func _on_hud_move_pressed() -> void:
