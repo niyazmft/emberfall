@@ -304,8 +304,8 @@ Narrative, dialogue, localization.
 
 | Task | Issue | Status | Priority | Estimate | Blocked By |
 |----|-----|------|--------|--------|----------|
-| Title Screen → CombatRoom scene flow | #288 | ⏳ Ready | P0 | 1d | None |
-| Enable Continue button on Title Screen | #289 | ⏳ Ready | P0 | 1d | None |
+| Title Screen → CombatRoom scene flow | #288 | ✅ Done | P0 | 1d | None |
+| Enable Continue button on Title Screen | #289 | ✅ Done | P0 | 1d | #288 |
 | Remove orphaned MainMenu scene | #291 | ⏳ Ready | P1 | 1d | None |
 | Create missing config placeholder files | #290 | ⏳ Ready | P1 | 1d | None |
 | Bump project version to 0.1.2 | #292 | ⏳ Ready | P1 | 1d | None |
