@@ -3,15 +3,11 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dfjjvicsxhjgp"
-path="res://.godot/imported/status_poison.png-e9fa60a84346b0b2dbb3b76153a063d4.ctex"
-metadata={
-"vram_texture": false
-}
+valid=true
 
 [deps]
 
 source_file="res://assets/icons/status_poison.png"
-dest_files=["res://.godot/imported/status_poison.png-e9fa60a84346b0b2dbb3b76153a063d4.ctex"]
 
 [params]
 
