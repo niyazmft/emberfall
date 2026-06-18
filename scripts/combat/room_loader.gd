@@ -17,8 +17,8 @@ const ENEMY_SCENES := {
 
 ## Load room JSON data by ID.
 static func load_room_data(room_id: String) -> Dictionary:
-	var path := ROOMS_PATH + room_id + ".json"
-	if not FileAccess.file_exists(path):
+	var path := _find_room_path(room_id)
+	if path == "":
 		return {}
 	var f := FileAccess.open(path, FileAccess.READ)
 	if f == null:
@@ -28,12 +28,123 @@ static func load_room_data(room_id: String) -> Dictionary:
 	var text := f.get_as_text()
 	f.close()
 
-	var data: Variant = JSON.parse_string(text)
-	if data == null or not data is Dictionary:
+	var data_v: Variant = JSON.parse_string(text)
+	if data_v == null or not data_v is Dictionary:
 		push_error("Failed to parse room JSON or data is not a Dictionary: " + path)
 		return {}
 
-	return data as Dictionary
+	var data := data_v as Dictionary
+	if not data.has("id"):
+		data["id"] = room_id
+
+	# Translate new schema if detected
+	if data.has("grid_size"):
+		data = _translate_new_schema(data)
+
+	return data
+
+
+static func _find_room_path(room_id: String) -> String:
+	var base_path := ROOMS_PATH + room_id + ".json"
+	if FileAccess.file_exists(base_path):
+		return base_path
+
+	# Search in subdirectories
+	var biomes: Array[String] = ["biome1", "biome2", "biome3"]
+	for biome: String in biomes:
+		var path: String = ROOMS_PATH + biome + "/" + room_id + ".json"
+		if FileAccess.file_exists(path):
+			return path
+
+	return ""
+
+
+static func _translate_new_schema(data: Dictionary) -> Dictionary:
+	var translated := data.duplicate(true)
+	var grid_size: Dictionary = data.get("grid_size", {"width": 12, "height": 12})
+	var width: int = int(grid_size.get("width", 12))
+	var height: int = int(grid_size.get("height", 12))
+	var total_tiles := width * height
+
+	# Initialize layout if not present
+	if not translated.has("layout"):
+		var elevation: Array = []
+		var cover: Array = []
+		var blocked: Array = []
+		var vision_blocked: Array = []
+		elevation.resize(total_tiles)
+		elevation.fill(0)
+		cover.resize(total_tiles)
+		cover.fill(0)
+		blocked.resize(total_tiles)
+		blocked.fill(false)
+		vision_blocked.resize(total_tiles)
+		vision_blocked.fill(false)
+		translated["layout"] = {
+			"elevation": elevation,
+			"cover": cover,
+			"blocked": blocked,
+			"vision_blocked": vision_blocked
+		}
+
+	var layout: Dictionary = translated["layout"]
+
+	# Translate cover_positions
+	if data.has("cover_positions"):
+		var cover_arr: Array = layout["cover"]
+		for cp: Variant in data["cover_positions"]:
+			if cp is Dictionary:
+				var x: int = int(cp.get("x", 0))
+				var y: int = int(cp.get("y", 0))
+				var type: String = cp.get("type", "light")
+				var idx := y * width + x
+				if idx < cover_arr.size():
+					cover_arr[idx] = 1 if type == "light" else 2
+
+	# Translate blocked_tiles
+	if data.has("blocked_tiles"):
+		var blocked_arr: Array = layout["blocked"]
+		var vision_arr: Array = layout["vision_blocked"]
+		for bt: Variant in data["blocked_tiles"]:
+			if bt is Dictionary:
+				var x: int = int(bt.get("x", 0))
+				var y: int = int(bt.get("y", 0))
+				var idx := y * width + x
+				if idx < blocked_arr.size():
+					blocked_arr[idx] = true
+					vision_arr[idx] = true
+
+	# Translate spawn_points
+	if data.has("spawn_points"):
+		var encounters: Array = []
+		var player_start: Dictionary = {"x": 1, "y": 1}
+		var enemy_groups: Dictionary = {} # type -> Array of positions
+
+		for sp: Variant in data["spawn_points"]:
+			if sp is Dictionary:
+				var x: int = int(sp.get("x", 0))
+				var y: int = int(sp.get("y", 0))
+				var team: String = sp.get("team", "enemy")
+				var archetype: String = sp.get("archetype", "grunt")
+
+				if team == "player":
+					player_start = {"x": x, "y": y}
+				else:
+					if not enemy_groups.has(archetype):
+						enemy_groups[archetype] = []
+					enemy_groups[archetype].append({"x": x, "y": y})
+
+		for type: String in enemy_groups:
+			encounters.append({
+				"enemy_type": type,
+				"count": (enemy_groups[type] as Array).size(),
+				"positions": enemy_groups[type]
+			})
+
+		translated["encounters"] = encounters
+		translated["player_start"] = player_start
+
+	return translated
 
 
 ## Configure the GridSystem with room layout.

@@ -1,0 +1,18 @@
+{
+  "id": "room_biome1_02",
+  "biome": "biome1",
+  "grid_size": { "width": 12, "height": 12 },
+  "cover_positions": [
+    { "x": 5, "y": 5, "type": "heavy" },
+    { "x": 6, "y": 5, "type": "heavy" },
+    { "x": 5, "y": 6, "type": "heavy" },
+    { "x": 6, "y": 6, "type": "heavy" }
+  ],
+  "spawn_points": [
+    { "x": 1, "y": 1, "team": "player", "archetype": "keeper" },
+    { "x": 9, "y": 2, "team": "enemy", "archetype": "archer" },
+    { "x": 2, "y": 9, "team": "enemy", "archetype": "archer" }
+  ],
+  "lighting_preset": "overgrown_noon",
+  "blocked_tiles": []
+}

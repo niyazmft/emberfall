@@ -1,0 +1,17 @@
+{
+  "grid_size": { "width": 12, "height": 12 },
+  "cover_positions": [
+    { "x": 5, "y": 5, "type": "light" },
+    { "x": 6, "y": 6, "type": "heavy" }
+  ],
+  "spawn_points": [
+    { "x": 1, "y": 1, "team": "player", "archetype": "keeper" },
+    { "x": 8, "y": 8, "team": "enemy", "archetype": "grunt" },
+    { "x": 9, "y": 9, "team": "enemy", "archetype": "archer" }
+  ],
+  "lighting_preset": "default",
+  "blocked_tiles": [
+    { "x": 0, "y": 0 }
+  ],
+  "encounter_seed_salt": "test_salt"
+}
