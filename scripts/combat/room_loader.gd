@@ -118,7 +118,7 @@ static func _translate_new_schema(data: Dictionary) -> Dictionary:
 	if data.has("spawn_points"):
 		var encounters: Array = []
 		var player_start: Dictionary = {"x": 1, "y": 1}
-		var enemy_groups: Dictionary = {} # type -> Array of positions
+		var enemy_groups: Dictionary = {}  # type -> Array of positions
 
 		for sp: Variant in data["spawn_points"]:
 			if sp is Dictionary:
@@ -135,11 +135,13 @@ static func _translate_new_schema(data: Dictionary) -> Dictionary:
 					enemy_groups[archetype].append({"x": x, "y": y})
 
 		for type: String in enemy_groups:
-			encounters.append({
-				"enemy_type": type,
-				"count": (enemy_groups[type] as Array).size(),
-				"positions": enemy_groups[type]
-			})
+			encounters.append(
+				{
+					"enemy_type": type,
+					"count": (enemy_groups[type] as Array).size(),
+					"positions": enemy_groups[type]
+				}
+			)
 
 		translated["encounters"] = encounters
 		translated["player_start"] = player_start

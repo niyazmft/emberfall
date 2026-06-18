@@ -1,5 +1,6 @@
 extends GdUnitTestSuite
 
+
 func test_load_new_schema() -> void:
 	var data := RoomLoader.load_room_data("test_new_schema")
 
@@ -12,9 +13,9 @@ func test_load_new_schema() -> void:
 
 	# Verify cover (y * 12 + x)
 	# (5, 5) -> 5 * 12 + 5 = 65
-	assert_int(cover[65]).is_equal(1) # light
+	assert_int(cover[65]).is_equal(1)  # light
 	# (6, 6) -> 6 * 12 + 6 = 78
-	assert_int(cover[78]).is_equal(2) # heavy
+	assert_int(cover[78]).is_equal(2)  # heavy
 
 	# Verify blocked (0, 0) -> 0
 	assert_bool(blocked[0]).is_true()
