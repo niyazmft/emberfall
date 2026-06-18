@@ -1,6 +1,6 @@
 ; Engine Configuration for Project Emberfall
 ; Godot 4.x Project Scaffold — Deterministic Math Validation
-; Issue: DON-31 A1
+; Issue: DON-292
 
 [application]
 config/name="Emberfall"
