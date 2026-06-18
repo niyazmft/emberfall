@@ -1,0 +1,22 @@
+{
+  "id": "room_biome2_07",
+  "biome": "biome2",
+  "grid_size": { "width": 12, "height": 12 },
+  "cover_positions": [
+    { "x": 1, "y": 1, "type": "light" },
+    { "x": 2, "y": 1, "type": "light" },
+    { "x": 1, "y": 2, "type": "light" },
+    { "x": 9, "y": 9, "type": "light" },
+    { "x": 10, "y": 9, "type": "light" },
+    { "x": 10, "y": 10, "type": "light" }
+  ],
+  "spawn_points": [
+    { "x": 5, "y": 5, "team": "player", "archetype": "keeper" },
+    { "x": 1, "y": 10, "team": "enemy", "archetype": "grunt" },
+    { "x": 10, "y": 1, "team": "enemy", "archetype": "grunt" }
+  ],
+  "lighting_preset": "industrial_night",
+  "blocked_tiles": [
+    { "x": 4, "y": 4 }, { "x": 7, "y": 4 }, { "x": 4, "y": 7 }, { "x": 7, "y": 7 }
+  ]
+}

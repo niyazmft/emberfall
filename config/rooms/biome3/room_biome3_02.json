@@ -1,0 +1,20 @@
+{
+  "id": "room_biome3_02",
+  "biome": "biome3",
+  "grid_size": { "width": 12, "height": 12 },
+  "cover_positions": [
+    { "x": 2, "y": 5, "type": "heavy" },
+    { "x": 9, "y": 5, "type": "heavy" }
+  ],
+  "spawn_points": [
+    { "x": 5, "y": 1, "team": "player", "archetype": "keeper" },
+    { "x": 5, "y": 10, "team": "enemy", "archetype": "tank" },
+    { "x": 4, "y": 10, "team": "enemy", "archetype": "tank" },
+    { "x": 6, "y": 10, "team": "enemy", "archetype": "tank" }
+  ],
+  "lighting_preset": "crystal_void",
+  "blocked_tiles": [
+    { "x": 0, "y": 0 }, { "x": 11, "y": 0 }, { "x": 0, "y": 11 }, { "x": 11, "y": 11 },
+    { "x": 5, "y": 5 }, { "x": 6, "y": 6 }
+  ]
+}
