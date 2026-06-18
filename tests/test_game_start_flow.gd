@@ -2,6 +2,18 @@ extends GdUnitTestSuite
 
 ## Integration test for Title Screen → CombatRoom flow via GameCoordinator
 
+const TITLE_SCREEN_SCENE := "res://scenes/title_screen.tscn"
+
+
+func after_test() -> void:
+	var run_manager := AutoloadHelper.run_manager()
+	if run_manager:
+		run_manager.cmd_return_to_sanctum()
+
+	# Revert to a neutral scene if we changed it
+	get_tree().change_scene_to_file("res://scenes/main.tscn")
+	await get_tree().process_frame
+
 
 func test_new_game_flow() -> void:
 	var coordinator := AutoloadHelper.game_coordinator()
@@ -34,7 +46,3 @@ func test_new_game_flow() -> void:
 	# Verify entities spawned
 	var entity_container := current_scene.get_node("EntityContainer")
 	assert_int(entity_container.get_child_count()).is_greater(0)
-
-	# Cleanup: return to SANCTUM to avoid side effects on other tests
-	run_manager.cmd_return_to_sanctum()
-	await get_tree().process_frame
