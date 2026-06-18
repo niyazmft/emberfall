@@ -1,6 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://enemy_grunt_001"]
+[gd_scene load_steps=3 format=3 uid="uid://pm29udh3fr0a1"]
 
-[ext_resource type="PackedScene" uid="uid://base_enemy_001" path="res://scenes/enemies/base_enemy.tscn" id="1_base_enemy"]
+[ext_resource type="PackedScene" uid="uid://l4bgdwl6oilfx" path="res://scenes/enemies/base_enemy.tscn" id="1_base_enemy"]
 [ext_resource type="Script" path="res://scripts/entities/enemies/enemy_grunt.gd" id="2_grunt_script"]
 
 [node name="EnemyGrunt" instance=ExtResource("1_base_enemy")]

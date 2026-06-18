@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://base_enemy_001"]
+[gd_scene load_steps=6 format=3 uid="uid://l4bgdwl6oilfx"]
 
 [ext_resource type="Script" path="res://scripts/entities/base_enemy.gd" id="1_base_enemy"]
 [ext_resource type="Script" path="res://scripts/visual/entity_visual_proxy.gd" id="2_visual_proxy"]

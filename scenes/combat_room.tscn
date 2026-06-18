@@ -4,7 +4,7 @@
 [ext_resource type="Script" path="res://scripts/visual/grid_renderer.gd" id="2_grid_renderer"]
 [ext_resource type="PackedScene" uid="uid://g4s6t8m1p5n7y" path="res://scenes/ui/combat_hud.tscn" id="3_combat_hud"]
 [ext_resource type="PackedScene" uid="uid://toast001" path="res://scenes/ui/toast.tscn" id="4_toast"]
-[ext_resource type="PackedScene" uid="uid://p4u4jtlxv83t_scene" path="res://scenes/ui/turn_banner.tscn" id="5_turn_banner"]
+[ext_resource type="PackedScene" uid="uid://vu81cphw6iz95" path="res://scenes/ui/turn_banner.tscn" id="5_turn_banner"]
 
 [node name="CombatRoom" type="Node2D"]
 script = ExtResource("1_cmbtrm")
