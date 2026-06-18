@@ -4,7 +4,6 @@
 [ext_resource type="Script" path="res://scripts/visual/grid_renderer.gd" id="2_grid_renderer"]
 [ext_resource type="PackedScene" uid="uid://g4s6t8m1p5n7y" path="res://scenes/ui/combat_hud.tscn" id="3_combat_hud"]
 [ext_resource type="PackedScene" uid="uid://toast001" path="res://scenes/ui/toast.tscn" id="4_toast"]
-[ext_resource type="PackedScene" path="res://scenes/ui/transition_layer.tscn" id="5_transition"]
 
 [node name="CombatRoom" type="Node2D"]
 script = ExtResource("1_cmbtrm")
@@ -27,6 +26,3 @@ y_sort_enabled = true
 [node name="CombatHUD" parent="UIOverlay" instance=ExtResource("3_combat_hud")]
 
 [node name="ToastWidget" parent="UIOverlay" instance=ExtResource("4_toast")]
-
-[node name="TransitionLayer" parent="UIOverlay" instance=ExtResource("5_transition")]
-unique_name_in_owner = true

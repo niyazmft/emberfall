@@ -64,6 +64,10 @@ func _ready() -> void:
 			_entity_lifecycle.connect("mwt_reached", _on_mwt_reached)
 
 
+func _process(delta: float) -> void:
+	update(delta)
+
+
 func _exit_tree() -> void:
 	if _entity_lifecycle and _entity_lifecycle.is_connected("mwt_reached", _on_mwt_reached):
 		_entity_lifecycle.disconnect("mwt_reached", _on_mwt_reached)
@@ -142,10 +146,7 @@ func _register_states() -> void:
 func _register_transitions() -> void:
 	# SANCTUM → BIOME_GENERATION (guard: always allowed for new runs)
 	register_transition(
-		RunState.SANCTUM,
-		RunState.BIOME_GENERATION,
-		Callable(self, "_guard_memory_loaded"),
-		Callable(self, "_action_start_run")
+		RunState.SANCTUM, RunState.BIOME_GENERATION, Callable(), Callable(self, "_action_start_run")
 	)
 
 	# BIOME_GENERATION → ROOM (guard: topology generation done)
@@ -320,6 +321,14 @@ func _enter_room(_ctx: Dictionary) -> void:
 
 	# Apply procedural augmentation (topology + encounters)
 	RoomLoader.augment_room_procedurally(room_data)
+
+	if OS.is_debug_build():
+		print(
+			(
+				"[RunManager] Entering room %d (id: %s)"
+				% [room_index, room_data.get("room_id", "unknown")]
+			)
+		)
 
 	# Emit event for UI / encounter spawner
 	room_entered.emit(room_index, room_data)

@@ -69,9 +69,6 @@ signal save_failed(reason: String)
 ## Emitted when load_game() cannot read or parse the file.
 signal load_failed(reason: String)
 
-## Emitted whenever a save is created or deleted.
-signal save_changed
-
 # ── Lifecycle ──────────────────────────────────────────────────────────────
 
 
@@ -107,7 +104,6 @@ func save_game(state: Dictionary) -> Error:
 
 	_print_debug("save_game: wrote %d bytes to %s" % [json_text.length(), SAVE_PATH])
 	save_completed.emit()
-	save_changed.emit()
 	return OK
 
 
@@ -132,10 +128,20 @@ func load_game() -> Dictionary:
 	var raw_text: String = file.get_as_text()
 	file.close()
 
-	var raw_data: Variant = JSON.parse_string(raw_text)
+	var json := JSON.new()
+	var err := json.parse(raw_text)
+	if err != OK:
+		var reason: String = (
+			"JSON syntax failure: %s at line %d" % [json.get_error_message(), json.get_error_line()]
+		)
+		push_warning("[SaveManager] load_game: %s" % reason)
+		load_failed.emit(reason)
+		return {}
+
+	var raw_data: Variant = json.data
 	if typeof(raw_data) != TYPE_DICTIONARY:
-		var reason: String = "Parsed JSON is not a Dictionary or failed to parse."
-		push_error("[SaveManager] load_game: %s" % reason)
+		var reason: String = "Parsed JSON is not a Dictionary."
+		push_warning("[SaveManager] load_game: %s" % reason)
 		load_failed.emit(reason)
 		return {}
 
@@ -177,7 +183,6 @@ func delete_save() -> void:
 		)
 	else:
 		_print_debug("delete_save: removed %s" % SAVE_PATH)
-		save_changed.emit()
 
 
 ## Returns true if a save file is present on disk.

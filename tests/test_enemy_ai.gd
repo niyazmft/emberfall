@@ -7,26 +7,35 @@ var _ai: EnemyAIController
 
 
 func before_test() -> void:
-	_grid = auto_free(_GridSystem.new()) as _GridSystem
+	_grid = _GridSystem.new()
 	_grid._reset_grid()
 
-	_player = auto_free(Keeper.new()) as Keeper
+	_player = Keeper.new()
 	_player.entity = Entity.new("Player", 5, 5, 100, 10, 10)
 	_player.entity.is_player = true
 	add_child(_player)
 	_player.add_to_group("player")
 
-	_enemy = auto_free(BaseEnemy.new()) as BaseEnemy
+	_enemy = BaseEnemy.new()
 	_enemy.entity = Entity.new("Enemy", 8, 8, 50, 10, 5)
 	_enemy._grid_system = _grid  # Inject grid system
 	add_child(_enemy)
 	_enemy.add_to_group("enemies")
 
-	_ai = auto_free(EnemyAIController.new()) as EnemyAIController
+	_ai = EnemyAIController.new()
 	_ai.grid_system = _grid
 	_ai.enemy_entity = _enemy.entity
 	_enemy.ai_controller = _ai
 	_enemy.add_child(_ai)
+
+
+func after_test() -> void:
+	if is_instance_valid(_enemy):
+		_enemy.free()
+	if is_instance_valid(_player):
+		_player.free()
+	if is_instance_valid(_grid):
+		_grid.free()
 
 
 func test_grunt_moves_towards_player() -> void:
@@ -55,7 +64,16 @@ func test_grunt_attacks_adjacent_player() -> void:
 
 	assert_that(action.has("type")).is_true()
 	assert_str(action["type"]).is_equal("attack")
-	assert_object(action["target"]).is_equal(_player)
+
+	# Normalize target so tests accept Node or Dictionary formats (DON-Coordinator)
+	var returned_target: Variant = action.get("target")
+	if returned_target is Dictionary:
+		if returned_target.has("node"):
+			returned_target = returned_target["node"]
+		elif returned_target.has("entity"):
+			returned_target = returned_target["entity"]
+
+	assert_object(returned_target).is_equal(_player)
 
 
 func test_archer_moves_away_when_too_close() -> void:
@@ -110,7 +128,7 @@ func test_tank_behavior_is_grunt_like() -> void:
 
 func test_ai_avoids_occupied_tiles() -> void:
 	# Add another enemy at (7,7)
-	var other_enemy: BaseEnemy = auto_free(BaseEnemy.new()) as BaseEnemy
+	var other_enemy: BaseEnemy = BaseEnemy.new()
 	other_enemy.entity = Entity.new("Blocker", 7, 7, 50, 10, 5)
 	add_child(other_enemy)
 	other_enemy.add_to_group("enemies")
@@ -129,6 +147,8 @@ func test_ai_avoids_occupied_tiles() -> void:
 	# With blocker at (7,7), best available tiles are distance 3 (e.g. (7,8) or (8,7))
 	var dist_after: int = max(abs(action["target_x"] - 5), abs(action["target_y"] - 5))
 	assert_int(dist_after).is_equal(3)
+
+	other_enemy.free()
 
 
 func test_base_enemy_facing_updates_on_move() -> void:
@@ -160,7 +180,7 @@ func test_archer_retreat_logic() -> void:
 	# Replace generic AI with ArcherAI
 	_enemy.remove_child(_ai)
 	_ai.free()
-	_ai = auto_free(ArcherAI.new()) as ArcherAI
+	_ai = ArcherAI.new()
 	_ai.grid_system = _grid
 	_ai.enemy_entity = _enemy.entity
 	_enemy.ai_controller = _ai
@@ -189,7 +209,7 @@ func test_archer_elevation_preference() -> void:
 	_enemy.remove_child(_ai)
 	if is_instance_valid(_ai):
 		_ai.free()
-	_ai = auto_free(ArcherAI.new()) as ArcherAI
+	_ai = ArcherAI.new()
 	_ai.grid_system = _grid
 	_ai.enemy_entity = _enemy.entity
 	_enemy.ai_controller = _ai

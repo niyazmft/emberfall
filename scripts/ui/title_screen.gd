@@ -8,7 +8,6 @@ extends Control
 @onready var settings_btn: Button = %SettingsButton
 @onready var quit_btn: Button = %QuitButton
 @onready var button_container: VBoxContainer = %ButtonContainer
-@onready var transition_layer: TransitionLayer = %TransitionLayer
 
 
 func _ready() -> void:
@@ -18,18 +17,19 @@ func _ready() -> void:
 	settings_btn.text = tr("menu.title.settings")
 	quit_btn.text = tr("menu.title.quit")
 
-	# Setup button states
-	_update_continue_button_state()
+	# Enable Continue if a save exists
+	var save_manager: _SaveManager = AutoloadHelper.save_manager()
+	if save_manager != null and save_manager.has_save():
+		continue_btn.disabled = false
+	else:
+		continue_btn.disabled = true
 
 	# Connect signals
-	continue_btn.pressed.connect(_on_continue_pressed)
+	if not continue_btn.disabled:
+		continue_btn.pressed.connect(_on_continue_pressed)
 	new_game_btn.pressed.connect(_on_new_game_pressed)
 	settings_btn.pressed.connect(_on_settings_pressed)
 	quit_btn.pressed.connect(_on_quit_pressed)
-
-	var save_manager: _SaveManager = AutoloadHelper.save_manager()
-	if save_manager != null:
-		save_manager.save_changed.connect(_update_continue_button_state)
 
 	# Enforce touch targets
 	for btn: Button in [continue_btn, new_game_btn, settings_btn, quit_btn]:
@@ -37,9 +37,6 @@ func _ready() -> void:
 
 	# Setup dynamic vertical wrap-around focus
 	_setup_focus_wrap()
-
-	if transition_layer:
-		transition_layer.fade_in()
 
 	# Initial focus: Continue if enabled, otherwise New Game
 	if not continue_btn.disabled:
@@ -57,23 +54,6 @@ func _exit_tree() -> void:
 		settings_btn.pressed.disconnect(_on_settings_pressed)
 	if quit_btn and quit_btn.pressed.is_connected(_on_quit_pressed):
 		quit_btn.pressed.disconnect(_on_quit_pressed)
-
-	var save_manager: _SaveManager = AutoloadHelper.save_manager()
-	if (
-		save_manager != null
-		and save_manager.save_changed.is_connected(_update_continue_button_state)
-	):
-		save_manager.save_changed.disconnect(_update_continue_button_state)
-
-
-func _update_continue_button_state() -> void:
-	var save_manager: _SaveManager = AutoloadHelper.save_manager()
-	var has_save: bool = save_manager != null and save_manager.has_save()
-
-	continue_btn.disabled = not has_save
-
-	# Setup dynamic vertical wrap-around focus
-	_setup_focus_wrap()
 
 
 func _setup_focus_wrap() -> void:
@@ -96,38 +76,20 @@ func _setup_focus_wrap() -> void:
 
 func _on_new_game_pressed() -> void:
 	_print_debug("New Game pressed")
-	if transition_layer:
-		await transition_layer.fade_out()
-
-	var run_manager: _RunManager = AutoloadHelper.run_manager()
-	if run_manager != null:
-		run_manager.cmd_start_run()
-		# Delete existing save so Continue doesn't re-offer it on a fresh run
-		var save_manager: _SaveManager = AutoloadHelper.save_manager()
-		if save_manager != null:
-			save_manager.delete_save()
-	get_tree().change_scene_to_file("res://scenes/combat_room.tscn")
+	var coordinator := AutoloadHelper.game_coordinator()
+	if coordinator != null:
+		coordinator.cmd_new_game()
+	else:
+		push_error("TitleScreen: GameCoordinator not found for New Game.")
 
 
 func _on_continue_pressed() -> void:
 	_print_debug("Continue pressed")
-	if transition_layer:
-		await transition_layer.fade_out()
-
-	var save_manager: _SaveManager = AutoloadHelper.save_manager()
-	if save_manager == null:
-		push_error("TitleScreen: SaveManager not available for Continue.")
-		return
-	var data: Dictionary = save_manager.load_game()
-	if data.is_empty():
-		push_warning("TitleScreen: Continue pressed but no valid save found.")
-		return
-	var run_manager: _RunManager = AutoloadHelper.run_manager()
-	if run_manager != null and data.has("run_state"):
-		run_manager.load_run_state(data["run_state"])
-		get_tree().change_scene_to_file("res://scenes/combat_room.tscn")
+	var coordinator := AutoloadHelper.game_coordinator()
+	if coordinator != null:
+		coordinator.cmd_continue_game()
 	else:
-		push_warning("TitleScreen: No run_state in save data.")
+		push_error("TitleScreen: GameCoordinator not found for Continue.")
 
 
 func _on_settings_pressed() -> void:

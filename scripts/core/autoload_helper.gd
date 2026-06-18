@@ -108,11 +108,6 @@ static func secret_room_trigger() -> _SecretRoomTrigger:
 	return get_autoload("SecretRoomTrigger") as _SecretRoomTrigger
 
 
-## Returns the GameCoordinator autoload, or null.
-static func game_coordinator() -> _GameCoordinator:
-	return get_autoload("GameCoordinator") as _GameCoordinator
-
-
 ## Returns the SafeZoneManager autoload, or null.
 static func safe_zone_manager() -> _SafeZoneManager:
 	return get_autoload("SafeZoneManager") as _SafeZoneManager
@@ -141,6 +136,11 @@ static func ability_manager() -> _AbilityManager:
 ## Returns the BurdenCaptionDriver autoload, or null.
 static func burden_caption_driver() -> _BurdenCaptionDriver:
 	return get_autoload("BurdenCaptionDriver") as _BurdenCaptionDriver
+
+
+## Returns the GameCoordinator autoload, or null.
+static func game_coordinator() -> _GameCoordinator:
+	return get_autoload("GameCoordinator") as _GameCoordinator
 
 
 ## Returns the BurdenEventCoordinator autoload, or null.

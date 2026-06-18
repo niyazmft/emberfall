@@ -39,6 +39,7 @@ gdscript/warnings/unsafe_call_argument=1
 
 [autoload]
 
+GameCoordinator="*res://scripts/autoload/game_coordinator.gd"
 EventBus="*res://scripts/autoload/event_bus.gd"
 SafeZoneManager="*res://scripts/autoload/safe_zone_manager.gd"
 ConfigLoader="*res://scripts/autoload/config_loader.gd"
@@ -65,7 +66,6 @@ InventoryManager="*res://scripts/inventory/inventory_manager.gd"
 InputRouter="*res://scripts/autoload/input_router.gd"
 AmbientNarrator="*res://scripts/autoload/ambient_narrator.gd"
 SecretRoomTrigger="*res://scripts/autoload/secret_room_trigger.gd"
-GameCoordinator="*res://scripts/autoload/game_coordinator.gd"
 
 [internationalization]
 

@@ -23,7 +23,6 @@ var _current_room_data: Dictionary = {}
 @onready var entity_container: Node2D = $EntityContainer
 @onready var ui_overlay: CanvasLayer = $UIOverlay
 @onready var camera: Camera2D = $Camera2D
-@onready var transition_layer: TransitionLayer = %TransitionLayer
 
 
 func _ready() -> void:
@@ -55,7 +54,11 @@ func _exit_tree() -> void:
 		eb.entity_state_changed.disconnect(_on_entity_state_changed)
 
 
-func _on_room_entered(_room_index: int, room_data: Dictionary) -> void:
+func _on_room_entered(p_room_index: int, room_data: Dictionary) -> void:
+	if OS.is_debug_build():
+		print(
+			"[CombatRoom] _on_room_entered index:%d data_keys:%s" % [p_room_index, room_data.keys()]
+		)
 	_current_room_data = room_data
 	_room_kills = 0
 
@@ -86,9 +89,6 @@ func _on_room_entered(_room_index: int, room_data: Dictionary) -> void:
 
 	# Setup HUD
 	_setup_hud()
-
-	if transition_layer:
-		transition_layer.fade_in()
 
 
 func _setup_hud() -> void:
@@ -205,16 +205,10 @@ func _on_hud_move_pressed() -> void:
 
 
 func _on_combat_ended(victory: bool) -> void:
-	if transition_layer:
-		await transition_layer.fade_out()
-
 	if victory:
-		_show_victory_modal()
+		_showVictoryModal()
 	else:
-		_show_defeat_modal()
-
-	if transition_layer:
-		transition_layer.fade_in()
+		_showDefeatModal()
 
 
 func _on_entity_state_changed(
@@ -243,16 +237,11 @@ func _calculate_shards() -> int:
 	return min_shards + bonus
 
 
-func _show_victory_modal() -> void:
+func _showVictoryModal() -> void:
 	var scene: PackedScene = load(VICTORY_MODAL_SCENE_PATH)
 	if scene:
 		var modal := scene.instantiate() as _VictoryModal
-		var lm: _LayerManager = AutoloadHelper.layer_manager()
-		if lm:
-			lm.add_modal(modal)
-		else:
-			ui_overlay.add_child(modal)
-
+		ui_overlay.add_child(modal)
 		if modal:
 			var summary: Dictionary = {
 				"turns": _turn_manager.round_number,
@@ -262,16 +251,11 @@ func _show_victory_modal() -> void:
 			modal.setup(summary)
 
 
-func _show_defeat_modal() -> void:
+func _showDefeatModal() -> void:
 	var scene: PackedScene = load(DEFEAT_MODAL_SCENE_PATH)
 	if scene:
 		var modal := scene.instantiate() as _DefeatModal
-		var lm: _LayerManager = AutoloadHelper.layer_manager()
-		if lm:
-			lm.add_modal(modal)
-		else:
-			ui_overlay.add_child(modal)
-
+		ui_overlay.add_child(modal)
 		if modal:
 			var rm: _RunManager = AutoloadHelper.run_manager()
 			var summary: Dictionary = {
