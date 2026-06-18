@@ -1,0 +1,41 @@
+{
+  "dialogue_id": "mysterious_stranger",
+  "nodes": [
+    {
+      "id": "start",
+      "speaker": "Stranger",
+      "portrait": "res://assets/icons/portrait_stranger.png",
+      "text_key": "dialogue.stranger.intro",
+      "choices": [
+        {
+          "text_key": "dialogue.stranger.choice.who",
+          "next_node": "who_am_i"
+        },
+        {
+          "text_key": "dialogue.stranger.choice.leave",
+          "next_node": "leave"
+        }
+      ]
+    },
+    {
+      "id": "who_am_i",
+      "speaker": "Stranger",
+      "portrait": "res://assets/icons/portrait_stranger.png",
+      "text_key": "dialogue.stranger.truth",
+      "next_node": "end"
+    },
+    {
+      "id": "leave",
+      "speaker": "Stranger",
+      "portrait": "res://assets/icons/portrait_stranger.png",
+      "text_key": "dialogue.stranger.farewell",
+      "next_node": "end"
+    },
+    {
+      "id": "end",
+      "speaker": "",
+      "text_key": "",
+      "action": "close_dialogue"
+    }
+  ]
+}

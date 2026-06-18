@@ -222,6 +222,11 @@ func cmd_topology_ready() -> void:
 ## Call from combat system when all enemies are defeated.
 func cmd_combat_resolved() -> void:
 	_combat_resolved = true
+	combat_resolved_signal.emit(room_index)
+	var eb: _EventBus = AutoloadHelper.event_bus()
+	if eb:
+		eb.combat_resolved_signal.emit(room_index)
+
 	if current_state == RunState.ROOM:
 		transition_to(RunState.MORAL_EVAL)
 
