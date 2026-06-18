@@ -30,6 +30,7 @@ var _hit_flash_timer: float = 0.0
 var _hit_flash_duration: float = 0.1
 var _hit_stop_remaining: int = 0
 var _damage_label_pool: Array[Label] = []
+var _cached_flash_color: Color = Color.WHITE
 
 ## Reference to the CombatRoom node (set by parent scene; NOT an autoload).
 ## Use export to avoid fragile /root/ lookup.
@@ -60,11 +61,27 @@ func _exit_tree() -> void:
 
 
 func _process(delta: float) -> void:
+	if _hit_stop_remaining > 0:
+		_hit_stop_remaining -= 1
+		return
+
 	if global_position.distance_to(_target_position) > 0.1:
 		var weight: float = minf(delta * lerp_speed, 1.0)
 		global_position = global_position.lerp(_target_position, weight)
 	else:
 		global_position = _target_position
+
+	# Hit Flash Logic
+	if _hit_flash_timer > 0:
+		_hit_flash_timer -= delta
+		if base_sprite:
+			base_sprite.modulate = Color.WHITE.lerp(
+				_cached_flash_color, _hit_flash_timer / _hit_flash_duration
+			)
+
+		if _hit_flash_timer <= 0:
+			if base_sprite:
+				base_sprite.modulate = Color.WHITE
 
 
 func _find_grid_renderer(node: Node) -> GridRenderer:
@@ -108,6 +125,8 @@ func _connect_entity_signals() -> void:
 		entity.hp_changed.connect(_on_entity_hp_changed)
 	if not entity.ap_changed.is_connected(_on_entity_ap_changed):
 		entity.ap_changed.connect(_on_entity_ap_changed)
+	if not entity.damage_taken.is_connected(_triggerHitEffects):
+		entity.damage_taken.connect(_triggerHitEffects)
 
 
 func _disconnect_entity_signals() -> void:
@@ -125,6 +144,8 @@ func _disconnect_entity_signals() -> void:
 		entity.hp_changed.disconnect(_on_entity_hp_changed)
 	if entity.ap_changed.is_connected(_on_entity_ap_changed):
 		entity.ap_changed.disconnect(_on_entity_ap_changed)
+	if entity.damage_taken.is_connected(_triggerHitEffects):
+		entity.damage_taken.disconnect(_triggerHitEffects)
 
 
 func _on_entity_position_changed(x: int, y: int) -> void:
@@ -226,52 +247,84 @@ func _triggerHitEffects(p_damage: int, p_damage_type: String = "PHYSICAL") -> vo
 	if loader:
 		var flash_config: Dictionary = loader.getValue("hit_flash", "", {})
 		if not flash_config.is_empty():
-			_hit_flash_duration = float(flash_config.get("duration", 0.1))
+			_hit_flash_duration = float(flash_config.get("duration_seconds", 0.1))
+			_cached_flash_color = Color(flash_config.get("color", "#FFFFFF"))
 	_hit_flash_timer = _hit_flash_duration
 
 	# Hit Stop
 	if loader:
 		var hit_stop_config: Dictionary = loader.getValue("hit_stop", "", {})
-		if hit_stop_config:
+		if not hit_stop_config.is_empty():
 			var tiers: Array = hit_stop_config.get("tiers", [])
-			for tier: Dictionary in tiers:
-				if p_damage >= tier.get("threshold", 0):
-					_hit_stop_remaining = tier.get("frames", 0)
+			for tier: Variant in tiers:
+				if tier is Dictionary:
+					if p_damage >= tier.get("threshold", 0):
+						_hit_stop_remaining = int(tier.get("frames", 0))
 
 	# Floating Text
 	_spawnDamageNumber(p_damage, p_damage_type)
+
+	# Screen Shake
+	if loader:
+		var shake_config: Dictionary = loader.getValue("screen_shake", "", {})
+		if not shake_config.is_empty():
+			var eb := AutoloadHelper.event_bus()
+			if eb:
+				var intensity: float = float(shake_config.get("default_intensity", 4.0))
+				var duration: float = float(shake_config.get("default_duration", 0.2))
+				eb.camera_shake_requested.emit(intensity, duration)
 
 
 func _spawnDamageNumber(p_damage: int, p_damage_type: String) -> void:
 	var loader: _ConfigLoader = AutoloadHelper.config_loader()
 	var color: Color = Color.WHITE
-	var duration: float = 0.5
-	var offset_vec: Vector2 = Vector2(0, -40)
+	var duration: float = 1.0
+	var rise_pixels: int = 40
 
 	if loader:
-		var floating_config: Dictionary = loader.getValue("floating_text", "", {})
-		if floating_config and floating_config.has(p_damage_type):
-			var preset: Dictionary = floating_config[p_damage_type]
-			color = Color(preset.get("color", "#FFFFFF"))
-			duration = float(preset.get("duration", 0.5))
-			var offset_arr: Variant = preset.get("offset", [0, -40])
-			if offset_arr is Array and offset_arr.size() >= 2:
-				offset_vec = Vector2(float(offset_arr[0]), float(offset_arr[1]))
+		var damage_config: Dictionary = loader.getValue("damage_numbers", "", {})
+		if not damage_config.is_empty():
+			duration = float(damage_config.get("duration_seconds", 1.0))
+			rise_pixels = int(damage_config.get("rise_pixels", 40))
+
+		# Optional per-type color override if defined in a nested 'types' or similar
+		# For now, we'll look for a direct color in damage_numbers or use defaults
+		var type_configs: Dictionary = loader.getValue("floating_text", "", {})
+		if not type_configs.is_empty() and type_configs.has(p_damage_type):
+			var type_cfg: Dictionary = type_configs[p_damage_type]
+			color = Color(type_cfg.get("color", "#FFFFFF"))
 
 	var label: Label
+	var parent_node: Node = get_parent()
+	if _combat_room and _combat_room.entity_container:
+		parent_node = _combat_room.entity_container
+
 	if _damage_label_pool.is_empty():
 		label = Label.new()
-		add_child(label)
+		# Use a default theme or font size if available
+		label.add_theme_font_size_override("font_size", 18)
+		parent_node.add_child(label)
 	else:
 		label = _damage_label_pool.pop_back()
+		if label.get_parent() != parent_node:
+			label.get_parent().remove_child(label)
+			parent_node.add_child(label)
 
 	label.text = str(p_damage)
 	label.modulate = color
-	label.position = offset_vec
+	# Start at entity's world position plus a small offset
+	label.global_position = global_position + Vector2(-16, -40)
 	label.visible = true
+	label.z_index = 100  # Ensure it's above most things
 
 	var tween: Tween = create_tween()
-	tween.tween_property(label, "position", label.position + Vector2(0, -20), duration)
+	var target_pos: Vector2 = label.position + Vector2(0, -rise_pixels)
+	(
+		tween
+		. tween_property(label, "position", target_pos, duration)
+		. set_trans(Tween.TRANS_SINE)
+		. set_ease(Tween.EASE_OUT)
+	)
 	tween.parallel().tween_property(label, "modulate:a", 0.0, duration)
 	tween.tween_callback(
 		func() -> void:

@@ -25,6 +25,8 @@ signal mwt_reached(moral_flag: int, remaining_deltas: int)
 signal moral_delta_processed(delta: int, source: String, sentient: bool)
 ## Emitted when a dying enemy is spared (true) or executed (false).
 signal spare_or_execute(entity: Entity, was_spared: bool)
+## Emitted when damage is applied to an entity.
+signal entity_damaged(attacker: Entity, defender: Entity, amount: int, damage_type: String)
 
 
 # ── Queued moral delta record ────────────────────────────────────────────
@@ -85,10 +87,20 @@ func _record_kill(enemy_id: String, enemy_name: String) -> void:
 
 ## Canonical damage application. Updates defender HP and transitions state
 ## deterministically. If damage is lethal, targets enter DYING (not DEAD).
-func apply_damage(attacker: Entity, defender: Entity, damage: int) -> void:
+func apply_damage(
+	attacker: Entity, defender: Entity, damage: int, damage_type: String = "PHYSICAL"
+) -> void:
 	var old_hp: int = defender.hp
 	var new_hp: int = DeterministicMath.clampi(old_hp - damage, 0, defender.hp_max)
 	defender.hp = new_hp
+
+	# Emit damage signals
+	entity_damaged.emit(attacker, defender, damage, damage_type)
+	defender.damage_taken.emit(damage, damage_type)
+
+	var eb := AutoloadHelper.event_bus()
+	if eb:
+		eb.entity_damaged.emit(attacker, defender, damage, damage_type)
 
 	if (
 		new_hp == 0
