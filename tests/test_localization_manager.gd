@@ -34,4 +34,15 @@ func test_set_locale() -> void:
 	var actual_fr: String = tr(key_fr)
 	assert_that(actual_fr).is_equal(expected_fr)
 
+	lm.set_locale("es")
+	var keys_to_test_es: Dictionary = {
+		"MENU_NEW_RUN": "Nueva Partida",
+		"menu.title.new_game": "Nuevo Juego",
+		"HUD_VICTORY_TITLE": "VICTORIA"
+	}
+	for key: String in keys_to_test_es:
+		var expected: String = keys_to_test_es[key]
+		var actual: String = tr(key)
+		assert_that(actual).is_equal(expected)
+
 	lm.set_locale("en")
