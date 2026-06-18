@@ -8,6 +8,7 @@ var _summary_data: Dictionary = {}
 @onready var title_label: Label = %TitleLabel
 @onready var summary_container: VBoxContainer = %SummaryContainer
 @onready var continue_button: Button = %ContinueButton
+@onready var _margin_container: MarginContainer = %MarginContainer
 
 
 func _ready() -> void:
@@ -15,10 +16,34 @@ func _ready() -> void:
 	_setup_from_config()
 	continue_button.text = tr("HUD_VICTORY_CONTINUE")
 
+	# SafeZone support
+	var sz: _SafeZoneManager = AutoloadHelper.safe_zone_manager()
+	if sz:
+		sz.safe_area_changed.connect(_on_safe_area_changed)
+		_apply_safe_area()
+
+	# Focus management
+	continue_button.grab_focus.call_deferred()
+
+	# Fade-in animation
+	modulate.a = 0.0
+	var tween: Tween = create_tween()
+	tween.tween_property(self, "modulate:a", 1.0, 0.3)
+
 
 func _exit_tree() -> void:
 	if continue_button and continue_button.pressed.is_connected(_on_continue_pressed):
 		continue_button.pressed.disconnect(_on_continue_pressed)
+
+	var sz: _SafeZoneManager = AutoloadHelper.safe_zone_manager()
+	if sz and sz.safe_area_changed.is_connected(_on_safe_area_changed):
+		sz.safe_area_changed.disconnect(_on_safe_area_changed)
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel") or event.is_action_pressed("combat_confirm"):
+		_on_continue_pressed()
+		get_viewport().set_input_as_handled()
 
 
 func setup(p_summary_data: Dictionary) -> void:
@@ -72,3 +97,18 @@ func _on_continue_pressed() -> void:
 	if rm:
 		rm.cmd_next_room()
 	queue_free()
+
+
+func _on_safe_area_changed(_rect: Rect2) -> void:
+	_apply_safe_area()
+
+
+func _apply_safe_area() -> void:
+	var sz: _SafeZoneManager = AutoloadHelper.safe_zone_manager()
+	if sz == null or _margin_container == null:
+		return
+	var margins: Dictionary = sz.get_safe_margins()
+	_margin_container.add_theme_constant_override("margin_left", margins.left)
+	_margin_container.add_theme_constant_override("margin_top", margins.top)
+	_margin_container.add_theme_constant_override("margin_right", margins.right)
+	_margin_container.add_theme_constant_override("margin_bottom", margins.bottom)
