@@ -234,11 +234,14 @@ func _on_entity_state_changed(
 							is_elite = not child.elite_type.is_empty()
 						break
 
-			_killed_entities.append({
-				"archetype": entity.archetype_id,
-				"is_elite": is_elite,
-				"is_boss": entity.archetype_id == "boss" or entity.archetype_id == "overgrown_guardian"
-			})
+			_killed_entities.append(
+				{
+					"archetype": entity.archetype_id,
+					"is_elite": is_elite,
+					"is_boss":
+					entity.archetype_id == "boss" or entity.archetype_id == "overgrown_guardian"
+				}
+			)
 
 
 func _calculate_shards() -> int:
