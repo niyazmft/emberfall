@@ -1,15 +1,15 @@
 [gd_scene load_steps=5 format=3 uid="uid://skuab4zyewld3"]
 
-[ext_resource type="Script" path="res://scripts/entities/keeper.gd" id="1_keeper"]
-[ext_resource type="Script" path="res://scripts/entities/apparition_renderer.gd" id="2_apparition"]
-[ext_resource type="Script" path="res://scripts/visual/entity_visual_proxy.gd" id="3_visual_proxy"]
+[ext_resource type="Script" path="res://scripts/entities/keeper.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/entities/apparition_renderer.gd" id="2"]
+[ext_resource type="Script" path="res://scripts/visual/entity_visual_proxy.gd" id="3"]
 
 [node name="Keeper" type="Node2D" node_paths=PackedStringArray("visual_proxy")]
-script = ExtResource("1_keeper")
+script = ExtResource(1)
 visual_proxy = NodePath("EntityVisualProxy")
 
 [node name="EntityVisualProxy" type="Node2D" parent="." node_paths=PackedStringArray("base_sprite", "shadow_sprite", "height_indicator")]
-script = ExtResource("3_visual_proxy")
+script = ExtResource(3)
 base_sprite = NodePath("BaseSprite")
 shadow_sprite = NodePath("ShadowSprite")
 height_indicator = NodePath("HeightIndicator")
@@ -25,4 +25,4 @@ offset_right = 16.0
 offset_bottom = 6.0
 
 [node name="ApparitionRenderer" type="Node2D" parent="."]
-script = ExtResource("2_apparition")
+script = ExtResource(2)

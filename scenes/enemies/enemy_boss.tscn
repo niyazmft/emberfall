@@ -1,9 +1,9 @@
 [gd_scene load_steps=3 format=3 uid="uid://ai36e3qqzfz3e"]
 
-[ext_resource type="PackedScene" uid="uid://l4bgdwl6oilfx" path="res://scenes/enemies/base_enemy.tscn" id="1_base_enemy"]
-[ext_resource type="Script" path="res://scripts/entities/enemies/enemy_boss.gd" id="2_boss_script"]
+[ext_resource type="PackedScene" uid="uid://l4bgdwl6oilfx" path="res://scenes/enemies/base_enemy.tscn" id="1"]
+[ext_resource type="Script" path="res://scripts/entities/enemies/enemy_boss.gd" id="2"]
 
-[node name="EnemyBoss" instance=ExtResource("1_base_enemy")]
-script = ExtResource("2_boss_script")
+[node name="EnemyBoss" instance=ExtResource(1)]
+script = ExtResource(2)
 debug_color = Color(1, 0, 0, 1)
 visual_scale = 1.5
