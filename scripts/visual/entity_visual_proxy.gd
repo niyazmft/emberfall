@@ -5,7 +5,7 @@ extends Node2D
 ## Bridges Entity data to visual representation.
 ## Handles: positioning, elevation, facing direction, state effects.
 
-const STATUS_BAR_SCENE: PackedScene = preload("res://scenes/ui/entity_status_bar.tscn")
+@export var status_bar_scene: PackedScene = preload("res://scenes/ui/entity_status_bar.tscn")
 
 @export var entity: Entity:
 	set(p_value):
@@ -46,7 +46,7 @@ func _ready() -> void:
 		_grid_renderer = _find_grid_renderer(get_tree().root)
 
 	_setup_greybox()
-	_setupStatusBar()
+	_setup_status_bar()
 
 	if entity:
 		_connect_entity_signals()
@@ -151,12 +151,12 @@ func _on_entity_hp_changed(new_hp: int, old_hp: int) -> void:
 			_apparition_renderer.trigger_damage_effect()
 
 	if _status_bar:
-		_status_bar.updateHp(new_hp, entity.hp_max)
+		_status_bar.update_hp(new_hp, entity.hp_max)
 
 
 func _on_entity_ap_changed(new_ap: int, _old_ap: int) -> void:
 	if _status_bar:
-		_status_bar.updateAp(new_ap, GameConstants.AP_MAX)
+		_status_bar.update_ap(new_ap, GameConstants.AP_MAX)
 
 
 func _update_elevation_visuals(elevation: int) -> void:
@@ -208,17 +208,17 @@ func grid_to_world(p_x: int, p_y: int, p_elevation: int) -> Vector2:
 	return Vector2.ZERO
 
 
-func _setupStatusBar() -> void:
-	if STATUS_BAR_SCENE:
-		_status_bar = STATUS_BAR_SCENE.instantiate() as EntityStatusBar
+func _setup_status_bar() -> void:
+	if status_bar_scene:
+		_status_bar = status_bar_scene.instantiate() as EntityStatusBar
 		add_child(_status_bar)
 		_status_bar.position = Vector2(-32, -60)  # Position above entity
 		if entity:
-			_status_bar.updateHp(entity.hp, entity.hp_max)
-			_status_bar.updateAp(entity.ap, GameConstants.AP_MAX)
+			_status_bar.update_hp(entity.hp, entity.hp_max)
+			_status_bar.update_ap(entity.ap, GameConstants.AP_MAX)
 
 
-func _triggerHitEffects(p_damage: int, p_damage_type: String = "PHYSICAL") -> void:
+func _trigger_hit_effects(p_damage: int, p_damage_type: String = "PHYSICAL") -> void:
 	var loader: _ConfigLoader = AutoloadHelper.config_loader()
 
 	# Hit Flash
@@ -238,10 +238,10 @@ func _triggerHitEffects(p_damage: int, p_damage_type: String = "PHYSICAL") -> vo
 					_hit_stop_remaining = tier.get("frames", 0)
 
 	# Floating Text
-	_spawnDamageNumber(p_damage, p_damage_type)
+	_spawn_damage_number(p_damage, p_damage_type)
 
 
-func _spawnDamageNumber(p_damage: int, p_damage_type: String) -> void:
+func _spawn_damage_number(p_damage: int, p_damage_type: String) -> void:
 	var loader: _ConfigLoader = AutoloadHelper.config_loader()
 	var color: Color = Color.WHITE
 	var duration: float = 0.5

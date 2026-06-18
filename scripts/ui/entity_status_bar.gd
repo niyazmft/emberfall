@@ -30,41 +30,45 @@ func _process(delta: float) -> void:
 		hp_bar.value = _target_hp
 
 
-func updateHp(current: int, max_hp: int) -> void:
-	hp_bar.max_value = max_hp
-	_target_hp = float(current)
+## Update HP bar
+func update_hp(p_current: int, p_max_hp: int) -> void:
+	hp_bar.max_value = p_max_hp
+	_target_hp = float(p_current)
 
 
-## Backward-compatible snake_case alias for updateHp
-func update_hp(p_current_hp: int, p_max_hp: int) -> void:
-	updateHp(p_current_hp, p_max_hp)
+## Deprecated: Use update_hp
+func updateHp(p_current: int, p_max_hp: int) -> void:
+	update_hp(p_current, p_max_hp)
 
 
 ## Update AP pips to show current AP out of max
-func updateAp(current: int, max_ap: int) -> void:
+func update_ap(p_current: int, p_max_ap: int = -1) -> void:
+	var actual_max_ap: int = p_max_ap
+	if actual_max_ap < 0:
+		actual_max_ap = _get_ap_max()
+
 	var current_child_count: int = ap_container.get_child_count()
 
-	if max_ap > current_child_count:
-		for i: int in range(max_ap - current_child_count):
+	if actual_max_ap > current_child_count:
+		for i: int in range(actual_max_ap - current_child_count):
 			var pip: ColorRect = ColorRect.new()
 			pip.custom_minimum_size = Vector2(4, 8)
 			ap_container.add_child(pip)
-	elif max_ap < current_child_count:
-		for i: int in range(current_child_count - 1, max_ap - 1, -1):
+	elif actual_max_ap < current_child_count:
+		for i: int in range(current_child_count - 1, actual_max_ap - 1, -1):
 			var child: Node = ap_container.get_child(i)
 			ap_container.remove_child(child)
 			child.queue_free()
 
-	for i: int in range(max_ap):
+	for i: int in range(actual_max_ap):
 		var pip: ColorRect = ap_container.get_child(i) as ColorRect
 		if pip:
-			pip.color = Color.YELLOW if i < current else Color(0.2, 0.2, 0.2)
+			pip.color = Color.YELLOW if i < p_current else Color(0.2, 0.2, 0.2)
 
 
-## Backward-compatible snake_case alias for updateAp (ignores extra arg)
-func update_ap(p_current_ap: int, _p_max_ap: int = 0) -> void:
-	var ap_max: int = _get_ap_max()
-	updateAp(p_current_ap, ap_max)
+## Deprecated: Use update_ap
+func updateAp(p_current: int, p_max_ap: int) -> void:
+	update_ap(p_current, p_max_ap)
 
 
 func _get_ap_max() -> int:
