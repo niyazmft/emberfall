@@ -1,6 +1,7 @@
 # SFX Assets
 
 Expected SFX categories:
+
 - move
 - attack
 - hit

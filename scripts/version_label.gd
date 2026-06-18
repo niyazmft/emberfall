@@ -1,15 +1,10 @@
 extends Label
-## VersionLabel (DON-292)
-## Displays the current build version retrieved from ProjectSettings.
+## VersionLabel (DON-31/36)
+## Displays the current build version.
 
 
 func _ready() -> void:
-	# Retrieve version from ProjectSettings; fallback to dev string if missing
-	var version: String = str(
-		ProjectSettings.get_setting("application/config/version", "0.0.0-dev")
-	)
-	text = version
-
+	text = str(ProjectSettings.get_setting("application/config/version", "0.0.0-dev"))
 	_apply_notch_offset()
 	if not SafeZoneManager.safe_area_changed.is_connected(_on_safe_area_changed):
 		SafeZoneManager.safe_area_changed.connect(_on_safe_area_changed)

@@ -20,6 +20,11 @@
     "segment_count": 6,
     "pip_spacing": 4.0
   },
+  "turn_banner": {
+    "fade_duration": 0.3,
+    "slide_duration": 0.5,
+    "display_duration": 1.2
+  },
   "end_screens": {
     "victory": {
       "title_key": "HUD_VICTORY_TITLE",
