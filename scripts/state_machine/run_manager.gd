@@ -322,6 +322,14 @@ func _enter_room(_ctx: Dictionary) -> void:
 	# Apply procedural augmentation (topology + encounters)
 	RoomLoader.augment_room_procedurally(room_data)
 
+	if OS.is_debug_build():
+		print(
+			(
+				"[RunManager] Entering room %d (id: %s)"
+				% [room_index, room_data.get("room_id", "unknown")]
+			)
+		)
+
 	# Emit event for UI / encounter spawner
 	room_entered.emit(room_index, room_data)
 

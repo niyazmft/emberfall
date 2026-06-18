@@ -128,10 +128,19 @@ func load_game() -> Dictionary:
 	var raw_text: String = file.get_as_text()
 	file.close()
 
-	var raw_data: Variant = JSON.parse_string(raw_text)
+	var json := JSON.new()
+	var err := json.parse(raw_text)
+	if err != OK:
+		var reason: String = (
+			"JSON syntax failure: %s at line %d" % [json.get_error_message(), json.get_error_line()]
+		)
+		push_warning("[SaveManager] load_game: %s" % reason)
+		load_failed.emit(reason)
+		return {}
+
+	var raw_data: Variant = json.data
 	if typeof(raw_data) != TYPE_DICTIONARY:
-		var reason: String = "Parsed JSON is not a Dictionary or failed to parse."
-		# Use push_warning instead of push_error to avoid failing the pre_push_check on expected test failures
+		var reason: String = "Parsed JSON is not a Dictionary."
 		push_warning("[SaveManager] load_game: %s" % reason)
 		load_failed.emit(reason)
 		return {}

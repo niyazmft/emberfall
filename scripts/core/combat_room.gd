@@ -54,7 +54,11 @@ func _exit_tree() -> void:
 		eb.entity_state_changed.disconnect(_on_entity_state_changed)
 
 
-func _on_room_entered(_room_index: int, room_data: Dictionary) -> void:
+func _on_room_entered(p_room_index: int, room_data: Dictionary) -> void:
+	if OS.is_debug_build():
+		print(
+			"[CombatRoom] _on_room_entered index:%d data_keys:%s" % [p_room_index, room_data.keys()]
+		)
 	_current_room_data = room_data
 	_room_kills = 0
 
