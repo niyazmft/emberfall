@@ -55,7 +55,16 @@ func test_grunt_attacks_adjacent_player() -> void:
 
 	assert_that(action.has("type")).is_true()
 	assert_str(action["type"]).is_equal("attack")
-	assert_object(action["target"]).is_equal(_player)
+
+	# Normalize target so tests accept Node or Dictionary formats (DON-Coordinator)
+	var returned_target: Variant = action.get("target")
+	if returned_target is Dictionary:
+		if returned_target.has("node"):
+			returned_target = returned_target["node"]
+		elif returned_target.has("entity"):
+			returned_target = returned_target["entity"]
+
+	assert_object(returned_target).is_equal(_player)
 
 
 func test_archer_moves_away_when_too_close() -> void:
