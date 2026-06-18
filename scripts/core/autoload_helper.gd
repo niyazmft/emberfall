@@ -93,6 +93,11 @@ static func settings_manager() -> _SettingsManager:
 	return get_autoload("SettingsManager") as _SettingsManager
 
 
+## Returns the SFXManager autoload, or null.
+static func sfx_manager() -> _SFXManager:
+	return get_autoload("SFXManager") as _SFXManager
+
+
 ## Returns the LocalizationManager autoload, or null.
 static func localization_manager() -> _LocalizationManager:
 	return get_autoload("LocalizationManager") as _LocalizationManager
