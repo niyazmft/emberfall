@@ -3,15 +3,11 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cnk72tjwtkw2r"
-path="res://.godot/imported/status_stun.png-8ca996930700805ad93331b3a4a85fa0.ctex"
-metadata={
-"vram_texture": false
-}
+valid=true
 
 [deps]
 
 source_file="res://assets/icons/status_stun.png"
-dest_files=["res://.godot/imported/status_stun.png-8ca996930700805ad93331b3a4a85fa0.ctex"]
 
 [params]
 

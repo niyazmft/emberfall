@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://b1m4n7k8p9q2r"]
 
-[ext_resource type="Script" path="res://scripts/ui/version_label.gd" id="2_vlabel"]
+[ext_resource type="Script" path="res://scripts/version_label.gd" id="2_vlabel"]
 
 [node name="Main" type="Node2D"]
 

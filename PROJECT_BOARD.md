@@ -306,9 +306,9 @@ Narrative, dialogue, localization.
 |----|-----|------|--------|--------|----------|
 | Title Screen → CombatRoom scene flow | #288 | ⏳ Ready | P0 | 1d | None |
 | Enable Continue button on Title Screen | #289 | ⏳ Ready | P0 | 1d | None |
-| Remove orphaned MainMenu scene | #291 | ✅ Done | P1 | 1d | None |
+| Remove orphaned MainMenu scene | #291 | ⏳ Ready | P1 | 1d | None |
 | Create missing config placeholder files | #290 | ⏳ Ready | P1 | 1d | None |
-| Bump project version to 0.1.2 | #292 | ✅ Done | P1 | 1d | None |
+| Bump project version to 0.1.2 | #292 | ⏳ Ready | P1 | 1d | None |
 | Project version still shows 0.1.0-sprint1 in version_label.gd | #307 | ✅ Done | P2 | 1d | None |
 
 ## Infrastructure Completed (Recent)
