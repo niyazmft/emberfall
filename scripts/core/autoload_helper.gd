@@ -99,13 +99,13 @@ static func localization_manager() -> _LocalizationManager:
 
 
 ## Returns the AmbientNarrator autoload, or null.
-static func ambient_narrator() -> _AmbientNarrator:
-	return get_autoload("AmbientNarrator") as _AmbientNarrator
+static func ambient_narrator() -> AmbientNarratorAutoload:
+	return get_autoload("AmbientNarrator") as AmbientNarratorAutoload
 
 
 ## Returns the SecretRoomTrigger autoload, or null.
-static func secret_room_trigger() -> _SecretRoomTrigger:
-	return get_autoload("SecretRoomTrigger") as _SecretRoomTrigger
+static func secret_room_trigger() -> SecretRoomTriggerAutoload:
+	return get_autoload("SecretRoomTrigger") as SecretRoomTriggerAutoload
 
 
 ## Returns the SafeZoneManager autoload, or null.

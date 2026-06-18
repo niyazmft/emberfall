@@ -1,4 +1,4 @@
-class_name _AmbientNarrator
+class_name AmbientNarratorAutoload
 extends Node
 
 ## AmbientNarrator

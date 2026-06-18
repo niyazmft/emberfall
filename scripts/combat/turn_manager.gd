@@ -22,7 +22,7 @@ var current_turn_index: int = -1
 var _player: Node2D
 var _enemies: Array[Node2D] = []
 var _lifecycle: Node
-var _isProcessingState: bool = false
+var _is_processing_state: bool = false
 
 
 # ── Lifecycle ───────────────────────────────────────────────────────
@@ -65,16 +65,16 @@ func _change_state(p_new_state: CombatState) -> void:
 	if current_state == CombatState.COMBAT_END and p_new_state != CombatState.IDLE:
 		return
 	current_state = p_new_state
-	if not _isProcessingState:
+	if not _is_processing_state:
 		_process_state_loop()
 
 
 func _process_state_loop() -> void:
-	_isProcessingState = true
+	_is_processing_state = true
 	var iterations: int = 0
 	const MAX_ITERATIONS: int = 200
 
-	while _isProcessingState and iterations < MAX_ITERATIONS:
+	while _is_processing_state and iterations < MAX_ITERATIONS:
 		var start_state: CombatState = current_state
 		_process_current_state()
 
@@ -86,7 +86,7 @@ func _process_state_loop() -> void:
 		push_error("TurnManager: Infinite state transition loop detected!")
 		current_state = CombatState.COMBAT_END
 
-	_isProcessingState = false
+	_is_processing_state = false
 
 
 func _process_current_state() -> void:
@@ -136,7 +136,7 @@ func _process_current_state() -> void:
 			_check_end_conditions()
 
 		CombatState.COMBAT_END:
-			_isProcessingState = false
+			_is_processing_state = false
 
 
 func _is_actor_alive(actor: Node2D) -> bool:

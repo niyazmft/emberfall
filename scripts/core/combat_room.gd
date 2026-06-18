@@ -229,9 +229,9 @@ func _on_combat_ended(victory: bool) -> void:
 			var rm := AutoloadHelper.run_manager()
 			if rm:
 				rm.cmd_final_encounter_won()
-		_showVictoryModal()
+		_show_victory_modal()
 	else:
-		_showDefeatModal()
+		_show_defeat_modal()
 
 
 func _on_boss_hp_changed(new_hp: int, _old_hp: int) -> void:
@@ -320,7 +320,7 @@ func _calculate_shards() -> int:
 	return min_shards + bonus
 
 
-func _showVictoryModal() -> void:
+func _show_victory_modal() -> void:
 	var scene: PackedScene = load(VICTORY_MODAL_SCENE_PATH)
 	if scene:
 		var modal := scene.instantiate() as _VictoryModal
@@ -334,7 +334,7 @@ func _showVictoryModal() -> void:
 			modal.setup(summary)
 
 
-func _showDefeatModal() -> void:
+func _show_defeat_modal() -> void:
 	var scene: PackedScene = load(DEFEAT_MODAL_SCENE_PATH)
 	if scene:
 		var modal := scene.instantiate() as _DefeatModal
