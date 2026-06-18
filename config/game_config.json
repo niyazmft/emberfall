@@ -44,6 +44,11 @@
     "ECHO_COUNT": "BIOME_COUNT - 1",
     "DYING_DURATION_TURNS": 1
   },
+  "ui": {
+    "transitions": {
+      "transition_duration": 0.5
+    }
+  },
   "golden_seed": "0xDEADBEEF",
   "grid": {
     "GRID_W": 12,

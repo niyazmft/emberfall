@@ -23,6 +23,7 @@ var _current_room_data: Dictionary = {}
 @onready var entity_container: Node2D = $EntityContainer
 @onready var ui_overlay: CanvasLayer = $UIOverlay
 @onready var camera: Camera2D = $Camera2D
+@onready var transition_layer: TransitionLayer = %TransitionLayer
 
 
 func _ready() -> void:
@@ -85,6 +86,9 @@ func _on_room_entered(_room_index: int, room_data: Dictionary) -> void:
 
 	# Setup HUD
 	_setup_hud()
+
+	if transition_layer:
+		transition_layer.fade_in()
 
 
 func _setup_hud() -> void:
@@ -201,10 +205,16 @@ func _on_hud_move_pressed() -> void:
 
 
 func _on_combat_ended(victory: bool) -> void:
+	if transition_layer:
+		await transition_layer.fade_out()
+
 	if victory:
-		_showVictoryModal()
+		_show_victory_modal()
 	else:
-		_showDefeatModal()
+		_show_defeat_modal()
+
+	if transition_layer:
+		transition_layer.fade_in()
 
 
 func _on_entity_state_changed(
@@ -233,7 +243,7 @@ func _calculate_shards() -> int:
 	return min_shards + bonus
 
 
-func _showVictoryModal() -> void:
+func _show_victory_modal() -> void:
 	var scene: PackedScene = load(VICTORY_MODAL_SCENE_PATH)
 	if scene:
 		var modal := scene.instantiate() as _VictoryModal
@@ -252,7 +262,7 @@ func _showVictoryModal() -> void:
 			modal.setup(summary)
 
 
-func _showDefeatModal() -> void:
+func _show_defeat_modal() -> void:
 	var scene: PackedScene = load(DEFEAT_MODAL_SCENE_PATH)
 	if scene:
 		var modal := scene.instantiate() as _DefeatModal

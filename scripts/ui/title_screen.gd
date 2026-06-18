@@ -8,6 +8,7 @@ extends Control
 @onready var settings_btn: Button = %SettingsButton
 @onready var quit_btn: Button = %QuitButton
 @onready var button_container: VBoxContainer = %ButtonContainer
+@onready var transition_layer: TransitionLayer = %TransitionLayer
 
 
 func _ready() -> void:
@@ -33,6 +34,12 @@ func _ready() -> void:
 	# Enforce touch targets
 	for btn: Button in [continue_btn, new_game_btn, settings_btn, quit_btn]:
 		TouchTargetEnforcer.enforce(btn)
+
+	# Setup dynamic vertical wrap-around focus
+	_setup_focus_wrap()
+
+	if transition_layer:
+		transition_layer.fade_in()
 
 	# Initial focus: Continue if enabled, otherwise New Game
 	if not continue_btn.disabled:
@@ -89,16 +96,38 @@ func _setup_focus_wrap() -> void:
 
 func _on_new_game_pressed() -> void:
 	_print_debug("New Game pressed")
-	var gc: _GameCoordinator = AutoloadHelper.game_coordinator()
-	if gc != null:
-		gc.cmd_new_game()
+	if transition_layer:
+		await transition_layer.fade_out()
+
+	var run_manager: _RunManager = AutoloadHelper.run_manager()
+	if run_manager != null:
+		run_manager.cmd_start_run()
+		# Delete existing save so Continue doesn't re-offer it on a fresh run
+		var save_manager: _SaveManager = AutoloadHelper.save_manager()
+		if save_manager != null:
+			save_manager.delete_save()
+	get_tree().change_scene_to_file("res://scenes/combat_room.tscn")
 
 
 func _on_continue_pressed() -> void:
 	_print_debug("Continue pressed")
-	var gc: _GameCoordinator = AutoloadHelper.game_coordinator()
-	if gc != null:
-		gc.cmd_continue_game()
+	if transition_layer:
+		await transition_layer.fade_out()
+
+	var save_manager: _SaveManager = AutoloadHelper.save_manager()
+	if save_manager == null:
+		push_error("TitleScreen: SaveManager not available for Continue.")
+		return
+	var data: Dictionary = save_manager.load_game()
+	if data.is_empty():
+		push_warning("TitleScreen: Continue pressed but no valid save found.")
+		return
+	var run_manager: _RunManager = AutoloadHelper.run_manager()
+	if run_manager != null and data.has("run_state"):
+		run_manager.load_run_state(data["run_state"])
+		get_tree().change_scene_to_file("res://scenes/combat_room.tscn")
+	else:
+		push_warning("TitleScreen: No run_state in save data.")
 
 
 func _on_settings_pressed() -> void:
