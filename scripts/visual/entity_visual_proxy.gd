@@ -29,8 +29,6 @@ var _status_bar: EntityStatusBar
 var _hit_flash_timer: float = 0.0
 var _hit_flash_duration: float = 0.1
 var _hit_stop_remaining: int = 0
-var _damage_label_pool: Array[Label] = []
-
 ## Reference to the CombatRoom node (set by parent scene; NOT an autoload).
 ## Use export to avoid fragile /root/ lookup.
 var _combat_room: CombatRoom = null
@@ -258,26 +256,25 @@ func _spawnDamageNumber(p_damage: int, p_damage_type: String) -> void:
 			if offset_arr is Array and offset_arr.size() >= 2:
 				offset_vec = Vector2(float(offset_arr[0]), float(offset_arr[1]))
 
-	var label: Label
-	if _damage_label_pool.is_empty():
-		label = Label.new()
-		add_child(label)
+	var label: Label = Label.new()
+	label.z_index = 10
+
+	if _combat_room and _combat_room.floating_text_container:
+		_combat_room.floating_text_container.add_child(label)
 	else:
-		label = _damage_label_pool.pop_back()
+		add_child(label)
 
 	label.text = str(p_damage)
 	label.modulate = color
-	label.position = offset_vec
+	label.global_position = global_position + offset_vec
 	label.visible = true
 
-	var tween: Tween = create_tween()
-	tween.tween_property(label, "position", label.position + Vector2(0, -20), duration)
-	tween.parallel().tween_property(label, "modulate:a", 0.0, duration)
-	tween.tween_callback(
-		func() -> void:
-			label.visible = false
-			_damage_label_pool.append(label)
+	var tween: Tween = get_tree().create_tween()
+	tween.tween_property(
+		label, "global_position", label.global_position + Vector2(0, -20), duration
 	)
+	tween.parallel().tween_property(label, "modulate:a", 0.0, duration)
+	tween.tween_callback(label.queue_free)
 
 
 func _setup_greybox() -> void:

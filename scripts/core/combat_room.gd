@@ -21,6 +21,7 @@ var _current_room_data: Dictionary = {}
 
 @onready var grid_renderer: GridRenderer = $GridRenderer
 @onready var entity_container: Node2D = $EntityContainer
+@onready var floating_text_container: Node2D = $EntityContainer/FloatingTextContainer
 @onready var ui_overlay: CanvasLayer = $UIOverlay
 @onready var camera: Camera2D = $Camera2D
 
