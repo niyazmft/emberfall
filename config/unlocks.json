@@ -1,53 +1,17 @@
 {
   "unlocks": {
     "_description": "Meta-progression unlocks and sanctum upgrades.",
-    "starting_loadouts": {
-      "basic_kit": {
-        "items": ["rusted_blade", "leather_vest"],
-        "hp_bonus": 0,
-        "ap_bonus": 0
-      }
-    },
+    "starting_unlocks": ["basic_kit"],
     "upgrades": {
       "hp_boost_1": {
         "id": "hp_boost_1",
-        "name": "Vitality I",
-        "cost_shards": 250,
+        "cost_shards": 100,
         "effect": { "hp_max_bonus": 10 }
-      },
-      "hp_boost_2": {
-        "id": "hp_boost_2",
-        "name": "Vitality II",
-        "cost_shards": 750,
-        "effect": { "hp_max_bonus": 15 },
-        "requires": "hp_boost_1"
-      },
-      "hp_boost_3": {
-        "id": "hp_boost_3",
-        "name": "Vitality III",
-        "cost_shards": 2000,
-        "effect": { "hp_max_bonus": 25 },
-        "requires": "hp_boost_2"
       },
       "ap_boost_1": {
         "id": "ap_boost_1",
-        "name": "Focus I",
-        "cost_shards": 500,
+        "cost_shards": 150,
         "effect": { "ap_max_bonus": 1 }
-      },
-      "ap_boost_2": {
-        "id": "ap_boost_2",
-        "name": "Focus II",
-        "cost_shards": 1500,
-        "effect": { "ap_max_bonus": 1 },
-        "requires": "ap_boost_1"
-      },
-      "ap_boost_3": {
-        "id": "ap_boost_3",
-        "name": "Focus III",
-        "cost_shards": 5000,
-        "effect": { "ap_max_bonus": 2 },
-        "requires": "ap_boost_2"
       }
     }
   }

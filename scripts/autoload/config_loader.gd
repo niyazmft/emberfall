@@ -144,7 +144,9 @@ func _load_json_to_config(file_path: String) -> void:
 				_loaded_files[file_path] = true
 				print("ConfigLoader: loaded config from %s" % file_path)
 			else:
-				push_warning("ConfigLoader: config file %s was not a valid JSON object." % file_path)
+				push_warning(
+					"ConfigLoader: config file %s was not a valid JSON object." % file_path
+				)
 			file_handle.close()
 	else:
 		push_warning("ConfigLoader: config file not found at %s." % file_path)

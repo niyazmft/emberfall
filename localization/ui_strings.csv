@@ -6,7 +6,7 @@ BE_MWT_3,[The breaking point nears],[Der Belastungspunkt nähert sich],[El punto
 BE_CAP_0_TO_1,[The world stills],[Die Welt steht still],[El mundo se detiene],[Le monde se fige]
 BE_CAP_1_TO_2,[Machinery grinds],[Maschinen knirschen],[La maquinaria cruje],[Les machines grincent]
 BE_CAP_2_TO_3,[The weight gathers],[Die Last sammelt sich],[La carga se acumule],[Le poids s'accumule]
-BE_CAP_3_TO_2,[The pressure recedes],[Der Druck weicht zurück],[La presión retrocede],[La presión diminue]
+BE_CAP_3_TO_2,[The pressure recedes],[Der Druck weicht zurück],[La presión retrocede],[La pression diminue]
 BE_CAP_2_TO_1,[The memory loosens],[Die Erinnerung lockert sich],[El recuerdo se afloja],[Le souvenir se relâche]
 BE_CAP_1_TO_0,[The embers cool],[Die Glut kühlt ab],[Las brasas se enfrían],[Les braises refroidissent]
 BE_CAP_3_TO_0_NORMAL,[The burden fades slowly],[Die Last schwindet langsam],[La carga se desvanece lentamente],[Le fardeau s'efface lentement]
@@ -61,33 +61,33 @@ SKILL_QUICK_DASH_NAME,Quick Dash,Schneller Spurt,Carrera Rápida,Élan Rapide
 SKILL_QUICK_DASH_DESC,Dash forward to gain distance.,Spurte vorwärts, um Distanz zu gewinnen.,Corre hacia adelante para ganar distancia.,Élancez-vous pour gagner de la distance.
 ENEMY_ARCHER_NAME,Archer,Bogenschütze,Arquero,Archer
 ENEMY_ARCHER_DESC,Ranged enemy that maintains distance.,Fernkampfgegner, der Distanz hält.,Enemigo a distancia que mantiene la distancia.,Ennemi à distance qui maintient ses distances.
-HUD_TOOLTIP_HP,HP: Current / Max health,HP: Aktuelle / Max. Gesundheit,PV: Salud actual / máxima,PV : Santé actuelle / max
-HUD_TOOLTIP_AP,AP: Current / Max action points,AP: Aktuelle / Max. Aktionspunkte,PA: Puntos de acción actuales / máximos,PA : Points d'action actuels / max
-HUD_TOOLTIP_MOVE,Move to a new position,Auf eine neue Position bewegen,Mover a una nueva posición,Se déplacer vers une nouvelle position
-HUD_TOOLTIP_ATTACK,Initiate an attack,Einen Angriff starten,Iniciar un ataque,Lancer une ataque
-HUD_TOOLTIP_END_TURN,End your turn,Deinen Zug beenden,Terminar tu turno,Terminer votre tour
-HUD_LOG_PLAYER_TURN,PLAYER TURN,SPIELERZUG,TURNO DEL JUGADOR,TOUR DU JOUEUR
-HUD_LOG_ENEMY_TURN,ENEMY TURN: %s,GEGNERZUG: %s,TURNO DEL ENEMIGO: %s,TOUR DE L'ENNEMI : %s
-HUD_LOG_ROUND_START,ROUND %d,RUNDE %d,RONDA %d,ROUND %d
-HUD_LOG_SELECT_TARGET,SELECT TARGET,ZIEL WÄHLEN,SELECCIONAR OBJETIVO,SÉLECTIONNER LA CIBLE
-HUD_LOG_DAMAGE_DEALT,Dealt %d damage to %s,%d Schaden an %s verursacht,Infligido %d de daño a %s,%d dégâts infligés à %s
-HUD_VICTORY_TITLE,VICTORY,SIEG,VICTORIA,VICTOIRE
-HUD_DEFEAT_TITLE,DEFEAT,NIEDERLAGE,DERROTA,DÉFAITE
-HUD_SUMMARY_TURNS,Turns taken: %d,Züge: %d,Turnos tomados: %d,Tours pris : %d
-HUD_SUMMARY_KILLS,Enemies defeated: %d,Besiegte Gegner: %d,Enemigos derrotados: %d,Ennemis vaincus : %d
-HUD_SUMMARY_SHARDS,Echo shards earned: %d,Verdiente Echo-Scherben: %d,Fragmentos de eco ganados: %d,Éclats d'écho gagnés : %d
-HUD_SUMMARY_ROOMS,Rooms cleared: %d,Abgeschlossene Räume: %d,Salas despejadas: %d,Salles terminées : %d
-HUD_PLAYER_TURN,Your Turn,Dein Zug,Tu Turno,Votre tour
-HUD_ENEMY_TURN,Enemy Turn: %s,Gegnerzug: %s,Turno del Enemigo: %s,Tour de l'ennemi : %s
-HUD_ROUND_LABEL,Round %d,Runde %d,Ronda %d,Round %d
-HUD_COMBAT_START,COMBAT START,KAMPFBEGINN,INICIO DEL COMBATE,DÉBUT DU COMBAT
-HUD_PLAYER_TURN_BANNER,PLAYER TURN,SPIELERZUG,TURNO DEL JUGADOR,TOUR DU JOUEUR
-HUD_ENEMY_TURN_BANNER,%s TURN,%s ZUG,TURNO DE %s,TOUR DE %s
+HUD_TOOLTIP_HP,HP: Current / Max health,,,
+HUD_TOOLTIP_AP,AP: Current / Max action points,,,
+HUD_TOOLTIP_MOVE,Move to a new position,,,
+HUD_TOOLTIP_ATTACK,Initiate an attack,,,
+HUD_TOOLTIP_END_TURN,End your turn,,,
+HUD_LOG_PLAYER_TURN,PLAYER TURN,,,
+HUD_LOG_ENEMY_TURN,ENEMY TURN: %s,,,
+HUD_LOG_ROUND_START,ROUND %d,,,
+HUD_LOG_SELECT_TARGET,SELECT TARGET,,,
+HUD_LOG_DAMAGE_DEALT,Dealt %d damage to %s,,,
+HUD_VICTORY_TITLE,VICTORY,,,
+HUD_DEFEAT_TITLE,DEFEAT,,,
+HUD_SUMMARY_TURNS,Turns taken: %d,,,
+HUD_SUMMARY_KILLS,Enemies defeated: %d,,,
+HUD_SUMMARY_SHARDS,Echo shards earned: %d,,,
+HUD_SUMMARY_ROOMS,Rooms cleared: %d,,,
+HUD_PLAYER_TURN,Your Turn,,,
+HUD_ENEMY_TURN,Enemy Turn: %s,,,
+HUD_ROUND_LABEL,Round %d,,,
+HUD_COMBAT_START,COMBAT START,,,
+HUD_PLAYER_TURN_BANNER,PLAYER TURN,,,
+HUD_ENEMY_TURN_BANNER,%s TURN,,,
 SETTINGS_HELP_MASTER_VOL,Adjust the overall volume of the game.,Gesamtlautstärke des Spiels anpassen.,Ajustar el volumen general del juego.,Ajuster le volume global du jeu.
 SETTINGS_HELP_MUSIC_VOL,Adjust the volume of the background music.,Hintergrundmusik-Lautstärke anpassen.,Ajustar el volumen de la música de fondo.,Ajuster le volume de la musique de fond.
 SETTINGS_HELP_SFX_VOL,Adjust the volume of sound effects.,Effektlautstärke anpassen.,Ajustar el volumen de los efectos de sonido.,Ajuster le volume des effets sonores.
 SETTINGS_HELP_MUTE,Mute all game audio.,Alle Töne stummschalten.,Silenciar todo el audio del juego.,Couper tous les sons du jeu.
-SETTINGS_HELP_RESOLUTION,Change the display resolution.,Bildschirmauflösung ändern.,Cambiar la resolución de pantalla.,Changer la resolución d'affichage.
+SETTINGS_HELP_RESOLUTION,Change the display resolution.,Bildschirmauflösung ändern.,Cambiar la resolución de pantalla.,Changer la résolution d'affichage.
 SETTINGS_HELP_FULLSCREEN,Toggle fullscreen mode.,Vollbildmodus umschalten.,Alternar modo de pantalla completa.,Basculer en mode plein écran.
 SETTINGS_HELP_VSYNC,Enable or disable vertical sync.,Vertikale Synchronisation aktivieren/deaktivieren.,Activar o desactivar la sincronización vertical.,Activer ou désactiver la synchronisation verticale.
 SETTINGS_HELP_APPLY,Apply the selected video settings.,Ausgewählte Videoeinstellungen anwenden.,Aplicar los ajustes de video seleccionados.,Appliquer les paramètres vidéo sélectionnés.
@@ -115,4 +115,4 @@ biome.3.name,Crystal Spires,Kristallspitzen,Pináculos de Cristal,Pinacles de Cr
 biome.3.elev.0,[Shimmering shards underfoot],[Schimmernde Scherben unter den Füßen],[Fragmentos brillantes bajo tus pies],[Éclats chatoyants sous vos pieds]
 biome.3.elev.1,[The crystals grow denser],[Die Kristalle werden dichter],[Los cristales se vuelven más densos],[Les cristaux deviennent plus denses]
 biome.3.elev.2,[Light refracts through the spires],[Licht bricht sich in den Spitzen],[La luz se refracta a través de los pináculos],[La lumière se réfracte à travers les pinacles]
-HUD_LOG_MOVE_HINT,Use Arrow Keys or WASD to move,Benutze Pfeiltasten oder WASD zum Bewegen,Usa las flechas o WASD para moverte,Utilisez les flèches ou WASD pour vous déplacer
+HUD_LOG_MOVE_HINT,Use Arrow Keys or WASD to move,,,

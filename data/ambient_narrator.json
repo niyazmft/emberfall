@@ -11,51 +11,7 @@
       "event_type": "room_entered",
       "room_id": "boss_overgrown_guardian",
       "localization_key": "narrative.boss.intro",
-      "id": "run_start",
-      "event_type": "run_started",
-      "localization_key": "narrative.run.start",
-      "channel": "AMBIENT"
-    },
-    {
-      "id": "run_victory",
-      "event_type": "run_ended_victory",
-      "localization_key": "narrative.run.victory",
-      "channel": "AMBIENT"
-    },
-    {
-      "id": "run_defeat",
-      "event_type": "run_ended_defeat",
-      "localization_key": "narrative.run.defeat",
-      "channel": "AMBIENT"
-    },
-    {
-      "id": "outcome_spare",
-      "event_type": "spare",
-      "localization_key": "narrative.outcome.spare",
-      "channel": "AMBIENT"
-    },
-    {
-      "id": "outcome_execute",
-      "event_type": "execute",
-      "localization_key": "narrative.outcome.execute",
       "channel": "AMBIENT"
     }
-  ],
-  "biome_echoes": {
-    "biome1": [
-      "narrative.echo.biome1.1",
-      "narrative.echo.biome1.2",
-      "narrative.echo.biome1.3"
-    ],
-    "biome2": [
-      "narrative.echo.biome2.1",
-      "narrative.echo.biome2.2",
-      "narrative.echo.biome2.3"
-    ],
-    "biome3": [
-      "narrative.echo.biome3.1",
-      "narrative.echo.biome3.2",
-      "narrative.echo.biome3.3"
-    ]
-  }
+  ]
 }

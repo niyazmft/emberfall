@@ -42,7 +42,7 @@ func _load_translations() -> void:
 
 
 func _apply_saved_locale() -> void:
-	var locale: String = TranslationServer.get_locale()
+	var locale: String = "en"
 	if FileAccess.file_exists(SETTINGS_PATH):
 		var file: FileAccess = FileAccess.open_encrypted_with_pass(
 			SETTINGS_PATH, FileAccess.READ, _get_secure_salt()

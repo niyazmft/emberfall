@@ -384,12 +384,6 @@ func target_has_cover_against(
 	return _cover_cache[oi * TOTAL_TILES + ti]
 
 
-## Spawns a special tile (e.g., secret exit) at a valid location.
-## Stub implementation to prevent SecretRoomTrigger crashes.
-func spawn_special_tile(tile_id: String) -> void:
-	push_warning("GridSystem: spawn_special_tile('%s') called but not implemented." % tile_id)
-
-
 ## ------------------------------------------------------------------
 ## Internal — Cover cache
 ## ------------------------------------------------------------------
