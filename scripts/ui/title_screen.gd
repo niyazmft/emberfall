@@ -76,32 +76,20 @@ func _setup_focus_wrap() -> void:
 
 func _on_new_game_pressed() -> void:
 	_print_debug("New Game pressed")
-	var run_manager: _RunManager = AutoloadHelper.run_manager()
-	if run_manager != null:
-		run_manager.cmd_start_run()
-		# Delete existing save so Continue doesn't re-offer it on a fresh run
-		var save_manager: _SaveManager = AutoloadHelper.save_manager()
-		if save_manager != null:
-			save_manager.delete_save()
-	get_tree().change_scene_to_file("res://scenes/combat_room.tscn")
+	var coordinator := AutoloadHelper.game_coordinator()
+	if coordinator != null:
+		coordinator.cmd_new_game()
+	else:
+		push_error("TitleScreen: GameCoordinator not found for New Game.")
 
 
 func _on_continue_pressed() -> void:
 	_print_debug("Continue pressed")
-	var save_manager: _SaveManager = AutoloadHelper.save_manager()
-	if save_manager == null:
-		push_error("TitleScreen: SaveManager not available for Continue.")
-		return
-	var data: Dictionary = save_manager.load_game()
-	if data.is_empty():
-		push_warning("TitleScreen: Continue pressed but no valid save found.")
-		return
-	var run_manager: _RunManager = AutoloadHelper.run_manager()
-	if run_manager != null and data.has("run_state"):
-		run_manager.load_run_state(data["run_state"])
-		get_tree().change_scene_to_file("res://scenes/combat_room.tscn")
+	var coordinator := AutoloadHelper.game_coordinator()
+	if coordinator != null:
+		coordinator.cmd_continue_game()
 	else:
-		push_warning("TitleScreen: No run_state in save data.")
+		push_error("TitleScreen: GameCoordinator not found for Continue.")
 
 
 func _on_settings_pressed() -> void:

@@ -138,6 +138,11 @@ static func burden_caption_driver() -> _BurdenCaptionDriver:
 	return get_autoload("BurdenCaptionDriver") as _BurdenCaptionDriver
 
 
+## Returns the GameCoordinator autoload, or null.
+static func game_coordinator() -> _GameCoordinator:
+	return get_autoload("GameCoordinator") as _GameCoordinator
+
+
 ## Returns the BurdenEventCoordinator autoload, or null.
 static func burden_event_coordinator() -> _BurdenEventCoordinator:
 	return get_autoload("BurdenEventCoordinator") as _BurdenEventCoordinator

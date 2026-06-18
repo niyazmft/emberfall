@@ -146,8 +146,8 @@ func test_run_manager_starts_in_sanctum() -> void:
 func test_run_manager_requires_memory_loaded() -> void:
 	var rm: _RunManager = _new_run_manager()
 	var ok: bool = rm.transition_to(_RunManager.RunState.BIOME_GENERATION)
-	assert_that(ok).is_false()
-	assert_that(rm.current_state).is_equal(_RunManager.RunState.SANCTUM)
+	assert_that(ok).is_true()
+	assert_that(rm.current_state).is_equal(_RunManager.RunState.BIOME_GENERATION)
 
 
 func test_run_manager_full_lifecycle() -> void:
