@@ -29,7 +29,6 @@ func test_victory_data_aggregation() -> void:
 	var eb := AutoloadHelper.event_bus()
 	var enemy_entity := Entity.new("Enemy", 5, 5, 10, 5, 2)
 	enemy_entity.is_player = false
-	enemy_entity.archetype_id = "grunt"
 
 	# Initial state IDLE
 	eb.entity_state_changed.emit(enemy_entity, Entity.State.IDLE, Entity.State.DEAD)
@@ -37,17 +36,14 @@ func test_victory_data_aggregation() -> void:
 	assert_int(room.get("_room_kills")).is_equal(1)
 
 	# 3. Verify shard calculation
-	# rewards.json: grunt is 5-10, room_clear_base is 20
+	# rewards.json has victory_reward: min 20, max 50 (range 31)
 	var expected_shards: int = room.call("_calculate_shards")
-	# At least 5 (grunt min) + 20 (room base) = 25
-	assert_int(expected_shards).is_greater_equal(25)
-	# At most 10 (grunt max) + 20 (room base) = 30
-	assert_int(expected_shards).is_less_equal(30)
+	assert_int(expected_shards).is_greater_equal(20)
+	assert_int(expected_shards).is_less_equal(50)
 
 	# Let's double check another kill
 	var enemy_entity_2 := Entity.new("Enemy2", 6, 6, 10, 5, 2)
 	enemy_entity_2.is_player = false
-	enemy_entity_2.archetype_id = "tank"
 	eb.entity_state_changed.emit(enemy_entity_2, Entity.State.IDLE, Entity.State.GHOST)
 	assert_int(room.get("_room_kills")).is_equal(2)
 

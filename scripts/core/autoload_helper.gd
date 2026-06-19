@@ -128,6 +128,10 @@ static func audio_middleware() -> _AudioMiddleware:
 	return get_autoload("AudioMiddleware") as _AudioMiddleware
 
 
+static func audio_sfx_manager() -> _AudioSFXManager:
+	return get_autoload("AudioSFXManager") as _AudioSFXManager
+
+
 ## Returns the AbilityManager autoload, or null.
 static func ability_manager() -> _AbilityManager:
 	return get_autoload("AbilityManager") as _AbilityManager

@@ -62,11 +62,15 @@ func _apply_safe_area() -> void:
 
 func _show_settings() -> void:
 	_settings_panel.show()
-	FocusManager.set_initial_focus(_settings_panel)
+	var fm: _FocusManager = AutoloadHelper.focus_manager()
+	if fm:
+		fm.set_initial_focus(_settings_panel)
 
 
 func _on_settings_back() -> void:
-	if _pause_menu.visible:
-		FocusManager.set_initial_focus(_pause_menu)
-	elif _main_menu.visible:
-		FocusManager.set_initial_focus(_main_menu)
+	var fm: _FocusManager = AutoloadHelper.focus_manager()
+	if fm:
+		if _pause_menu.visible:
+			fm.set_initial_focus(_pause_menu)
+		elif _main_menu.visible:
+			fm.set_initial_focus(_main_menu)

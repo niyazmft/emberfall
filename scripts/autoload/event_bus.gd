@@ -13,6 +13,9 @@
 class_name _EventBus
 extends Node
 
+## Fired when a system requests a sound effect
+signal sfx_requested(sfx_name: String)
+
 # ── EntityLifecycle ──────────────────────────────────────────────────────────
 
 ## Fired when an entity transitions between gameplay states.

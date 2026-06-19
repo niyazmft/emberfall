@@ -1,48 +1,54 @@
-keys,en,es
-MENU_NEW_RUN,New Run,Nueva Partida
-MENU_CONTINUE,Continue,Continuar
-MENU_SETTINGS,Settings,Ajustes
-MENU_QUIT,Quit,Salir
-MENU_TITLE,Emberfall,Emberfall
-PAUSE_RESUME,Resume,Reanudar
-PAUSE_RESTART,Restart Room,Reiniciar Sala
-PAUSE_SETTINGS,Settings,Ajustes
-PAUSE_QUIT_SANCTUM,Quit to Sanctum,Salir al Santuario
-SETTINGS_AUDIO,Audio,Audio
-SETTINGS_VIDEO,Video,Video
-SETTINGS_ACCESSIBILITY,Accessibility,Accesibilidad
-SETTINGS_CONTROLS,Controls,Controles
-SETTINGS_MASTER_VOL,Master Volume,Volumen Maestro
-SETTINGS_MUSIC_VOL,Music Volume,Volumen de Música
-SETTINGS_SFX_VOL,SFX Volume,Volumen de SFX
-SETTINGS_MUTE,Mute All,Silenciar Todo
-SETTINGS_FULLSCREEN,Fullscreen,Pantalla Completa
-SETTINGS_RESOLUTION,Resolution,Resolución
-SETTINGS_VSYNC,VSync,Sincronización Vertical
-SETTINGS_APPLY,Apply Video Settings,Aplicar Ajustes de Video
-SETTINGS_RESET_DEFAULTS,Reset to Defaults,Restablecer Valores
-SETTINGS_SCREEN_SHAKE,Screen Shake,Temblor de Pantalla
-SETTINGS_CVD_SIM,CVD Simulation,Simulación de CVD
-CVD_NONE,None,Ninguno
-CVD_PROTANOPIA,Protanopia,Protanopía
-CVD_DEUTERANOPIA,Deuteranopia,Deuteranopía
-CVD_TRITANOPIA,Tritanopia,Tritanopía
-SETTINGS_INPUT_HINTS,Input Hints,Sugerencias de Entrada
-OPTION_AUTO,Auto,Auto
-OPTION_KBM,Keyboard & Mouse,Teclado y Ratón
-OPTION_GP,Gamepad,Mando
-HINT_SELECT_KBM,[Enter] Select,[Enter] Seleccionar
-HINT_SELECT_GP,[A] Select,[A] Seleccionar
-HINT_BACK_KBM,[Esc] Back,[Esc] Atrás
-HINT_BACK_GP,[B] Back,[B] Atrás
-MENU_BACK,Back,Atrás
-SETTINGS_SETTINGS,Settings,Ajustes
-PAUSED,Paused,Pausado
-CONFIRM_QUIT_TITLE,Quit Game?,¿Salir del Juego?
-CONFIRM_QUIT_BODY,"Are you sure you want to quit the game? Any unsaved progress will be lost.","¿Estás seguro de que quieres salir del juego? Se perderá cualquier progreso no guardado."
-CONFIRM_RETURN_TITLE,Return to Sanctum?,¿Volver al Santuario?
-CONFIRM_RETURN_BODY,"Are you sure you want to return to the Sanctum? Current room progress will be lost.","¿Estás seguro de que quieres volver al Santuario? Se perderá el progreso de la sala actual."
-CONFIRM_RESET_TITLE,Reset Controls?,¿Restablecer Controles?
-CONFIRM_RESET_BODY,Are you sure you want to reset all controls to their default bindings?,¿Estás seguro de que quieres restablecer todos los controles a sus asignaciones predeterminadas?
-CONFIRM_RESET_SETTINGS_TITLE,Reset Settings?,¿Restablecer Ajustes?
-CONFIRM_RESET_SETTINGS_BODY,"Are you sure you want to reset ALL settings (audio, video, accessibility, controls) to their default values?","¿Estás seguro de que quieres restablecer TODOS los ajustes (audio, video, accesibilidad, controles) a sus valores predeterminados?"
+keys,en
+MENU_NEW_RUN,New Run
+MENU_CONTINUE,Continue
+MENU_SETTINGS,Settings
+MENU_QUIT,Quit
+MENU_TITLE,Emberfall
+PAUSE_RESUME,Resume
+PAUSE_RESTART,Restart Room
+PAUSE_SETTINGS,Settings
+PAUSE_QUIT_SANCTUM,Quit to Sanctum
+SETTINGS_AUDIO,Audio
+SETTINGS_VIDEO,Video
+SETTINGS_ACCESSIBILITY,Accessibility
+SETTINGS_CONTROLS,Controls
+SETTINGS_MASTER_VOL,Master Volume
+SETTINGS_MUSIC_VOL,Music Volume
+SETTINGS_SFX_VOL,SFX Volume
+SETTINGS_MUTE,Mute All
+SETTINGS_FULLSCREEN,Fullscreen
+SETTINGS_RESOLUTION,Resolution
+SETTINGS_VSYNC,VSync
+SETTINGS_APPLY,Apply Video Settings
+SETTINGS_RESET_DEFAULTS,Reset to Defaults
+SETTINGS_SCREEN_SHAKE,Screen Shake
+SETTINGS_CVD_SIM,CVD Simulation
+CVD_NONE,None
+CVD_PROTANOPIA,Protanopia
+CVD_DEUTERANOPIA,Deuteranopia
+CVD_TRITANOPIA,Tritanopia
+SETTINGS_INPUT_HINTS,Input Hints
+OPTION_AUTO,Auto
+OPTION_KBM,Keyboard & Mouse
+OPTION_GP,Gamepad
+HINT_SELECT_KBM,[Enter] Select
+HINT_SELECT_GP,[A] Select
+HINT_BACK_KBM,[Esc] Back
+HINT_BACK_GP,[B] Back
+MENU_BACK,Back
+SETTINGS_SETTINGS,Settings
+PAUSED,Paused
+CONFIRM_QUIT_TITLE,Quit Game?
+CONFIRM_QUIT_BODY,Are you sure you want to quit the game? Any unsaved progress will be lost.
+CONFIRM_RETURN_TITLE,Return to Sanctum?
+CONFIRM_RETURN_BODY,Are you sure you want to return to the Sanctum? Current room progress will be lost.
+CONFIRM_RESET_TITLE,Reset Controls?
+CONFIRM_RESET_BODY,Are you sure you want to reset all controls to their default bindings?
+CONFIRM_RESET_SETTINGS_TITLE,Reset Settings?
+CONFIRM_RESET_SETTINGS_BODY,Are you sure you want to reset ALL settings (audio, video, accessibility, controls) to their default values?
+narrative.boss.intro,The Overgrown Guardian awakens. Its stony limbs creaking with ancient power.
+narrative.boss.reinforcements,Vines writhe beneath the soil as reinforcements emerge!
+HUD_VICTORY_CONTINUE,Continue
+HUD_SUMMARY_TURNS,Turns: %d
+HUD_SUMMARY_KILLS,Kills: %d
+HUD_SUMMARY_SHARDS,Shards: %d

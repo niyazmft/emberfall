@@ -34,16 +34,36 @@ func cmd_continue_game() -> void:
 		return
 
 	var run_manager := AutoloadHelper.run_manager()
-	if run_manager != null and data.has("run_state"):
+	if (
+		run_manager != null
+		and data.has("run_state")
+		and typeof(data["run_state"]) == TYPE_DICTIONARY
+	):
 		run_manager.load_run_state(data["run_state"])
 		_change_scene(COMBAT_ROOM_SCENE)
 	else:
-		push_warning("GameCoordinator: No run_state found in save data.")
+		push_warning("GameCoordinator: No valid run_state Dictionary found in save data.")
+		var tm := AutoloadHelper.toast_manager()
+		if tm:
+			tm.show_toast("Save File Corrupted!", _ToastManager.ToastType.T_04)
 
 
 func _change_scene(path: String) -> void:
+	if OS.has_feature("headless"):
+		var err := get_tree().change_scene_to_file(path)
+		if err != OK:
+			push_error("GameCoordinator: Failed to change scene to %s" % path)
+		return
+
+	var tl: Node = get_node_or_null("/root/TransitionLayer")
+	if tl and tl.has_method("fade_out"):
+		await tl.fade_out(0.4)
+
 	var tree := get_tree()
 	if tree:
 		var err := tree.change_scene_to_file(path)
 		if err != OK:
 			push_error("GameCoordinator: Failed to change scene to %s (Error %d)" % [path, err])
+
+	if tl and tl.has_method("fade_in"):
+		await tl.fade_in(0.4)

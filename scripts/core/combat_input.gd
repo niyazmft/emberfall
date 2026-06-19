@@ -180,9 +180,12 @@ func _execute_attack() -> void:
 	else:
 		target_ent.apply_damage(damage)
 
-	# Consume AP
 	var new_ap: int = DeterministicMath.clampi(player_ent.ap - cost, 0, GameConstants.AP_MAX)
 	player_ent.ap = new_ap
+
+	var eb := AutoloadHelper.event_bus()
+	if eb:
+		eb.sfx_requested.emit("attack")
 
 	attack_executed.emit(target, damage)
 	_stop_targeting()

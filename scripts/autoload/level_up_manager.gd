@@ -28,7 +28,6 @@ func _connect_signals() -> void:
 	if event_bus:
 		event_bus.spare_or_execute.connect(_on_spare_or_execute)
 		event_bus.biome_echo_triggered.connect(_on_biome_echo_triggered)
-		event_bus.combat_resolved_signal.connect(_on_combat_resolved)
 
 
 func _exit_tree() -> void:
@@ -38,8 +37,6 @@ func _exit_tree() -> void:
 			event_bus.spare_or_execute.disconnect(_on_spare_or_execute)
 		if event_bus.biome_echo_triggered.is_connected(_on_biome_echo_triggered):
 			event_bus.biome_echo_triggered.disconnect(_on_biome_echo_triggered)
-		if event_bus.combat_resolved_signal.is_connected(_on_combat_resolved):
-			event_bus.combat_resolved_signal.disconnect(_on_combat_resolved)
 
 
 func grant_experience(entity: Entity, amount: int, reason: String = "") -> void:
@@ -100,18 +97,8 @@ func _apply_level_up(entity: Entity, new_level: int) -> void:
 func _on_spare_or_execute(entity: Entity, was_spared: bool) -> void:
 	# entity here is the enemy
 	var archetype: String = entity.archetype_id
-	var config_loader: _ConfigLoader = AutoloadHelper.config_loader()
-	var enemy_rewards: Dictionary = {}
-	if config_loader:
-		enemy_rewards = config_loader.getValue("rewards", "enemy_rewards", {})
-
-	var base_xp: int = 10
-	if enemy_rewards.has(archetype):
-		base_xp = int(enemy_rewards[archetype].get("xp", 10))
-	else:
-		# Fallback to xp_economy if not in rewards
-		var enemy_xp_map: Dictionary = _xp_economy_config.get("enemy_xp", {})
-		base_xp = int(enemy_xp_map.get(archetype, 10))
+	var enemy_xp_map: Dictionary = _xp_economy_config.get("enemy_xp", {})
+	var base_xp: int = int(enemy_xp_map.get(archetype, 10))
 
 	var player: Entity = _get_player_entity()
 	if not player:
@@ -143,33 +130,6 @@ func _on_biome_echo_triggered(_biome_index: int) -> void:
 	if player:
 		var bonus: int = int(_xp_economy_config.get("biome_clear_bonus", 100))
 		grant_experience(player, bonus, "biome_clear")
-
-
-func _on_combat_resolved(_room_index: int) -> void:
-	var player: Entity = _get_player_entity()
-	if not player:
-		return
-
-	var config_loader: _ConfigLoader = AutoloadHelper.config_loader()
-	if not config_loader:
-		return
-
-	var room_reward_config: Dictionary = config_loader.getValue("rewards", "room_clear_reward", {})
-	if room_reward_config.is_empty():
-		return
-
-	var rm: _RunManager = AutoloadHelper.run_manager()
-	if not rm:
-		return
-
-	var room_data: Dictionary = rm.get_current_room_data()
-	var room_in_biome_idx: int = int(room_data.get("room_in_biome", 0))
-
-	var base_xp: int = int(room_reward_config.get("xp_base", 50))
-	var scale_xp: int = int(room_reward_config.get("xp_scale", 10))
-	var final_xp: int = base_xp + (room_in_biome_idx * scale_xp)
-
-	grant_experience(player, final_xp, "room_clear")
 
 
 func _evaluate_formula(formula: String, context: Dictionary) -> int:

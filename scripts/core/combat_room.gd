@@ -8,6 +8,7 @@ extends Node2D
 
 const VICTORY_MODAL_SCENE_PATH: String = "res://scenes/ui/victory_modal.tscn"
 const DEFEAT_MODAL_SCENE_PATH: String = "res://scenes/ui/defeat_modal.tscn"
+const TURN_BANNER_SCENE_PATH: String = "res://scenes/ui/turn_banner.tscn"
 
 @export var test_mode: bool = true  # Spawn test enemies
 
@@ -17,8 +18,9 @@ var _enemies_node: Node2D
 var _combat_input: CombatInput
 var _turn_manager: TurnManager
 var _room_kills: int = 0
-var _killed_entities: Array[Dictionary] = []
 var _current_room_data: Dictionary = {}
+var _boss_entity: Entity = null
+var _reinforcements_spawned: bool = false
 
 @onready var grid_renderer: GridRenderer = $GridRenderer
 @onready var entity_container: Node2D = $EntityContainer
@@ -32,7 +34,8 @@ func _ready() -> void:
 
 	var run_manager := AutoloadHelper.run_manager()
 	if run_manager:
-		run_manager.room_entered.connect(_on_room_entered)
+		if not run_manager.room_entered.is_connected(_on_room_entered):
+			run_manager.room_entered.connect(_on_room_entered)
 		# If we are already in a room, trigger it manually
 		if run_manager.current_state == _RunManager.RunState.ROOM:
 			_on_room_entered(run_manager.room_index, run_manager.get_current_room_data())
@@ -41,19 +44,10 @@ func _ready() -> void:
 
 	var eb := AutoloadHelper.event_bus()
 	if eb:
-		eb.entity_state_changed.connect(_on_entity_state_changed)
+		if not eb.entity_state_changed.is_connected(_on_entity_state_changed):
+			eb.entity_state_changed.connect(_on_entity_state_changed)
 
 	_setup_camera()
-
-
-func _exit_tree() -> void:
-	var run_manager := AutoloadHelper.run_manager()
-	if run_manager and run_manager.room_entered.is_connected(_on_room_entered):
-		run_manager.room_entered.disconnect(_on_room_entered)
-
-	var eb := AutoloadHelper.event_bus()
-	if eb and eb.entity_state_changed.is_connected(_on_entity_state_changed):
-		eb.entity_state_changed.disconnect(_on_entity_state_changed)
 
 
 func _on_room_entered(p_room_index: int, room_data: Dictionary) -> void:
@@ -63,19 +57,32 @@ func _on_room_entered(p_room_index: int, room_data: Dictionary) -> void:
 		)
 	_current_room_data = room_data
 	_room_kills = 0
-	_killed_entities.clear()
 
 	# Clear existing entities if any
 	for child: Node in entity_container.get_children():
+		entity_container.remove_child(child)
 		child.queue_free()
 
 	_create_enemies_node()
+
+	if _boss_entity and _boss_entity.hp_changed.is_connected(_on_boss_hp_changed):
+		_boss_entity.hp_changed.disconnect(_on_boss_hp_changed)
 
 	# Configure grid
 	RoomLoader.configure_grid(room_data)
 
 	# Spawn entities
 	_player = RoomLoader.spawn_entities(room_data, entity_container, _enemies_node)
+
+	# Boss and reinforcements setup
+	_boss_entity = null
+	_reinforcements_spawned = false
+	for child in _enemies_node.get_children():
+		var e := CombatEntity.get_entity(child)
+		if e and e.archetype_id == "overgrown_guardian":
+			_boss_entity = e
+			_boss_entity.hp_changed.connect(_on_boss_hp_changed)
+			break
 
 	# Setup combat systems
 	if _combat_input:
@@ -102,6 +109,11 @@ func _setup_hud() -> void:
 			combat_hud.setup(player_entity, _turn_manager, _combat_input)
 			if not combat_hud.move_pressed.is_connected(_on_hud_move_pressed):
 				combat_hud.move_pressed.connect(_on_hud_move_pressed)
+
+	var turn_banner_scene := load(TURN_BANNER_SCENE_PATH) as PackedScene
+	if turn_banner_scene:
+		var turn_banner := turn_banner_scene.instantiate()
+		ui_overlay.add_child(turn_banner)
 
 
 func _setup_turn_manager() -> void:
@@ -209,9 +221,73 @@ func _on_hud_move_pressed() -> void:
 
 func _on_combat_ended(victory: bool) -> void:
 	if victory:
-		_showVictoryModal()
+		if _boss_entity and _boss_entity.archetype_id == "overgrown_guardian":
+			var rm := AutoloadHelper.run_manager()
+			if rm:
+				rm.cmd_final_encounter_won()
+		_show_victory_modal()
 	else:
-		_showDefeatModal()
+		_show_defeat_modal()
+
+
+func _on_boss_hp_changed(new_hp: int, _old_hp: int) -> void:
+	if _boss_entity == null or _reinforcements_spawned:
+		return
+
+	if float(new_hp) / float(_boss_entity.hp_max) <= 0.5:
+		_reinforcements_spawned = true
+		_spawn_reinforcements()
+
+
+func _spawn_reinforcements() -> void:
+	if not _current_room_data.has("reinforcements"):
+		return
+
+	var an := AutoloadHelper.ambient_narrator()
+	if an:
+		an.trigger_narrative("narrative.boss.reinforcements")
+
+	var reinforcements: Array = _current_room_data["reinforcements"] as Array
+	for encounter: Variant in reinforcements:
+		if encounter is Dictionary:
+			var enc := encounter as Dictionary
+			var enemy_type: String = enc.get("enemy_type", "grunt")
+			var positions: Array = enc.get("positions", []) as Array
+
+			var enemy_scene: PackedScene = RoomLoader.ENEMY_SCENES.get(
+				enemy_type, RoomLoader.ENEMY_SCENES["grunt"]
+			)
+			if enemy_scene == null:
+				continue
+
+			for pos_data: Variant in positions:
+				if not pos_data is Dictionary:
+					continue
+				var d := pos_data as Dictionary
+				var x: int = int(d.get("x", 0))
+				var y: int = int(d.get("y", 0))
+
+				var enemy := enemy_scene.instantiate() as Node2D
+				if "archetype_id" in enemy:
+					var arch_override: String = enc.get("archetype_override", "")
+					if not arch_override.is_empty():
+						enemy.set("archetype_id", arch_override)
+					else:
+						enemy.set("archetype_id", enemy_type)
+
+				if "elite_type" in enemy:
+					enemy.set("elite_type", enc.get("elite_type", ""))
+
+				if "behavior_override" in enemy:
+					enemy.set("behavior_override", enc.get("behavior_override", ""))
+
+				_enemies_node.add_child(enemy)
+
+				var entity: Entity = CombatEntity.get_entity(enemy)
+				if entity:
+					entity.set_grid_position(x, y)
+					if _turn_manager:
+						_turn_manager.add_enemy(enemy)
 
 
 func _on_entity_state_changed(
@@ -223,25 +299,6 @@ func _on_entity_state_changed(
 
 	if not entity.is_player and was_alive and is_now_dead:
 		_room_kills += 1
-		if not entity.archetype_id.is_empty():
-			var is_elite: bool = false
-
-			# Find the node associated with this entity to check for elite status
-			if is_instance_valid(_enemies_node):
-				for child in _enemies_node.get_children():
-					if child is CombatEntity and child.entity == entity:
-						if child is BaseEnemy:
-							is_elite = not child.elite_type.is_empty()
-						break
-
-			_killed_entities.append(
-				{
-					"archetype": entity.archetype_id,
-					"is_elite": is_elite,
-					"is_boss":
-					entity.archetype_id == "boss" or entity.archetype_id == "overgrown_guardian"
-				}
-			)
 
 
 func _calculate_shards() -> int:
@@ -249,49 +306,17 @@ func _calculate_shards() -> int:
 	if not config:
 		return 0
 
-	var rewards_config: Dictionary = config.getValue("rewards", "", {})
-	var enemy_rewards: Dictionary = rewards_config.get("enemy_rewards", {})
-	var room_reward_config: Dictionary = rewards_config.get("room_clear_reward", {})
-	var elite_mult: float = float(rewards_config.get("elite_bonus_mult", 1.5))
-	var boss_mult: float = float(rewards_config.get("boss_bonus_mult", 3.0))
+	var rewards: Dictionary = config.getValue("rewards", "victory_reward", {})
+	var min_shards: int = int(rewards.get("shards_min", 20))
+	var max_shards: int = int(rewards.get("shards_max", 50))
+	var shard_range: int = max_shards - min_shards + 1
 
-	var total_shards: int = 0
 	var enc_seed: int = int(_current_room_data.get("encounter_seed", 0))
-	var i: int = 0
-
-	# 1. Sum up per-enemy rewards
-	for kill_data in _killed_entities:
-		var archetype: String = kill_data["archetype"]
-		var min_s: int = 5
-		var max_s: int = 10
-		if enemy_rewards.has(archetype):
-			var data: Dictionary = enemy_rewards[archetype]
-			min_s = int(data.get("shards_min", 5))
-			max_s = int(data.get("shards_max", 10))
-
-		var shard_range: int = max_s - min_s + 1
-		var salt: String = "ENEMY_SHARDS_" + str(i)
-		var base_roll: int = min_s + SeedGovernance.modulo_from_seed(enc_seed, salt, shard_range)
-
-		var final_val: float = float(base_roll)
-		if kill_data["is_boss"]:
-			final_val *= boss_mult
-		elif kill_data["is_elite"]:
-			final_val *= elite_mult
-
-		total_shards += DeterministicMath.floori(final_val)
-		i += 1
-
-	# 2. Add room clear bonus with scaling
-	var room_idx: int = int(_current_room_data.get("room_in_biome", 0))
-	var base_bonus: int = int(room_reward_config.get("shards_base", 20))
-	var scale_bonus: int = int(room_reward_config.get("shards_scale", 5))
-	total_shards += base_bonus + (room_idx * scale_bonus)
-
-	return total_shards
+	var bonus: int = SeedGovernance.modulo_from_seed(enc_seed, "VICTORY_SHARDS", shard_range)
+	return min_shards + bonus
 
 
-func _showVictoryModal() -> void:
+func _show_victory_modal() -> void:
 	var scene: PackedScene = load(VICTORY_MODAL_SCENE_PATH)
 	if scene:
 		var modal := scene.instantiate() as _VictoryModal
@@ -305,7 +330,7 @@ func _showVictoryModal() -> void:
 			modal.setup(summary)
 
 
-func _showDefeatModal() -> void:
+func _show_defeat_modal() -> void:
 	var scene: PackedScene = load(DEFEAT_MODAL_SCENE_PATH)
 	if scene:
 		var modal := scene.instantiate() as _DefeatModal

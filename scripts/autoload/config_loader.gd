@@ -201,10 +201,8 @@ func getString(key: String, fallback: String = "") -> String:
 
 
 func isLoaded() -> bool:
-	for path: String in _loadedFiles:
-		if not _loadedFiles[path]:
-			return false
-	return true
+	# Only fail if the core gameplay config is missing
+	return _loadedFiles.get(CONFIG_PATH, false)
 
 
 func _validateGridVisuals() -> void:
