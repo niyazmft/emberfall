@@ -1,6 +1,6 @@
 {
   "id": "boss_overgrown_guardian",
-  "biome": "biome1",
+  "biome": 2,
   "size": {
     "width": 12,
     "height": 12

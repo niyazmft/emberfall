@@ -85,7 +85,8 @@
         "room_biome3_09",
         "room_biome3_10",
         "room_biome3_11",
-        "room_biome3_12"
+        "room_biome3_12",
+        "boss_overgrown_guardian"
       ],
       "generation_params": {
         "cover_density": 0.1,

@@ -53,7 +53,7 @@ func _on_room_entered(room_index: int, room_data: Dictionary) -> void:
 					trigger_narrative(loc_key)
 
 	# 2. Trigger initial elevation flavor
-	var biome_id: String = room_data.get("biome_id", "biome1")
+	var biome_id: String = "biome%d" % (int(room_data.get("biome", 0)) + 1)
 	# In Emberfall, player typically starts at a certain elevation,
 	# but we'll assume elevation 0 for the initial flavor trigger or get it from player.
 	trigger_elevation_flavor(biome_id, 0)

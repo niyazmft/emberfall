@@ -11,7 +11,8 @@ const ENEMY_SCENES := {
 	"archer": preload("res://scenes/enemies/enemy_archer.tscn"),
 	"tank": preload("res://scenes/enemies/enemy_tank.tscn"),
 	"mage": preload("res://scenes/enemies/enemy_mage.tscn"),
-	"boss": preload("res://scenes/enemies/enemy_boss.tscn")
+	"boss": preload("res://scenes/enemies/enemy_boss.tscn"),
+	"overgrown_guardian": preload("res://scenes/enemies/enemy_boss.tscn")
 }
 
 
