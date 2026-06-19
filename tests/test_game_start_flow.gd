@@ -6,6 +6,9 @@ const TITLE_SCREEN_SCENE := "res://scenes/title_screen.tscn"
 
 
 func after_test() -> void:
+	var current_scene := get_tree().current_scene
+	if is_instance_valid(current_scene):
+		current_scene.queue_free()
 	var run_manager := AutoloadHelper.run_manager()
 	if run_manager:
 		run_manager.cmd_return_to_sanctum()
@@ -38,6 +41,12 @@ func test_new_game_flow() -> void:
 
 	# Verify current scene
 	var current_scene := get_tree().current_scene
+	for i in 10:
+		if current_scene != null:
+			break
+		await get_tree().create_timer(0.05).timeout
+		current_scene = get_tree().current_scene
+
 	assert_that(current_scene).is_not_null()
 	# In some cases name might have @ symbols if instantiated multiple times,
 	# but it should contain CombatRoom or be a CombatRoom instance
