@@ -8,6 +8,7 @@ extends Node2D
 
 const VICTORY_MODAL_SCENE_PATH: String = "res://scenes/ui/victory_modal.tscn"
 const DEFEAT_MODAL_SCENE_PATH: String = "res://scenes/ui/defeat_modal.tscn"
+const TURN_BANNER_SCENE_PATH: String = "res://scenes/ui/turn_banner.tscn"
 
 @export var test_mode: bool = true  # Spawn test enemies
 
@@ -33,7 +34,8 @@ func _ready() -> void:
 
 	var run_manager := AutoloadHelper.run_manager()
 	if run_manager:
-		run_manager.room_entered.connect(_on_room_entered)
+		if not run_manager.room_entered.is_connected(_on_room_entered):
+			run_manager.room_entered.connect(_on_room_entered)
 		# If we are already in a room, trigger it manually
 		if run_manager.current_state == _RunManager.RunState.ROOM:
 			_on_room_entered(run_manager.room_index, run_manager.get_current_room_data())
@@ -42,22 +44,10 @@ func _ready() -> void:
 
 	var eb := AutoloadHelper.event_bus()
 	if eb:
-		eb.entity_state_changed.connect(_on_entity_state_changed)
+		if not eb.entity_state_changed.is_connected(_on_entity_state_changed):
+			eb.entity_state_changed.connect(_on_entity_state_changed)
 
 	_setup_camera()
-
-
-func _exit_tree() -> void:
-	var run_manager := AutoloadHelper.run_manager()
-	if run_manager and run_manager.room_entered.is_connected(_on_room_entered):
-		run_manager.room_entered.disconnect(_on_room_entered)
-
-	if _boss_entity and _boss_entity.hp_changed.is_connected(_on_boss_hp_changed):
-		_boss_entity.hp_changed.disconnect(_on_boss_hp_changed)
-
-	var eb := AutoloadHelper.event_bus()
-	if eb and eb.entity_state_changed.is_connected(_on_entity_state_changed):
-		eb.entity_state_changed.disconnect(_on_entity_state_changed)
 
 
 func _on_room_entered(p_room_index: int, room_data: Dictionary) -> void:
@@ -70,6 +60,7 @@ func _on_room_entered(p_room_index: int, room_data: Dictionary) -> void:
 
 	# Clear existing entities if any
 	for child: Node in entity_container.get_children():
+		entity_container.remove_child(child)
 		child.queue_free()
 
 	_create_enemies_node()
@@ -118,6 +109,11 @@ func _setup_hud() -> void:
 			combat_hud.setup(player_entity, _turn_manager, _combat_input)
 			if not combat_hud.move_pressed.is_connected(_on_hud_move_pressed):
 				combat_hud.move_pressed.connect(_on_hud_move_pressed)
+
+	var turn_banner_scene := load(TURN_BANNER_SCENE_PATH) as PackedScene
+	if turn_banner_scene:
+		var turn_banner := turn_banner_scene.instantiate()
+		ui_overlay.add_child(turn_banner)
 
 
 func _setup_turn_manager() -> void:

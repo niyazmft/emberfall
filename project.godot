@@ -39,6 +39,8 @@ gdscript/warnings/unsafe_call_argument=1
 
 [autoload]
 
+TransitionLayer="*res://scripts/autoload/transition_layer.gd"
+AudioSFXManager="*res://scripts/autoload/audio_sfx_manager.gd"
 GameCoordinator="*res://scripts/autoload/game_coordinator.gd"
 EventBus="*res://scripts/autoload/event_bus.gd"
 SafeZoneManager="*res://scripts/autoload/safe_zone_manager.gd"

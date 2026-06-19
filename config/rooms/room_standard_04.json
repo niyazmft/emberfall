@@ -1,6 +1,6 @@
 {
   "id": "room_standard_04",
-  "biome": "sanctum",
+  "biome": 0,
   "size": {
     "width": 12,
     "height": 12

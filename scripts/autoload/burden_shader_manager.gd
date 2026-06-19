@@ -17,18 +17,17 @@ func _ready() -> void:
 	_allocate_static_pool()
 	_setup_global_parameters()
 
-	if BurdenManager:
-		BurdenManager.burden_active_changed.connect(_on_burden_active_changed)
+	var bm: _BurdenManager = AutoloadHelper.burden_manager()
+	if bm:
+		bm.burden_active_changed.connect(_on_burden_active_changed)
 		# Initial sync
-		call_deferred("_on_burden_active_changed", BurdenManager.burden_active)
+		call_deferred("_on_burden_active_changed", bm.burden_active)
 
 
 func _exit_tree() -> void:
-	if (
-		BurdenManager
-		and BurdenManager.is_connected("burden_active_changed", _on_burden_active_changed)
-	):
-		BurdenManager.disconnect("burden_active_changed", _on_burden_active_changed)
+	var bm: _BurdenManager = AutoloadHelper.burden_manager()
+	if bm and bm.is_connected("burden_active_changed", _on_burden_active_changed):
+		bm.disconnect("burden_active_changed", _on_burden_active_changed)
 
 
 func _allocate_static_pool() -> void:
@@ -108,8 +107,9 @@ func _update_pp_visibility() -> void:
 		return
 
 	var burden_active: bool = false
-	if BurdenManager:
-		burden_active = BurdenManager.burden_active
+	var bm: _BurdenManager = AutoloadHelper.burden_manager()
+	if bm:
+		burden_active = bm.burden_active
 
 	_pp_rect.visible = burden_active or _current_cvd_mode > 0
 

@@ -85,22 +85,21 @@ func _ready() -> void:
 	state_machine = ApparitionStateMachine.new(self)
 
 	# Listen to BurdenManager for kill history changes.
-	if BurdenManager:
-		BurdenManager.kill_history_changed.connect(_on_kill_history_changed)
-		BurdenManager.burden_active_changed.connect(_on_burden_active_changed)
-
-	# Initial sync.
-	if BurdenManager:
-		_on_burden_active_changed(BurdenManager.burden_active)
+	var bm: _BurdenManager = AutoloadHelper.burden_manager()
+	if bm:
+		bm.kill_history_changed.connect(_on_kill_history_changed)
+		bm.burden_active_changed.connect(_on_burden_active_changed)
+		_on_burden_active_changed(bm.burden_active)
 	_refresh_stack()
 
 
 func _exit_tree() -> void:
-	if BurdenManager:
-		if BurdenManager.kill_history_changed.is_connected(_on_kill_history_changed):
-			BurdenManager.kill_history_changed.disconnect(_on_kill_history_changed)
-		if BurdenManager.burden_active_changed.is_connected(_on_burden_active_changed):
-			BurdenManager.burden_active_changed.disconnect(_on_burden_active_changed)
+	var bm: _BurdenManager = AutoloadHelper.burden_manager()
+	if bm:
+		if bm.kill_history_changed.is_connected(_on_kill_history_changed):
+			bm.kill_history_changed.disconnect(_on_kill_history_changed)
+		if bm.burden_active_changed.is_connected(_on_burden_active_changed):
+			bm.burden_active_changed.disconnect(_on_burden_active_changed)
 
 
 func _process(delta: float) -> void:
@@ -249,7 +248,7 @@ func bind_owner(owner_entity: Node2D) -> void:
 # ---------------------------------------------------------------------------
 
 
-func _on_kill_history_changed(_queue: Array[BurdenManager.BurdenKillRecord]) -> void:
+func _on_kill_history_changed(_queue: Array[BurdenKillRecord]) -> void:
 	_refresh_stack()
 
 
@@ -347,15 +346,16 @@ func _create_trail_sprites() -> void:
 
 
 func _refresh_stack() -> void:
-	if not BurdenManager:
+	var bm: _BurdenManager = AutoloadHelper.burden_manager()
+	if not bm:
 		return
-	var ids: PackedStringArray = BurdenManager.get_last_enemy_ids(STACK_COUNT)
+	var ids: PackedStringArray = bm.get_last_enemy_ids(STACK_COUNT)
 	_current_stack = ids
 
 	for i: int in range(STACK_COUNT):
 		var sprite: Sprite2D = _silhouette_sprites[i]
 		if i < ids.size():
-			var tex: Texture2D = BurdenManager.get_silhouette_texture(ids[i])
+			var tex: Texture2D = bm.get_silhouette_texture(ids[i])
 			if tex:
 				sprite.texture = tex
 			else:
@@ -451,14 +451,17 @@ func _update_z_index() -> void:
 
 
 func _get_placeholder_texture() -> Texture2D:
-	var cached: Texture2D = BurdenManager.get_silhouette_texture(PLACEHOLDER_ATLAS_UID)
-	if cached:
-		return cached
+	var bm: _BurdenManager = AutoloadHelper.burden_manager()
+	if bm:
+		var cached: Texture2D = bm.get_silhouette_texture(PLACEHOLDER_ATLAS_UID)
+		if cached:
+			return cached
 	# Create a procedural 64×64 silhouette placeholder (white blob).
 	var img: Image = Image.create(64, 64, false, Image.FORMAT_RGBA8)
 	img.fill(Color(1.0, 1.0, 1.0, 1.0))
 	var tex: ImageTexture = ImageTexture.create_from_image(img)
-	BurdenManager.register_silhouette(PLACEHOLDER_ATLAS_UID, tex)
+	if bm:
+		bm.register_silhouette(PLACEHOLDER_ATLAS_UID, tex)
 	return tex
 
 

@@ -32,14 +32,14 @@ var _hit_stop_remaining: int = 0
 ## Reference to the CombatRoom node (set by parent scene; NOT an autoload).
 
 ## Use export to avoid fragile /root/ lookup.
-var _combat_room: CombatRoom = null
+var _combat_room: Node = null
 
 
 func _ready() -> void:
 	if not _combat_room:
-		_combat_room = get_node_or_null("/root/CombatRoom") as CombatRoom
-	if _combat_room:
-		_grid_renderer = _combat_room.grid_renderer
+		_combat_room = get_node_or_null("/root/CombatRoom")
+	if _combat_room and "grid_renderer" in _combat_room:
+		_grid_renderer = _combat_room.get("grid_renderer")
 
 	if not _grid_renderer:
 		# Fallback: search the tree by type instead of string name
@@ -129,6 +129,9 @@ func _disconnect_entity_signals() -> void:
 func _on_entity_position_changed(x: int, y: int) -> void:
 	if _grid_renderer and entity:
 		_target_position = _grid_renderer.grid_to_world(x, y, entity.elevation)
+		var eb := AutoloadHelper.event_bus()
+		if eb:
+			eb.sfx_requested.emit("move")
 
 
 func _on_entity_elevation_changed(elevation: int) -> void:
@@ -149,6 +152,7 @@ func _on_entity_hp_changed(new_hp: int, old_hp: int) -> void:
 	if new_hp < old_hp:
 		if _apparition_renderer:
 			_apparition_renderer.trigger_damage_effect()
+		_trigger_hit_effects(old_hp - new_hp, "PHYSICAL")
 
 	if _status_bar:
 		_status_bar.update_hp(new_hp, entity.hp_max)
@@ -194,6 +198,9 @@ func _update_state_visuals(p_state: Entity.State) -> void:
 	match p_state:
 		Entity.State.DYING:
 			modulate = Color(1.0, 0.4, 0.4)
+			var eb := AutoloadHelper.event_bus()
+			if eb:
+				eb.sfx_requested.emit("death")
 		Entity.State.STUNNED:
 			modulate = Color(1.0, 1.0, 0.0)
 		Entity.State.DEAD:
@@ -220,6 +227,9 @@ func _setup_status_bar() -> void:
 
 func _trigger_hit_effects(p_damage: int, p_damage_type: String = "PHYSICAL") -> void:
 	var loader: _ConfigLoader = AutoloadHelper.config_loader()
+	var eb := AutoloadHelper.event_bus()
+	if eb:
+		eb.sfx_requested.emit("hit")
 
 	# Hit Flash
 	if loader:

@@ -99,13 +99,13 @@ static func localization_manager() -> _LocalizationManager:
 
 
 ## Returns the AmbientNarrator autoload, or null.
-static func ambient_narrator() -> AmbientNarratorAutoload:
-	return get_autoload("AmbientNarrator") as AmbientNarratorAutoload
+static func ambient_narrator() -> _AmbientNarrator:
+	return get_autoload("AmbientNarrator") as _AmbientNarrator
 
 
 ## Returns the SecretRoomTrigger autoload, or null.
-static func secret_room_trigger() -> SecretRoomTriggerAutoload:
-	return get_autoload("SecretRoomTrigger") as SecretRoomTriggerAutoload
+static func secret_room_trigger() -> _SecretRoomTrigger:
+	return get_autoload("SecretRoomTrigger") as _SecretRoomTrigger
 
 
 ## Returns the SafeZoneManager autoload, or null.
@@ -126,6 +126,10 @@ static func input_router() -> _InputRouter:
 ## Returns the AudioMiddleware autoload, or null.
 static func audio_middleware() -> _AudioMiddleware:
 	return get_autoload("AudioMiddleware") as _AudioMiddleware
+
+
+static func audio_sfx_manager() -> _AudioSFXManager:
+	return get_autoload("AudioSFXManager") as _AudioSFXManager
 
 
 ## Returns the AbilityManager autoload, or null.

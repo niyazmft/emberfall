@@ -61,28 +61,28 @@ SKILL_QUICK_DASH_NAME,Quick Dash,Schneller Spurt,Carrera Rápida,Élan Rapide
 SKILL_QUICK_DASH_DESC,Dash forward to gain distance.,Spurte vorwärts, um Distanz zu gewinnen.,Corre hacia adelante para ganar distancia.,Élancez-vous pour gagner de la distance.
 ENEMY_ARCHER_NAME,Archer,Bogenschütze,Arquero,Archer
 ENEMY_ARCHER_DESC,Ranged enemy that maintains distance.,Fernkampfgegner, der Distanz hält.,Enemigo a distancia que mantiene la distancia.,Ennemi à distance qui maintient ses distances.
-HUD_TOOLTIP_HP,HP: Current / Max health,,,
-HUD_TOOLTIP_AP,AP: Current / Max action points,,,
-HUD_TOOLTIP_MOVE,Move to a new position,,,
-HUD_TOOLTIP_ATTACK,Initiate an attack,,,
-HUD_TOOLTIP_END_TURN,End your turn,,,
-HUD_LOG_PLAYER_TURN,PLAYER TURN,,,
-HUD_LOG_ENEMY_TURN,ENEMY TURN: %s,,,
-HUD_LOG_ROUND_START,ROUND %d,,,
-HUD_LOG_SELECT_TARGET,SELECT TARGET,,,
-HUD_LOG_DAMAGE_DEALT,Dealt %d damage to %s,,,
-HUD_VICTORY_TITLE,VICTORY,,,
-HUD_DEFEAT_TITLE,DEFEAT,,,
-HUD_SUMMARY_TURNS,Turns taken: %d,,,
-HUD_SUMMARY_KILLS,Enemies defeated: %d,,,
-HUD_SUMMARY_SHARDS,Echo shards earned: %d,,,
-HUD_SUMMARY_ROOMS,Rooms cleared: %d,,,
-HUD_PLAYER_TURN,Your Turn,,,
-HUD_ENEMY_TURN,Enemy Turn: %s,,,
-HUD_ROUND_LABEL,Round %d,,,
-HUD_COMBAT_START,COMBAT START,,,
-HUD_PLAYER_TURN_BANNER,PLAYER TURN,,,
-HUD_ENEMY_TURN_BANNER,%s TURN,,,
+HUD_TOOLTIP_HP,HP: Current / Max health,HP: Aktuell / Max,HP: Actual / Máx,PV : Actuel / Max
+HUD_TOOLTIP_AP,AP: Current / Max action points,AP: Aktuell / Max,PA: Actual / Máx,PA : Actuel / Max
+HUD_TOOLTIP_MOVE,Move to a new position,Zu einer neuen Position bewegen,Mover a una nueva posición,Déplacer vers une nouvelle position
+HUD_TOOLTIP_ATTACK,Initiate an attack,Einen Angriff starten,Iniciar un ataque,Lancer une attaque
+HUD_TOOLTIP_END_TURN,End your turn,Zug beenden,Terminar turno,Fin du tour
+HUD_LOG_PLAYER_TURN,PLAYER TURN,SPIELERZUG,TURNO DEL JUGADOR,TOUR DU JOUEUR
+HUD_LOG_ENEMY_TURN,ENEMY TURN: %s,GEGNERZUG: %s,TURNO DEL ENEMIGO: %s,TOUR DE L'ENNEMI : %s
+HUD_LOG_ROUND_START,ROUND %d,RUNDE %d,RONDA %d,ROUND %d
+HUD_LOG_SELECT_TARGET,SELECT TARGET,ZIEL WÄHLEN,SELECCIONAR OBJETIVO,SÉLECTIONNER CIBLE
+HUD_LOG_DAMAGE_DEALT,Dealt %d damage to %s,%d Schaden an %s verursacht,Infligió %d de daño a %s,A infligé %d dégâts à %s
+HUD_VICTORY_TITLE,VICTORY,SIEG,VICTORIA,VICTOIRE
+HUD_DEFEAT_TITLE,DEFEAT,NIEDERLAGE,DERROTA,DÉFAITE
+HUD_SUMMARY_TURNS,Turns taken: %d,Gespielte Züge: %d,Turnos tomados: %d,Tours joués : %d
+HUD_SUMMARY_KILLS,Enemies defeated: %d,Besiegte Gegner: %d,Enemigos derrotados: %d,Ennemis vaincus : %d
+HUD_SUMMARY_SHARDS,Echo shards earned: %d,Verdiente Echosplitter: %d,Fragmentos de eco ganados: %d,Éclats d'écho gagnés : %d
+HUD_SUMMARY_ROOMS,Rooms cleared: %d,Gereinigte Räume: %d,Salas despejadas: %d,Salles nettoyées : %d
+HUD_PLAYER_TURN,Your Turn,Dein Zug,Tu Turno,Votre Tour
+HUD_ENEMY_TURN,Enemy Turn: %s,Gegnerzug: %s,Turno del Enemigo: %s,Tour de l'Ennemi : %s
+HUD_ROUND_LABEL,Round %d,Runde %d,Ronda %d,Round %d
+HUD_COMBAT_START,COMBAT START,KAMPFBEGINN,INICIO DE COMBATE,DÉBUT DU COMBAT
+HUD_PLAYER_TURN_BANNER,PLAYER TURN,SPIELERZUG,TURNO DEL JUGADOR,TOUR DU JOUEUR
+HUD_ENEMY_TURN_BANNER,%s TURN,%s ZUG,TURNO %s,TOUR %s
 SETTINGS_HELP_MASTER_VOL,Adjust the overall volume of the game.,Gesamtlautstärke des Spiels anpassen.,Ajustar el volumen general del juego.,Ajuster le volume global du jeu.
 SETTINGS_HELP_MUSIC_VOL,Adjust the volume of the background music.,Hintergrundmusik-Lautstärke anpassen.,Ajustar el volumen de la música de fondo.,Ajuster le volume de la musique de fond.
 SETTINGS_HELP_SFX_VOL,Adjust the volume of sound effects.,Effektlautstärke anpassen.,Ajustar el volumen de los efectos de sonido.,Ajuster le volume des effets sonores.
@@ -115,4 +115,4 @@ biome.3.name,Crystal Spires,Kristallspitzen,Pináculos de Cristal,Pinacles de Cr
 biome.3.elev.0,[Shimmering shards underfoot],[Schimmernde Scherben unter den Füßen],[Fragmentos brillantes bajo tus pies],[Éclats chatoyants sous vos pieds]
 biome.3.elev.1,[The crystals grow denser],[Die Kristalle werden dichter],[Los cristales se vuelven más densos],[Les cristaux deviennent plus denses]
 biome.3.elev.2,[Light refracts through the spires],[Licht bricht sich in den Spitzen],[La luz se refracta a través de los pináculos],[La lumière se réfracte à travers les pinacles]
-HUD_LOG_MOVE_HINT,Use Arrow Keys or WASD to move,,,
+HUD_LOG_MOVE_HINT,Use Arrow Keys or WASD to move,Pfeiltasten oder WASD zum Bewegen nutzen,Usa las flechas o WASD para moverte,Utilisez les flèches ou WASD pour vous déplacer

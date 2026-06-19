@@ -1,4 +1,4 @@
-class_name AmbientNarratorAutoload
+class_name _AmbientNarrator
 extends Node
 
 ## AmbientNarrator
@@ -46,7 +46,7 @@ func _on_room_entered(_room_index: int, _room_data: Dictionary) -> void:
 					trigger_narrative(loc_key)
 
 	# 2. Trigger initial elevation flavor
-	var biome_id: String = _room_data.get("biome_id", "biome_1")
+	var biome_id: String = "biome%d" % (int(_room_data.get("biome", 0)) + 1)
 	# In Emberfall, player typically starts at a certain elevation,
 	# but we'll assume elevation 0 for the initial flavor trigger or get it from player.
 	trigger_elevation_flavor(biome_id, 0)

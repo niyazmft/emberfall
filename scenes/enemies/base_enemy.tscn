@@ -1,20 +1,20 @@
-[gd_scene load_steps=6 format=3 uid="uid://l4bgdwl6oilfx"]
+[gd_scene load_steps=6 format=3 uid="uid://base_enemy_001"]
 
-[ext_resource type="Script" path="res://scripts/entities/base_enemy.gd" id="1"]
-[ext_resource type="Script" path="res://scripts/visual/entity_visual_proxy.gd" id="2"]
-[ext_resource type="Script" path="res://scripts/entities/apparition_renderer.gd" id="3"]
-[ext_resource type="Script" path="res://scripts/ai/simple_ai.gd" id="4"]
+[ext_resource type="Script" path="res://scripts/entities/base_enemy.gd" id="1_base_enemy"]
+[ext_resource type="Script" path="res://scripts/visual/entity_visual_proxy.gd" id="2_visual_proxy"]
+[ext_resource type="Script" path="res://scripts/entities/apparition_renderer.gd" id="3_apparition"]
+[ext_resource type="Script" path="res://scripts/ai/simple_ai.gd" id="4_simple_ai"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_1"]
 radius = 8.0
 
 [node name="BaseEnemy" type="Node2D" node_paths=PackedStringArray("ai_controller", "visual_proxy")]
-script = ExtResource(1)
+script = ExtResource("1_base_enemy")
 ai_controller = NodePath("SimpleAI")
 visual_proxy = NodePath("EntityVisualProxy")
 
 [node name="EntityVisualProxy" type="Node2D" parent="." node_paths=PackedStringArray("base_sprite", "shadow_sprite", "height_indicator")]
-script = ExtResource(2)
+script = ExtResource("2_visual_proxy")
 base_sprite = NodePath("BaseSprite")
 shadow_sprite = NodePath("ShadowSprite")
 height_indicator = NodePath("HeightIndicator")
@@ -33,7 +33,7 @@ offset_bottom = 6.0
 shape = SubResource("CircleShape2D_1")
 
 [node name="ApparitionRenderer" type="Node2D" parent="."]
-script = ExtResource(3)
+script = ExtResource("3_apparition")
 
 [node name="SimpleAI" type="Node" parent="."]
-script = ExtResource(4)
+script = ExtResource("4_simple_ai")

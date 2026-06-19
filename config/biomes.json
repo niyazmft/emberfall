@@ -10,18 +10,12 @@
         "2": "biome.1.elev.2"
       },
       "room_templates": [
-        "room_biome1_01",
-        "room_biome1_02",
-        "room_biome1_03",
-        "room_biome1_04",
-        "room_biome1_05",
         "room_biome1_06",
         "room_biome1_07",
         "room_biome1_08",
         "room_biome1_09",
         "room_biome1_10",
-        "room_biome1_11",
-        "room_biome1_12"
+        "room_biome1_11"
       ],
       "generation_params": {
         "cover_density": 0.15,
@@ -42,15 +36,7 @@
         "2": "biome.2.elev.2"
       },
       "room_templates": [
-        "room_biome2_01",
-        "room_biome2_02",
         "room_biome2_03",
-        "room_biome2_04",
-        "room_biome2_05",
-        "room_biome2_06",
-        "room_biome2_07",
-        "room_biome2_08",
-        "room_biome2_09",
         "room_biome2_10",
         "room_biome2_11",
         "room_biome2_12"
@@ -74,18 +60,11 @@
         "2": "biome.3.elev.2"
       },
       "room_templates": [
-        "room_biome3_01",
-        "room_biome3_02",
-        "room_biome3_03",
-        "room_biome3_04",
         "room_biome3_05",
         "room_biome3_06",
         "room_biome3_07",
-        "room_biome3_08",
         "room_biome3_09",
-        "room_biome3_10",
-        "room_biome3_11",
-        "room_biome3_12"
+        "boss_overgrown_guardian"
       ],
       "generation_params": {
         "cover_density": 0.1,

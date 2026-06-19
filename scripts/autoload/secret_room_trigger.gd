@@ -1,4 +1,4 @@
-class_name SecretRoomTriggerAutoload
+class_name _SecretRoomTrigger
 extends Node
 
 ## SecretRoomTrigger
@@ -94,7 +94,7 @@ func _unlock_secret(cond: Dictionary) -> void:
 
 	# Narrative feedback
 	if not flavor_key.is_empty():
-		var an: AmbientNarratorAutoload = AutoloadHelper.ambient_narrator()
+		var an: _AmbientNarrator = AutoloadHelper.ambient_narrator()
 		if an:
 			an.trigger_narrative(flavor_key)
 

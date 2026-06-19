@@ -62,7 +62,9 @@ func add_modal(modal: Node) -> void:
 	add_child(modal)
 
 	if modal is Control:
-		FocusManager.push_modal_focus(modal as Control)
+		var fm: _FocusManager = AutoloadHelper.focus_manager()
+		if fm:
+			fm.push_modal_focus(modal as Control)
 
 	_update_dim(true)
 	modal_opened.emit()
@@ -74,7 +76,9 @@ func _on_modal_exited(modal: Node) -> void:
 	_modal_stack.erase(modal)
 
 	if modal is Control:
-		FocusManager.pop_modal_focus()
+		var fm: _FocusManager = AutoloadHelper.focus_manager()
+		if fm:
+			fm.pop_modal_focus()
 
 	if _modal_stack.is_empty():
 		_update_dim(false)
