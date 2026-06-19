@@ -292,20 +292,24 @@ func _setup_greybox() -> void:
 	if not base_sprite:
 		base_sprite = Sprite2D.new()
 		base_sprite.name = "BaseSprite"
+		add_child(base_sprite)
+	
+	if not base_sprite.texture:
 		var img: Image = Image.create(32, 48, false, Image.FORMAT_RGBA8)
 		img.fill(Color.WHITE)
 		base_sprite.texture = ImageTexture.create_from_image(img)
 		base_sprite.offset = Vector2(0, -24)
-		add_child(base_sprite)
 
 	if not shadow_sprite:
 		shadow_sprite = Sprite2D.new()
 		shadow_sprite.name = "ShadowSprite"
+		shadow_sprite.z_index = -1
+		add_child(shadow_sprite)
+		
+	if not shadow_sprite.texture:
 		var img: Image = Image.create(32, 16, false, Image.FORMAT_RGBA8)
 		img.fill(Color(0.1, 0.1, 0.1, 0.5))
 		shadow_sprite.texture = ImageTexture.create_from_image(img)
-		shadow_sprite.z_index = -1
-		add_child(shadow_sprite)
 
 	if not height_indicator and not has_node("HeightIndicator"):
 		var hi: ColorRect = ColorRect.new()
