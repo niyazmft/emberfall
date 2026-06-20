@@ -142,10 +142,13 @@ grid-positioning formulas before porting to GDScript.
 - [x] State machine framework (`BaseStateMachine`, `RunManager`)
 - [x] Burden/Moral Weight tracking (`BurdenManager`)
 - [x] Apparition (death effect) renderer
+- [x] Procedural room generation (`RoomGenerator`, `EncounterSystem`)
+- [x] Save/load with deterministic re-seeding (`SaveManager`)
+- [x] Localization (EN/DE/ES/FR) wiring (`LocalizationManager`)
+- [x] Dynamic audio routing and burden stems (`AudioMiddleware`, `BurdenStemCaptionRouter`)
+- [x] Subtitle and narrative captioning (`CaptionManager`, `AmbientNarrator`)
+- [x] UI Accessibility and aesthetics (CVD mode, dynamic styling, focus management)
 - [ ] Vertical slice playable demo
-- [ ] Procedural room generation
-- [ ] Localization (EN/DE/ES/FR) wiring
-- [ ] Save/load with deterministic re-seeding
 
 ## Contributing
 
