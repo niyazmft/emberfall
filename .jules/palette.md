@@ -13,3 +13,21 @@
 ## 2026-05-31 - Add confirmation modals to destructive actions
 **Learning:** Destructive actions like quitting the game, returning to the sanctum (losing progress), or resetting controls were happening instantly without user confirmation. This is bad UX as it can lead to accidental data loss or frustration.
 **Action:** Added a `ConfirmModal` (`res://scenes/ui/confirm_modal.tscn`) to intercept these actions. I updated `main_menu.gd` (quit), `pause_menu.gd` (return to sanctum), and `remap_panel.gd` (reset controls) to instantiate the modal, set up localized title/body text, and connect the confirmation signal to the actual destructive logic.
+
+## 2026-06-20 - Prevent text clipping on retro buttons with content margins
+
+**Learning:** When using Godot's `Button` nodes with a `StyleBoxFlat` for custom retro pixel-art styling, the text naturally expands to the exact edges of the background rectangle. This causes ugly visual clipping, especially in tight HUD containers.
+
+**Action:** Always define `content_margin_left`, `right`, `top`, and `bottom` explicitly within the `StyleBoxFlat` theme overrides for buttons (e.g., in `main_theme.tres`) so that text rests comfortably inside the box.
+
+## 2026-06-20 - Global styling for unstyled default ProgressBars
+
+**Learning:** Godot's default `ProgressBar` node renders as a flat, solid grey rectangle, which breaks the immersion of custom retro art styles. Attempting to set `modulate` does not properly style the underlying structural elements.
+
+**Action:** Create a global `StyleBoxFlat` override for both the `background` and `fill` layers of the `ProgressBar` inside the main `.tres` theme file, giving them distinct colors (e.g., a transparent dark background and a solid red fill for HP) to match the game's palette.
+
+## 2026-06-20 - Remove debug color modulation from finalized visual proxies
+
+**Learning:** During blockout phases, we tinted `visual_proxy.modulate` with debug colors (e.g., red for bosses, green for archers) to differentiate enemies. However, when actual pixel art is imported, this debug `modulate` permanently tints the real textures, making them look broken or overly saturated.
+
+**Action:** Strip `modulate = debug_color` from visual proxy setup logic (like `base_enemy.gd`) as soon as actual artwork is attached to the scene. Additionally, remember to remove any legacy `GdUnit4` assertions that were strictly checking for those debug `modulate` colors.
