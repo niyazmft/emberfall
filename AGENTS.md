@@ -513,6 +513,15 @@ When picking up or completing a task, agents **MUST** keep the local tracker up 
 3. **Hybrid Tracking**: Ensure you also create or reference the matching GitHub Issue as per global rules. The user manages the visual GitHub Project board, but `PROJECT_BOARD.md` is the primary map for AI agents.
 4. **Add Learnings to `.jules/`**: If you discovered anything non-obvious during the task (performance gotcha, Godot quirk, CI issue), append a dated entry to the appropriate `.jules/*.md` file. See the **"Learnings from .jules/"** section below for the required format. This is required, not optional.
 
+### GitHub Issue & PR Workflow Rules
+
+1. **Naming Convention:** Both Issues and Pull Requests MUST follow the `[Category] Task Description` format.
+   - Example Issue: `[Accessibility] Implement CVD mode`
+   - Example PR: `[UI] Polish aesthetics and layout`
+2. **Issue PRererequisite:** For every PR, an associated GitHub Issue MUST be created *before* the PR is opened.
+3. **Linking:** The PR body MUST contain the phrase `Closes #<issue_number>` to properly link the PR to the historical issue.
+4. **Labels:** Relevant tags (e.g., `bug`, `enhancement`, and the responsible agent like `game-engine-agent`) must be applied to the Issue.
+
 ### GitHub Issue Creation — Required Fields
 
 **Every agent that opens a GitHub issue MUST set Priority, Size, and Status
