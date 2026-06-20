@@ -269,6 +269,9 @@ func _resolve_dying_timers() -> void:
 
 	for id: int in to_remove:
 		var obj: Object = instance_from_id(id)
+		if not is_instance_valid(obj):
+			_dying_turns.erase(id)
+			continue
 		if obj is Entity:
 			var ent: Entity = obj as Entity
 			if ent.alive() and ent.state == Entity.State.DYING:
@@ -286,6 +289,9 @@ func _resolve_stunned_timers() -> void:
 
 	for id: int in to_remove:
 		var obj: Object = instance_from_id(id)
+		if not is_instance_valid(obj):
+			_stunned_turns.erase(id)
+			continue
 		if obj is Entity:
 			var ent: Entity = obj as Entity
 			if ent.state == Entity.State.STUNNED:

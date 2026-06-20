@@ -79,6 +79,10 @@ func _process_state_loop() -> void:
 
 	if iterations >= MAX_ITERATIONS:
 		push_error("TurnManager: Infinite state transition loop detected!")
+		combat_ended.emit(false)
+		var eb := AutoloadHelper.event_bus()
+		if eb:
+			eb.combat_ended.emit(false)
 		current_state = CombatState.COMBAT_END
 
 	_is_processing_state = false
