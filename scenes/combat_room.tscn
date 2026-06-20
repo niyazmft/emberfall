@@ -1,35 +1,109 @@
-[gd_scene load_steps=5 format=3 uid="uid://cmbtrm0000001"]
+[gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/core/combat_room.gd" id="1_cmbtrm"]
 [ext_resource type="Script" path="res://scripts/visual/grid_renderer.gd" id="2_grid_renderer"]
-[ext_resource type="PackedScene" uid="uid://g4s6t8m1p5n7y" path="res://scenes/ui/combat_hud.tscn" id="3_combat_hud"]
-[ext_resource type="PackedScene" uid="uid://toast001" path="res://scenes/ui/toast.tscn" id="4_toast"]
-[ext_resource type="PackedScene" uid="uid://p4u4jtlxv83t_scene" path="res://scenes/ui/turn_banner.tscn" id="5_turn_banner"]
+[ext_resource type="PackedScene" path="res://scenes/ui/combat_hud.tscn" id="3_combat_hud"]
+[ext_resource type="Script" path="res://scripts/ui/combat_hud.gd" id="4_6p8gw"]
+[ext_resource type="PackedScene" path="res://scenes/ui/turn_banner.tscn" id="5_turn_banner"]
+[ext_resource type="Script" path="res://scripts/ui/turn_banner.gd" id="6_m4csd"]
 
-[node name="CombatRoom" type="Node2D"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_64js0"]
+content_margin_left = 12.0
+content_margin_top = 8.0
+content_margin_right = 12.0
+content_margin_bottom = 8.0
+bg_color = Color(0.25, 0.25, 0.25, 1)
+border_width_bottom = 2
+border_color = Color(0.05, 0.05, 0.05, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xgdp2"]
+content_margin_left = 12.0
+content_margin_top = 8.0
+content_margin_right = 12.0
+content_margin_bottom = 8.0
+bg_color = Color(0.15, 0.15, 0.15, 0.9)
+border_width_bottom = 2
+border_color = Color(0.05, 0.05, 0.05, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_d80jv"]
+content_margin_left = 12.0
+content_margin_top = 10.0
+content_margin_right = 12.0
+content_margin_bottom = 6.0
+bg_color = Color(0.1, 0.1, 0.1, 1)
+border_color = Color(0.05, 0.05, 0.05, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0arac"]
+bg_color = Color(0.05, 0.05, 0.05, 0.8)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_611f8"]
+bg_color = Color(0.2, 0.6, 0.2, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="Theme" id="Theme_wc2to"]
+Button/styles/hover = SubResource("StyleBoxFlat_64js0")
+Button/styles/normal = SubResource("StyleBoxFlat_xgdp2")
+Button/styles/pressed = SubResource("StyleBoxFlat_d80jv")
+ProgressBar/styles/background = SubResource("StyleBoxFlat_0arac")
+ProgressBar/styles/fill = SubResource("StyleBoxFlat_611f8")
+
+[node name="CombatRoom" type="Node2D" unique_id=1051591366]
 script = ExtResource("1_cmbtrm")
 
-[node name="Camera2D" type="Camera2D" parent="."]
-enabled = true
+[node name="Camera2D" type="Camera2D" parent="." unique_id=2110801437]
+position = Vector2(0, 192)
+zoom = Vector2(3, 3)
 
-[node name="GridRenderer" type="Node2D" parent="."]
+[node name="GridRenderer" type="Node2D" parent="." unique_id=1240770257]
 script = ExtResource("2_grid_renderer")
 
-[node name="EntityContainer" type="Node2D" parent="."]
+[node name="EntityContainer" type="Node2D" parent="." unique_id=251666011]
 y_sort_enabled = true
 
-[node name="FloatingTextContainer" type="Node2D" parent="EntityContainer"]
+[node name="FloatingTextContainer" type="Node2D" parent="EntityContainer" unique_id=883793355]
 z_index = 10
 
-[node name="Environment" type="Node2D" parent="."]
+[node name="Environment" type="Node2D" parent="." unique_id=1416534330]
 
-[node name="CanvasModulate" type="CanvasModulate" parent="Environment"]
+[node name="CanvasModulate" type="CanvasModulate" parent="Environment" unique_id=2075476781]
 
-[node name="UIOverlay" type="CanvasLayer" parent="."]
+[node name="UIOverlay" type="CanvasLayer" parent="." unique_id=599266703]
 
-[node name="CombatHUD" parent="UIOverlay" instance=ExtResource("3_combat_hud")]
+[node name="CombatHUD" type="Control" parent="UIOverlay" unique_id=1372504661 instance=ExtResource("3_combat_hud")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("4_6p8gw")
 
-[node name="TurnBanner" parent="UIOverlay" instance=ExtResource("5_turn_banner")]
+[node name="TurnBanner" type="Control" parent="UIOverlay" unique_id=399957658 instance=ExtResource("5_turn_banner")]
 visible = false
-
-[node name="ToastWidget" parent="UIOverlay" instance=ExtResource("4_toast")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("6_m4csd")

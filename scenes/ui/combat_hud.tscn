@@ -1,52 +1,98 @@
-[gd_scene load_steps=3 format=3 uid="uid://g4s6t8m1p5n7y"]
+[gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/combat_hud.gd" id="1_script"]
-[ext_resource type="PackedScene" uid="uid://f3r5s7l0p4n6x" path="res://scenes/ui/hotbar.tscn" id="2_hotbar"]
+[ext_resource type="FontFile" path="res://assets/fonts/PressStart2P-Regular.ttf" id="1_wc2to"]
+[ext_resource type="PackedScene" path="res://scenes/ui/hotbar.tscn" id="2_hotbar"]
+[ext_resource type="Script" path="res://scripts/ui/hotbar.gd" id="3_3too6"]
 
-[node name="CombatHUD" type="Control"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_470mv"]
+bg_color = Color(0.15, 0.15, 0.15, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_a2l2q"]
+bg_color = Color(0.25, 0.25, 0.25, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0omi4"]
+bg_color = Color(0.1, 0.1, 0.1, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="Theme" id="Theme_wc2to"]
+default_font = ExtResource("1_wc2to")
+default_font_size = 12
+Button/fonts/font = ExtResource("1_wc2to")
+Button/styles/focus = SubResource("StyleBoxFlat_470mv")
+Button/styles/hover = SubResource("StyleBoxFlat_a2l2q")
+Button/styles/normal = SubResource("StyleBoxFlat_470mv")
+Button/styles/pressed = SubResource("StyleBoxFlat_0omi4")
+Label/fonts/font = ExtResource("1_wc2to")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ap_fill"]
+bg_color = Color(0.8, 0.6, 0.1, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[node name="CombatHUD" type="Control" unique_id=1694207348]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = SubResource("Theme_wc2to")
 script = ExtResource("1_script")
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1004296218]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
 
-[node name="TopInfo" type="VBoxContainer" parent="MarginContainer"]
+[node name="TopInfo" type="VBoxContainer" parent="MarginContainer" unique_id=1609407671]
 layout_mode = 2
 size_flags_vertical = 0
 
-[node name="TurnLabel" type="Label" parent="MarginContainer/TopInfo"]
+[node name="TurnLabel" type="Label" parent="MarginContainer/TopInfo" unique_id=2124916337]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Your Turn"
 horizontal_alignment = 1
 
-[node name="RoundLabel" type="Label" parent="MarginContainer/TopInfo"]
+[node name="RoundLabel" type="Label" parent="MarginContainer/TopInfo" unique_id=2087559899]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Round 1"
 horizontal_alignment = 1
 
-[node name="BottomChrome" type="VBoxContainer" parent="MarginContainer"]
+[node name="BottomChrome" type="VBoxContainer" parent="MarginContainer" unique_id=1692163553]
 layout_mode = 2
 size_flags_vertical = 8
+theme_override_constants/separation = 8
 alignment = 2
 
-[node name="StatusIcons" type="HBoxContainer" parent="MarginContainer/BottomChrome"]
+[node name="StatusIcons" type="HBoxContainer" parent="MarginContainer/BottomChrome" unique_id=1163043075]
 layout_mode = 2
 theme_override_constants/separation = 10
 alignment = 1
 
-[node name="HPBar" type="ProgressBar" parent="MarginContainer/BottomChrome/StatusIcons"]
+[node name="HPBar" type="ProgressBar" parent="MarginContainer/BottomChrome/StatusIcons" unique_id=14819860]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(100, 16)
 layout_mode = 2
@@ -54,47 +100,51 @@ size_flags_vertical = 4
 value = 50.0
 show_percentage = false
 
-[node name="HPLabel" type="Label" parent="MarginContainer/BottomChrome/StatusIcons"]
+[node name="HPLabel" type="Label" parent="MarginContainer/BottomChrome/StatusIcons" unique_id=1114876940]
 unique_name_in_owner = true
 layout_mode = 2
 text = "0 / 0"
 
-[node name="APBar" type="ProgressBar" parent="MarginContainer/BottomChrome/StatusIcons"]
+[node name="APBar" type="ProgressBar" parent="MarginContainer/BottomChrome/StatusIcons" unique_id=1352002314]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(100, 16)
 layout_mode = 2
 size_flags_vertical = 4
+theme_override_styles/fill = SubResource("StyleBoxFlat_ap_fill")
 value = 50.0
 show_percentage = false
 
-[node name="APLabel" type="Label" parent="MarginContainer/BottomChrome/StatusIcons"]
+[node name="APLabel" type="Label" parent="MarginContainer/BottomChrome/StatusIcons" unique_id=660805588]
 unique_name_in_owner = true
 layout_mode = 2
 text = "0 / 0"
 
-[node name="ActionButtons" type="HBoxContainer" parent="MarginContainer/BottomChrome"]
+[node name="ActionButtons" type="HBoxContainer" parent="MarginContainer/BottomChrome" unique_id=893368708]
 layout_mode = 2
+theme_override_constants/separation = 16
 alignment = 1
 
-[node name="MoveButton" type="Button" parent="MarginContainer/BottomChrome/ActionButtons"]
+[node name="MoveButton" type="Button" parent="MarginContainer/BottomChrome/ActionButtons" unique_id=233566378]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Move"
 
-[node name="AttackButton" type="Button" parent="MarginContainer/BottomChrome/ActionButtons"]
+[node name="AttackButton" type="Button" parent="MarginContainer/BottomChrome/ActionButtons" unique_id=758992100]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Attack"
 
-[node name="EndTurnButton" type="Button" parent="MarginContainer/BottomChrome/ActionButtons"]
+[node name="EndTurnButton" type="Button" parent="MarginContainer/BottomChrome/ActionButtons" unique_id=185299671]
 unique_name_in_owner = true
 layout_mode = 2
 text = "End Turn"
 
-[node name="Prompts" type="Label" parent="MarginContainer/BottomChrome"]
+[node name="Prompts" type="Label" parent="MarginContainer/BottomChrome" unique_id=490054073]
 layout_mode = 2
 text = "SELECT ACTION"
 horizontal_alignment = 1
 
-[node name="Hotbar" parent="MarginContainer/BottomChrome" instance=ExtResource("2_hotbar")]
+[node name="Hotbar" type="Control" parent="MarginContainer/BottomChrome" unique_id=2049820780 instance=ExtResource("2_hotbar")]
+custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
+script = ExtResource("3_3too6")

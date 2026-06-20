@@ -1,12 +1,43 @@
-[gd_scene load_steps=4 format=3 uid="uid://enemy_archer_001"]
+[gd_scene format=3]
 
-[ext_resource type="PackedScene" uid="uid://base_enemy_001" path="res://scenes/enemies/base_enemy.tscn" id="1_base_enemy"]
 [ext_resource type="Script" path="res://scripts/entities/enemies/enemy_archer.gd" id="2_archer_script"]
+[ext_resource type="Script" path="res://scripts/visual/entity_visual_proxy.gd" id="2_hs3bi"]
+[ext_resource type="Texture2D" path="res://assets/sprites/archer_concept.png" id="3_48pmb"]
 [ext_resource type="Script" path="res://scripts/ai/archer_ai.gd" id="3_archer_ai"]
+[ext_resource type="Script" path="res://scripts/entities/apparition_renderer.gd" id="4_jco3c"]
 
-[node name="EnemyArcher" instance=ExtResource("1_base_enemy")]
+[sub_resource type="CircleShape2D" id="CircleShape2D_1"]
+radius = 8.0
+
+[node name="EnemyArcher" type="Node2D" unique_id=339493198 node_paths=PackedStringArray("ai_controller", "visual_proxy")]
 script = ExtResource("2_archer_script")
+ai_controller = NodePath("SimpleAI")
+visual_proxy = NodePath("EntityVisualProxy")
 debug_color = Color(0, 1, 0, 1)
 
-[node name="SimpleAI" parent="." index="4"]
+[node name="EntityVisualProxy" type="Node2D" parent="." unique_id=1478145609 node_paths=PackedStringArray("base_sprite", "shadow_sprite", "height_indicator")]
+script = ExtResource("2_hs3bi")
+base_sprite = NodePath("BaseSprite")
+shadow_sprite = NodePath("ShadowSprite")
+height_indicator = NodePath("HeightIndicator")
+
+[node name="BaseSprite" type="Sprite2D" parent="EntityVisualProxy" unique_id=1047189592]
+scale = Vector2(0.03125, 0.046875)
+texture = ExtResource("3_48pmb")
+
+[node name="ShadowSprite" type="Sprite2D" parent="EntityVisualProxy" unique_id=1689580937]
+
+[node name="HeightIndicator" type="ColorRect" parent="EntityVisualProxy" unique_id=1341823956]
+offset_left = -16.0
+offset_top = 2.0
+offset_right = 16.0
+offset_bottom = 6.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2107449679]
+shape = SubResource("CircleShape2D_1")
+
+[node name="ApparitionRenderer" type="Node2D" parent="." unique_id=386664839]
+script = ExtResource("4_jco3c")
+
+[node name="SimpleAI" type="Node" parent="." unique_id=1629358579]
 script = ExtResource("3_archer_ai")

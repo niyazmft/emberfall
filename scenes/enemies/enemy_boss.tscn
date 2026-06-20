@@ -1,9 +1,44 @@
-[gd_scene load_steps=3 format=3 uid="uid://enemy_boss_001"]
+[gd_scene format=3]
 
-[ext_resource type="PackedScene" uid="uid://base_enemy_001" path="res://scenes/enemies/base_enemy.tscn" id="1_base_enemy"]
 [ext_resource type="Script" path="res://scripts/entities/enemies/enemy_boss.gd" id="2_boss_script"]
+[ext_resource type="Script" path="res://scripts/visual/entity_visual_proxy.gd" id="2_dnuh1"]
+[ext_resource type="Texture2D" path="res://assets/sprites/boss_concept.png" id="3_2orkc"]
+[ext_resource type="Script" path="res://scripts/entities/apparition_renderer.gd" id="4_pkga2"]
+[ext_resource type="Script" path="res://scripts/ai/simple_ai.gd" id="5_bfrxa"]
 
-[node name="EnemyBoss" instance=ExtResource("1_base_enemy")]
+[sub_resource type="CircleShape2D" id="CircleShape2D_1"]
+radius = 8.0
+
+[node name="EnemyBoss" type="Node2D" unique_id=1672465256 node_paths=PackedStringArray("ai_controller", "visual_proxy")]
 script = ExtResource("2_boss_script")
+ai_controller = NodePath("SimpleAI")
+visual_proxy = NodePath("EntityVisualProxy")
 debug_color = Color(1, 0, 0, 1)
 visual_scale = 1.5
+
+[node name="EntityVisualProxy" type="Node2D" parent="." unique_id=759787208 node_paths=PackedStringArray("base_sprite", "shadow_sprite", "height_indicator")]
+script = ExtResource("2_dnuh1")
+base_sprite = NodePath("BaseSprite")
+shadow_sprite = NodePath("ShadowSprite")
+height_indicator = NodePath("HeightIndicator")
+
+[node name="BaseSprite" type="Sprite2D" parent="EntityVisualProxy" unique_id=1836725082]
+scale = Vector2(0.03125, 0.046875)
+texture = ExtResource("3_2orkc")
+
+[node name="ShadowSprite" type="Sprite2D" parent="EntityVisualProxy" unique_id=888198934]
+
+[node name="HeightIndicator" type="ColorRect" parent="EntityVisualProxy" unique_id=1444068185]
+offset_left = -16.0
+offset_top = 2.0
+offset_right = 16.0
+offset_bottom = 6.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1264274365]
+shape = SubResource("CircleShape2D_1")
+
+[node name="ApparitionRenderer" type="Node2D" parent="." unique_id=759005226]
+script = ExtResource("4_pkga2")
+
+[node name="SimpleAI" type="Node" parent="." unique_id=1141411841]
+script = ExtResource("5_bfrxa")
