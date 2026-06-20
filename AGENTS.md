@@ -427,9 +427,9 @@ Create or append to the file that best matches the topic:
 
 | File | Topic |
 |------|-------|
-| `.jules/bolt.md` | Performance, hot paths, optimization |
-| `.jules/palette.md` | UI, UX, accessibility, theming |
-| `.jules/sentinel.md` | Security vulnerabilities, codebase protection, repository risks |
+| `.jules/bolt.md` | **"Bolt"** - a performance-obsessed agent who makes the codebase faster, one optimization at a time. |
+| `.jules/palette.md` | **"Palette"** - a UX-focused agent who adds small touches of delight and accessibility to the user interface. |
+| `.jules/sentinel.md` | **"Sentinel"** - a security-focused agent who protects the codebase from vulnerabilities and security risks. |
 | `.jules/integrations.md` | (create if needed) External tools, CI, git hooks |
 | `.jules/<topic>.md` | Create a new file if the topic is distinct |
 
