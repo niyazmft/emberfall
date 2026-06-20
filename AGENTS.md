@@ -479,12 +479,13 @@ When picking up or completing a task, agents **MUST** keep the local tracker up 
 
 ### GitHub Issue & PR Workflow Rules
 
-1. **Naming Convention:** Both Issues and Pull Requests MUST follow the `[Category] Task Description` format.
+1. **Branching:** You MUST NEVER commit directly to `main`. Always create a new local branch (e.g., `git checkout -b feature-name`) before beginning work.
+2. **Issue Prerequisite:** For every PR, an associated GitHub Issue MUST be created *before* the PR is opened.
+3. **Naming Convention:** Both Issues and Pull Requests MUST follow the `[Category] Task Description` format.
    - Example Issue: `[Accessibility] Implement CVD mode`
    - Example PR: `[UI] Polish aesthetics and layout`
-2. **Issue PRererequisite:** For every PR, an associated GitHub Issue MUST be created *before* the PR is opened.
-3. **Linking:** The PR body MUST contain the phrase `Closes #<issue_number>` to properly link the PR to the historical issue.
-4. **Labels:** Relevant tags (e.g., `bug`, `enhancement`, and the responsible agent like `game-engine-agent`) must be applied to the Issue.
+4. **Linking:** The PR body MUST contain the phrase `Closes #<issue_number>` to properly link the PR to the historical issue.
+5. **Labels:** Relevant tags (e.g., `bug`, `enhancement`, and the responsible agent like `game-engine-agent`) must be applied to the Issue.
 
 ### GitHub Issue Creation — Required Fields
 
