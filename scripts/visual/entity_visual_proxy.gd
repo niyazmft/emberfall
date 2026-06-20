@@ -64,7 +64,7 @@ func _process(delta: float) -> void:
 		global_position = global_position.lerp(_target_position, weight)
 	else:
 		global_position = _target_position
-		
+
 	if base_sprite:
 		# Add a subtle breathing / floating animation using sin wave
 		# Time.get_ticks_msec() provides a continuous time value
@@ -303,7 +303,7 @@ func _setup_greybox() -> void:
 		base_sprite = Sprite2D.new()
 		base_sprite.name = "BaseSprite"
 		add_child(base_sprite)
-	
+
 	if not base_sprite.texture:
 		var img: Image = Image.create(32, 48, false, Image.FORMAT_RGBA8)
 		img.fill(Color.WHITE)
@@ -315,7 +315,7 @@ func _setup_greybox() -> void:
 		shadow_sprite.name = "ShadowSprite"
 		shadow_sprite.z_index = -1
 		add_child(shadow_sprite)
-		
+
 	if not shadow_sprite.texture:
 		var img: Image = Image.create(32, 16, false, Image.FORMAT_RGBA8)
 		img.fill(Color(0.1, 0.1, 0.1, 0.5))
