@@ -1,9 +1,44 @@
-[gd_scene load_steps=3 format=3 uid="uid://enemy_tank_001"]
+[gd_scene format=3]
 
-[ext_resource type="PackedScene" uid="uid://base_enemy_001" path="res://scenes/enemies/base_enemy.tscn" id="1_base_enemy"]
 [ext_resource type="Script" path="res://scripts/entities/enemies/enemy_tank.gd" id="2_tank_script"]
+[ext_resource type="Script" path="res://scripts/visual/entity_visual_proxy.gd" id="2_vs2kr"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tank_concept.png" id="3_sib1e"]
+[ext_resource type="Script" path="res://scripts/entities/apparition_renderer.gd" id="4_2cuw7"]
+[ext_resource type="Script" path="res://scripts/ai/simple_ai.gd" id="5_0mfil"]
 
-[node name="EnemyTank" instance=ExtResource("1_base_enemy")]
+[sub_resource type="CircleShape2D" id="CircleShape2D_1"]
+radius = 8.0
+
+[node name="EnemyTank" type="Node2D" unique_id=755871448 node_paths=PackedStringArray("ai_controller", "visual_proxy")]
 script = ExtResource("2_tank_script")
+ai_controller = NodePath("SimpleAI")
+visual_proxy = NodePath("EntityVisualProxy")
 debug_color = Color(0, 0, 1, 1)
 visual_scale = 1.2
+
+[node name="EntityVisualProxy" type="Node2D" parent="." unique_id=1551431927 node_paths=PackedStringArray("base_sprite", "shadow_sprite", "height_indicator")]
+script = ExtResource("2_vs2kr")
+base_sprite = NodePath("BaseSprite")
+shadow_sprite = NodePath("ShadowSprite")
+height_indicator = NodePath("HeightIndicator")
+
+[node name="BaseSprite" type="Sprite2D" parent="EntityVisualProxy" unique_id=2138666799]
+scale = Vector2(0.03125, 0.046875)
+texture = ExtResource("3_sib1e")
+
+[node name="ShadowSprite" type="Sprite2D" parent="EntityVisualProxy" unique_id=198344208]
+
+[node name="HeightIndicator" type="ColorRect" parent="EntityVisualProxy" unique_id=1562085413]
+offset_left = -16.0
+offset_top = 2.0
+offset_right = 16.0
+offset_bottom = 6.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=789836508]
+shape = SubResource("CircleShape2D_1")
+
+[node name="ApparitionRenderer" type="Node2D" parent="." unique_id=2057396445]
+script = ExtResource("4_2cuw7")
+
+[node name="SimpleAI" type="Node" parent="." unique_id=606784703]
+script = ExtResource("5_0mfil")

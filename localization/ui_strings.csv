@@ -73,6 +73,7 @@ HUD_LOG_SELECT_TARGET,SELECT TARGET,ZIEL WÄHLEN,SELECCIONAR OBJETIVO,SÉLECTION
 HUD_LOG_DAMAGE_DEALT,Dealt %d damage to %s,%d Schaden an %s verursacht,Infligió %d de daño a %s,A infligé %d dégâts à %s
 HUD_VICTORY_TITLE,VICTORY,SIEG,VICTORIA,VICTOIRE
 HUD_DEFEAT_TITLE,DEFEAT,NIEDERLAGE,DERROTA,DÉFAITE
+HUD_DEFEAT_RETRY,RETRY,WIEDERHOLEN,REINTENTAR,RÉESSAYER
 HUD_SUMMARY_TURNS,Turns taken: %d,Gespielte Züge: %d,Turnos tomados: %d,Tours joués : %d
 HUD_SUMMARY_KILLS,Enemies defeated: %d,Besiegte Gegner: %d,Enemigos derrotados: %d,Ennemis vaincus : %d
 HUD_SUMMARY_SHARDS,Echo shards earned: %d,Verdiente Echosplitter: %d,Fragmentos de eco ganados: %d,Éclats d'écho gagnés : %d

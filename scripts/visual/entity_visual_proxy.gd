@@ -65,6 +65,14 @@ func _process(delta: float) -> void:
 	else:
 		global_position = _target_position
 
+	if base_sprite:
+		# Add a subtle breathing / floating animation using sin wave
+		# Time.get_ticks_msec() provides a continuous time value
+		var time_sec: float = float(Time.get_ticks_msec()) / 1000.0
+		# Offset by node's instance ID so they don't all bob in perfect sync
+		var offset: float = float(get_instance_id() % 1000) / 100.0
+		base_sprite.position.y = sin((time_sec + offset) * 3.0) * 4.0
+
 
 func _find_grid_renderer(node: Node) -> GridRenderer:
 	if node is GridRenderer:
@@ -90,6 +98,8 @@ func _sync_to_entity() -> void:
 	_on_entity_elevation_changed(entity.elevation)
 	_on_entity_facing_changed(entity.facing_x, entity.facing_y)
 	_on_entity_state_changed(entity.state)
+	_on_entity_hp_changed(entity.hp, entity.hp)
+	_on_entity_ap_changed(entity.ap, entity.ap)
 
 
 func _connect_entity_signals() -> void:
@@ -292,20 +302,24 @@ func _setup_greybox() -> void:
 	if not base_sprite:
 		base_sprite = Sprite2D.new()
 		base_sprite.name = "BaseSprite"
+		add_child(base_sprite)
+
+	if not base_sprite.texture:
 		var img: Image = Image.create(32, 48, false, Image.FORMAT_RGBA8)
 		img.fill(Color.WHITE)
 		base_sprite.texture = ImageTexture.create_from_image(img)
 		base_sprite.offset = Vector2(0, -24)
-		add_child(base_sprite)
 
 	if not shadow_sprite:
 		shadow_sprite = Sprite2D.new()
 		shadow_sprite.name = "ShadowSprite"
+		shadow_sprite.z_index = -1
+		add_child(shadow_sprite)
+
+	if not shadow_sprite.texture:
 		var img: Image = Image.create(32, 16, false, Image.FORMAT_RGBA8)
 		img.fill(Color(0.1, 0.1, 0.1, 0.5))
 		shadow_sprite.texture = ImageTexture.create_from_image(img)
-		shadow_sprite.z_index = -1
-		add_child(shadow_sprite)
 
 	if not height_indicator and not has_node("HeightIndicator"):
 		var hi: ColorRect = ColorRect.new()

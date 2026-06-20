@@ -68,10 +68,11 @@ graph LR
 ```
 
 - **PaperclipAI** — High-level strategist, defines project goals and architecture
-- **Google Jules** — Implements features from specifications and responds to review feedback
+- **Google Jules** — Implements features through specialized personas (**Bolt** for performance, **Palette** for UX/UI, **Sentinel** for security)
+- **Domain Agents** — Task boards for `game-engine`, `creative-assets`, and `story-level` manage isolated agile backlogs inside `.agents/`
 - **Human Director** — Final approval, code review, and project direction
 
-For contribution guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md).
+For contribution guidelines and agent instructions, see [AGENTS.md](AGENTS.md) and [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Tech Stack
 
@@ -95,6 +96,8 @@ emberfall/
 │   ├── autoload/        # 16 global systems (EventBus, GridSystem, SaveManager, …)
 │   ├── shaders/
 │   └── state_machine/
+├── .agents/             # Agent task boards and custom Godot skills
+├── .jules/              # Persistent memory and learning files for AI personas
 ├── assets/
 ├── config/              # JSON-driven tunable constants
 ├── localization/        # CSV + compiled .translation files (EN/DE/ES/FR)

@@ -51,8 +51,9 @@ func update_ap(p_current: int, p_max_ap: int = -1) -> void:
 
 	if actual_max_ap > current_child_count:
 		for i: int in range(actual_max_ap - current_child_count):
-			var pip: ColorRect = ColorRect.new()
-			pip.custom_minimum_size = Vector2(4, 8)
+			var pip: TextureRect = TextureRect.new()
+			pip.custom_minimum_size = Vector2(12, 12)
+			pip.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
 			ap_container.add_child(pip)
 	elif actual_max_ap < current_child_count:
 		for i: int in range(current_child_count - 1, actual_max_ap - 1, -1):
@@ -60,10 +61,13 @@ func update_ap(p_current: int, p_max_ap: int = -1) -> void:
 			ap_container.remove_child(child)
 			child.queue_free()
 
+	var tex_full: Texture2D = load("res://assets/sprites/ap_gem.png") as Texture2D
+	var tex_empty: Texture2D = load("res://assets/sprites/ap_gem_empty.png") as Texture2D
+
 	for i: int in range(actual_max_ap):
-		var pip: ColorRect = ap_container.get_child(i) as ColorRect
+		var pip: TextureRect = ap_container.get_child(i) as TextureRect
 		if pip:
-			pip.color = Color.YELLOW if i < p_current else Color(0.2, 0.2, 0.2)
+			pip.texture = tex_full if i < p_current else tex_empty
 
 
 ## Deprecated: Use update_ap

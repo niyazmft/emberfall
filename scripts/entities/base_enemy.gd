@@ -166,7 +166,6 @@ func _setup_visual_proxy() -> void:
 	# Connect visual_proxy to entity
 	if visual_proxy and entity:
 		visual_proxy.entity = entity
-		visual_proxy.modulate = debug_color
 		visual_proxy.scale = Vector2(visual_scale, visual_scale)
 
 

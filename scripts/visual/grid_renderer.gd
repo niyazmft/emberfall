@@ -26,7 +26,13 @@ var _diamond_tex: Texture2D
 func _ready() -> void:
 	# Idiomatic access to Autoloaded systems
 	_grid_system = AutoloadHelper.grid_system()
-	_diamond_tex = _generate_diamond_texture()
+
+	var custom_tex: Texture2D = load("res://assets/sprites/tile_stone.png") as Texture2D
+	if custom_tex != null:
+		_diamond_tex = custom_tex
+	else:
+		_diamond_tex = _generate_diamond_texture()
+
 	_render_grid()
 
 
@@ -64,14 +70,30 @@ func _render_tile(x: int, y: int, tile: TacTileData) -> void:
 		sprite.centered = true
 		sprite.position = _grid_to_world(x, y, e)
 
-		# Color based on elevation level
-		match e:
-			0:
-				sprite.modulate = COLOR_FLOOR
-			1:
-				sprite.modulate = COLOR_ELEV_1
-			2:
-				sprite.modulate = COLOR_ELEV_2
+		# Color based on elevation level, but only if it's the fallback texture
+		# Assuming _diamond_tex is the fallback if custom texture wasn't loaded
+		# Let's check if the current texture is our generated greybox diamond or a file.
+		# A custom texture will have a valid resource path, while the generated one won't.
+		if (
+			_diamond_tex.resource_path.is_empty()
+			or not _diamond_tex.resource_path.ends_with(".png")
+		):
+			match e:
+				0:
+					sprite.modulate = COLOR_FLOOR
+				1:
+					sprite.modulate = COLOR_ELEV_1
+				2:
+					sprite.modulate = COLOR_ELEV_2
+		else:
+			# For custom textures, just slightly darken lower elevations
+			match e:
+				0:
+					sprite.modulate = Color(1.0, 1.0, 1.0)
+				1:
+					sprite.modulate = Color(0.9, 0.9, 0.9)
+				2:
+					sprite.modulate = Color(0.8, 0.8, 0.8)
 
 		add_child(sprite)
 		_tile_sprites.append(sprite)

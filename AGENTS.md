@@ -119,7 +119,7 @@ emberfall/
     ├── bolt.md                # Performance learnings
     ├── palette.md             # UI/UX learnings
     ├── integrations.md        # External tools, CI, git hooks (create as needed)
-    └── gotchas.md             # Godot quirks, autoload issues (create as needed)
+    └── sentinel.md            # Security vulnerabilities and codebase protection
 ```
 
 ---
@@ -160,32 +160,7 @@ var damage: int = int(raw)  # Platform-dependent
 var clamped: int = clamp(value, 0, 100)  # Use clampi instead
 ```
 
-### 3. Grid System Performance
-
-Learned from `.jules/bolt.md`:
-
-- Use direct array access: `_tiles[ti]` not `get_tile()`
-- Cast to typed: `var tile: TacTileData = _tiles[i]`
-- Use bitwise flags in hot loops
-- Avoid `.get("property")` or `.call("method")` in loops
-
-**Hot Path Example:**
-
-```gdscript
-# ✅ Fast - direct access with types
-for ti: int in range(TOTAL_TILES):
-    var tile: TacTileData = _tiles[ti]
-    if (tile.cover_flags & 64) != 0:
-        continue
-
-# ❌ Slow - dynamic dispatch
-for i in range(TOTAL_TILES):
-    var tile = get_tile(i % GRID_SIZE, i / GRID_SIZE)
-    if tile.get("blocks_vision"):
-        continue
-```
-
-### 4. Strict Typing for CI
+### 3. Strict Typing for CI
 
 **ALL** variables must be typed:
 
@@ -427,10 +402,10 @@ Create or append to the file that best matches the topic:
 
 | File | Topic |
 |------|-------|
-| `.jules/bolt.md` | Performance, hot paths, optimization |
-| `.jules/palette.md` | UI, UX, accessibility, theming |
+| `.jules/bolt.md` | **"Bolt"** - a performance-obsessed agent who makes the codebase faster, one optimization at a time. |
+| `.jules/palette.md` | **"Palette"** - a UX-focused agent who adds small touches of delight and accessibility to the user interface. |
+| `.jules/sentinel.md` | **"Sentinel"** - a security-focused agent who protects the codebase from vulnerabilities and security risks. |
 | `.jules/integrations.md` | (create if needed) External tools, CI, git hooks |
-| `.jules/gotchas.md` | (create if needed) Godot-specific quirks, autoload issues |
 | `.jules/<topic>.md` | Create a new file if the topic is distinct |
 
 If a file doesn't exist for your topic, **create it** with the same format
@@ -488,18 +463,7 @@ entries get pruned; high-signal entries stay.
 
 ### Existing Learnings Reference
 
-**Performance (`.jules/bolt.md`):**
-
-- **GridSystem optimization:** Reduced O(N²) inner loops by inlining and direct array access
-- **Type casting:** Cast `_tiles` to `TacTileData` in hot loops for 10x speedup
-- **CI compliance:** All new scripts require strict typing
-
-**UI Accessibility (`.jules/palette.md`):**
-
-- **Focus management:** Use `grab_focus.call_deferred()` on primary buttons
-- Applies to: `main_menu.gd`, `pause_menu.gd`, `settings_menu.gd`
-
-**Before starting any task:** Read the relevant `.jules/*.md` file first.
+**Before starting any task:** You MUST read the relevant `.jules/*.md` file (Bolt for performance, Palette for UI, Sentinel for security) to review our existing learnings.
 Then check `git log --oneline .jules/` for the most recent additions.
 
 ---
@@ -512,6 +476,15 @@ When picking up or completing a task, agents **MUST** keep the local tracker up 
 2. **Update Status**: When starting or finishing a task, you must update the task's status in `PROJECT_BOARD.md` (e.g., from ⏳ "Ready" to 🔄 "In Progress", or to ✅ "Done").
 3. **Hybrid Tracking**: Ensure you also create or reference the matching GitHub Issue as per global rules. The user manages the visual GitHub Project board, but `PROJECT_BOARD.md` is the primary map for AI agents.
 4. **Add Learnings to `.jules/`**: If you discovered anything non-obvious during the task (performance gotcha, Godot quirk, CI issue), append a dated entry to the appropriate `.jules/*.md` file. See the **"Learnings from .jules/"** section below for the required format. This is required, not optional.
+
+### GitHub Issue & PR Workflow Rules
+
+1. **Naming Convention:** Both Issues and Pull Requests MUST follow the `[Category] Task Description` format.
+   - Example Issue: `[Accessibility] Implement CVD mode`
+   - Example PR: `[UI] Polish aesthetics and layout`
+2. **Issue PRererequisite:** For every PR, an associated GitHub Issue MUST be created *before* the PR is opened.
+3. **Linking:** The PR body MUST contain the phrase `Closes #<issue_number>` to properly link the PR to the historical issue.
+4. **Labels:** Relevant tags (e.g., `bug`, `enhancement`, and the responsible agent like `game-engine-agent`) must be applied to the Issue.
 
 ### GitHub Issue Creation — Required Fields
 
@@ -660,7 +633,7 @@ gh project field-list 1 --owner niyazmft --format json
 - **Jules Protocol:** `.jules/JULES_PROTOCOL.md`
 - **Jules QA Checklist:** `.jules/JULES_QA_CHECKLIST.md`
 - **Release Checklist:** `.jules/RELEASE_CHECKLIST.md`
-- **Learnings:** `.jules/bolt.md`, `.jules/palette.md`, `.jules/integrations.md`, `.jules/gotchas.md`
+- **Learnings:** `.jules/bolt.md`, `.jules/palette.md`, `.jules/integrations.md`, `.jules/sentinel.md`
 - **Config:** `config/game_config.json`
 - **Apparition Specs:** `docs/apparition_animation_lead_notes.md`, `docs/apparition_composite_spec.md`, `docs/apparition_material_pipeline.md`
 - **Shader Budget:** `docs/SHADER_BUDGET_DON-253.md`
