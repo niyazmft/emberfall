@@ -119,7 +119,7 @@ emberfall/
     ├── bolt.md                # Performance learnings
     ├── palette.md             # UI/UX learnings
     ├── integrations.md        # External tools, CI, git hooks (create as needed)
-    └── gotchas.md             # Godot quirks, autoload issues (create as needed)
+    └── sentinel.md            # Security vulnerabilities and codebase protection
 ```
 
 ---
@@ -669,7 +669,7 @@ gh project field-list 1 --owner niyazmft --format json
 - **Jules Protocol:** `.jules/JULES_PROTOCOL.md`
 - **Jules QA Checklist:** `.jules/JULES_QA_CHECKLIST.md`
 - **Release Checklist:** `.jules/RELEASE_CHECKLIST.md`
-- **Learnings:** `.jules/bolt.md`, `.jules/palette.md`, `.jules/integrations.md`, `.jules/gotchas.md`
+- **Learnings:** `.jules/bolt.md`, `.jules/palette.md`, `.jules/integrations.md`, `.jules/sentinel.md`
 - **Config:** `config/game_config.json`
 - **Apparition Specs:** `docs/apparition_animation_lead_notes.md`, `docs/apparition_composite_spec.md`, `docs/apparition_material_pipeline.md`
 - **Shader Budget:** `docs/SHADER_BUDGET_DON-253.md`
