@@ -31,7 +31,9 @@ __pycache__/
 .antigravitycli/
 
 # agents Skills
-.agents/
+.agents/creative-assets-agent/
+.agents/game-engine-agent/
+.agents/story-level-agent/
 skills-lock.json
 
 # Local GitHub issue drafts (issues live on GitHub, not in repo)
