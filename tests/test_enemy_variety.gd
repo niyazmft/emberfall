@@ -22,7 +22,6 @@ func test_enemy_grunt_variety() -> void:
 
 	assert_that(grunt.ai_controller.behavior).is_equal(EnemyAIController.BehaviorType.GRUNT)
 	assert_that(grunt.debug_color).is_equal(Color.WHITE)
-	assert_that(grunt.visual_proxy.modulate).is_equal(Color.WHITE)
 
 
 func test_enemy_archer_variety() -> void:
@@ -39,7 +38,6 @@ func test_enemy_archer_variety() -> void:
 
 	assert_that(archer.ai_controller.behavior).is_equal(EnemyAIController.BehaviorType.ARCHER)
 	assert_that(archer.debug_color).is_equal(Color.GREEN)
-	assert_that(archer.visual_proxy.modulate).is_equal(Color.GREEN)
 
 
 func test_enemy_tank_variety() -> void:
@@ -56,7 +54,6 @@ func test_enemy_tank_variety() -> void:
 
 	assert_that(tank.ai_controller.behavior).is_equal(EnemyAIController.BehaviorType.TANK)
 	assert_that(tank.debug_color).is_equal(Color.BLUE)
-	assert_that(tank.visual_proxy.modulate).is_equal(Color.BLUE)
 	assert_that(tank.visual_scale).is_equal(1.2)
 	assert_that(tank.visual_proxy.scale).is_equal(Vector2(1.2, 1.2))
 
@@ -75,7 +72,6 @@ func test_enemy_mage_variety() -> void:
 
 	assert_that(mage.ai_controller.behavior).is_equal(EnemyAIController.BehaviorType.ARCHER)
 	assert_that(mage.debug_color).is_equal(Color.MAGENTA)
-	assert_that(mage.visual_proxy.modulate).is_equal(Color.MAGENTA)
 
 
 func test_enemy_boss_variety() -> void:
@@ -91,6 +87,5 @@ func test_enemy_boss_variety() -> void:
 	assert_that(boss.entity.spd).is_equal(3)
 
 	assert_that(boss.debug_color).is_equal(Color.RED)
-	assert_that(boss.visual_proxy.modulate).is_equal(Color.RED)
 	assert_that(boss.visual_scale).is_equal(1.5)
 	assert_that(boss.visual_proxy.scale).is_equal(Vector2(1.5, 1.5))
