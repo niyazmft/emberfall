@@ -31,3 +31,9 @@
 **Learning:** During blockout phases, we tinted `visual_proxy.modulate` with debug colors (e.g., red for bosses, green for archers) to differentiate enemies. However, when actual pixel art is imported, this debug `modulate` permanently tints the real textures, making them look broken or overly saturated.
 
 **Action:** Strip `modulate = debug_color` from visual proxy setup logic (like `base_enemy.gd`) as soon as actual artwork is attached to the scene. Additionally, remember to remove any legacy `GdUnit4` assertions that were strictly checking for those debug `modulate` colors.
+
+## 2026-06-17 - Placeholder audio files with identical checksums are undetectable by eye
+
+**Learning:** Four burden audio stem placeholders (`bd_drone.ogg`, `bd_bells.ogg`, `bd_voices.ogg`, `bd_wind.ogg`) were created with identical file sizes and MD5 hashes, meaning they were copies of the same dummy file. Godot would load them without error, but all stems would sound identical in a debug build, making audio coordination bugs impossible to hear.
+
+**Action:** Always run `md5sum` on placeholder audio files after creation. If all hashes match, generate distinct content programmatically (different frequencies, waveforms, or amplitude envelopes) so each placeholder has a unique acoustic signature. Switch to `.wav` format during placeholder phase if Ogg Vorbis encoding tools are unavailable.

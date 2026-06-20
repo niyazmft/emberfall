@@ -429,8 +429,8 @@ Create or append to the file that best matches the topic:
 |------|-------|
 | `.jules/bolt.md` | Performance, hot paths, optimization |
 | `.jules/palette.md` | UI, UX, accessibility, theming |
+| `.jules/sentinel.md` | Security vulnerabilities, codebase protection, repository risks |
 | `.jules/integrations.md` | (create if needed) External tools, CI, git hooks |
-| `.jules/gotchas.md` | (create if needed) Godot-specific quirks, autoload issues |
 | `.jules/<topic>.md` | Create a new file if the topic is distinct |
 
 If a file doesn't exist for your topic, **create it** with the same format

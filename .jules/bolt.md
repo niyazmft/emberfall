@@ -18,3 +18,9 @@
 ## 2025-02-27 - [Godot Dictionary iteration]
 **Learning:** Deleting from a Dictionary while iterating over its keys() returns a new array, but iterating over the dictionary directly is faster and we can store keys to erase in a local array and erase them after the loop. Iterating over `keys()` makes a copy of the keys, causing array allocation and garbage collection churn inside `_process`.
 **Action:** Don't use `keys()` inside high-frequency loops like `_process`. Use a custom array or iterate without modifying the dictionary, keeping track of keys to remove.
+
+## 2026-06-17 - Node.get("property") is as dangerous as Object.call("method")
+
+**Learning:** `Node.get("property_name")` and `Object.call("method_name", args)` are the same class of dynamic dispatch anti-pattern. Both rely on string-based lookups at runtime that bypass GDScript's type checker and hurt performance. Replacing `.get("entity")` with a typed static helper `CombatEntity.get_entity(node)` eliminates the string lookup entirely and gives compile-time safety.
+
+**Action:** Treat `.get("...")` on nodes as the same priority as `.call("...")` during audits. When a commonly accessed property (like `entity` on `CombatEntity` subclasses) is fetched dynamically, add a typed static accessor or getter method and migrate all call sites.
