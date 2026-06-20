@@ -160,32 +160,7 @@ var damage: int = int(raw)  # Platform-dependent
 var clamped: int = clamp(value, 0, 100)  # Use clampi instead
 ```
 
-### 3. Grid System Performance
-
-Learned from `.jules/bolt.md`:
-
-- Use direct array access: `_tiles[ti]` not `get_tile()`
-- Cast to typed: `var tile: TacTileData = _tiles[i]`
-- Use bitwise flags in hot loops
-- Avoid `.get("property")` or `.call("method")` in loops
-
-**Hot Path Example:**
-
-```gdscript
-# ✅ Fast - direct access with types
-for ti: int in range(TOTAL_TILES):
-    var tile: TacTileData = _tiles[ti]
-    if (tile.cover_flags & 64) != 0:
-        continue
-
-# ❌ Slow - dynamic dispatch
-for i in range(TOTAL_TILES):
-    var tile = get_tile(i % GRID_SIZE, i / GRID_SIZE)
-    if tile.get("blocks_vision"):
-        continue
-```
-
-### 4. Strict Typing for CI
+### 3. Strict Typing for CI
 
 **ALL** variables must be typed:
 
@@ -488,18 +463,7 @@ entries get pruned; high-signal entries stay.
 
 ### Existing Learnings Reference
 
-**Performance (`.jules/bolt.md`):**
-
-- **GridSystem optimization:** Reduced O(N²) inner loops by inlining and direct array access
-- **Type casting:** Cast `_tiles` to `TacTileData` in hot loops for 10x speedup
-- **CI compliance:** All new scripts require strict typing
-
-**UI Accessibility (`.jules/palette.md`):**
-
-- **Focus management:** Use `grab_focus.call_deferred()` on primary buttons
-- Applies to: `main_menu.gd`, `pause_menu.gd`, `settings_menu.gd`
-
-**Before starting any task:** Read the relevant `.jules/*.md` file first.
+**Before starting any task:** You MUST read the relevant `.jules/*.md` file (Bolt for performance, Palette for UI, Sentinel for security) to review our existing learnings.
 Then check `git log --oneline .jules/` for the most recent additions.
 
 ---
