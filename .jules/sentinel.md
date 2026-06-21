@@ -20,3 +20,21 @@
 ## 2026-06-12 - Expression.execute const_calls_only doesn't block globals
 **Learning:** Godot's Expression.execute method with the const_calls_only flag set to true prevents calling non-constant methods on objects, but it does NOT block access to global functions like print() or OS.get_name() if the instance passed is null. This creates a code injection risk when evaluating formulas from external configurations.
 **Action:** Before calling Expression.parse(), implement a manual whitelist check for identifiers in the formula. Extract all identifiers using RegEx and verify that they are either numeric literals or explicitly allowed variable names from the provided context dictionary.
+
+## 2026-06-20 - instance_from_id() without is_instance_valid() is a use-after-free trap
+
+**Learning:** `EntityLifecycle` used `Dictionary` keyed by `instance_id` (int) to track dying/stunned entities across turns. When `CombatRoom` freed entities via `queue_free()`, the `Entity` `Resource` (RefCounted) could be freed while the dictionary still held the integer key. Calling `instance_from_id(id)` on the next `process_end_of_turn()` returned a dangling pointer — classic use-after-free leading to crash or silent corruption.
+
+**Action:** Always guard `instance_from_id()` with `is_instance_valid(obj)` before dereferencing. Better: avoid storing raw instance IDs for long-lived tracking; use `WeakRef` or notify the lifecycle owner explicitly when entities are freed (e.g., `clear_timers()` on room teardown).
+
+## 2026-06-20 - EventBus signal leaks survive node freedom if not explicitly disconnected
+
+**Learning:** `CombatRoom` connected to `EventBus` and `RunManager` signals in `_ready()` but had no `_exit_tree()` disconnect. While Godot auto-disconnects signals on `queue_free()` for plain method bindings, the pattern is fragile — nodes removed from tree without freeing, autoload references, or capturing lambdas all leak. After scene transitions, duplicate connections accumulated and callbacks fired on stale object references.
+
+**Action:** Every node that `.connect()`s to autoload signals in `_ready()` must `.disconnect()` in `_exit_tree()` — always, explicitly, defensively. Verify with `is_connected()` before disconnecting to avoid double-disconnect errors.
+
+## 2026-06-20 - MAX_ITERATIONS abort must emit terminal signal before returning
+
+**Learning:** `TurnManager._process_state_loop()` capped iterations at 200 and set `current_state = COMBAT_END` on breach, but never emitted `combat_ended`. Any listener waiting for that signal (victory/defeat modals, scene transitioners) hung indefinitely. The game appeared frozen even though the state machine had technically terminated.
+
+**Action:** Any "abort / safety exit" path that short-circuits a state machine must still emit the terminal lifecycle signal expected by downstream listeners. The abort handler is not exempt from the normal termination contract.

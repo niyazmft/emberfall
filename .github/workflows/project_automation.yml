@@ -18,28 +18,7 @@ jobs:
         with:
           project-url: https://github.com/users/niyazmft/projects/1
           github-token: ${{ secrets.ADD_TO_PROJECT_PAT }}
-
-      - name: Set initial status to Ready
-        # This part usually requires the GitHub CLI in the action
-        # or a specialized action to set project fields.
-        # Since we can't easily set select fields with the base add-to-project action,
-        # we'll use a script with gh cli which is pre-installed on ubuntu-latest.
-        env:
-          GH_TOKEN: ${{ secrets.ADD_TO_PROJECT_PAT }}
-          ISSUE_URL: ${{ github.event.issue.html_url }}
-          PROJECT_ID: "PVT_kwHOAI5hvc4BZpb5"
-          STATUS_FIELD_ID: "PVTSSF_lAHOAI5hvc4BZpb5zhUmpS0"
-          READY_OPTION_ID: "61e4505c"
-        run: |
-          # Wait a few seconds for the item to be added by the previous step
-          sleep 10
-
-          # Get the item ID
-          ITEM_ID=$(gh project item-list $PROJECT_ID --owner niyazmft --format json | jq -r ".items[] | select(.content.url == \"$ISSUE_URL\") | .id")
-
-          if [ -n "$ITEM_ID" ]; then
-            gh project item-edit --id "$ITEM_ID" --project-id "$PROJECT_ID" --field-id "$STATUS_FIELD_ID" --single-select-option-id "$READY_OPTION_ID"
-            echo "Successfully set status to Ready for $ITEM_ID"
-          else
-            echo "Could not find item ID for $ISSUE_URL"
-          fi
+        # This action is idempotent — if the issue is already in the project
+        # (e.g. added by automation scripts), it silently no-ops.
+        # Field setting (Priority, Size, Status) is handled by the creation script
+        # to avoid race conditions and duplicate API calls.
