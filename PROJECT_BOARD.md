@@ -2,7 +2,7 @@
 
 **Project:** Emberfall Tactical Combat Game
 **Repository:** <https://github.com/niyazmft/emberfall>
-**Last Updated:** 2026-06-20
+**Last Updated:** 2026-06-21
 **Current Phase:** Phase 5 (Vertical Slice Audit & Blocker Resolution)
 
 ---
@@ -339,15 +339,20 @@ Outside the numbered phases, recent infrastructure work:
 - C-9 — `EventBus` signal leaks (crash risk) → same branch
 - C-10 — `TurnManager` infinite-loop abort → same branch
 
-**Remaining Open Issues (35):**
+**Remaining Open Issues (74):**
 
-- **Critical Audit Blockers** (#411-#426): 16 issues from full audit (loop closure, engine crash risks, visual identity, level design, narrative)
+- **Critical Audit Blockers** (#411–#426): 16 issues from full audit
   - 🔄 In Progress: C-1 (Return to Menu buttons), C-2 (Defeat modal)
-  - ✅ Done: C-8, C-9, C-10 (engine crash risks)
+  - ✅ Done: C-8, C-9, C-10 (engine crash risks) — fixed on `pi/fix-engine-crash-risks`
   - ⏳ Ready: C-3, C-4, C-5, C-6, C-7, C-11, C-12, C-13, C-14, C-15, C-16
-- **5.1b Creative Assets wiring** (#299-#306): Hit effects, transitions, asset dirs, SFX, TurnBanner, StatusBar polish, damage number Z-sort, modal theming
-- **5.7 MVP Gaps** (#294-#298): Room JSONs, narrative data, boss encounter, economy tables, localization
-- **5.8 Playability** (#288-#292): Title screen → combat flow, Continue button, config files, version bump
+- **High Priority** (#427–#441, #464–#471): 23 issues (engine perf, UX, level design, story)
+- **Medium Priority** (#442–#454, #474–#480): 22 issues (quality, systems, content)
+- **Small Priority** (#455–#463, #481–#484): 13 issues (polish, art, CI)
+- **5.1b Creative Assets wiring** (#299–#306): 8 issues
+- **5.7 MVP Gaps** (#294–#298): 5 issues
+- **5.8 Playability** (#288–#292): 6 issues
+
+> **Note:** #472 and #473 were created as duplicates of #419 and #422 respectively. They have been closed. #419 was reopened with corrected P1/S priority after meta-audit finding.
 
 **Next Milestone:** Demo MVP playable end-to-end with no crashes — requires all P0 Critical items plus #288 + #301 + #300 + #304.
 
@@ -382,7 +387,8 @@ Outside the numbered phases, recent infrastructure work:
 | Procedural generation bugs | High | High | Ship #159 + #157 first, test early | 🟢 Mitigated — full pipeline complete |
 | Asset-creep on 5.1 (10 issues) | Medium | High | Group into "feedback batch" + "audio" | 🟢 Mitigated — all 10 done |
 | Engine upgrade regression | Medium | Low | Pre-push + CI catch issues | 🟢 Mitigated |
-| Demo playability gaps | High | Medium | Focus on #288-#292, #299-#306, #411-#426 | 🔴 Active — 16 Critical blockers identified, 3 engine fixes shipped |
+| Demo playability gaps | High | Medium | Focus on #288-#292, #299-#306, #411-#426, #427-#484 | 🔴 Active — 74 open issues across all severities |
+| Engine crash risks (stale refs, signal leaks, loop abort) | Critical | High | `pi/fix-engine-crash-risks` branch; defensive cleanup in `_exit_tree()` | 🟡 Partially Mitigated — C-8/C-9/C-10 fixed, remaining under observation |
 | Engine crash risks (stale refs, signal leaks, loop abort) | Critical | High | `pi/fix-engine-crash-risks` branch; defensive cleanup in `_exit_tree()` | 🟡 Partially Mitigated — C-8/C-9/C-10 fixed, remaining under observation |
 | Audit divergence (docs vs. reality) | Medium | High | Maintain `.jules/integrations.md`; patch `AGENTS.md` weekly | 🟢 Under control — AGENTS.md patched 2026-06-20 |
 
@@ -431,6 +437,7 @@ Outside the numbered phases, recent infrastructure work:
 ---
 
 | 2026-06-20 | **Vertical Slice Audit Complete** — PI engine audit identifies 16 Critical blockers; 3 engine crash fixes shipped on `pi/fix-engine-crash-risks`. All 16 Critical issues created on GitHub (#411–#426). Board expanded from 19 → 35 open issues. See `docs/github_issues.md` for full tracker. |
+| 2026-06-21 | **Full audit tracker aligned with GitHub** — 58 new issues created (#427–#484) covering H-1 through H-23, M-1 through M-20, S-2 through S-17, M-NEW-1, M-NEW-2. #419 reopened with corrected P1/S priority. #472 and #473 closed as duplicates. `project_automation.yml` fixed to prevent failure notifications. Total open issues: 74. |
 
-*Last Updated: 2026-06-20*
+*Last Updated: 2026-06-21*
 *Next Review: After C-1/C-2/C-3 loop-closure fixes ship (Return to Menu buttons)*
