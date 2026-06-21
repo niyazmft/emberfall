@@ -62,6 +62,10 @@ func _render_grid() -> void:
 func _render_tile(x: int, y: int, tile: TacTileData) -> void:
 	var elev_val: int = int(tile.elevation)
 
+	# Deterministic per-tile variation so identical textures don't form a grey void.
+	var tile_seed: int = SeedGovernance.hash_seed("TILEVAR_" + str(x) + "_" + str(y))
+	var tile_norm: float = (float(tile_seed % 161) / 100.0) - 0.8
+
 	# 1. Elevation Terraces: Visual Stacking
 	# We draw diamonds from ground up to the tile's actual elevation.
 	for e: int in range(elev_val + 1):
@@ -70,30 +74,44 @@ func _render_tile(x: int, y: int, tile: TacTileData) -> void:
 		sprite.centered = true
 		sprite.position = _grid_to_world(x, y, e)
 
-		# Color based on elevation level, but only if it's the fallback texture
-		# Assuming _diamond_tex is the fallback if custom texture wasn't loaded
-		# Let's check if the current texture is our generated greybox diamond or a file.
-		# A custom texture will have a valid resource path, while the generated one won't.
-		if (
+		var base_mod: Color
+		var is_fallback: bool = (
 			_diamond_tex.resource_path.is_empty()
 			or not _diamond_tex.resource_path.ends_with(".png")
-		):
+		)
+
+		if is_fallback:
 			match e:
 				0:
-					sprite.modulate = COLOR_FLOOR
+					base_mod = COLOR_FLOOR
 				1:
-					sprite.modulate = COLOR_ELEV_1
+					base_mod = COLOR_ELEV_1
 				2:
-					sprite.modulate = COLOR_ELEV_2
+					base_mod = COLOR_ELEV_2
+				_:
+					base_mod = COLOR_ELEV_2
 		else:
-			# For custom textures, just slightly darken lower elevations
+			# Custom texture: stronger elevation steps, higher = brighter.
 			match e:
 				0:
-					sprite.modulate = Color(1.0, 1.0, 1.0)
+					base_mod = Color(0.60, 0.60, 0.60)
 				1:
-					sprite.modulate = Color(0.9, 0.9, 0.9)
+					base_mod = Color(0.80, 0.80, 0.80)
 				2:
-					sprite.modulate = Color(0.8, 0.8, 0.8)
+					base_mod = Color(1.00, 1.00, 1.00)
+				_:
+					base_mod = Color(1.00, 1.00, 1.00)
+
+		# Apply subtle per-tile colour variation to break up uniformity.
+		var var_r: float = tile_norm * 0.05
+		var var_g: float = tile_norm * 0.03
+		var var_b: float = tile_norm * 0.01
+
+		var r: float = DeterministicMath.clampf(base_mod.r + var_r, 0.0, 1.0)
+		var g: float = DeterministicMath.clampf(base_mod.g + var_g, 0.0, 1.0)
+		var b: float = DeterministicMath.clampf(base_mod.b + var_b, 0.0, 1.0)
+
+		sprite.modulate = Color(r, g, b, 1.0)
 
 		add_child(sprite)
 		_tile_sprites.append(sprite)
