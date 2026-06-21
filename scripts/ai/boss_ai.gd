@@ -22,10 +22,14 @@ static func decide_action(
 			var player_entity: Entity = CombatEntity.get_entity(p_player_node)
 			if player_entity == null:
 				return {"type": "wait"}
+			var occupied_coords: Array[Vector2i] = p_controller._get_occupied_coords()
 			return p_controller._grunt_behavior(
 				p_entity.grid_position(),
 				player_entity.grid_position(),
-				p_controller._grid_distance(p_entity.grid_position(), player_entity.grid_position())
+				p_controller._grid_distance(
+					p_entity.grid_position(), player_entity.grid_position()
+				),
+				occupied_coords
 			)
 
 
@@ -42,6 +46,7 @@ static func _overgrown_guardian_behavior(
 	var player_pos: Vector2i = player_entity.grid_position()
 	var enemy_pos: Vector2i = p_entity.grid_position()
 	var dist: int = p_controller._grid_distance(enemy_pos, player_pos)
+	var occupied_coords: Array[Vector2i] = p_controller._get_occupied_coords()
 
 	# Overgrown Guardian logic:
 	# 1. If adjacent, attack.
@@ -51,7 +56,7 @@ static func _overgrown_guardian_behavior(
 	if dist <= 1:
 		return {"type": "attack", "target": p_player_node}
 
-	var next_tile: Vector2i = p_controller._get_next_tile_towards(player_pos)
+	var next_tile: Vector2i = p_controller._get_next_tile_towards(player_pos, occupied_coords)
 	if next_tile != enemy_pos:
 		return {"type": "move", "target_x": next_tile.x, "target_y": next_tile.y}
 

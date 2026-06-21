@@ -25,6 +25,13 @@ extends Node2D
 var _target_position: Vector2
 var _grid_renderer: GridRenderer
 var _status_bar: EntityStatusBar
+
+# Breathing animation state (H-13: avoid per-frame sin()/get_ticks_msec())
+var _breath_time: float = 0.0
+var _breath_update_acc: float = 0.0
+var _breath_y: float = 0.0
+var _breath_phase: float = 0.0
+
 @onready var _apparition_renderer: ApparitionRenderer = _find_apparition_renderer()
 var _hit_flash_timer: float = 0.0
 var _hit_flash_duration: float = 0.1
@@ -53,6 +60,11 @@ func _ready() -> void:
 		_sync_to_entity()
 		global_position = _target_position  # Snap initially
 
+	# Initialize breathing phase once so entities bob out of sync (H-13)
+	if base_sprite:
+		_breath_phase = float(get_instance_id() % 1000) / 100.0
+		_breath_y = sin(_breath_phase * 3.0) * 4.0
+
 
 func _exit_tree() -> void:
 	_disconnect_entity_signals()
@@ -66,12 +78,13 @@ func _process(delta: float) -> void:
 		global_position = _target_position
 
 	if base_sprite:
-		# Add a subtle breathing / floating animation using sin wave
-		# Time.get_ticks_msec() provides a continuous time value
-		var time_sec: float = float(Time.get_ticks_msec()) / 1000.0
-		# Offset by node's instance ID so they don't all bob in perfect sync
-		var offset: float = float(get_instance_id() % 1000) / 100.0
-		base_sprite.position.y = sin((time_sec + offset) * 3.0) * 4.0
+		# Accumulate elapsed time locally and recompute sin() at 10 Hz (H-13)
+		_breath_time += delta
+		_breath_update_acc += delta
+		if _breath_update_acc >= 0.1:
+			_breath_update_acc -= 0.1
+			_breath_y = sin((_breath_time + _breath_phase) * 3.0) * 4.0
+		base_sprite.position.y = _breath_y
 
 
 func _find_grid_renderer(node: Node) -> GridRenderer:

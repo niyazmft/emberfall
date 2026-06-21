@@ -349,7 +349,8 @@ Outside the numbered phases, recent infrastructure work:
   - ✅ Done: C-1 (#411), C-3 (#413), C-5 (#415), C-11 (#421) — PR #487 merged
   - ✅ Done: C-8, C-9, C-10 (engine crash risks) — PR #485 merged
   - 🔄 In review: C-2 (#412), C-4 (#414), C-6 (#416), C-7 (#417) — PR #488
-  - ⏳ Ready: C-12, C-13, C-14, C-15, C-16
+  - 🔄 In review: C-13 (#423), C-15 (#425) — PR #489
+  - ⏳ Ready: C-14, C-16
 - **High Priority** (#427–#441, #464–#471): 23 issues (engine perf, UX, level design, story)
 - **Medium Priority** (#442–#454, #474–#480): 22 issues (quality, systems, content)
 - **Small Priority** (#455–#463, #481–#484): 13 issues (polish, art, CI)

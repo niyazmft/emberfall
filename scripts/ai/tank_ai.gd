@@ -18,6 +18,7 @@ static func decide_action(
 	var player_pos: Vector2i = player_entity.grid_position()
 	var enemy_pos: Vector2i = p_entity.grid_position()
 	var dist: int = p_controller._grid_distance(enemy_pos, player_pos)
+	var occupied_coords: Array[Vector2i] = p_controller._get_occupied_coords()
 
 	# Get Tank-specific properties from the entity's controller node (BaseEnemy or child)
 	var tank_node := p_controller.get_parent() as EnemyTank
@@ -33,14 +34,14 @@ static func decide_action(
 	# Tanks want to be within taunt_radius to be effective.
 	# If outside, move towards.
 	if dist > taunt_radius:
-		var next_tile: Vector2i = p_controller._get_next_tile_towards(player_pos)
+		var next_tile: Vector2i = p_controller._get_next_tile_towards(player_pos, occupied_coords)
 		if next_tile != enemy_pos:
 			return {"type": "move", "target_x": next_tile.x, "target_y": next_tile.y}
 
 	# 3. If within taunt radius but not adjacent, still move towards if possible
 	# to maximize pressure, but this could be made more sophisticated later.
 	if dist > 1:
-		var next_tile: Vector2i = p_controller._get_next_tile_towards(player_pos)
+		var next_tile: Vector2i = p_controller._get_next_tile_towards(player_pos, occupied_coords)
 		if next_tile != enemy_pos:
 			return {"type": "move", "target_x": next_tile.x, "target_y": next_tile.y}
 
