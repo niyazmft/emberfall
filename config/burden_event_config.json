@@ -21,8 +21,8 @@
     "variant_hash_seed_formula": "run_seed + encounter_room_index + variant_state",
     "noun_rotation_seed_formula": "seed_room_topology hash mod noun_pool size",
     "noun_pool_size": 8,
-    "variant_first_pool_size": 3,
-    "variant_repeat_pool_size": 2,
+    "variant_first_pool_size": 10,
+    "variant_repeat_pool_size": 5,
     "fallback_variant_id": "BE_B_FIRST_A"
   },
   "numbness_cap": {
@@ -47,11 +47,21 @@
       "variants_first": [
         {"id": "BE_B_FIRST_A", "title": "The Holding", "text": "Three keepers of their own small truths. You hold them now. That is the burden.", "word_count": 15, "emotion": "acknowledgement-of-transfer", "cadence_ms_estimate": 6000, "localization_key": "BE_B_FIRST_A"},
         {"id": "BE_B_FIRST_B", "title": "The Silence", "text": "Three echoes, and the world is quieter for their leaving. You carry what remains.", "word_count": 14, "emotion": "absence-and-continuation", "cadence_ms_estimate": 5600, "localization_key": "BE_B_FIRST_B"},
-        {"id": "BE_B_FIRST_C", "title": "The Cost", "text": "Three bearers, each walking their own uncertain path. That path ends with you.", "word_count": 13, "emotion": "interrupted-futurity", "cadence_ms_estimate": 5200, "localization_key": "BE_B_FIRST_C"}
+        {"id": "BE_B_FIRST_C", "title": "The Cost", "text": "Three bearers, each walking their own uncertain path. That path ends with you.", "word_count": 13, "emotion": "interrupted-futurity", "cadence_ms_estimate": 5200, "localization_key": "BE_B_FIRST_C"},
+        {"id": "BE_B_FIRST_D", "title": "The Gathering", "text": "Three vessels of quiet purpose, stilled. You gather their unfinished songs.", "word_count": 11, "emotion": "unfinished-purpose", "cadence_ms_estimate": 4400, "localization_key": "BE_B_FIRST_D"},
+        {"id": "BE_B_FIRST_E", "title": "The Fraying", "text": "Three threads once woven into the silence. You feel the fraying begin.", "word_count": 12, "emotion": "dissolution-and-continuity", "cadence_ms_estimate": 4800, "localization_key": "BE_B_FIRST_E"},
+        {"id": "BE_B_FIRST_F", "title": "The Dimming", "text": "Three witnesses to a light that dimmed. You remember what they saw.", "word_count": 12, "emotion": "witness-and-remembrance", "cadence_ms_estimate": 4800, "localization_key": "BE_B_FIRST_F"},
+        {"id": "BE_B_FIRST_G", "title": "The Transfer", "text": "Three carriers of weight they never chose. You accept the transfer in kind.", "word_count": 12, "emotion": "involuntary-burden-shared", "cadence_ms_estimate": 4800, "localization_key": "BE_B_FIRST_G"},
+        {"id": "BE_B_FIRST_H", "title": "The Recall", "text": "Three remnants fading from the world's recall. You hold their names intact.", "word_count": 12, "emotion": "memory-against-erasure", "cadence_ms_estimate": 4800, "localization_key": "BE_B_FIRST_H"},
+        {"id": "BE_B_FIRST_I", "title": "The Listening", "text": "Three echoes refusing to dissolve unheard. You become their listening ear.", "word_count": 11, "emotion": "refusal-to-be-unheard", "cadence_ms_estimate": 4400, "localization_key": "BE_B_FIRST_I"},
+        {"id": "BE_B_FIRST_J", "title": "The Passing", "text": "Three keepers bound to futures unlived. You are the vessel of their passing.", "word_count": 13, "emotion": "unlived-future-borne", "cadence_ms_estimate": 5200, "localization_key": "BE_B_FIRST_J"}
       ],
       "variants_repeat": [
         {"id": "BE_B_REPEAT_R1", "title": "The Addition", "text": "More remnants. The burden holds.", "word_count": 5, "emotion": "accumulation-without-elaboration", "cadence_ms_estimate": 2000, "localization_key": "BE_B_REPEAT_R1"},
-        {"id": "BE_B_REPEAT_R2", "title": "The Doubling", "text": "More echoes. The world does not forget.", "word_count": 8, "emotion": "persistent-memory", "cadence_ms_estimate": 3200, "localization_key": "BE_B_REPEAT_R2"}
+        {"id": "BE_B_REPEAT_R2", "title": "The Doubling", "text": "More echoes. The world does not forget.", "word_count": 8, "emotion": "persistent-memory", "cadence_ms_estimate": 3200, "localization_key": "BE_B_REPEAT_R2"},
+        {"id": "BE_B_REPEAT_R3", "title": "The Deepening", "text": "More vessels. The hollow grows.", "word_count": 5, "emotion": "accumulating-absence", "cadence_ms_estimate": 2000, "localization_key": "BE_B_REPEAT_R3"},
+        {"id": "BE_B_REPEAT_R4", "title": "The Accumulation", "text": "More witnesses. The memory accumulates still.", "word_count": 6, "emotion": "persistent-witness", "cadence_ms_estimate": 2400, "localization_key": "BE_B_REPEAT_R4"},
+        {"id": "BE_B_REPEAT_R5", "title": "The Bending", "text": "More bearers. The path bends lower.", "word_count": 6, "emotion": "increasing-weight", "cadence_ms_estimate": 2400, "localization_key": "BE_B_REPEAT_R5"}
       ],
       "template_first": "{count} {collective_noun} of their own small truths. You hold them now. That is the burden.",
       "count_first": "Three",

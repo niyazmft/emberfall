@@ -1,0 +1,92 @@
+{
+  "id": "boss_industrial_overseer",
+  "biome": 1,
+  "size": {
+    "width": 12,
+    "height": 12
+  },
+  "layout": {
+    "elevation": [
+      0,0,0,0,0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,0,0,0,0,
+      0,0,1,1,1,1,1,1,1,1,0,0,
+      0,0,1,1,1,1,1,1,1,1,0,0,
+      0,0,1,1,2,2,2,2,1,1,0,0,
+      0,0,1,1,2,2,2,2,1,1,0,0,
+      0,0,1,1,2,2,2,2,1,1,0,0,
+      0,0,1,1,2,2,2,2,1,1,0,0,
+      0,0,1,1,1,1,1,1,1,1,0,0,
+      0,0,1,1,1,1,1,1,1,1,0,0,
+      0,0,0,0,0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,0,0,0,0
+    ],
+    "cover": [
+      0,0,0,0,0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,0,0,0,0,
+      0,0,0,0,1,1,1,1,0,0,0,0,
+      0,0,0,0,1,1,1,1,0,0,0,0,
+      0,0,1,1,0,0,0,0,1,1,0,0,
+      0,0,1,1,0,0,0,0,1,1,0,0,
+      0,0,1,1,0,0,0,0,1,1,0,0,
+      0,0,1,1,0,0,0,0,1,1,0,0,
+      0,0,0,0,1,1,1,1,0,0,0,0,
+      0,0,0,0,1,1,1,1,0,0,0,0,
+      0,0,0,0,0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,0,0,0,0
+    ],
+    "blocked": [
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,true,true,false,false,false,false,true,true,false,false,
+      false,false,true,true,false,false,false,false,true,true,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,true,true,false,false,false,false,true,true,false,false,
+      false,false,true,true,false,false,false,false,true,true,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false
+    ],
+    "vision_blocked": [
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false
+    ]
+  },
+  "encounters": [
+    {
+      "enemy_type": "boss",
+      "archetype_override": "industrial_overseer",
+      "behavior_override": "BOSS",
+      "count": 1,
+      "positions": [
+        { "x": 5, "y": 5 }
+      ]
+    }
+  ],
+  "reinforcements": [
+    {
+      "enemy_type": "grunt",
+      "count": 3,
+      "positions": [
+        { "x": 2, "y": 2 },
+        { "x": 9, "y": 2 },
+        { "x": 5, "y": 8 }
+      ]
+    }
+  ],
+  "player_start": {
+    "x": 5,
+    "y": 10
+  }
+}

@@ -50,12 +50,13 @@ func decide_action(p_entity: Entity = null) -> Dictionary:
 	var player_pos: Vector2i = player_entity.grid_position()
 	var enemy_pos: Vector2i = enemy_entity.grid_position()
 	var dist: int = _grid_distance(enemy_pos, player_pos)
+	var occupied_coords: Array[Vector2i] = _get_occupied_coords()
 
 	match behavior:
 		BehaviorType.GRUNT:
-			return _grunt_behavior(enemy_pos, player_pos, dist)
+			return _grunt_behavior(enemy_pos, player_pos, dist, occupied_coords)
 		BehaviorType.ARCHER:
-			return _archer_behavior(enemy_pos, player_pos, dist)
+			return _archer_behavior(enemy_pos, player_pos, dist, occupied_coords)
 		BehaviorType.TANK:
 			return _tank_behavior(enemy_pos, player_pos, dist)
 		BehaviorType.BOSS:
@@ -64,28 +65,32 @@ func decide_action(p_entity: Entity = null) -> Dictionary:
 	return {"type": "wait"}
 
 
-func _grunt_behavior(enemy_pos: Vector2i, player_pos: Vector2i, dist: int) -> Dictionary:
+func _grunt_behavior(
+	enemy_pos: Vector2i, player_pos: Vector2i, dist: int, occupied_coords: Array[Vector2i]
+) -> Dictionary:
 	# Rush player, attack when adjacent
 	if dist <= 1:
 		return {"type": "attack", "target": _player_node}
 
-	var next_tile: Vector2i = _get_next_tile_towards(player_pos)
+	var next_tile: Vector2i = _get_next_tile_towards(player_pos, occupied_coords)
 	if next_tile != enemy_pos:
 		return {"type": "move", "target_x": next_tile.x, "target_y": next_tile.y}
 
 	return {"type": "wait"}
 
 
-func _archer_behavior(enemy_pos: Vector2i, player_pos: Vector2i, dist: int) -> Dictionary:
+func _archer_behavior(
+	enemy_pos: Vector2i, player_pos: Vector2i, dist: int, occupied_coords: Array[Vector2i]
+) -> Dictionary:
 	# Maintain 2-3 tile distance
 	if dist < 2:
 		# Too close, move away
-		var next_tile: Vector2i = _get_next_tile_towards(player_pos, true)
+		var next_tile: Vector2i = _get_next_tile_towards(player_pos, occupied_coords, true)
 		if next_tile != enemy_pos:
 			return {"type": "move", "target_x": next_tile.x, "target_y": next_tile.y}
 	elif dist > 3:
 		# Too far, move towards
-		var next_tile: Vector2i = _get_next_tile_towards(player_pos)
+		var next_tile: Vector2i = _get_next_tile_towards(player_pos, occupied_coords)
 		if next_tile != enemy_pos:
 			return {"type": "move", "target_x": next_tile.x, "target_y": next_tile.y}
 	else:
@@ -105,7 +110,9 @@ func _boss_behavior() -> Dictionary:
 	return BossAI.decide_action(boss_behavior_name, enemy_entity, _player_node, grid_system, self)
 
 
-func _get_next_tile_towards(target_pos: Vector2i, away: bool = false) -> Vector2i:
+func _get_next_tile_towards(
+	target_pos: Vector2i, occupied_coords: Array[Vector2i], away: bool = false
+) -> Vector2i:
 	if enemy_entity == null or grid_system == null:
 		return Vector2i(enemy_entity.x, enemy_entity.y) if enemy_entity else Vector2i.ZERO
 
@@ -118,9 +125,6 @@ func _get_next_tile_towards(target_pos: Vector2i, away: bool = false) -> Vector2
 		# Sentinel larger than any possible grid distance so any valid
 		# neighbour is considered when the ideal tile is occupied.
 		min_dist = GameConstants.GRID_W * 2 + 1
-
-	# Get all entities once to avoid repeated group lookups in the loop
-	var occupied_coords: Array[Vector2i] = _get_occupied_coords()
 
 	# Check all 8 neighbors
 	for dx: int in range(-1, 2):

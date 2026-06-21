@@ -1,0 +1,91 @@
+{
+  "id": "boss_crystal_sentinel",
+  "biome": 0,
+  "size": {
+    "width": 12,
+    "height": 12
+  },
+  "layout": {
+    "elevation": [
+      0,0,0,0,0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,0,0,0,0,
+      0,0,1,1,1,1,1,1,1,1,0,0,
+      0,0,1,1,1,1,1,1,1,1,0,0,
+      0,0,1,1,2,2,2,2,1,1,0,0,
+      0,0,1,1,2,2,2,2,1,1,0,0,
+      0,0,1,1,2,2,2,2,1,1,0,0,
+      0,0,1,1,2,2,2,2,1,1,0,0,
+      0,0,1,1,1,1,1,1,1,1,0,0,
+      0,0,1,1,1,1,1,1,1,1,0,0,
+      0,0,0,0,0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,0,0,0,0
+    ],
+    "cover": [
+      0,0,0,0,0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,0,0,0,0,
+      0,0,1,0,0,0,0,0,0,1,0,0,
+      0,0,0,1,0,0,0,0,1,0,0,0,
+      0,0,0,0,0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,0,0,0,0,
+      0,0,0,1,0,0,0,0,1,0,0,0,
+      0,0,1,0,0,0,0,0,0,1,0,0,
+      0,0,0,0,0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,0,0,0,0
+    ],
+    "blocked": [
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false
+    ],
+    "vision_blocked": [
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false,
+      false,false,false,false,false,false,false,false,false,false,false,false
+    ]
+  },
+  "encounters": [
+    {
+      "enemy_type": "boss",
+      "archetype_override": "crystal_sentinel",
+      "behavior_override": "BOSS",
+      "count": 1,
+      "positions": [
+        { "x": 5, "y": 5 }
+      ]
+    }
+  ],
+  "reinforcements": [
+    {
+      "enemy_type": "grunt",
+      "count": 2,
+      "positions": [
+        { "x": 3, "y": 3 },
+        { "x": 8, "y": 8 }
+      ]
+    }
+  ],
+  "player_start": {
+    "x": 5,
+    "y": 10
+  }
+}
