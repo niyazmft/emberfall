@@ -335,15 +335,15 @@ Outside the numbered phases, recent infrastructure work:
 
 **Recently Fixed (2026-06-20):**
 
-- C-8 — `EntityLifecycle` stale dicts (crash risk) → branch `pi/fix-engine-crash-risks`
-- C-9 — `EventBus` signal leaks (crash risk) → same branch
-- C-10 — `TurnManager` infinite-loop abort → same branch
+- C-8 — `EntityLifecycle` stale dicts (crash risk) → PR #485 ✅ Merged
+- C-9 — `EventBus` signal leaks (crash risk) → PR #485 ✅ Merged
+- C-10 — `TurnManager` infinite-loop abort → PR #485 ✅ Merged
 
 **Remaining Open Issues (74):**
 
 - **Critical Audit Blockers** (#411–#426): 16 issues from full audit
   - 🔄 In Progress: C-1 (Return to Menu buttons), C-2 (Defeat modal)
-  - ✅ Done: C-8, C-9, C-10 (engine crash risks) — fixed on `pi/fix-engine-crash-risks`
+  - ✅ Done: C-8, C-9, C-10 (engine crash risks) — PR #485 merged
   - ⏳ Ready: C-3, C-4, C-5, C-6, C-7, C-11, C-12, C-13, C-14, C-15, C-16
 - **High Priority** (#427–#441, #464–#471): 23 issues (engine perf, UX, level design, story)
 - **Medium Priority** (#442–#454, #474–#480): 22 issues (quality, systems, content)
@@ -438,6 +438,7 @@ Outside the numbered phases, recent infrastructure work:
 
 | 2026-06-20 | **Vertical Slice Audit Complete** — PI engine audit identifies 16 Critical blockers; 3 engine crash fixes shipped on `pi/fix-engine-crash-risks`. All 16 Critical issues created on GitHub (#411–#426). Board expanded from 19 → 35 open issues. See `docs/github_issues.md` for full tracker. |
 | 2026-06-21 | **Full audit tracker aligned with GitHub** — 58 new issues created (#427–#484) covering H-1 through H-23, M-1 through M-20, S-2 through S-17, M-NEW-1, M-NEW-2. #419 reopened with corrected P1/S priority. #472 and #473 closed as duplicates. `project_automation.yml` fixed to prevent failure notifications. Total open issues: 74. |
+| 2026-06-21 | **PRs #485 and #486 merged to main** — Engine crash fixes (C-8, C-9, C-10) and docs/board updates both landed. C-8/C-9/C-10 status updated to ✅ Done. Open issues reduced to 71. |
 
 *Last Updated: 2026-06-21*
 *Next Review: After C-1/C-2/C-3 loop-closure fixes ship (Return to Menu buttons)*
