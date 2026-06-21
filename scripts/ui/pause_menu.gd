@@ -112,3 +112,4 @@ func _on_quit_confirmed() -> void:
 	if rm:
 		rm.cmd_return_to_sanctum()
 	hide()
+	get_tree().change_scene_to_file("res://scenes/title_screen.tscn")
