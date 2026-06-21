@@ -304,7 +304,7 @@ Narrative, dialogue, localization.
 
 | Task | Issue | Status | Priority | Estimate | Blocked By |
 |----|-----|------|--------|--------|----------|
-| Title Screen → CombatRoom scene flow | #288 | ⏳ Ready | P0 | 1d | None |
+| Title Screen → CombatRoom scene flow | #288 | ✅ Done | P0 | 1d | PR #391 |
 | Enable Continue button on Title Screen | #289 | ⏳ Ready | P0 | 1d | None |
 | Remove orphaned MainMenu scene | #291 | ⏳ Ready | P1 | 1d | None |
 | Create missing config placeholder files | #290 | ⏳ Ready | P1 | 1d | None |
@@ -344,7 +344,8 @@ Outside the numbered phases, recent infrastructure work:
 - **Critical Audit Blockers** (#411–#426): 16 issues from full audit
   - 🔄 In Progress: C-1 (Return to Menu buttons), C-2 (Defeat modal)
   - ✅ Done: C-8, C-9, C-10 (engine crash risks) — PR #485 merged
-  - ⏳ Ready: C-3, C-4, C-5, C-6, C-7, C-11, C-12, C-13, C-14, C-15, C-16
+  - 🔄 In review: C-1 (#411), C-3 (#413), C-5 (#415), C-11 (#421) → PR #487
+  - ⏳ Ready: C-4, C-5, C-6, C-7, C-11, C-12, C-13, C-14, C-15, C-16
 - **High Priority** (#427–#441, #464–#471): 23 issues (engine perf, UX, level design, story)
 - **Medium Priority** (#442–#454, #474–#480): 22 issues (quality, systems, content)
 - **Small Priority** (#455–#463, #481–#484): 13 issues (polish, art, CI)
@@ -354,7 +355,7 @@ Outside the numbered phases, recent infrastructure work:
 
 > **Note:** #472 and #473 were created as duplicates of #419 and #422 respectively. They have been closed. #419 was reopened with corrected P1/S priority after meta-audit finding.
 
-**Next Milestone:** Demo MVP playable end-to-end with no crashes — requires all P0 Critical items plus #288 + #301 + #300 + #304.
+**Next Milestone:** Demo MVP playable end-to-end with no crashes — requires all P0 Critical items plus #301 + #300 + #304.
 
 ---
 

@@ -7,9 +7,15 @@ class_name _GameCoordinator
 
 const COMBAT_ROOM_SCENE := "res://scenes/combat_room.tscn"
 
+var _is_changing_scene: bool = false
+
 
 ## Starts a fresh run.
 func cmd_new_game() -> void:
+	if _is_changing_scene:
+		push_warning("GameCoordinator: Scene change already in progress. Ignoring cmd_new_game.")
+		return
+
 	var run_manager := AutoloadHelper.run_manager()
 	if run_manager != null:
 		run_manager.cmd_start_run()
@@ -18,11 +24,17 @@ func cmd_new_game() -> void:
 	if save_manager != null:
 		save_manager.delete_save()
 
-	_change_scene(COMBAT_ROOM_SCENE)
+	await _change_scene(COMBAT_ROOM_SCENE)
 
 
 ## Continues a run from the last save.
 func cmd_continue_game() -> void:
+	if _is_changing_scene:
+		push_warning(
+			"GameCoordinator: Scene change already in progress. Ignoring cmd_continue_game."
+		)
+		return
+
 	var save_manager := AutoloadHelper.save_manager()
 	if save_manager == null:
 		push_error("GameCoordinator: SaveManager not found.")
@@ -40,30 +52,45 @@ func cmd_continue_game() -> void:
 		and typeof(data["run_state"]) == TYPE_DICTIONARY
 	):
 		run_manager.load_run_state(data["run_state"])
-		_change_scene(COMBAT_ROOM_SCENE)
+		await _change_scene(COMBAT_ROOM_SCENE)
 	else:
 		push_warning("GameCoordinator: No valid run_state Dictionary found in save data.")
 		var tm := AutoloadHelper.toast_manager()
-		if tm:
+		if tm != null:
 			tm.show_toast("Save File Corrupted!", _ToastManager.ToastType.T_04)
 
 
 func _change_scene(path: String) -> void:
+	if _is_changing_scene:
+		return
+	_is_changing_scene = true
+
 	if OS.has_feature("headless"):
-		var err := get_tree().change_scene_to_file(path)
-		if err != OK:
-			push_error("GameCoordinator: Failed to change scene to %s" % path)
+		var tree := get_tree()
+		if tree != null:
+			var err := tree.change_scene_to_file(path)
+			if err != OK:
+				push_error("GameCoordinator: Failed to change scene to %s (Error %d)" % [path, err])
+				var tm := AutoloadHelper.toast_manager()
+				if tm != null:
+					tm.show_toast("Failed to load scene.", _ToastManager.ToastType.T_04)
+		_is_changing_scene = false
 		return
 
-	var tl: Node = get_node_or_null("/root/TransitionLayer")
-	if tl and tl.has_method("fade_out"):
+	var tl: _TransitionLayer = get_node_or_null("/root/TransitionLayer") as _TransitionLayer
+	if tl != null:
 		await tl.fade_out(0.4)
 
 	var tree := get_tree()
-	if tree:
+	if tree != null:
 		var err := tree.change_scene_to_file(path)
 		if err != OK:
 			push_error("GameCoordinator: Failed to change scene to %s (Error %d)" % [path, err])
+			var tm := AutoloadHelper.toast_manager()
+			if tm != null:
+				tm.show_toast("Failed to load scene.", _ToastManager.ToastType.T_04)
 
-	if tl and tl.has_method("fade_in"):
+	if tl != null:
 		await tl.fade_in(0.4)
+
+	_is_changing_scene = false
