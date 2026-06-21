@@ -10,7 +10,7 @@ const VICTORY_MODAL_SCENE_PATH: String = "res://scenes/ui/victory_modal.tscn"
 const DEFEAT_MODAL_SCENE_PATH: String = "res://scenes/ui/defeat_modal.tscn"
 const TURN_BANNER_SCENE_PATH: String = "res://scenes/ui/turn_banner.tscn"
 
-@export var test_mode: bool = true  # Spawn test enemies
+@export var test_mode: bool = false  # Spawn test enemies
 
 var _grid_system: _GridSystem
 var _player: Node2D  # Type will be Keeper
