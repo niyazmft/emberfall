@@ -81,6 +81,9 @@ func _on_new_game_pressed() -> void:
 		coordinator.cmd_new_game()
 	else:
 		push_error("TitleScreen: GameCoordinator not found for New Game.")
+		var tm := AutoloadHelper.toast_manager()
+		if tm != null:
+			tm.show_toast("TitleScreen: GameCoordinator not found", _ToastManager.ToastType.T_04)
 
 
 func _on_continue_pressed() -> void:
