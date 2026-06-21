@@ -183,6 +183,7 @@ func _spawn_test_encounter() -> void:
 
 func _setup_camera() -> void:
 	# Camera centered on grid (approximate center of 12x12 grid)
+	camera.zoom = Vector2(4.5, 4.5)
 	if grid_renderer:
 		camera.position = grid_renderer.grid_to_world(5, 5, 0)
 

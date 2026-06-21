@@ -8,6 +8,7 @@ extends Control
 @onready var settings_btn: Button = %SettingsButton
 @onready var quit_btn: Button = %QuitButton
 @onready var button_container: VBoxContainer = %ButtonContainer
+@onready var ember_particles: CPUParticles2D = $EmberParticles
 
 
 func _ready() -> void:
@@ -37,6 +38,11 @@ func _ready() -> void:
 
 	# Setup dynamic vertical wrap-around focus
 	_setup_focus_wrap()
+
+	# Position ember particles across bottom of viewport
+	var viewport_size: Vector2 = get_viewport_rect().size
+	ember_particles.position = Vector2(viewport_size.x * 0.5, viewport_size.y * 0.95)
+	ember_particles.emission_rect_extents = Vector2(viewport_size.x * 0.5, 20.0)
 
 	# Initial focus: Continue if enabled, otherwise New Game
 	if not continue_btn.disabled:

@@ -333,8 +333,12 @@ Outside the numbered phases, recent infrastructure work:
 
 **Phase 5.1-5.6 Complete:** All original creative assets, content/systems, content/level, content/story, and bugs/refactoring issues are now ✅ Done. Sub-areas 5.1-5.6 are fully closed.
 
-**Recently Fixed (2026-06-20):**
+**Recently Fixed (2026-06-21):**
 
+- C-1 — VictoryModal Return to Menu button → PR #487 ✅ Merged
+- C-3 — PauseMenu Quit transitions to title → PR #487 ✅ Merged
+- C-5 — GridRenderer textured floor instead of grey void → PR #487 ✅ Merged
+- C-11 — `test_mode` defaults to `false` for procedural rooms → PR #487 ✅ Merged
 - C-8 — `EntityLifecycle` stale dicts (crash risk) → PR #485 ✅ Merged
 - C-9 — `EventBus` signal leaks (crash risk) → PR #485 ✅ Merged
 - C-10 — `TurnManager` infinite-loop abort → PR #485 ✅ Merged
@@ -342,10 +346,10 @@ Outside the numbered phases, recent infrastructure work:
 **Remaining Open Issues (74):**
 
 - **Critical Audit Blockers** (#411–#426): 16 issues from full audit
-  - 🔄 In Progress: C-1 (Return to Menu buttons), C-2 (Defeat modal)
+  - ✅ Done: C-1 (#411), C-3 (#413), C-5 (#415), C-11 (#421) — PR #487 merged
   - ✅ Done: C-8, C-9, C-10 (engine crash risks) — PR #485 merged
-  - 🔄 In review: C-1 (#411), C-3 (#413), C-5 (#415), C-11 (#421) → PR #487
-  - ⏳ Ready: C-4, C-5, C-6, C-7, C-11, C-12, C-13, C-14, C-15, C-16
+  - 🔄 In review: C-2 (#412), C-4 (#414), C-6 (#416), C-7 (#417) — PR #488
+  - ⏳ Ready: C-12, C-13, C-14, C-15, C-16
 - **High Priority** (#427–#441, #464–#471): 23 issues (engine perf, UX, level design, story)
 - **Medium Priority** (#442–#454, #474–#480): 22 issues (quality, systems, content)
 - **Small Priority** (#455–#463, #481–#484): 13 issues (polish, art, CI)
