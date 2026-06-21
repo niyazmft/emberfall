@@ -50,11 +50,30 @@ func _ready() -> void:
 	_setup_camera()
 
 
+func _exit_tree() -> void:
+	var run_manager := AutoloadHelper.run_manager()
+	if run_manager and run_manager.room_entered.is_connected(_on_room_entered):
+		run_manager.room_entered.disconnect(_on_room_entered)
+
+	var eb := AutoloadHelper.event_bus()
+	if eb and eb.entity_state_changed.is_connected(_on_entity_state_changed):
+		eb.entity_state_changed.disconnect(_on_entity_state_changed)
+
+	var lifecycle := AutoloadHelper.entity_lifecycle()
+	if lifecycle:
+		lifecycle.clear_timers()
+
+
 func _on_room_entered(p_room_index: int, room_data: Dictionary) -> void:
 	if OS.is_debug_build():
 		print(
 			"[CombatRoom] _on_room_entered index:%d data_keys:%s" % [p_room_index, room_data.keys()]
 		)
+
+	var lifecycle := AutoloadHelper.entity_lifecycle()
+	if lifecycle:
+		lifecycle.clear_timers()
+
 	_current_room_data = room_data
 	_room_kills = 0
 
