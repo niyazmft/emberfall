@@ -88,23 +88,53 @@ For contribution guidelines and agent instructions, see [AGENTS.md](AGENTS.md) a
 ```text
 emberfall/
 ├── project.godot
+├── AGENTS.md            # Agent behavioral guidelines and architecture
+├── ARCHITECTURE.md      # System architecture documentation
 ├── CONTRIBUTING.md      # Setup, branch strategy, code standards
-├── scenes/
+├── CODE_OF_CONDUCT.md   # Contributor Covenant v2.1
+├── LICENSE              # MIT License
+├── SECURITY.md          # Vulnerability disclosure process
+├── main_theme.tres      # Custom Godot theme
+├── scenes/              # TSCN scene files
+│   └── enemies/         # Enemy scene definitions
 ├── scripts/
+│   ├── ai/              # Enemy behavior trees
+│   ├── autoload/        # ~29 global systems (EventBus, GridSystem, SaveManager, …)
+│   ├── burden/          # Moral weight events
+│   ├── combat/          # Combat orchestration
 │   ├── core/            # Math, combat, constants (deterministic)
 │   ├── entities/        # Entity data + state lifecycle
-│   ├── autoload/        # 16 global systems (EventBus, GridSystem, SaveManager, …)
-│   ├── shaders/
-│   └── state_machine/
+│   ├── inventory/       # Item/equipment management
+│   ├── skills/          # Ability definitions
+│   ├── state_machine/   # FSM framework
+│   ├── ui/              # UI components and screens
+│   └── visual/          # Entity proxies, grid rendering
 ├── .agents/             # Agent task boards and custom Godot skills
 ├── .jules/              # Persistent memory and learning files for AI personas
-├── assets/
+├── .githooks/           # Version-controlled pre-commit and pre-push hooks
+├── .github/             # GitHub Actions workflows and issue templates
+├── assets/              # Sprites, fonts, audio, shaders
+│   ├── audio/
+│   ├── fonts/
+│   ├── icons/
+│   ├── locales/
+│   ├── palettes/
+│   ├── particles/
+│   ├── shaders/         # GDShader files (post-process, sprite, CVD simulation)
+│   ├── sprites/
+│   └── textures/
 ├── config/              # JSON-driven tunable constants
+│   └── rooms/           # Room template JSON files
+├── data/                # Runtime data (props, ambient narrator, captioning)
+│   └── captioning/
+├── docs/                # Design specs and schemas
+│   └── schemas/         # JSON schema validation files
 ├── localization/        # CSV + compiled .translation files (EN/DE/ES/FR)
-├── schemas/             # JSON schema validation files
-├── prototype/           # Throwaway Python research — see below
-└── tests/
-    └── benchmark/       # Performance benchmarks (not in CI)
+├── reports/             # Generated test and benchmark reports
+├── tests/               # Unit tests
+│   └── benchmark/       # Performance benchmarks (not in CI)
+└── tools/               # Scripts and utilities (hooks, validation, helpers)
+    └── project_management/
 ```
 
 ## Determinism Guarantees
@@ -115,24 +145,6 @@ emberfall/
   integers via SHA-256 → truncation
 - **Cross-Platform:** Validation script mirrors GDScript logic in Python;
   both must agree bit-for-bit
-
-## Prototype Archive
-
-The `prototype/` directory contains **throwaway Python research scripts** used
-during pre-production (DON-1). They validated the core AP-economy and
-grid-positioning formulas before porting to GDScript.
-
-> **Do not carry code forward from `prototype/` into production.** All findings
-> are documented in [`prototype/FINDINGS.md`](prototype/FINDINGS.md). The
-> Python scripts have served their purpose and exist only as a reference audit
-> trail.
-
-| File | Purpose |
-|------|---------|
-| `core_mechanic_prototype.py` | Playable terminal prototype (AP economy + positioning) |
-| `grid_system.py` | Python grid/pathfinding reference implementation |
-| `batch_simulation.py` | Quantitative scenario runner |
-| `FINDINGS.md` | Full prototype report with results and recommendations |
 
 ## Roadmap
 
@@ -149,6 +161,12 @@ grid-positioning formulas before porting to GDScript.
 - [x] Subtitle and narrative captioning (`CaptionManager`, `AmbientNarrator`)
 - [x] UI Accessibility and aesthetics (CVD mode, dynamic styling, focus management)
 - [ ] Vertical slice playable demo
+  - [ ] Loop closure: Return to Menu from Victory/Defeat/Pause (#411, #412, #413)
+  - [ ] End condition: cap rooms or add run-complete screen (#414)
+  - [ ] Visual identity: title art, environment props, hit effects (#415, #416, #417)
+  - [ ] Engine stability: stale refs, signal leaks, infinite-loop abort (#418, #419, #420) ✅ *Fixed 2026-06-20*
+  - [ ] Level design: biome rooms, boss variety, hazards (#421, #422, #423)
+  - [ ] Narrative: premise, burden variants, ambient captions (#424, #425, #426)
 
 ## Contributing
 
