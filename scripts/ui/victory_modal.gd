@@ -15,7 +15,7 @@ func _ready() -> void:
 	continue_button.pressed.connect(_on_continue_pressed)
 	menu_button.pressed.connect(_on_return_to_menu_pressed)
 	_setup_from_config()
-	continue_button.text = tr("HUD_VICTORY_CONTINUE")
+	continue_button.text = "RETURN TO MENU"
 
 
 func _exit_tree() -> void:
@@ -71,10 +71,7 @@ func _update_summary_display() -> void:
 
 
 func _on_continue_pressed() -> void:
-	# Transition back to run manager or next room
-	var rm: _RunManager = AutoloadHelper.run_manager()
-	if rm:
-		rm.cmd_next_room()
+	get_tree().change_scene_to_file("res://scenes/title_screen.tscn")
 	queue_free()
 
 

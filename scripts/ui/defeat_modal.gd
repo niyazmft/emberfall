@@ -8,10 +8,12 @@ var _summary_data: Dictionary = {}
 @onready var title_label: Label = %TitleLabel
 @onready var summary_container: VBoxContainer = %SummaryContainer
 @onready var retry_button: Button = %RetryButton
+@onready var menu_button: Button = %MenuButton
 
 
 func _ready() -> void:
 	retry_button.pressed.connect(_on_retry_pressed)
+	menu_button.pressed.connect(_on_return_to_menu_pressed)
 	_setup_from_config()
 	retry_button.text = tr("HUD_DEFEAT_RETRY")
 
@@ -19,6 +21,8 @@ func _ready() -> void:
 func _exit_tree() -> void:
 	if retry_button and retry_button.pressed.is_connected(_on_retry_pressed):
 		retry_button.pressed.disconnect(_on_retry_pressed)
+	if menu_button and menu_button.pressed.is_connected(_on_return_to_menu_pressed):
+		menu_button.pressed.disconnect(_on_return_to_menu_pressed)
 
 
 func setup(p_summary_data: Dictionary) -> void:
@@ -70,4 +74,9 @@ func _on_retry_pressed() -> void:
 	var rm: _RunManager = AutoloadHelper.run_manager()
 	if rm:
 		rm.cmd_start_run(GameConstants.GOLDEN_SEED)
+	queue_free()
+
+
+func _on_return_to_menu_pressed() -> void:
+	get_tree().change_scene_to_file("res://scenes/title_screen.tscn")
 	queue_free()

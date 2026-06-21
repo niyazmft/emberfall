@@ -252,6 +252,15 @@ func cmd_next_room() -> void:
 			transition_to(RunState.ROOM)
 
 
+## Restart the current room from the beginning.
+func cmd_restart_room() -> void:
+	if room_index < 0 or room_index >= room_queue.size():
+		push_error("cmd_restart_room called with invalid room_index: %d" % room_index)
+		return
+	_combat_resolved = false
+	_enter_room({})
+
+
 ## Call from combat/entity system when player HP reaches 0.
 func cmd_player_defeated() -> void:
 	_player_hp_zero = true

@@ -84,9 +84,10 @@ func toggle_pause() -> void:
 
 
 func _on_restart_pressed() -> void:
-	# Implementation depends on how rooms are reset
 	toggle_pause()
-	# RunManager.cmd_restart_room() # If implemented
+	var rm: _RunManager = AutoloadHelper.run_manager()
+	if rm:
+		rm.cmd_restart_room()
 
 
 func _on_settings_requested() -> void:

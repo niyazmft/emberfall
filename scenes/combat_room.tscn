@@ -71,7 +71,7 @@ script = ExtResource("1_cmbtrm")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=2110801437]
 position = Vector2(0, 192)
-zoom = Vector2(3, 3)
+zoom = Vector2(4.5, 4.5)
 
 [node name="GridRenderer" type="Node2D" parent="." unique_id=1240770257]
 script = ExtResource("2_grid_renderer")
