@@ -38,3 +38,33 @@
 **Learning:** `TurnManager._process_state_loop()` capped iterations at 200 and set `current_state = COMBAT_END` on breach, but never emitted `combat_ended`. Any listener waiting for that signal (victory/defeat modals, scene transitioners) hung indefinitely. The game appeared frozen even though the state machine had technically terminated.
 
 **Action:** Any "abort / safety exit" path that short-circuits a state machine must still emit the terminal lifecycle signal expected by downstream listeners. The abort handler is not exempt from the normal termination contract.
+
+## 2026-06-22 - Typed Dictionary parameters in static methods crash Godot 4.6.3 cleanup
+
+**Learning:** Using `Dictionary[Vector2i, bool]` as a typed parameter in a `static func` causes a segfault during Godot engine cleanup (`GDScriptInstance::~GDScriptInstance()` in `ObjectDB::cleanup()`). The crash only surfaces when running the FULL test suite — individual test files pass fine.
+
+**Action:** NEVER use typed Dictionary annotations (`Dictionary[K, V]`) in Godot 4.6.3 public/static method signatures. Use plain `Dictionary` and rely on `.has(key)` for O(1) lookups. Build the Dictionary locally inside the function body, not as a typed parameter.
+
+## 2026-06-22 - Object reference in static var survives engine shutdown
+
+**Learning:** A `static var _cached_tree: SceneTree = null` in `AutoloadHelper` stored a direct Object reference. During Godot shutdown, the static var outlived the engine's cleanup sequence and caused a recursive mutex crash (`std::__1::recursive_mutex::lock()` in `GDScriptInstance::~GDScriptInstance()`).
+
+**Action:** NEVER store Object references in `static var`. Always store only the integer `get_instance_id()` and resolve via `instance_from_id()` on each call. This pattern eliminates object lifetime issues entirely.
+
+## 2026-06-22 - External HP modification breaks alive-enemy count invariant
+
+**Learning:** `TurnManager` tracked `_alive_enemy_count` via signal-driven decrement on `Entity.State.DEAD`. But tests directly set `enemy.hp = 0` without going through `EntityLifecycle.apply_damage()`, so the signal never fired and `_alive_enemy_count` became stale. `_is_combat_over()` returned false even though all enemies were dead.
+
+**Action:** When tracking derived counts (alive enemies, active buffs, etc.), always add a test-safe fallback that verifies the count against a real scan when the count claims items exist. Reset the count and scan if the quick check fails.
+
+## 2026-06-22 - Worker prompts with `git push origin` leak remote branches
+
+**Learning:** Batch 1 worker prompts included `git push origin fix/c1-victory-menu`. Workers pushed 5 remote branches (`fix/c1-*`, `fix/c3-*`, etc.) to origin that had to be manually deleted. This polluted the remote repo and confused other developers.
+
+**Action:** NEVER include `git push origin` in subagent worker prompts. Workers must ONLY commit locally and report diffs via output files. The coordinator handles all remote interactions.
+
+## 2026-06-22 - `subagent worktree: true` leaks worker commits into coordinator tree
+
+**Learning:** Using `subagent` with `worktree: true` caused a worker's commits on `fix/c7-title-visuals` to spontaneously appear in the coordinator's working tree. The commit `fe369d9` was visible in `git status` even though the coordinator was on a different branch.
+
+**Action:** NEVER use `worktree: true` in `subagent` calls. Always use `context: "fresh"` to ensure complete isolation between worker and coordinator environments.
