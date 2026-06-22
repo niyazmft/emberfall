@@ -310,6 +310,100 @@ func test_turn_tick_idempotent() -> void:
 	assert_that(result1["extinguished"]).is_equal(result2["extinguished"])
 
 
+func test_fire_consumes_leftmost_oil_multiple_overlap() -> void:
+	var effects: Array[ElementalTypes.TileEffect] = []
+	effects = ElementalInteractionResolver.apply_element(
+		effects, ElementalTypes.ElementType.FIRE, 0, 2
+	)
+	effects = ElementalInteractionResolver.apply_element(
+		effects, ElementalTypes.ElementType.OIL, 0, 2
+	)
+	effects = ElementalInteractionResolver.apply_element(
+		effects, ElementalTypes.ElementType.OIL, 0, 2
+	)
+
+	var result: Dictionary = ElementalInteractionResolver.process_turn_tick(
+		effects, 0, Vector2i(0, 0), []
+	)
+	var out: Array[ElementalTypes.TileEffect] = result["effects"]
+
+	assert_that(_count_element(out, ElementalTypes.ElementType.FIRE)).is_equal(1)
+	assert_that(_count_element(out, ElementalTypes.ElementType.OIL)).is_equal(1)
+
+
+func test_expired_elements_filtered_in_tick_resolution() -> void:
+	var effects: Array[ElementalTypes.TileEffect] = []
+	effects = ElementalInteractionResolver.apply_element(
+		effects, ElementalTypes.ElementType.FIRE, 0, 1
+	)
+	effects = ElementalInteractionResolver.apply_element(
+		effects, ElementalTypes.ElementType.OIL, 0, 3
+	)
+
+	var result: Dictionary = ElementalInteractionResolver.process_turn_tick(
+		effects, 2, Vector2i(0, 0), []
+	)
+	var out: Array[ElementalTypes.TileEffect] = result["effects"]
+
+	assert_that(_count_element(out, ElementalTypes.ElementType.FIRE)).is_equal(0)
+	assert_that(_count_element(out, ElementalTypes.ElementType.OIL)).is_equal(1)
+
+
+func test_chain_reaction_fire_spreads_to_adjacent_oil() -> void:
+	var source_effects: Array[ElementalTypes.TileEffect] = []
+	source_effects = ElementalInteractionResolver.apply_element(
+		source_effects, ElementalTypes.ElementType.FIRE, 0, 2
+	)
+	source_effects = ElementalInteractionResolver.apply_element(
+		source_effects, ElementalTypes.ElementType.WIND, 0, 2
+	)
+
+	var bounds: Array[Vector2i] = [Vector2i(0, 0), Vector2i(2, 2)]
+	var result: Dictionary = ElementalInteractionResolver.process_turn_tick(
+		source_effects, 0, Vector2i(1, 1), bounds
+	)
+	var spread: Array[Vector2i] = result["spread_positions"]
+	assert_that(spread.size()).is_equal(4)
+
+	var adjacent_effects: Array[ElementalTypes.TileEffect] = []
+	adjacent_effects = ElementalInteractionResolver.apply_element(
+		adjacent_effects, ElementalTypes.ElementType.OIL, 0, 2
+	)
+	adjacent_effects = ElementalInteractionResolver.apply_element(
+		adjacent_effects, ElementalTypes.ElementType.FIRE, 0, 2
+	)
+
+	var chain_result: Dictionary = ElementalInteractionResolver.process_turn_tick(
+		adjacent_effects, 0, Vector2i(0, 1), []
+	)
+	var chain_out: Array[ElementalTypes.TileEffect] = chain_result["effects"]
+
+	assert_that(_count_element(chain_out, ElementalTypes.ElementType.OIL)).is_equal(0)
+	assert_that(_count_element(chain_out, ElementalTypes.ElementType.FIRE)).is_equal(1)
+
+
+func test_none_element_does_not_modify_list() -> void:
+	var effects: Array[ElementalTypes.TileEffect] = []
+	effects = ElementalInteractionResolver.apply_element(
+		effects, ElementalTypes.ElementType.FIRE, 0, 2
+	)
+
+	var result: Array[ElementalTypes.TileEffect] = ElementalInteractionResolver.apply_element(
+		effects, ElementalTypes.ElementType.NONE, 0, 2
+	)
+
+	assert_that(result.size()).is_equal(1)
+	assert_that(result[0].element).is_equal(ElementalTypes.ElementType.FIRE)
+
+
+func test_empty_modifiers_via_compute_tile_modifiers() -> void:
+	var effects: Array[ElementalTypes.TileEffect] = []
+	var mods: Dictionary = ElementalInteractionResolver.compute_tile_modifiers(effects, 0)
+
+	assert_that(is_equal_approx(mods["damage_multiplier"] as float, 1.0)).is_true()
+	assert_that(is_equal_approx(mods["speed_multiplier"] as float, 1.0)).is_true()
+
+
 static func _count_element(
 	effects: Array[ElementalTypes.TileEffect], elem: ElementalTypes.ElementType
 ) -> int:

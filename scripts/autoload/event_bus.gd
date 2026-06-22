@@ -16,6 +16,9 @@ extends Node
 ## Fired when a system requests a sound effect
 signal sfx_requested(sfx_name: String)
 
+## Fired when floating combat text should be displayed.
+signal floating_text_requested(text: String, position: Vector2, color: Color)
+
 # ── EntityLifecycle ──────────────────────────────────────────────────────────
 
 ## Fired when an entity transitions between gameplay states.

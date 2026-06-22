@@ -74,3 +74,19 @@ func test_visual_proxy() -> void:
 	# 7. Verify Damage Signal -> Apparition Effect
 	entity.set("hp", 5)  # Damage from 10 to 5
 	assert_that(app_mock.get("damage_triggered")).is_true()
+
+	# 8. Verify damage_taken signal -> EventBus floating text request
+	var received: Array[String] = []
+	var eb := AutoloadHelper.event_bus()
+	var callback: Callable = func(text: String, _pos: Vector2, _color: Color) -> void:
+		received.append(text)
+	if eb:
+		if not eb.floating_text_requested.is_connected(callback):
+			eb.floating_text_requested.connect(callback)
+
+	entity.call("apply_damage", 3)
+	assert_that(received.size()).is_equal(1)
+	assert_that(received[0]).is_equal("3")
+
+	if eb and eb.floating_text_requested.is_connected(callback):
+		eb.floating_text_requested.disconnect(callback)
