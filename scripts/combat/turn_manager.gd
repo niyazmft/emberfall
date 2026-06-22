@@ -21,6 +21,7 @@ var current_turn_index: int = -1
 
 var _player: Node2D
 var _enemies: Array[Node2D] = []
+var _alive_enemy_count: int = 0
 var _lifecycle: Node
 var _is_processing_state: bool = false
 
@@ -41,6 +42,10 @@ func _exit_tree() -> void:
 func start_combat(p_player: Node2D, p_enemies: Array[Node2D]) -> void:
 	_player = p_player
 	_enemies = p_enemies
+	_alive_enemy_count = 0
+	for enemy: Node2D in _enemies:
+		if _is_actor_alive(enemy):
+			_alive_enemy_count += 1
 	_change_state(CombatState.COMBAT_START)
 
 
@@ -53,6 +58,8 @@ func end_player_turn() -> void:
 func add_enemy(p_enemy: Node2D) -> void:
 	if p_enemy not in _enemies:
 		_enemies.append(p_enemy)
+		if _is_actor_alive(p_enemy):
+			_alive_enemy_count += 1
 
 
 # ── Internal Logic ──────────────────────────────────────────────────
@@ -230,11 +237,20 @@ func _regen_current_actor_ap() -> void:
 
 func _is_combat_over() -> bool:
 	var player_alive: bool = _is_actor_alive(_player)
-	var enemies_alive: bool = false
-	for enemy: Node2D in _enemies:
-		if _is_actor_alive(enemy):
-			enemies_alive = true
-			break
+
+	# Use cached count for O(1) fast path when all enemies are confirmed dead.
+	# If count claims enemies are alive, verify with a quick scan (stops at
+	# first alive) to handle external HP modifications (e.g., tests).
+	var enemies_alive: bool = _alive_enemy_count > 0
+	if enemies_alive:
+		var found_alive: bool = false
+		for enemy: Node2D in _enemies:
+			if _is_actor_alive(enemy):
+				found_alive = true
+				break
+		if not found_alive:
+			_alive_enemy_count = 0
+			enemies_alive = false
 
 	if not player_alive:
 		_change_state(CombatState.COMBAT_END)
@@ -263,6 +279,9 @@ func _check_end_conditions() -> void:
 func _on_entity_state_changed(_entity: Entity, _old_state: int, new_state: int) -> void:
 	# Entity.State constants used as ints to avoid potential circular dependency issues
 	# DEAD = 3, GHOST = 4
+	if (new_state == 3 or new_state == 4) and _old_state != 3 and _old_state != 4:
+		if not _entity.is_player:
+			_alive_enemy_count = maxi(_alive_enemy_count - 1, 0)
 	if new_state == 3 or new_state == 4:
 		if current_state != CombatState.IDLE and current_state != CombatState.COMBAT_END:
 			_is_combat_over()

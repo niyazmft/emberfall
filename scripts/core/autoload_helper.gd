@@ -16,15 +16,27 @@ class_name AutoloadHelper
 
 # ── Core Accessor ─────────────────────────────────────────────────────────────
 
+## Cached SceneTree object ID to avoid repeated Engine.get_main_loop() queries.
+## Stores only an integer ID (never a reference) so shutdown never crashes.
+static var _cached_tree_id: int = 0
+
 
 ## Returns the named autoload Node, or null if the SceneTree is not ready or
 ## the autoload has not been registered.
 ## Autoloads are always direct children of the scene root.
 static func get_autoload(autoload_name: String) -> Node:
-	var ml: MainLoop = Engine.get_main_loop()
-	if not ml is SceneTree:
-		return null
-	var tree: SceneTree = ml as SceneTree
+	var tree: SceneTree = null
+	if _cached_tree_id != 0:
+		var obj: Object = instance_from_id(_cached_tree_id)
+		if obj is SceneTree:
+			tree = obj as SceneTree
+	if tree == null or not is_instance_valid(tree) or tree.root == null:
+		var ml: MainLoop = Engine.get_main_loop()
+		if not ml is SceneTree:
+			_cached_tree_id = 0
+			return null
+		tree = ml as SceneTree
+		_cached_tree_id = tree.get_instance_id()
 	if tree.root == null or not tree.root.is_inside_tree():
 		return null
 	return tree.root.get_node_or_null(autoload_name)

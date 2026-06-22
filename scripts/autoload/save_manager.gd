@@ -88,6 +88,7 @@ func _ready() -> void:
 func save_game(state: Dictionary) -> Error:
 	var save_data: Dictionary = state.duplicate(true)
 	save_data["version"] = SAVE_VERSION
+	save_data["godot_version"] = Engine.get_version_info()["string"]
 
 	var json_text: String = JSON.stringify(save_data, "\t")
 
