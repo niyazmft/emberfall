@@ -20,7 +20,64 @@ const COLOR_OIL: Color = Color(0.0, 0.0, 0.55)  # Dark Blue
 var _grid_system: _GridSystem
 var _tile_sprites: Array[Sprite2D] = []
 var _highlights: Dictionary = {}  # Vector2i -> Sprite2D
+var _hover_sprite: Sprite2D
+var _hovered_tile: Vector2i = Vector2i(-1, -1)
 var _diamond_tex: Texture2D
+
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventMouseMotion:
+		_update_hover_from_mouse()
+
+
+func _update_hover_from_mouse() -> void:
+	if not _grid_system:
+		return
+
+	var local_pos: Vector2 = to_local(get_global_mouse_position())
+	var grid_pos: Vector2i = _world_to_grid(local_pos)
+
+	if not _grid_system.is_in_bounds(grid_pos.x, grid_pos.y):
+		_clear_hover()
+		return
+
+	if grid_pos == _hovered_tile:
+		return
+
+	_hovered_tile = grid_pos
+	_ensure_hover_sprite()
+	if _hover_sprite:
+		var tile: TacTileData = _grid_system.get_tile(grid_pos.x, grid_pos.y)
+		var elev: int = int(tile.elevation) if tile else 0
+		_hover_sprite.position = _grid_to_world(grid_pos.x, grid_pos.y, elev)
+		_hover_sprite.visible = true
+
+
+func _clear_hover() -> void:
+	_hovered_tile = Vector2i(-1, -1)
+	if _hover_sprite:
+		_hover_sprite.visible = false
+
+
+func _ensure_hover_sprite() -> void:
+	if _hover_sprite:
+		return
+	_hover_sprite = Sprite2D.new()
+	_hover_sprite.texture = _diamond_tex
+	_hover_sprite.centered = true
+	_hover_sprite.scale = Vector2(1.05, 1.05)
+	_hover_sprite.modulate = Color(1.0, 1.0, 0.8, 0.35)
+	add_child(_hover_sprite)
+
+
+func _world_to_grid(world_pos: Vector2) -> Vector2i:
+	## Inverse isometric projection: converts local screen position to grid coords.
+	## Uses the same 64×32 2:1 ratio as _grid_to_world().
+	var tw: float = tile_size.x
+	var th: float = tile_size.y
+	var gx: float = world_pos.x / (tw / 2.0) + world_pos.y / (th / 2.0)
+	var gy: float = world_pos.y / (th / 2.0) - world_pos.x / (tw / 2.0)
+	return Vector2i(int(round(gx / 2.0)), int(round(gy / 2.0)))
 
 
 func _ready() -> void:

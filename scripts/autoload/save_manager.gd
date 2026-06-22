@@ -164,31 +164,42 @@ func load_game() -> Dictionary:
 	else:
 		push_warning("[SaveManager] load_game: save file has no version field.")
 
-	# Godot version guard — procedural RNG sequences are version-bound.
-	if data.has("godot_version"):
-		var saved_gv: String = str(data["godot_version"])
-		var current_gv: String = Engine.get_version_info()["string"]
-		if saved_gv != current_gv:
-			push_warning(
-				(
-					(
-						"[SaveManager] load_game: Godot version mismatch (save=%s, current=%s). "
-						% [saved_gv, current_gv]
-					)
-					+ "Procedural room layouts may differ."
-				)
-			)
-	else:
-		push_warning(
-			(
-				"[SaveManager] load_game: save file has no godot_version field."
-				+ " Procedural room compatibility unknown."
-			)
-		)
+	# Structural validation — catches corrupted or malformed save files.
+	_validate_save_structure(data)
 
 	_print_debug("load_game: loaded %d top-level keys." % data.size())
 	load_completed.emit(data)
 	return data
+
+
+## Lightweight structural validation for loaded save data.
+## Warns (non-fatally) on missing or wrong-type top-level keys.
+## Does NOT validate nested fields — that would couple the loader
+## too tightly to evolving subsystem schemas.
+func _validate_save_structure(data: Dictionary) -> void:
+	var required_keys: Array[String] = ["version"]
+	for key: String in required_keys:
+		if not data.has(key):
+			push_warning("[SaveManager] load_game: missing required key '%s'." % key)
+
+	if data.has("version") and not (data["version"] is int):
+		push_warning("[SaveManager] load_game: 'version' is not an int.")
+
+	var dict_keys: Array[String] = ["player_profile", "memory_state", "run_state", "meta"]
+	for key: String in dict_keys:
+		if data.has(key) and not (data[key] is Dictionary):
+			push_warning("[SaveManager] load_game: '%s' is not a Dictionary." % key)
+
+	# Sanity check: if every expected section is absent, the save is likely garbage.
+	var has_any_section: bool = false
+	for key: String in dict_keys:
+		if data.has(key):
+			has_any_section = true
+			break
+	if not has_any_section and data.size() > 1:
+		push_warning(
+			"[SaveManager] load_game: save has no recognised sections; possible corruption."
+		)
 
 
 ## Removes the save file from disk using DirAccess.

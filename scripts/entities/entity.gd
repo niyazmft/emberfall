@@ -7,6 +7,17 @@ extends Resource
 ## holds data and exposes typed mutators.
 
 # ── Signals ─────────────────────────────────────────────────────────
+## NOTE: Signals on a Resource may seem unusual if you're coming from
+## Godot 3, where only Nodes could emit signals. In Godot 4.x,
+## Resources fully support signals and callables. We use them here
+## because Entity is pure data (no scene-tree presence) and its
+## state changes must propagate to visual proxies, HUD bars, and
+## lifecycle systems without coupling Entity to Node2D.
+##
+## All signal handlers are connected by interested systems
+## (EntityVisualProxy, CombatHUD, EntityLifecycle) rather than
+## polling state each frame. This keeps Entity decoupled from
+## presentation and keeps the visual layer reactive.
 signal position_changed(x: int, y: int)
 signal elevation_changed(elevation: int)
 signal facing_changed(fx: int, fy: int)
