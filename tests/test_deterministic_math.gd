@@ -114,6 +114,19 @@ func test_absf_edge_cases() -> void:
 	assert_that(is_equal_approx(DeterministicMath.absf(5.0), 5.0)).is_true()
 	assert_that(is_equal_approx(DeterministicMath.absf(-5.0), 5.0)).is_true()
 	assert_that(is_equal_approx(DeterministicMath.absf(0.0), 0.0)).is_true()
-	assert_that(is_equal_approx(DeterministicMath.absf(DeterministicMath.EPSILON), DeterministicMath.EPSILON)).is_true()
-	assert_that(is_equal_approx(DeterministicMath.absf(-DeterministicMath.EPSILON), DeterministicMath.EPSILON)).is_true()
-
+	(
+		assert_that(
+			is_equal_approx(
+				DeterministicMath.absf(DeterministicMath.EPSILON), DeterministicMath.EPSILON
+			)
+		)
+		. is_true()
+	)
+	(
+		assert_that(
+			is_equal_approx(
+				DeterministicMath.absf(-DeterministicMath.EPSILON), DeterministicMath.EPSILON
+			)
+		)
+		. is_true()
+	)

@@ -103,6 +103,8 @@ func setup(player_entity: Entity, turn_manager: TurnManager, combat_input: Comba
 		if not _player_entity.ap_changed.is_connected(_on_ap_changed):
 			_player_entity.ap_changed.connect(_on_ap_changed)
 		update_player_stats(_player_entity)
+		if hotbar and hotbar.has_method("set_player_entity"):
+			hotbar.call("set_player_entity", player_entity)
 
 	if _turn_manager:
 		if not _turn_manager.turn_started.is_connected(_on_turn_started):
