@@ -19,7 +19,7 @@ jobs:
     name: gdscript-format
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Set up Node.js
         uses: actions/setup-node@v6
         with:
@@ -49,7 +49,7 @@ jobs:
     name: validate-math
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
@@ -66,7 +66,7 @@ jobs:
     needs: [gdscript-format, validate-math]
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Cache Godot
         uses: actions/cache@v5
         with:
