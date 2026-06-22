@@ -101,6 +101,12 @@ static func augment_room_procedurally(room_data: Dictionary) -> void:
 
 
 static func _assign_default_positions(room_data: Dictionary, p_seed: int) -> void:
+	## NOTE: RandomNumberGenerator is version-bound. Godot does NOT guarantee
+	## identical sequences across engine releases (e.g., 4.6.3 -> 4.7).
+	## Procedural room layouts from save files may differ when loaded on a
+	## different Godot version. SaveManager stores the originating version
+	## and warns on mismatch, but the layout divergence is unavoidable
+	## without replacing this with a custom deterministic RNG (future work).
 	var rng := RandomNumberGenerator.new()
 	rng.seed = p_seed
 
