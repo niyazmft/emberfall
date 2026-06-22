@@ -15,6 +15,7 @@ var _combat_input: CombatInput
 @onready var prompts: Label = $MarginContainer/BottomChrome/Prompts
 @onready var status_icons: Control = $MarginContainer/BottomChrome/StatusIcons
 @onready var action_buttons: Control = $MarginContainer/BottomChrome/ActionButtons
+@onready var tutorial_overlay: _TutorialOverlay = %TutorialOverlay
 
 # HP/AP Display
 @onready var hp_bar: ProgressBar = %HPBar
@@ -118,6 +119,12 @@ func setup(player_entity: Entity, turn_manager: TurnManager, combat_input: Comba
 			_combat_input.targeting_started.connect(_on_targeting_started)
 		if not _combat_input.attack_executed.is_connected(_on_attack_executed):
 			_combat_input.attack_executed.connect(_on_attack_executed)
+
+	# Show tutorial for new players (no save file yet)
+	if tutorial_overlay:
+		var sm: _SaveManager = AutoloadHelper.save_manager()
+		if sm and not sm.has_save():
+			tutorial_overlay.show_tutorial()
 
 
 func update_player_stats(entity: Entity) -> void:

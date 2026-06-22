@@ -4,6 +4,7 @@
 [ext_resource type="FontFile" path="res://assets/fonts/PressStart2P-Regular.ttf" id="1_wc2to"]
 [ext_resource type="PackedScene" path="res://scenes/ui/hotbar.tscn" id="2_hotbar"]
 [ext_resource type="Script" path="res://scripts/ui/hotbar.gd" id="3_3too6"]
+[ext_resource type="PackedScene" path="res://scenes/ui/tutorial_overlay.tscn" id="4_tutorial"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_470mv"]
 bg_color = Color(0.15, 0.15, 0.15, 1)
@@ -148,3 +149,12 @@ horizontal_alignment = 1
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 script = ExtResource("3_3too6")
+
+[node name="TutorialOverlay" parent="." instance=ExtResource("4_tutorial")]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

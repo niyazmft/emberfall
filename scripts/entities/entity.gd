@@ -36,6 +36,11 @@ var _cached_off_bonus: int = 0
 var _cached_def_bonus: int = 0
 var _cached_spd_mult: float = 1.0
 
+## Equipment stat bonuses (managed by InventoryManager).
+var _cached_equip_off_bonus: int = 0
+var _cached_equip_def_bonus: int = 0
+var _cached_equip_spd_bonus: int = 0
+
 # ── Grid Position ───────────────────────────────────────────────────
 @export var x: int = 0:
 	set(p_value):
@@ -82,20 +87,26 @@ var _cached_spd_mult: float = 1.0
 
 @export var off: int = 0:
 	get:
-		return DeterministicMath.clampi(off + _cached_off_bonus, 0, GameConstants.STAT_OFF_BOUND)
+		return DeterministicMath.clampi(
+			off + _cached_off_bonus + _cached_equip_off_bonus, 0, GameConstants.STAT_OFF_BOUND
+		)
 	set(p_value):
 		off = DeterministicMath.clampi(p_value, 0, GameConstants.STAT_OFF_BOUND)
 
 @export var def_: int = 0:
 	get:
-		return DeterministicMath.clampi(def_ + _cached_def_bonus, 0, GameConstants.STAT_DEF_BOUND)
+		return DeterministicMath.clampi(
+			def_ + _cached_def_bonus + _cached_equip_def_bonus, 0, GameConstants.STAT_DEF_BOUND
+		)
 	set(p_value):
 		def_ = DeterministicMath.clampi(p_value, 0, GameConstants.STAT_DEF_BOUND)
 
 @export var spd: int = 1:
 	get:
 		return DeterministicMath.clampi(
-			int(float(spd) * _cached_spd_mult), 1, GameConstants.STAT_SPD_BOUND
+			int(float(spd) * _cached_spd_mult) + _cached_equip_spd_bonus,
+			1,
+			GameConstants.STAT_SPD_BOUND
 		)
 	set(p_value):
 		spd = DeterministicMath.clampi(p_value, 1, GameConstants.STAT_SPD_BOUND)

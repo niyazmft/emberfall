@@ -80,6 +80,11 @@ func add_item(item_id: String, quantity: int = 1) -> bool:
 	return true
 
 
+## Picks up an item and adds it to the inventory. Stacks if already present.
+func pickup_item(item_id: String, quantity: int = 1) -> bool:
+	return add_item(item_id, quantity)
+
+
 ## Removes an item from the inventory.
 func remove_item(item_id: String, quantity: int = 1) -> bool:
 	if quantity <= 0 or item_id.is_empty():
@@ -134,11 +139,35 @@ func equip_item(item_id: String, slot: String) -> bool:
 
 		if not old_item_id.is_empty():
 			add_item(old_item_id, 1)
+			var old_item_data := get_item_data(old_item_id)
+			if old_item_data:
+				_apply_equipment_stats(old_item_data, false)
 
+		_apply_equipment_stats(item_data, true)
 		equipment_changed.emit(slot, item_id)
 		return true
 
 	return false
+
+
+func _get_player_entity() -> Entity:
+	var lifecycle: _EntityLifecycle = AutoloadHelper.entity_lifecycle()
+	if lifecycle != null:
+		return lifecycle.player_entity
+	return null
+
+
+func _apply_equipment_stats(item_data: Item, apply: bool) -> void:
+	var player: Entity = _get_player_entity()
+	if player == null or item_data == null:
+		return
+	var mult: int = 1 if apply else -1
+	if item_data.stats.has("off"):
+		player._cached_equip_off_bonus += int(item_data.stats["off"]) * mult
+	if item_data.stats.has("def"):
+		player._cached_equip_def_bonus += int(item_data.stats["def"]) * mult
+	if item_data.stats.has("spd"):
+		player._cached_equip_spd_bonus += int(item_data.stats["spd"]) * mult
 
 
 func _item_type_to_string(itemType: Item.ItemType) -> String:
@@ -160,7 +189,10 @@ func unequip_item(slot: String) -> bool:
 		return false
 
 	var item_id: String = equipment[slot]
+	var item_data := get_item_data(item_id)
 	if add_item(item_id, 1):
+		if item_data:
+			_apply_equipment_stats(item_data, false)
 		equipment[slot] = ""
 		equipment_changed.emit(slot, "")
 		return true

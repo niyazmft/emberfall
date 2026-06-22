@@ -132,3 +132,104 @@ func test_has_save_consistency() -> void:
 
 	sm.delete_save()
 	assert_bool(sm.has_save()).is_false()
+
+
+func test_end_to_end_save_load_round_trip() -> void:
+	var sm: _SaveManager = AutoloadHelper.save_manager()
+	var rm: _RunManager = AutoloadHelper.run_manager()
+
+	# Directly reset RunManager to SANCTUM by manipulating internal state,
+	# because transition guards may block cmd_return_to_sanctum() from
+	# arbitrary states (e.g., ROOM has no transition to SANCTUM).
+	if rm.current_state != _RunManager.RunState.SANCTUM:
+		rm._enter_sanctum({})
+		rm.current_state = _RunManager.RunState.SANCTUM
+		# Give the state machine one frame to settle
+		await get_tree().process_frame
+	assert_that(rm.current_state).is_equal(_RunManager.RunState.SANCTUM)
+
+	# 1. Start a run and wait for biome generation to reach ROOM state
+	rm.cmd_start_run(12345)
+	var safety: int = 0
+	while rm.current_state != _RunManager.RunState.ROOM and safety < 60:
+		await get_tree().process_frame
+		safety += 1
+	assert_that(rm.current_state).is_equal(_RunManager.RunState.ROOM)
+
+	# 2. Build a realistic save payload with run_state
+	var run_state: Dictionary = rm.save_run_state()
+	var player_snapshot: Dictionary = {
+		"hp": 85,
+		"hp_max": 100,
+		"off": 12,
+		"def_": 8,
+		"spd": 5,
+		"x": 3,
+		"y": 4,
+		"elevation": 1,
+	}
+	var test_data: Dictionary = {
+		"player_profile": {"player_id": "roundtrip_user", "total_runs": 3},
+		"memory_state": {"moral_flag_lifetime": 50},
+		"run_state":
+		{
+			"seed": run_state["seed"],
+			"room_index": run_state["room_index"],
+			"room_queue": run_state["room_queue"],
+			"biome_index": run_state["biome_index"],
+			"player_entity_snapshot": player_snapshot,
+			"inventory_snapshot": {"inventory": [], "equipment": {}},
+			"burden_run_snapshot":
+			{
+				"trigger_count_this_run": 2,
+				"last_noun_index_used": 1,
+			},
+		},
+		"meta":
+		{
+			"schema_version": "1.0.0",
+			"save_timestamp_iso": "2026-06-22T00:00:00Z",
+			"platform": "test",
+		},
+	}
+
+	# 3. Save mid-run
+	var err: Error = sm.save_game(test_data)
+	assert_that(err).is_equal(OK)
+	assert_that(sm.has_save()).is_true()
+
+	# 4. Simulate "quit to menu" — capture values before wipe
+	var saved_seed: int = run_state["seed"]
+	var saved_room_index: int = run_state["room_index"]
+	var saved_room_queue_size: int = int(run_state["room_queue"].size())
+	# Directly reset to avoid transition guard issues in tests
+	rm._enter_sanctum({})
+	rm.current_state = _RunManager.RunState.SANCTUM
+	await get_tree().process_frame
+
+	# 5. Load the save
+	var loaded: Dictionary = sm.load_game()
+	assert_that(loaded.is_empty()).is_false()
+	assert_that(loaded.has("run_state")).is_true()
+
+	# 6. Verify run_state integrity
+	var loaded_run: Dictionary = loaded["run_state"] as Dictionary
+	assert_int(int(loaded_run["seed"])).is_equal(saved_seed)
+	assert_int(int(loaded_run["room_index"])).is_equal(saved_room_index)
+	assert_that(loaded_run["room_queue"] is Array).is_true()
+	assert_int((loaded_run["room_queue"] as Array).size()).is_equal(saved_room_queue_size)
+	assert_that(loaded_run.has("player_entity_snapshot")).is_true()
+	var loaded_player: Dictionary = loaded_run["player_entity_snapshot"] as Dictionary
+	assert_int(int(loaded_player["hp"])).is_equal(85)
+	assert_int(int(loaded_player["off"])).is_equal(12)
+
+	# 7. Verify RunManager can resume from loaded state
+	rm.load_run_state(loaded_run)
+	assert_that(rm.memory_state_loaded).is_true()
+	assert_int(rm.run_seed).is_equal(saved_seed)
+	assert_int(rm.room_index).is_equal(saved_room_index)
+	assert_int(rm.room_queue.size()).is_equal(saved_room_queue_size)
+
+	# 8. Verify top-level keys preserved
+	assert_str(loaded["player_profile"]["player_id"]).is_equal("roundtrip_user")
+	assert_int(int(loaded["memory_state"]["moral_flag_lifetime"])).is_equal(50)

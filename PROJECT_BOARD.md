@@ -354,7 +354,7 @@ Outside the numbered phases, recent infrastructure work:
   - 🔄 In review: #458, #441, #440, #434, #451 — PR #491
   - ⏳ Ready: C-14, C-16
 - **High Priority** (#427–#441, #464–#471): 23 issues (engine perf, UX, level design, story)
-- **Medium Priority** (#442–#454, #474–#480): 22 issues (quality, systems, content)
+- **Medium Priority** (#442–#454, #474–#480): 17 issues (5 resolved in PR #493) (quality, systems, content)
 - **Small Priority** (#455–#463, #481–#484): 13 issues (polish, art, CI)
 - **5.1b Creative Assets wiring** (#299–#306): 8 issues
 - **5.7 MVP Gaps** (#294–#298): 5 issues
