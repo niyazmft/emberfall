@@ -70,3 +70,23 @@ func test_turn_indicator() -> void:
 
 	hud.queue_free()
 	turn_manager.queue_free()
+
+
+func test_show_floating_text_spawns_label() -> void:
+	var hud: Control = load(COMBAT_HUD_SCENE).instantiate() as Control
+	add_child(hud)
+
+	hud.call("show_floating_text", "42", Vector2(50, 50), Color.RED)
+
+	var found_label: Label = null
+	for child: Node in hud.get_children():
+		if child is Label:
+			found_label = child as Label
+			break
+
+	assert_that(found_label).is_not_null()
+	if found_label:
+		assert_str(found_label.text).is_equal("42")
+		assert_that(found_label.modulate).is_equal(Color.RED)
+
+	hud.queue_free()

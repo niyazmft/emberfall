@@ -51,6 +51,7 @@ func _ready() -> void:
 	_connect_signals()
 	_setupHelpListeners()
 	_style_tab_container()
+	_style_apply_button()
 
 
 func _loadHelpData() -> void:
@@ -326,6 +327,36 @@ func _on_tab_changed(_idx: int) -> void:
 	# Force immediate redraw so theme overrides take effect on the new active tab.
 	if _tab_container:
 		_tab_container.queue_redraw()
+
+
+func _style_apply_button() -> void:
+	if not _apply_button:
+		return
+	var hover_style := StyleBoxFlat.new()
+	hover_style.bg_color = Color(0.3, 0.3, 0.3, 1.0)
+	hover_style.border_color = Color(0.9, 0.75, 0.2, 1.0)
+	hover_style.border_width_left = 2
+	hover_style.border_width_top = 2
+	hover_style.border_width_right = 2
+	hover_style.border_width_bottom = 2
+	hover_style.corner_radius_top_left = 6
+	hover_style.corner_radius_top_right = 6
+	hover_style.corner_radius_bottom_right = 6
+	hover_style.corner_radius_bottom_left = 6
+	_apply_button.add_theme_stylebox_override("hover", hover_style)
+
+	var pressed_style := StyleBoxFlat.new()
+	pressed_style.bg_color = Color(0.15, 0.15, 0.15, 1.0)
+	pressed_style.border_color = Color(0.9, 0.75, 0.2, 1.0)
+	pressed_style.border_width_left = 2
+	pressed_style.border_width_top = 2
+	pressed_style.border_width_right = 2
+	pressed_style.border_width_bottom = 2
+	pressed_style.corner_radius_top_left = 6
+	pressed_style.corner_radius_top_right = 6
+	pressed_style.corner_radius_bottom_right = 6
+	pressed_style.corner_radius_bottom_left = 6
+	_apply_button.add_theme_stylebox_override("pressed", pressed_style)
 
 
 func _on_reset_confirmed() -> void:

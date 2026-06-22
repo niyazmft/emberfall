@@ -196,7 +196,10 @@ func set_grid_position(gx: int, gy: int) -> void:
 
 
 func apply_damage(dmg: int) -> void:
+	var old_hp: int = hp
 	hp = DeterministicMath.clampi(hp - dmg, 0, hp_max)
+	if old_hp > hp:
+		damage_taken.emit(old_hp - hp, "PHYSICAL")
 	## State transitions are owned by EntityLifecycle; this method
 	## only adjusts HP.  Use EntityLifecycle.apply_damage() for canonical
 	## damage with automatic state transitions.

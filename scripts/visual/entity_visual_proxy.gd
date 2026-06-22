@@ -130,6 +130,8 @@ func _connect_entity_signals() -> void:
 		entity.hp_changed.connect(_on_entity_hp_changed)
 	if not entity.ap_changed.is_connected(_on_entity_ap_changed):
 		entity.ap_changed.connect(_on_entity_ap_changed)
+	if not entity.damage_taken.is_connected(_on_entity_damage_taken):
+		entity.damage_taken.connect(_on_entity_damage_taken)
 
 
 func _disconnect_entity_signals() -> void:
@@ -147,6 +149,8 @@ func _disconnect_entity_signals() -> void:
 		entity.hp_changed.disconnect(_on_entity_hp_changed)
 	if entity.ap_changed.is_connected(_on_entity_ap_changed):
 		entity.ap_changed.disconnect(_on_entity_ap_changed)
+	if entity.damage_taken.is_connected(_on_entity_damage_taken):
+		entity.damage_taken.disconnect(_on_entity_damage_taken)
 
 
 func _on_entity_position_changed(x: int, y: int) -> void:
@@ -184,6 +188,27 @@ func _on_entity_hp_changed(new_hp: int, old_hp: int) -> void:
 func _on_entity_ap_changed(new_ap: int, _old_ap: int) -> void:
 	if _status_bar:
 		_status_bar.update_ap(new_ap, GameConstants.AP_MAX)
+
+
+func _on_entity_damage_taken(amount: int, damage_type: String) -> void:
+	var loader: _ConfigLoader = AutoloadHelper.config_loader()
+	var color: Color = Color.WHITE
+	var offset_vec: Vector2 = Vector2(0, -40)
+
+	if loader:
+		var floating_config: Dictionary = loader.getValue("floating_text", "", {})
+		if floating_config and floating_config.has(damage_type):
+			var preset: Dictionary = floating_config[damage_type]
+			color = Color(preset.get("color", "#FFFFFF"))
+			var offset_arr: Variant = preset.get("offset", [0, -40])
+			if offset_arr is Array and offset_arr.size() >= 2:
+				offset_vec = Vector2(float(offset_arr[0]), float(offset_arr[1]))
+
+	var screen_pos: Vector2 = get_global_transform_with_canvas().origin + offset_vec
+
+	var eb := AutoloadHelper.event_bus()
+	if eb:
+		eb.floating_text_requested.emit(str(amount), screen_pos, color)
 
 
 func _update_elevation_visuals(elevation: int) -> void:
@@ -271,44 +296,7 @@ func _trigger_hit_effects(p_damage: int, p_damage_type: String = "PHYSICAL") -> 
 					_hit_stop_remaining = tier.get("frames", 0)
 
 	# Floating Text
-	_spawn_damage_number(p_damage, p_damage_type)
-
-
-func _spawn_damage_number(p_damage: int, p_damage_type: String) -> void:
-	var loader: _ConfigLoader = AutoloadHelper.config_loader()
-	var color: Color = Color.WHITE
-	var duration: float = 0.5
-	var offset_vec: Vector2 = Vector2(0, -40)
-
-	if loader:
-		var floating_config: Dictionary = loader.getValue("floating_text", "", {})
-		if floating_config and floating_config.has(p_damage_type):
-			var preset: Dictionary = floating_config[p_damage_type]
-			color = Color(preset.get("color", "#FFFFFF"))
-			duration = float(preset.get("duration", 0.5))
-			var offset_arr: Variant = preset.get("offset", [0, -40])
-			if offset_arr is Array and offset_arr.size() >= 2:
-				offset_vec = Vector2(float(offset_arr[0]), float(offset_arr[1]))
-
-	var label: Label = Label.new()
-	label.z_index = 10
-
-	if _combat_room and _combat_room.floating_text_container:
-		_combat_room.floating_text_container.add_child(label)
-	else:
-		add_child(label)
-
-	label.text = str(p_damage)
-	label.modulate = color
-	label.global_position = global_position + offset_vec
-	label.visible = true
-
-	var tween: Tween = get_tree().create_tween()
-	tween.tween_property(
-		label, "global_position", label.global_position + Vector2(0, -20), duration
-	)
-	tween.parallel().tween_property(label, "modulate:a", 0.0, duration)
-	tween.tween_callback(label.queue_free)
+	# Handled via EventBus → CombatHUD on entity.damage_taken signal
 
 
 func _setup_greybox() -> void:
