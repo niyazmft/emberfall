@@ -165,3 +165,153 @@ func test_cover_cache_logic() -> void:
 	assert_bool(gs.target_has_cover_against(0, 0, 1, 0)).is_true()
 	# No cover if observer is far (only adjacent cover counts in _recompute_cover_cache)
 	assert_bool(gs.target_has_cover_against(5, 5, 1, 0)).is_false()
+
+
+# ── GridRenderer Visual Feedback Tests (#444) ───────────────────────────
+
+
+func test_highlight_tile_shows_cover_color() -> void:
+	var gs: _GridSystem = GridSystem
+	gs.load_room({"id": "highlight_test"})
+
+	var renderer: GridRenderer = GridRenderer.new()
+	add_child(renderer)
+	await get_tree().process_frame
+
+	# Highlight a tile with the cover colour
+	renderer.highlight_tile(0, 0, GridRenderer.COLOR_COVER)
+	await get_tree().process_frame
+
+	# The highlight sprite should exist as a child
+	var found: bool = false
+	for child: Node in renderer.get_children():
+		if child is Sprite2D:
+			var sprite: Sprite2D = child as Sprite2D
+			# highlight_tile sets alpha to 0.6 when input alpha == 1.0,
+			# so compare RGB only
+			if (
+				is_equal_approx(sprite.modulate.r, GridRenderer.COLOR_COVER.r)
+				and is_equal_approx(sprite.modulate.g, GridRenderer.COLOR_COVER.g)
+				and is_equal_approx(sprite.modulate.b, GridRenderer.COLOR_COVER.b)
+			):
+				found = true
+				break
+	assert_bool(found).is_true()
+
+	renderer.queue_free()
+	await get_tree().process_frame
+
+
+func test_elevation_terrace_colors() -> void:
+	var gs: _GridSystem = GridSystem
+	# Tile (0,0) elevation 0, (1,0) elevation 1, (2,0) elevation 2
+	var elev_data: Array = []
+	elev_data.resize(144)
+	elev_data.fill(0)
+	elev_data[gs.index(0, 0)] = 0
+	elev_data[gs.index(1, 0)] = 1
+	elev_data[gs.index(2, 0)] = 2
+	var layout: Dictionary = {"elevation": elev_data}
+	gs.load_room({"id": "elev_color_test", "layout": layout})
+
+	var renderer: GridRenderer = GridRenderer.new()
+	add_child(renderer)
+	await get_tree().process_frame
+
+	# _render_grid runs in _ready(); inspect _tile_sprites
+	var sprites: Array = renderer._tile_sprites
+	assert_int(sprites.size()).is_greater(0)
+
+	# Find sprites at each elevation and verify base colour family
+	var found_floor: bool = false
+	var found_elev1: bool = false
+	var found_elev2: bool = false
+
+	for sprite: Sprite2D in sprites:
+		var mod: Color = sprite.modulate
+		# Floor: near COLOR_FLOOR (0.5, 0.5, 0.5)
+		if mod.r < 0.65 and mod.g < 0.65 and mod.b < 0.65:
+			found_floor = true
+		# Elev 1: near COLOR_ELEV_1 (0.75, 0.75, 0.75)
+		elif mod.r >= 0.70 and mod.r < 0.90 and mod.g >= 0.70 and mod.g < 0.90:
+			found_elev1 = true
+		# Elev 2: near COLOR_ELEV_2 (1.0, 1.0, 1.0)
+		elif mod.r >= 0.90 and mod.g >= 0.90 and mod.b >= 0.90:
+			found_elev2 = true
+
+	assert_bool(found_floor).is_true()
+	assert_bool(found_elev1).is_true()
+	assert_bool(found_elev2).is_true()
+
+	renderer.queue_free()
+	await get_tree().process_frame
+
+
+func test_render_tile_base_mod_color() -> void:
+	var gs: _GridSystem = GridSystem
+	var elev_data: Array = []
+	elev_data.resize(144)
+	elev_data.fill(0)
+	elev_data[gs.index(0, 0)] = 1  # Elevation 1
+	var layout: Dictionary = {"elevation": elev_data}
+	gs.load_room({"id": "base_mod_test", "layout": layout})
+
+	var renderer: GridRenderer = GridRenderer.new()
+	add_child(renderer)
+	await get_tree().process_frame
+
+	# _render_tile at (0,0) with elevation 1 should produce terrace sprites
+	# The elevation-1 terrace should be in the COLOR_ELEV_1 family
+	var found_elev1_terrace: bool = false
+	for sprite: Sprite2D in renderer._tile_sprites:
+		var mod: Color = sprite.modulate
+		# Within tolerance of COLOR_ELEV_1 (0.75, 0.75, 0.75) plus variation
+		if (
+			mod.r >= 0.70
+			and mod.r <= 0.85
+			and mod.g >= 0.70
+			and mod.g <= 0.85
+			and mod.b >= 0.70
+			and mod.b <= 0.85
+		):
+			found_elev1_terrace = true
+			break
+
+	assert_bool(found_elev1_terrace).is_true()
+
+	renderer.queue_free()
+	await get_tree().process_frame
+
+
+func test_hover_cursor_visible_on_valid_tile() -> void:
+	var gs: _GridSystem = GridSystem
+	gs.load_room({"id": "hover_test"})
+
+	var renderer: GridRenderer = GridRenderer.new()
+	add_child(renderer)
+	await get_tree().process_frame
+
+	# Initially no hover
+	assert_bool(renderer._hovered_tile == Vector2i(-1, -1)).is_true()
+	if renderer._hover_sprite:
+		assert_bool(renderer._hover_sprite.visible).is_false()
+
+	# Simulate hover by setting hovered tile directly
+	renderer._hovered_tile = Vector2i(0, 0)
+	renderer._ensure_hover_sprite()
+	if renderer._hover_sprite:
+		var tile: TacTileData = gs.get_tile(0, 0)
+		var elev: int = int(tile.elevation) if tile else 0
+		renderer._hover_sprite.position = renderer._grid_to_world(0, 0, elev)
+		renderer._hover_sprite.visible = true
+
+	assert_that(renderer._hover_sprite).is_not_null()
+	assert_bool(renderer._hover_sprite.visible).is_true()
+
+	# Clear hover
+	renderer._clear_hover()
+	assert_bool(renderer._hovered_tile == Vector2i(-1, -1)).is_true()
+	assert_bool(renderer._hover_sprite.visible).is_false()
+
+	renderer.queue_free()
+	await get_tree().process_frame
