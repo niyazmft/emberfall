@@ -86,12 +86,10 @@ func _record_kill(enemy_id: String, enemy_name: String) -> void:
 ## Canonical damage application. Updates defender HP and transitions state
 ## deterministically. If damage is lethal, targets enter DYING (not DEAD).
 func apply_damage(attacker: Entity, defender: Entity, damage: int) -> void:
-	var old_hp: int = defender.hp
-	var new_hp: int = DeterministicMath.clampi(old_hp - damage, 0, defender.hp_max)
-	defender.hp = new_hp
+	defender.apply_damage(damage)
 
 	if (
-		new_hp == 0
+		defender.hp == 0
 		and defender.state != Entity.State.DYING
 		and defender.state != Entity.State.DEAD
 		and defender.state != Entity.State.GHOST

@@ -46,6 +46,12 @@ func _ready() -> void:
 	attack_button.pressed.connect(_on_attack_pressed)
 	end_turn_button.pressed.connect(_on_end_turn_pressed)
 
+	# Connect floating text signal
+	var eb := AutoloadHelper.event_bus()
+	if eb:
+		if not eb.floating_text_requested.is_connected(_on_floating_text_requested):
+			eb.floating_text_requested.connect(_on_floating_text_requested)
+
 
 func _exit_tree() -> void:
 	var sz: _SafeZoneManager = AutoloadHelper.safe_zone_manager()
@@ -61,6 +67,11 @@ func _exit_tree() -> void:
 		attack_button.pressed.disconnect(_on_attack_pressed)
 	if end_turn_button.pressed.is_connected(_on_end_turn_pressed):
 		end_turn_button.pressed.disconnect(_on_end_turn_pressed)
+
+	var eb := AutoloadHelper.event_bus()
+	if eb:
+		if eb.floating_text_requested.is_connected(_on_floating_text_requested):
+			eb.floating_text_requested.disconnect(_on_floating_text_requested)
 
 	if _player_entity:
 		if _player_entity.hp_changed.is_connected(_on_hp_changed):
@@ -238,6 +249,25 @@ func _log_from_config(template_key: String, args: Array = []) -> void:
 			log_action(localized_template % args)
 		else:
 			log_action(localized_template)
+
+
+func show_floating_text(text: String, position: Vector2, color: Color) -> void:
+	var label: Label = Label.new()
+	add_child(label)
+	label.text = text
+	label.modulate = color
+	label.position = position
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+
+	var tween: Tween = get_tree().create_tween()
+	tween.tween_property(label, "position:y", position.y - 20.0, 1.0)
+	tween.parallel().tween_property(label, "modulate:a", 0.0, 1.0)
+	tween.tween_callback(label.queue_free)
+
+
+func _on_floating_text_requested(text: String, position: Vector2, color: Color) -> void:
+	show_floating_text(text, position, color)
 
 
 func _reflow_bottom_chrome() -> void:

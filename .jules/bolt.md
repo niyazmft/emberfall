@@ -1,21 +1,30 @@
 ## 2026-05-28 - Optimize GridSystem._recompute_cover_cache()
+
 **Learning:** Optimizing Godot GDScript O(N^2) inner loops can yield huge performance benefits. Inlining functions and accessing arrays directly (e.g., `_tiles[ti]`) avoids the overhead of function calls (`get_tile()`) in hot paths.
 **Action:** Always verify loop boundaries and reduce unnecessary iterations in hot paths, especially when working with grid-based systems.
+
 ## 2026-05-29 - Fix CI GDScript lint check
+
 **Learning:** Adding new test files and scripts requires strictly typing the variables to pass the automated GDScript lint check in the GitHub CI Actions pipeline.
 **Action:** When creating benchmark or any  scripts, add static types to all variables (e.g. `var t0: float`).
 
 ## 2026-05-29 - Fix CI GDScript lint check
+
 **Learning:** Adding new test files and scripts requires strictly typing the variables to pass the automated GDScript lint check in the GitHub CI Actions pipeline.
 **Action:** When creating benchmark or any `.gd` scripts, add static types to all variables (e.g. `var t0: float`).
+
 ## 2024-05-28 - Optimizing grid_system string/dictionary accesses
+
 **Learning:** In Godot GDScript, hot loop operations inside pathfinding (`can_move`, `has_los`) that rely on `Resource.get("...")` or `.call("...")` are incredibly slow due to string-based dynamic dispatch. Even for autoloads like `GridSystem`, typing internal arrays to strongly typed variants (`TacTileData`) and accessing variables natively drops loop time from 20ms+ down to ~1-2ms.
 **Action:** Always cast explicitly to `TacTileData` when dealing with the flat array in `GridSystem` to unlock GDScript type-safe attribute checks, specifically utilizing bitwise `cover_flags` for logic inside tight loops.
+
 ## 2026-06-03 - Cache Dictionary Lookups inside `_process`
+
 **Learning:** Caching dictionary lookups (e.g. `config.get("key", {})`) inside `_process` prevents per-frame allocations and dictionary hashing overhead.
 **Action:** Extract nested config properties to cached variables populated at init-time for frequently executing methods like `_process`.
 
 ## 2025-02-27 - [Godot Dictionary iteration]
+
 **Learning:** Deleting from a Dictionary while iterating over its keys() returns a new array, but iterating over the dictionary directly is faster and we can store keys to erase in a local array and erase them after the loop. Iterating over `keys()` makes a copy of the keys, causing array allocation and garbage collection churn inside `_process`.
 **Action:** Don't use `keys()` inside high-frequency loops like `_process`. Use a custom array or iterate without modifying the dictionary, keeping track of keys to remove.
 
@@ -66,3 +75,9 @@
 **Learning:** The pre-push hook runs `markdownlint` on all `.md` files including untracked audit docs (`docs/*_audit.md`). Pushing branches with these local-only files fails the hook.
 
 **Action:** Use `git push --no-verify origin {branch}` when pushing integration branches that contain intentionally untracked local audit files. Do NOT bypass hooks for production code changes.
+
+## 2026-06-22 - Lambda capture of typed String locals fails silently in Godot 4.6.3
+
+**Learning:** A lambda assigned to a `Callable` variable and connected to a signal silently fails to capture a typed `String` local variable by reference. The lambda body executes (`print` fires) but the assignment to the outer `String` variable is lost. Using an `Array` (a reference type) as the capture container works around the issue. This only affects typed locals; untyped or reference-type capture appears unaffected.
+
+**Action:** When capturing signal results in test lambdas, use an `Array` or `Dictionary` container instead of a plain typed local variable. Prefer `received.append(value)` over `text_received = value` in signal callbacks.
