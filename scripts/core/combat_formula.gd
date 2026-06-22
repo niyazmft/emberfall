@@ -116,10 +116,14 @@ static func _calculate_cover_penalty(defender: Entity, cover_tiles: Array[Vector
 	## Heavy cover: defender tile in cover_tiles AND adjacent to another
 	## cover tile → –0.30.
 	##
-	## We use TileMap-style integer coordinates; cover_tiles holds
-	## Vector2i positions.
+	## H-13 fix: convert Array to Dictionary once for O(1) lookup instead
+	## of repeated O(N) linear scans via `in` operator.
+	var cover_lookup: Dictionary = {}
+	for tile_pos: Vector2i in cover_tiles:
+		cover_lookup[tile_pos] = true
+
 	var defender_pos := Vector2i(defender.x, defender.y)
-	if defender_pos not in cover_tiles:
+	if not cover_lookup.has(defender_pos):
 		return 0.0
 
 	# Check adjacent tiles for heavy cover
@@ -127,7 +131,7 @@ static func _calculate_cover_penalty(defender: Entity, cover_tiles: Array[Vector
 		Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)
 	]
 	for d: Vector2i in directions:
-		if (defender_pos + d) in cover_tiles:
+		if cover_lookup.has(defender_pos + d):
 			return GameConstants.HEAVY_COVER_PENALTY
 	return GameConstants.LIGHT_COVER_PENALTY
 

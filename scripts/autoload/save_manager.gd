@@ -88,6 +88,7 @@ func _ready() -> void:
 func save_game(state: Dictionary) -> Error:
 	var save_data: Dictionary = state.duplicate(true)
 	save_data["version"] = SAVE_VERSION
+	save_data["godot_version"] = Engine.get_version_info()["string"]
 
 	var json_text: String = JSON.stringify(save_data, "\t")
 
@@ -162,6 +163,28 @@ func load_game() -> Dictionary:
 			)
 	else:
 		push_warning("[SaveManager] load_game: save file has no version field.")
+
+	# Godot version guard — procedural RNG sequences are version-bound.
+	if data.has("godot_version"):
+		var saved_gv: String = str(data["godot_version"])
+		var current_gv: String = Engine.get_version_info()["string"]
+		if saved_gv != current_gv:
+			push_warning(
+				(
+					(
+						"[SaveManager] load_game: Godot version mismatch (save=%s, current=%s). "
+						% [saved_gv, current_gv]
+					)
+					+ "Procedural room layouts may differ."
+				)
+			)
+	else:
+		push_warning(
+			(
+				"[SaveManager] load_game: save file has no godot_version field."
+				+ " Procedural room compatibility unknown."
+			)
+		)
 
 	_print_debug("load_game: loaded %d top-level keys." % data.size())
 	load_completed.emit(data)

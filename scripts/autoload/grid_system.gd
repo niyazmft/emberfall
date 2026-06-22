@@ -39,6 +39,7 @@ const SLIP_MOVEMENT_BASE_COST: int = 1
 ## Lifecycle
 ## ------------------------------------------------------------------
 func _ready() -> void:
+	_cover_cache.resize(TOTAL_TILES * TOTAL_TILES)
 	_reset_grid()
 
 
@@ -56,8 +57,6 @@ func _reset_grid() -> void:
 
 func _invalidate_cache() -> void:
 	_cache_valid = false
-	_cover_cache.resize(TOTAL_TILES * TOTAL_TILES)
-	_cover_cache.fill(false)
 
 
 ## ------------------------------------------------------------------
@@ -389,6 +388,7 @@ func target_has_cover_against(
 ## ------------------------------------------------------------------
 func _recompute_cover_cache() -> void:
 	_invalidate_cache()
+	_cover_cache.fill(false)
 	for oy: int in range(GRID_SIZE):
 		for ox: int in range(GRID_SIZE):
 			var oi: int = oy * GRID_SIZE + ox
