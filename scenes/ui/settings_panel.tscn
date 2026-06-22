@@ -1,7 +1,19 @@
-[gd_scene load_steps=3 format=3 uid="uid://c7p9q4r5s6t1u"]
+[gd_scene load_steps=4 format=3 uid="uid://c7p9q4r5s6t1u"]
 
 [ext_resource type="Script" path="res://scripts/ui/settings_panel.gd" id="1_s7p8q"]
 [ext_resource type="PackedScene" uid="uid://c6r2j8w1v4p5m" path="res://scenes/ui/remap_panel.tscn" id="2_remap"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_apply_nml"]
+bg_color = Color(0.2, 0.2, 0.2, 1)
+border_color = Color(0.9, 0.75, 0.2, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
 
 [node name="SettingsPanel" type="Control"]
 layout_mode = 3
@@ -163,6 +175,7 @@ mouse_default_cursor_shape = 2
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
+theme_override_styles/normal = SubResource("StyleBoxFlat_apply_nml")
 text = "SETTINGS_APPLY"
 
 [node name="SETTINGS_ACCESSIBILITY" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
