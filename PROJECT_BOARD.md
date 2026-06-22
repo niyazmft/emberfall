@@ -348,8 +348,10 @@ Outside the numbered phases, recent infrastructure work:
 - **Critical Audit Blockers** (#411–#426): 16 issues from full audit
   - ✅ Done: C-1 (#411), C-3 (#413), C-5 (#415), C-11 (#421) — PR #487 merged
   - ✅ Done: C-8, C-9, C-10 (engine crash risks) — PR #485 merged
-  - 🔄 In review: C-2 (#412), C-4 (#414), C-6 (#416), C-7 (#417) — PR #488
-  - 🔄 In review: C-13 (#423), C-15 (#425) — PR #489
+  - ✅ Done: C-2 (#412), C-4 (#414), C-6 (#416), C-7 (#417) — PR #488 merged
+  - ✅ Done: C-13 (#423), C-15 (#425) — PR #489 merged
+  - ✅ Done: #454, #460, #452, #450, #438 — PR #490 merged
+  - 🔄 In review: #458, #441, #440, #434, #451 — PR #491
   - ⏳ Ready: C-14, C-16
 - **High Priority** (#427–#441, #464–#471): 23 issues (engine perf, UX, level design, story)
 - **Medium Priority** (#442–#454, #474–#480): 22 issues (quality, systems, content)

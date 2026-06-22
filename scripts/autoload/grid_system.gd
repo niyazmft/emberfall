@@ -84,7 +84,17 @@ func get_tile_by_index(i: int) -> TacTileData:
 
 
 func all_tiles() -> Array[TacTileData]:
-	return _tiles.duplicate()
+	## Returns the internal tile array directly.
+	## Callers MUST NOT modify the returned array (insert, remove, resize, etc.).
+	## Mutating TacTileData properties (elevation, cover, etc.) is allowed
+	## because the elements are shared references.
+	##
+	## Previously returned _tiles.duplicate() which allocated 144-element
+	## array on every call. Removing the copy saves ~1KB+ per frame in
+	## hot loops (AI pathfinding, damage calculation, cover queries).
+	##
+	## If you need an independent copy, call .duplicate() yourself.
+	return _tiles
 
 
 ## ------------------------------------------------------------------
