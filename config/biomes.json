@@ -15,13 +15,7 @@
         "room_biome1_03",
         "room_biome1_04",
         "room_biome1_05",
-        "room_biome1_06",
-        "room_biome1_07",
-        "room_biome1_08",
-        "room_biome1_09",
-        "room_biome1_10",
-        "room_biome1_11",
-        "room_biome1_12"
+        "room_biome1_06"
       ],
       "generation_params": {
         "cover_density": 0.15,
@@ -29,7 +23,9 @@
         "elevation_max": 1,
         "blocked_density": 0.05,
         "hazard_density": 0.02,
-        "hazard_types": ["oil"]
+        "hazard_types": [
+          "oil"
+        ]
       }
     },
     "biome2": {
@@ -45,15 +41,7 @@
         "room_biome2_01",
         "room_biome2_02",
         "room_biome2_03",
-        "room_biome2_04",
-        "room_biome2_05",
-        "room_biome2_06",
-        "room_biome2_07",
-        "room_biome2_08",
-        "room_biome2_09",
-        "room_biome2_10",
-        "room_biome2_11",
-        "room_biome2_12"
+        "room_biome2_04"
       ],
       "generation_params": {
         "cover_density": 0.25,
@@ -61,7 +49,9 @@
         "elevation_max": 2,
         "blocked_density": 0.1,
         "hazard_density": 0.05,
-        "hazard_types": ["oil"]
+        "hazard_types": [
+          "oil"
+        ]
       }
     },
     "biome3": {
@@ -78,14 +68,6 @@
         "room_biome3_02",
         "room_biome3_03",
         "room_biome3_04",
-        "room_biome3_05",
-        "room_biome3_06",
-        "room_biome3_07",
-        "room_biome3_08",
-        "room_biome3_09",
-        "room_biome3_10",
-        "room_biome3_11",
-        "room_biome3_12",
         "boss_overgrown_guardian"
       ],
       "generation_params": {
@@ -94,7 +76,9 @@
         "elevation_max": 2,
         "blocked_density": 0.15,
         "hazard_density": 0.08,
-        "hazard_types": ["fire"]
+        "hazard_types": [
+          "fire"
+        ]
       }
     }
   }
