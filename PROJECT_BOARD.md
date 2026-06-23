@@ -351,11 +351,15 @@ Outside the numbered phases, recent infrastructure work:
   - ✅ Done: C-2 (#412), C-4 (#414), C-6 (#416), C-7 (#417) — PR #488 merged
   - ✅ Done: C-13 (#423), C-15 (#425) — PR #489 merged
   - ✅ Done: #454, #460, #452, #450, #438 — PR #490 merged
-  - 🔄 In review: #458, #441, #440, #434, #451 — PR #491
+  - ✅ Done: #461, #456, #453, #448, #442 — PR #493 merged
+  - ✅ Done: #462, #429, #463, #428, #443 — PR #494 merged
+  - ✅ Done: #461, #456, #453, #448, #442 — PR #493 merged
+  - ✅ Done: #462, #429, #463, #428, #443 — PR #494 merged
+  - ✅ Done: #458, #441, #440, #434, #451 — PR #491 merged
   - ⏳ Ready: C-14, C-16
 - **High Priority** (#427–#441, #464–#471): 23 issues (engine perf, UX, level design, story)
-- **Medium Priority** (#442–#454, #474–#480): 17 issues (5 resolved in PR #493) (quality, systems, content)
-- **Small Priority** (#455–#463, #481–#484): 13 issues (polish, art, CI)
+- **Medium Priority** (#442–#454, #474–#480): 7 issues (PR #493 + #494 resolved 15) (quality, systems, content)
+- **Small Priority** (#455–#463, #481–#484): 4 issues (PR #494 resolved 9) (polish, art, CI)
 - **5.1b Creative Assets wiring** (#299–#306): 8 issues
 - **5.7 MVP Gaps** (#294–#298): 5 issues
 - **5.8 Playability** (#288–#292): 6 issues
