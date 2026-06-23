@@ -3,6 +3,18 @@
 [ext_resource type="Script" path="res://scripts/ui/settings_panel.gd" id="1_s7p8q"]
 [ext_resource type="PackedScene" uid="uid://c6r2j8w1v4p5m" path="res://scenes/ui/remap_panel.tscn" id="2_remap"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
+bg_color = Color(0.10196, 0.10196, 0.18039, 0.98)
+border_color = Color(0.9, 0.75, 0.2, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_apply_nml"]
 bg_color = Color(0.2, 0.2, 0.2, 1)
 border_color = Color(0.9, 0.75, 0.2, 1)
@@ -24,14 +36,14 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_s7p8q")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="Panel" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 0.8)
+theme_override_styles/panel = SubResource("StyleBoxFlat_bg")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 1
