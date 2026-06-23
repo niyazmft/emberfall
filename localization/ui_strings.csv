@@ -134,3 +134,13 @@ TUTORIAL_ATTACK,[SPACE to attack],[LEERTASTE zum Angreifen],[ESPACIO para atacar
 TUTORIAL_CYCLE,[TAB to cycle targets],[TAB zum Zielwechsel],[TAB para cambiar objetivo],[TAB pour changer de cible]
 TUTORIAL_CONFIRM,[ENTER to confirm],[ENTER zum Bestätigen],[ENTER para confirmar],[ENTRÉE pour confirmer]
 TUTORIAL_PAUSE,[ESC to pause],[ESC zum Pausieren],[ESC para pausar],[ÉCHAP pour mettre en pause]
+VICTORY_NARRATIVE_1,The embers remember your name.,Die Glut erinnert sich an deinen Namen.,Las brasas recuerdan tu nombre.,Les braises se souviennent de votre nom.
+VICTORY_NARRATIVE_2,Stillness returns — for now.,Die Stille kehrt zurück — vorerst.,La quietud regresa — por ahora.,Le calme revient — pour l’instant.
+VICTORY_NARRATIVE_3,Another shard of echo claimed.,Ein weiterer Echosplitter erobert.,Otro fragmento de eco reclamado.,Un autre éclat d’écho conquis.
+VICTORY_NARRATIVE_4,The burden lightens — but does not leave.,Die Last wird leichter — aber bleibt.,La carga se aligera — pero no se va.,Le fardeau s’allège — mais ne part pas.
+VICTORY_NARRATIVE_5,You endure. That is enough.,Du überstehst. Das genügt.,Resistes. Eso es suficiente.,Vous endurez. Cela suffit.
+DEFEAT_NARRATIVE_1,The stillness claims you.,Die Stille beansprucht dich.,La quietud te reclama.,Le calme vous réclame.
+DEFEAT_NARRATIVE_2,The embers fade — but do not die.,Die Glut verblasst — stirbt aber nicht.,Las brasas se desvanecen — pero no mueren.,Les braises s’estompent — mais ne meurent pas.
+DEFEAT_NARRATIVE_3,Another echo lost to the dark.,Ein weiterer Echo im Dunkeln verloren.,Otro eco perdido en la oscuridad.,Un autre écho perdu dans l’obscurité.
+DEFEAT_NARRATIVE_4,The burden was heavier than you knew.,Die Last war schwerer als du wusstest.,La carga era más pesada de lo que sabías.,Le fardeau était plus lourd que vous ne le saviez.
+DEFEAT_NARRATIVE_5,You falter. The world does not.,Du wankst. Die Welt nicht.,Titubéas. El mundo no.,Vous hésitez. Le monde non.
