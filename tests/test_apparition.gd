@@ -1,5 +1,14 @@
 extends GdUnitTestSuite
 
+
+func after_test() -> void:
+	# Remove any Keeper or ApparitionRenderer nodes that may have been added
+	for child: Node in get_children():
+		if child is Keeper or child is ApparitionRenderer:
+			remove_child(child)
+			child.queue_free()
+
+
 # ── BurdenManager Tests ───────────────────────────────────────────────────
 
 

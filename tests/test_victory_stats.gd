@@ -52,3 +52,7 @@ func test_victory_data_aggregation() -> void:
 	player_entity.is_player = true
 	eb.entity_state_changed.emit(player_entity, Entity.State.IDLE, Entity.State.DEAD)
 	assert_int(room.get("_room_kills")).is_equal(2)
+
+	# Dispose runner to free scene and prevent orphan nodes
+	if is_instance_valid(runner):
+		runner.dispose()

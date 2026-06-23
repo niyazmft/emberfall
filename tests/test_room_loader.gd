@@ -39,7 +39,10 @@ func test_spawn_entities() -> void:
 	assert_that(player).is_not_null()
 	assert_int(enemies.get_child_count()).is_equal(3)
 
-	container.free()
+	# Clean up: remove from tree first, then queue_free (safer than free when in tree)
+	if container.get_parent() != null:
+		container.get_parent().remove_child(container)
+	container.queue_free()
 
 
 # ── Multi-room generation correctness tests (#463) ─────────────────────────

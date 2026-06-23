@@ -34,10 +34,17 @@ func before_test() -> void:
 
 
 func after_test() -> void:
-	_combat_input.free()
-	_grid_renderer.free()
-	_enemies_node.free()
-	_player.free()
+	if is_instance_valid(_combat_input):
+		var parent: Node = _combat_input.get_parent()
+		if parent != null:
+			parent.remove_child(_combat_input)
+		_combat_input.free()
+	if is_instance_valid(_grid_renderer):
+		_grid_renderer.free()
+	if is_instance_valid(_enemies_node):
+		_enemies_node.free()
+	if is_instance_valid(_player):
+		_player.free()
 
 
 func test_enter_targeting_mode() -> void:
