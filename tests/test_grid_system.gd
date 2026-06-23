@@ -315,3 +315,65 @@ func test_hover_cursor_visible_on_valid_tile() -> void:
 
 	renderer.queue_free()
 	await get_tree().process_frame
+
+
+func test_cover_tile_renders_cover_sprite() -> void:
+	var gs: _GridSystem = GridSystem
+	# Tile (0,0) has light cover
+	var cover_data: Array = []
+	cover_data.resize(144)
+	cover_data.fill(0)
+	cover_data[gs.index(0, 0)] = 1  # LIGHT cover
+	var layout: Dictionary = {"cover": cover_data}
+	gs.load_room({"id": "cover_render_test", "layout": layout})
+
+	var renderer: GridRenderer = GridRenderer.new()
+	add_child(renderer)
+	await get_tree().process_frame
+
+	# Look for a cover sprite with COLOR_COVER modulate
+	var found_cover: bool = false
+	for child: Node in renderer.get_children():
+		if child is Sprite2D:
+			var sprite: Sprite2D = child as Sprite2D
+			if (
+				is_equal_approx(sprite.modulate.r, GridRenderer.COLOR_COVER.r)
+				and is_equal_approx(sprite.modulate.g, GridRenderer.COLOR_COVER.g)
+				and is_equal_approx(sprite.modulate.b, GridRenderer.COLOR_COVER.b)
+			):
+				found_cover = true
+				break
+
+	assert_bool(found_cover).is_true()
+
+	renderer.queue_free()
+	await get_tree().process_frame
+
+
+func test_highlight_tile_elevation_color() -> void:
+	var gs: _GridSystem = GridSystem
+	gs.load_room({"id": "highlight_elev_test"})
+
+	var renderer: GridRenderer = GridRenderer.new()
+	add_child(renderer)
+	await get_tree().process_frame
+
+	# Highlight with elevation color
+	renderer.highlight_tile(0, 0, GridRenderer.COLOR_ELEV_1)
+	await get_tree().process_frame
+
+	var found: bool = false
+	for child: Node in renderer.get_children():
+		if child is Sprite2D:
+			var sprite: Sprite2D = child as Sprite2D
+			if (
+				is_equal_approx(sprite.modulate.r, GridRenderer.COLOR_ELEV_1.r)
+				and is_equal_approx(sprite.modulate.g, GridRenderer.COLOR_ELEV_1.g)
+				and is_equal_approx(sprite.modulate.b, GridRenderer.COLOR_ELEV_1.b)
+			):
+				found = true
+				break
+	assert_bool(found).is_true()
+
+	renderer.queue_free()
+	await get_tree().process_frame
