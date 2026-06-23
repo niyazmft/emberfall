@@ -18,7 +18,7 @@ func test_entity_spawning() -> void:
 	var room: Node = runner.scene()
 
 	# Manually trigger test encounter to ensure entities exist regardless of RunManager state
-	room.call("_spawn_test_encounter")
+	room.call("_load_demo_room")
 
 	var entity_container: Node2D = room.get_node("EntityContainer") as Node2D
 	assert_int(entity_container.get_child_count()).is_greater(0)

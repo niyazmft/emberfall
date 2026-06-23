@@ -35,4 +35,6 @@ func test_mage_and_boss_spawn() -> void:
 	assert_str(boss.get("archetype_id")).is_equal("boss")
 
 	# Clean up
-	container.free()
+	if container.get_parent() != null:
+		container.get_parent().remove_child(container)
+	container.queue_free()

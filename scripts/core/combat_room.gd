@@ -10,7 +10,7 @@ const VICTORY_MODAL_SCENE_PATH: String = "res://scenes/ui/victory_modal.tscn"
 const DEFEAT_MODAL_SCENE_PATH: String = "res://scenes/ui/defeat_modal.tscn"
 const TURN_BANNER_SCENE_PATH: String = "res://scenes/ui/turn_banner.tscn"
 
-@export var test_mode: bool = false  # Spawn test enemies
+@export var demo_mode: bool = false  # Load curated demo room when no RunManager present
 
 var _grid_system: _GridSystem
 var _player: Node2D  # Type will be Keeper
@@ -39,8 +39,8 @@ func _ready() -> void:
 		# If we are already in a room, trigger it manually
 		if run_manager.current_state == _RunManager.RunState.ROOM:
 			_on_room_entered(run_manager.room_index, run_manager.get_current_room_data())
-	elif test_mode:
-		_spawn_test_encounter()
+	elif demo_mode:
+		_load_demo_room()
 
 	var eb := AutoloadHelper.event_bus()
 	if eb:
@@ -150,7 +150,7 @@ func _setup_turn_manager() -> void:
 		if child is Node2D:
 			enemies.append(child)
 
-	if not enemies.is_empty() or test_mode:
+	if not enemies.is_empty():
 		_turn_manager.start_combat(_player, enemies)
 
 
@@ -161,8 +161,8 @@ func _create_enemies_node() -> void:
 	entity_container.add_child(_enemies_node)
 
 
-func _spawn_test_encounter() -> void:
-	_room_kills = 0
+func _load_demo_room() -> void:
+	"""Load a curated demo room when no RunManager is present (e.g. direct scene launch)."""
 	var room_data := RoomLoader.load_room_data("room_standard_01")
 	if room_data.is_empty():
 		# Fallback if file not found
@@ -170,7 +170,7 @@ func _spawn_test_encounter() -> void:
 			"encounter_seed": 12345,
 			"biome": 0,
 			"room_in_biome": 0,
-			"player_start": {"x": 5, "y": 5}
+			"player_start": {"x": 1, "y": 1}
 		}
 	else:
 		room_data["encounter_seed"] = 12345

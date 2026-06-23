@@ -8,6 +8,14 @@ func before_test() -> void:
 	_grid._reset_grid()
 
 
+func after_test() -> void:
+	# Remove any enemy nodes that may have been added to the test suite tree
+	for child: Node in get_children():
+		if child.is_in_group("enemies"):
+			remove_child(child)
+			child.queue_free()
+
+
 func test_enemy_grunt_variety() -> void:
 	var grunt_scene := load("res://scenes/enemies/enemy_grunt.tscn")
 	var grunt: EnemyGrunt = auto_free(grunt_scene.instantiate()) as EnemyGrunt

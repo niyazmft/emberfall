@@ -1,6 +1,18 @@
 extends GdUnitTestSuite
 
 
+func before_test() -> void:
+	var bm: _BurdenManager = AutoloadHelper.burden_manager()
+	if bm != null and is_instance_valid(bm._mwt_matrix):
+		bm._mwt_matrix.free()
+
+
+func after_test() -> void:
+	var bm: _BurdenManager = AutoloadHelper.burden_manager()
+	if bm != null and is_instance_valid(bm._mwt_matrix):
+		bm._mwt_matrix.free()
+
+
 # ── AC-1: Config loads and schema validates ──────────────────────────────
 func test_config_loads() -> void:
 	var bm: _BurdenManager = AutoloadHelper.burden_manager()

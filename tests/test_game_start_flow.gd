@@ -8,7 +8,11 @@ const TITLE_SCREEN_SCENE := "res://scenes/title_screen.tscn"
 func after_test() -> void:
 	var current_scene := get_tree().current_scene
 	if is_instance_valid(current_scene):
+		# Remove the scene from the tree before freeing to avoid orphan references
+		if current_scene.get_parent() != null:
+			current_scene.get_parent().remove_child(current_scene)
 		current_scene.queue_free()
+
 	var run_manager := AutoloadHelper.run_manager()
 	if run_manager:
 		run_manager.cmd_return_to_sanctum()
