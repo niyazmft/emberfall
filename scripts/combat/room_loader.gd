@@ -227,6 +227,7 @@ static func _spawn_player(start_pos: Dictionary, container: Node) -> Node2D:
 static func _spawn_encounter(encounter: Dictionary, container: Node, enemies_node: Node) -> void:
 	var enemy_type: String = encounter.get("enemy_type", "grunt")
 	var positions: Array = encounter.get("positions", []) as Array
+	var is_leader: bool = bool(encounter.get("leader", false))
 
 	var enemy_scene: PackedScene = ENEMY_SCENES.get(enemy_type, ENEMY_SCENES["grunt"])
 	if enemy_scene == null:
@@ -253,6 +254,9 @@ static func _spawn_encounter(encounter: Dictionary, container: Node, enemies_nod
 
 		if "behavior_override" in enemy:
 			enemy.set("behavior_override", encounter.get("behavior_override", ""))
+
+		if enemy is BaseEnemy:
+			(enemy as BaseEnemy).is_leader = is_leader
 
 		if enemies_node:
 			enemies_node.add_child(enemy)

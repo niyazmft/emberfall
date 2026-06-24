@@ -5,6 +5,7 @@ extends CombatEntity
 @export var archetype_id: String = ""
 @export var elite_type: String = ""
 @export var behavior_override: String = ""
+@export var is_leader: bool = false
 @export var ai_controller: Node  ## Will integrate with behavior tree
 @export var visual_proxy: EntityVisualProxy
 @export var debug_color: Color = Color.WHITE
@@ -28,6 +29,7 @@ func _ready() -> void:
 	_setup_entity()
 	_setup_ai()
 	_setup_visual_proxy()
+	_setup_leader_visual()
 
 
 func _process(_delta: float) -> void:
@@ -167,6 +169,32 @@ func _setup_visual_proxy() -> void:
 	if visual_proxy and entity:
 		visual_proxy.entity = entity
 		visual_proxy.scale = Vector2(visual_scale, visual_scale)
+
+
+func _setup_leader_visual() -> void:
+	## Add a small gold glow/badge above the entity to mark group leaders.
+	if not is_leader:
+		return
+	var badge: Sprite2D = Sprite2D.new()
+	badge.name = "LeaderBadge"
+	# Use a tiny diamond texture or fall back to a colored rect
+	var tex: Texture2D = load("res://assets/sprites/tile_stone.png") as Texture2D
+	if tex != null:
+		badge.texture = tex
+		badge.scale = Vector2(0.15, 0.15)
+	badge.modulate = Color(1.0, 0.84, 0.0, 0.9)  # Gold
+	badge.position = Vector2(0.0, -12.0)
+	add_child(badge)
+
+	# Slight glow on the visual proxy for extra visibility
+	if visual_proxy:
+		var glow: PointLight2D = PointLight2D.new()
+		glow.name = "LeaderGlow"
+		glow.color = Color(1.0, 0.84, 0.0, 0.3)
+		glow.energy = 0.5
+		glow.texture = tex if tex != null else null
+		glow.scale = Vector2(0.3, 0.3)
+		visual_proxy.add_child(glow)
 
 
 ## Combat API

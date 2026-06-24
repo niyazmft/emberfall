@@ -1,10 +1,28 @@
 {
   "group_templates": {
-    "scout_party": ["grunt", "archer"],
-    "heavy_patrol": ["tank", "grunt", "grunt"],
-    "mage_coven": ["mage", "mage", "grunt"],
-    "mixed_force": ["tank", "archer", "mage"],
-    "vanguard": ["tank", "tank"]
+    "scout_party": [
+      {"type": "grunt"},
+      {"type": "archer", "leader": true}
+    ],
+    "heavy_patrol": [
+      {"type": "tank", "leader": true},
+      {"type": "grunt"},
+      {"type": "grunt"}
+    ],
+    "mage_coven": [
+      {"type": "mage", "leader": true},
+      {"type": "mage"},
+      {"type": "grunt"}
+    ],
+    "mixed_force": [
+      {"type": "tank", "leader": true},
+      {"type": "archer"},
+      {"type": "mage"}
+    ],
+    "vanguard": [
+      {"type": "tank", "leader": true},
+      {"type": "tank"}
+    ]
   },
   "biome_compositions": {
     "biome1": [
