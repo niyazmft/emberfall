@@ -14,7 +14,7 @@ var _combat_input: CombatInput
 @onready var hotbar: Control = $MarginContainer/BottomChrome/Hotbar
 @onready var prompts: Label = $MarginContainer/BottomChrome/Prompts
 @onready var status_icons: Control = $MarginContainer/BottomChrome/StatusIcons
-@onready var action_buttons: Control = $MarginContainer/BottomChrome/ActionButtons
+@onready var action_buttons: Control = $MarginContainer/BottomChrome/ActionButtonsPanel
 @onready var tutorial_overlay: _TutorialOverlay = %TutorialOverlay
 
 # HP/AP Display
@@ -219,6 +219,11 @@ func _enable_action_buttons(enabled: bool) -> void:
 	move_button.disabled = !enabled
 	attack_button.disabled = !enabled
 	end_turn_button.disabled = !enabled
+	# Visual feedback: dim buttons when disabled
+	var target_alpha: float = 1.0 if enabled else 0.4
+	move_button.modulate.a = target_alpha
+	attack_button.modulate.a = target_alpha
+	end_turn_button.modulate.a = target_alpha
 
 
 func _on_safe_area_changed(_rect: Rect2) -> void:
