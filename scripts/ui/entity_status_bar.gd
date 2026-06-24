@@ -2,17 +2,21 @@ class_name EntityStatusBar
 extends Control
 
 ## EntityStatusBar
-## Displays HP via a ProgressBar and AP via dynamic ColorRect pips.
+## Displays HP via a styled ProgressBar with color-coded fill and numeric label,
+## and AP via dynamic TextureRect pips (diamond shapes).
 
 var _lerp_speed: float = 10.0
 var _target_hp: float = 0.0
+var _max_hp: int = 1
 
 @onready var hp_bar: ProgressBar = %HPBar
+@onready var hp_label: Label = %HPLabel
 @onready var ap_container: HBoxContainer = %APContainer
 
 
 func _ready() -> void:
 	_load_config()
+	_style_hp_bar()
 
 
 func _load_config() -> void:
@@ -23,17 +27,75 @@ func _load_config() -> void:
 			_lerp_speed = feedback.get("lerp_speed", 10.0)
 
 
+func _style_hp_bar() -> void:
+	"""Apply StyleBoxFlat with rounded corners, border, and background to the HP bar."""
+	if hp_bar == null:
+		return
+
+	# Background style (empty portion of the bar)
+	var bg_style: StyleBoxFlat = StyleBoxFlat.new()
+	bg_style.bg_color = Color(0.12, 0.12, 0.12, 1.0)
+	bg_style.border_color = Color(0.3, 0.3, 0.3, 1.0)
+	bg_style.border_width_left = 1
+	bg_style.border_width_top = 1
+	bg_style.border_width_right = 1
+	bg_style.border_width_bottom = 1
+	bg_style.corner_radius_top_left = 3
+	bg_style.corner_radius_top_right = 3
+	bg_style.corner_radius_bottom_right = 3
+	bg_style.corner_radius_bottom_left = 3
+	hp_bar.add_theme_stylebox_override("bg", bg_style)
+
+	# Fill style will be set dynamically in _process based on HP percentage
+	var fill_style: StyleBoxFlat = StyleBoxFlat.new()
+	fill_style.corner_radius_top_left = 2
+	fill_style.corner_radius_top_right = 2
+	fill_style.corner_radius_bottom_right = 2
+	fill_style.corner_radius_bottom_left = 2
+	hp_bar.add_theme_stylebox_override("fg", fill_style)
+
+
 func _process(delta: float) -> void:
+	if hp_bar == null:
+		return
 	if DeterministicMath.absf(hp_bar.value - _target_hp) > 0.1:
 		hp_bar.value = lerpf(hp_bar.value, _target_hp, _lerp_speed * delta)
 	else:
 		hp_bar.value = _target_hp
 
+	_update_hp_color()
 
-## Update HP bar
+
+func _update_hp_color() -> void:
+	"""Set HP bar fill color based on percentage: red → yellow → green."""
+	if hp_bar == null or _max_hp <= 0:
+		return
+
+	var pct: float = hp_bar.value / float(_max_hp)
+	var fill_color: Color
+
+	if pct <= 0.33:
+		# Low HP: red
+		fill_color = Color(0.9, 0.15, 0.15)
+	elif pct <= 0.66:
+		# Medium HP: yellow/orange
+		fill_color = Color(0.95, 0.75, 0.1)
+	else:
+		# High HP: green
+		fill_color = Color(0.2, 0.85, 0.25)
+
+	var fg_style: StyleBoxFlat = hp_bar.get_theme_stylebox("fg") as StyleBoxFlat
+	if fg_style != null and fg_style.bg_color != fill_color:
+		fg_style.bg_color = fill_color
+
+
+## Update HP bar and numeric label
 func update_hp(p_current: int, p_max_hp: int) -> void:
 	hp_bar.max_value = p_max_hp
+	_max_hp = p_max_hp
 	_target_hp = float(p_current)
+	if hp_label != null:
+		hp_label.text = "HP: %d/%d" % [p_current, p_max_hp]
 
 
 ## Deprecated: Use update_hp
@@ -41,7 +103,7 @@ func updateHp(p_current: int, p_max_hp: int) -> void:
 	update_hp(p_current, p_max_hp)
 
 
-## Update AP pips to show current AP out of max
+## Update AP pips to show current AP out of max (yellow/gold diamond shapes)
 func update_ap(p_current: int, p_max_ap: int = -1) -> void:
 	var actual_max_ap: int = p_max_ap
 	if actual_max_ap < 0:

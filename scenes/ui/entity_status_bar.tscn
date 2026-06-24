@@ -25,12 +25,25 @@ grow_horizontal = 2
 grow_vertical = 2
 alignment = 2
 
-[node name="HPBar" type="ProgressBar" parent="VBoxContainer" unique_id=1702522432]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 4)
+[node name="HPHBox" type="HBoxContainer" parent="VBoxContainer" unique_id=731987087]
 layout_mode = 2
+alignment = 1
+
+[node name="HPBar" type="ProgressBar" parent="VBoxContainer/HPHBox" unique_id=1702522432]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+size_flags_horizontal = 3
 value = 50.0
 show_percentage = false
+
+[node name="HPLabel" type="Label" parent="VBoxContainer/HPHBox" unique_id=1702522433]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "HP: 25/30"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="APContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=68991114]
 unique_name_in_owner = true
