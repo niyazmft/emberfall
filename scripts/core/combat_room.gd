@@ -113,6 +113,9 @@ func _on_room_entered(p_room_index: int, room_data: Dictionary) -> void:
 		_turn_manager.queue_free()
 	_setup_turn_manager()
 
+	# Spawn props
+	_spawn_props(room_data)
+
 	# Center camera
 	_setup_camera()
 
@@ -152,6 +155,38 @@ func _setup_turn_manager() -> void:
 
 	if not enemies.is_empty():
 		_turn_manager.start_combat(_player, enemies)
+
+
+func _spawn_props(room_data: Dictionary) -> void:
+	"""Spawn purely visual environmental props using deterministic seed placement."""
+	var props_node: Node2D = $Environment/Props as Node2D
+	if props_node == null:
+		return
+
+	# Clear existing props
+	for child: Node in props_node.get_children():
+		props_node.remove_child(child)
+		child.queue_free()
+
+	var seed_val: int = room_data.get("encounter_seed", 12345)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = seed_val
+
+	# Spawn 2-3 rock/debris placeholders at static grid locations
+	var prop_count: int = rng.randi_range(2, 3)
+	for i: int in range(prop_count):
+		var gx: int = rng.randi_range(2, 9)
+		var gy: int = rng.randi_range(2, 9)
+		var pos: Vector2 = (
+			grid_renderer._grid_to_world(gx, gy, 0) if grid_renderer else Vector2(gx * 32, gy * 16)
+		)
+
+		var rock: ColorRect = ColorRect.new()
+		rock.name = "Rock_%d" % i
+		rock.size = Vector2(8, 6)
+		rock.color = Color(0.4, 0.38, 0.36, 1.0)
+		rock.position = pos - Vector2(4, 3)
+		props_node.add_child(rock)
 
 
 func _create_enemies_node() -> void:
