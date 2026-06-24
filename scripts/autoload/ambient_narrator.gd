@@ -57,7 +57,12 @@ func _on_room_entered(room_index: int, room_data: Dictionary) -> void:
 			if not loc_key.is_empty():
 				trigger_narrative(loc_key)
 
-	# 2. Trigger generic room-entry triggers
+	# 2. Trigger boss intro for boss rooms
+	var room_id: String = str(room_data.get("id", ""))
+	if room_id.begins_with("boss_"):
+		_trigger_boss_intro(room_id, room_index)
+
+	# 3. Trigger generic room-entry triggers
 	var triggers: Variant = cl.getValue("triggers")
 	if triggers is Array:
 		for trigger: Variant in triggers:
@@ -66,12 +71,12 @@ func _on_room_entered(room_index: int, room_data: Dictionary) -> void:
 				if not loc_key.is_empty():
 					trigger_narrative(loc_key)
 
-	# 3. Trigger initial elevation flavor
+	# 4. Trigger initial elevation flavor
 	# In Emberfall, player typically starts at a certain elevation,
 	# but we'll assume elevation 0 for the initial flavor trigger or get it from player.
 	trigger_elevation_flavor(biome_id, 0)
 
-	# 4. Trigger biome echo with a slight delay
+	# 5. Trigger biome echo with a slight delay
 	_trigger_random_biome_echo(biome_id, room_index, 1.5)
 
 
@@ -99,6 +104,20 @@ func _on_biome_echo_triggered(biome_index: int) -> void:
 	# Use a static index for biome-level threshold echoes, or random.
 	# We'll use 0 as the "threshold" echo.
 	_trigger_biome_echo(biome_id, 0)
+
+
+func _trigger_boss_intro(room_id: String, room_index: int) -> void:
+	## Select a deterministic boss intro variant based on room id and index.
+	var cl: _ConfigLoader = AutoloadHelper.config_loader()
+	if cl == null:
+		return
+
+	var boss_intros: Variant = cl.getValue("boss_intros")
+	if boss_intros is Dictionary and boss_intros.has(room_id):
+		var variants: Array = boss_intros[room_id] as Array
+		if not variants.is_empty():
+			var idx: int = room_index % variants.size()
+			trigger_narrative(variants[idx])
 
 
 func _trigger_event_narrative(event_type: String) -> void:

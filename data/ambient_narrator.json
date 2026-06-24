@@ -4,6 +4,19 @@
     "1": "NARRATIVE_BIOME_1_ENTRY",
     "2": "NARRATIVE_BIOME_2_ENTRY"
   },
+  "boss_intros": {
+    "boss_overgrown_guardian": [
+      "BOSS_INTRO_1",
+      "BOSS_INTRO_2",
+      "BOSS_INTRO_3"
+    ],
+    "boss_crystal_sentinel": [
+      "BOSS_INTRO_1"
+    ],
+    "boss_industrial_overseer": [
+      "BOSS_INTRO_1"
+    ]
+  },
   "triggers": [
     {
       "id": "entry_narrative",
