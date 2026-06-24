@@ -9,7 +9,8 @@
         "off": 2
       },
       "stackLimit": 1,
-      "description": "A worn out blade, but still sharp enough."
+      "description": "A worn out blade, but still sharp enough.",
+      "flavor_text": "A blade tempered in the last Emberfall. It remembers the heat."
     },
     "leather_vest": {
       "id": "leather_vest",
@@ -20,7 +21,8 @@
         "def": 2
       },
       "stackLimit": 1,
-      "description": "Basic protection for a traveler."
+      "description": "Basic protection for a traveler.",
+      "flavor_text": "Stitched by hands long since stilled. The leather still holds warmth."
     },
     "healing_salve": {
       "id": "healing_salve",
@@ -31,7 +33,8 @@
         "hp": 10
       },
       "stackLimit": 10,
-      "description": "Restores 10 HP."
+      "description": "Restores 10 HP.",
+      "flavor_text": "Pressed from moss that only grows where the Keepers once walked."
     },
     "lucky_pendant": {
       "id": "lucky_pendant",
@@ -42,7 +45,8 @@
         "spd": 1
       },
       "stackLimit": 1,
-      "description": "A small charm that seems to bring good luck."
+      "description": "A small charm that seems to bring good luck.",
+      "flavor_text": "A keeper's sigil, worn smooth by centuries of prayer."
     }
   }
 }

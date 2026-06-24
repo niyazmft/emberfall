@@ -14,6 +14,7 @@ enum Rarity { COMMON, UNCOMMON, RARE, LEGENDARY }
 @export var stats: Dictionary = {}
 @export var stackLimit: int = 1
 @export var description: String = ""
+@export var flavor_text: String = ""
 
 
 ## Factory method to create an Item from a Dictionary (parsed JSON).
@@ -26,7 +27,13 @@ static func fromDict(data: Dictionary) -> Item:
 	item.stats = data.get("stats", {})
 	item.stackLimit = int(data.get("stackLimit", data.get("stack_limit", 1)))
 	item.description = data.get("description", "")
+	item.flavor_text = data.get("flavor_text", "")
 	return item
+
+
+## Returns the flavor text if available, otherwise falls back to description.
+func get_flavor_text() -> String:
+	return flavor_text if not flavor_text.is_empty() else description
 
 
 static func _parseType(typeStr: String) -> ItemType:
