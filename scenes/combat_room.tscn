@@ -84,6 +84,19 @@ z_index = 10
 
 [node name="Environment" type="Node2D" parent="." unique_id=1416534330]
 
+[node name="Props" type="Node2D" parent="Environment" unique_id=1416534331]
+
+[node name="AtmosphereParticles" type="CPUParticles2D" parent="Environment" unique_id=1416534332]
+emitting = true
+amount = 20
+lifetime = 4.0
+emission_shape = 3
+emission_rect_extents = Vector2(400, 200)
+gravity = Vector2(0, -5)
+scale_amount_min = 1.0
+scale_amount_max = 2.0
+color = Color(0.8, 0.7, 0.5, 0.3)
+
 [node name="CanvasModulate" type="CanvasModulate" parent="Environment" unique_id=2075476781]
 
 [node name="UIOverlay" type="CanvasLayer" parent="." unique_id=599266703]
