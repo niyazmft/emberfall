@@ -144,3 +144,6 @@ DEFEAT_NARRATIVE_2,The embers fade — but do not die.,Die Glut verblasst — st
 DEFEAT_NARRATIVE_3,Another echo lost to the dark.,Ein weiterer Echo im Dunkeln verloren.,Otro eco perdido en la oscuridad.,Un autre écho perdu dans l’obscurité.
 DEFEAT_NARRATIVE_4,The burden was heavier than you knew.,Die Last war schwerer als du wusstest.,La carga era más pesada de lo que sabías.,Le fardeau était plus lourd que vous ne le saviez.
 DEFEAT_NARRATIVE_5,You falter. The world does not.,Du wankst. Die Welt nicht.,Titubéas. El mundo no.,Vous hésitez. Le monde non.
+NARRATIVE_BIOME_0_ENTRY,[The ruins breathe around you],[Die Ruinen atmen um dich herum],[Las ruinas respiran a tu alrededor],[Les ruines respirent autour de vous]
+NARRATIVE_BIOME_1_ENTRY,[Machinery groans beneath rusted vaults],[Maschinerie stöhnt unter rostigen Gewölben],[La maquinaria gime bajo bóvedas oxidadas],[Les machines gémissent sous des voûtes rouillées]
+NARRATIVE_BIOME_2_ENTRY,[Crystals hum with buried light],[Kristalle summen mit verborgenem Licht],[Los cristales zumban con luz enterrada],[Les cristaux bourdonnent de lumière enfouie]

@@ -6,6 +6,8 @@ extends Node
 ## Uses CaptionManager's AMBIENT channel for display.
 ## Architecture: Data-driven via ConfigLoader.
 
+var _visited_biomes: Dictionary = {}
+
 
 func _ready() -> void:
 	_connect_signals()
@@ -43,7 +45,19 @@ func _on_room_entered(room_index: int, room_data: Dictionary) -> void:
 	if cl == null:
 		return
 
-	# 1. Trigger generic room-entry triggers
+	var biome_index: int = int(room_data.get("biome", 0))
+	var biome_id: String = "biome%d" % (biome_index + 1)
+
+	# 1. Trigger biome entry narrative on first visit
+	if not _visited_biomes.has(biome_index):
+		_visited_biomes[biome_index] = true
+		var biome_entry: Variant = cl.getValue("biome_entry")
+		if biome_entry is Dictionary:
+			var loc_key: String = biome_entry.get(str(biome_index), "")
+			if not loc_key.is_empty():
+				trigger_narrative(loc_key)
+
+	# 2. Trigger generic room-entry triggers
 	var triggers: Variant = cl.getValue("triggers")
 	if triggers is Array:
 		for trigger: Variant in triggers:
@@ -52,17 +66,17 @@ func _on_room_entered(room_index: int, room_data: Dictionary) -> void:
 				if not loc_key.is_empty():
 					trigger_narrative(loc_key)
 
-	# 2. Trigger initial elevation flavor
-	var biome_id: String = "biome%d" % (int(room_data.get("biome", 0)) + 1)
+	# 3. Trigger initial elevation flavor
 	# In Emberfall, player typically starts at a certain elevation,
 	# but we'll assume elevation 0 for the initial flavor trigger or get it from player.
 	trigger_elevation_flavor(biome_id, 0)
 
-	# 3. Trigger biome echo with a slight delay
+	# 4. Trigger biome echo with a slight delay
 	_trigger_random_biome_echo(biome_id, room_index, 1.5)
 
 
 func _on_run_started(_seed: int) -> void:
+	_visited_biomes.clear()
 	_trigger_event_narrative("run_started")
 
 

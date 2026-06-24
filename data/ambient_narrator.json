@@ -1,4 +1,9 @@
 {
+  "biome_entry": {
+    "0": "NARRATIVE_BIOME_0_ENTRY",
+    "1": "NARRATIVE_BIOME_1_ENTRY",
+    "2": "NARRATIVE_BIOME_2_ENTRY"
+  },
   "triggers": [
     {
       "id": "entry_narrative",

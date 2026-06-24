@@ -32,6 +32,14 @@ var _combat_input: CombatInput
 @onready var turn_label: Label = %TurnLabel
 @onready var round_label: Label = %RoundLabel
 
+# Minimap
+@onready var minimap_container: SubViewportContainer = %MinimapContainer
+var _minimap_grid: GridRenderer
+var _minimap_player_dot: Sprite2D
+var _minimap_enemy_dots: Array[Sprite2D] = []
+var _minimap_enemy_map: Dictionary = {}  # entity -> dot sprite
+var _minimap_scale: float = 0.15
+
 
 func _ready() -> void:
 	var sz: _SafeZoneManager = AutoloadHelper.safe_zone_manager()
@@ -73,6 +81,8 @@ func _exit_tree() -> void:
 	if eb:
 		if eb.floating_text_requested.is_connected(_on_floating_text_requested):
 			eb.floating_text_requested.disconnect(_on_floating_text_requested)
+
+	_cleanup_minimap()
 
 	if _player_entity:
 		if _player_entity.hp_changed.is_connected(_on_hp_changed):
@@ -125,6 +135,8 @@ func setup(player_entity: Entity, turn_manager: TurnManager, combat_input: Comba
 		var sm: _SaveManager = AutoloadHelper.save_manager()
 		if sm and not sm.has_save():
 			tutorial_overlay.show_tutorial()
+
+	_setup_minimap()
 
 
 func update_player_stats(entity: Entity) -> void:
@@ -298,3 +310,108 @@ func _reflow_bottom_chrome() -> void:
 		status_icons.hide()
 	else:
 		status_icons.show()
+
+
+# ------------------------------------------------------------------
+# Minimap
+# ------------------------------------------------------------------
+
+
+func _setup_minimap() -> void:
+	if minimap_container == null:
+		return
+	var subviewport: SubViewport = minimap_container.get_node_or_null("SubViewport")
+	if subviewport == null:
+		return
+
+	# Create a scaled-down grid renderer inside the minimap viewport
+	_minimap_grid = GridRenderer.new()
+	subviewport.add_child(_minimap_grid)
+	await get_tree().process_frame
+
+	_minimap_grid.scale = Vector2(_minimap_scale, _minimap_scale)
+
+	# Position camera to center on the grid
+	var camera: Camera2D = subviewport.get_node_or_null("Camera2D")
+	if camera:
+		camera.position = Vector2(60, 60)
+
+	# Create player dot (green)
+	_minimap_player_dot = _create_dot_sprite(Color.GREEN)
+	_minimap_grid.add_child(_minimap_player_dot)
+
+	# Create enemy dots (red)
+	var tree: SceneTree = get_tree()
+	if tree:
+		for enemy_node: Node in tree.get_nodes_in_group("enemies"):
+			var enemy_entity: Entity = CombatEntity.get_entity(enemy_node)
+			if enemy_entity:
+				var dot: Sprite2D = _create_dot_sprite(Color.RED)
+				_minimap_grid.add_child(dot)
+				_minimap_enemy_dots.append(dot)
+				_minimap_enemy_map[enemy_entity] = dot
+				if not enemy_entity.position_changed.is_connected(_on_minimap_entity_moved):
+					enemy_entity.position_changed.connect(_on_minimap_entity_moved)
+
+	# Connect to player position changes
+	if (
+		_player_entity
+		and not _player_entity.position_changed.is_connected(_on_minimap_entity_moved)
+	):
+		_player_entity.position_changed.connect(_on_minimap_entity_moved)
+
+	_update_minimap_dots()
+
+
+func _cleanup_minimap() -> void:
+	if _player_entity and _player_entity.position_changed.is_connected(_on_minimap_entity_moved):
+		_player_entity.position_changed.disconnect(_on_minimap_entity_moved)
+	for enemy_entity: Entity in _minimap_enemy_map.keys():
+		if (
+			is_instance_valid(enemy_entity)
+			and enemy_entity.position_changed.is_connected(_on_minimap_entity_moved)
+		):
+			enemy_entity.position_changed.disconnect(_on_minimap_entity_moved)
+	_minimap_enemy_map.clear()
+	for dot: Sprite2D in _minimap_enemy_dots:
+		if is_instance_valid(dot):
+			dot.queue_free()
+	_minimap_enemy_dots.clear()
+	if is_instance_valid(_minimap_player_dot):
+		_minimap_player_dot.queue_free()
+		_minimap_player_dot = null
+	if is_instance_valid(_minimap_grid):
+		_minimap_grid.queue_free()
+		_minimap_grid = null
+
+
+func _create_dot_sprite(color: Color) -> Sprite2D:
+	var img: Image = Image.create(6, 6, false, Image.FORMAT_RGBA8)
+	img.fill(color)
+	var tex: ImageTexture = ImageTexture.create_from_image(img)
+	var sprite: Sprite2D = Sprite2D.new()
+	sprite.texture = tex
+	return sprite
+
+
+func _on_minimap_entity_moved(_x: int, _y: int) -> void:
+	_update_minimap_dots()
+
+
+func _update_minimap_dots() -> void:
+	if _minimap_grid == null:
+		return
+
+	# Update player dot position
+	if _player_entity and is_instance_valid(_minimap_player_dot):
+		var pos: Vector2i = _player_entity.grid_position()
+		_minimap_player_dot.position = _minimap_grid.grid_to_world(pos.x, pos.y, 0)
+
+	# Update enemy dot positions
+	for enemy_entity: Entity in _minimap_enemy_map.keys():
+		if not is_instance_valid(enemy_entity):
+			continue
+		var dot: Sprite2D = _minimap_enemy_map[enemy_entity]
+		if is_instance_valid(dot):
+			var pos: Vector2i = enemy_entity.grid_position()
+			dot.position = _minimap_grid.grid_to_world(pos.x, pos.y, 0)
