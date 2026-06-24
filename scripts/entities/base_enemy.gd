@@ -197,6 +197,27 @@ func _setup_leader_visual() -> void:
 		visual_proxy.add_child(glow)
 
 
+func get_lore_text() -> String:
+	## Returns the localized lore text for this enemy type.
+	if archetype_id.is_empty():
+		return ""
+
+	var config_loader: _ConfigLoader = AutoloadHelper.config_loader()
+	if config_loader == null:
+		return ""
+
+	var enemies_config: Variant = config_loader.getValue("enemies")
+	if not enemies_config is Dictionary:
+		return ""
+
+	var data: Dictionary = enemies_config[archetype_id] if enemies_config.has(archetype_id) else {}
+	if not data.has("lore_text"):
+		return ""
+
+	var loc_key: String = str(data["lore_text"])
+	return tr(loc_key)
+
+
 ## Combat API
 func take_turn() -> void:
 	## Called by combat system when it's this enemy's turn
