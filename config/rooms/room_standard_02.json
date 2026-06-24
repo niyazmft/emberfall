@@ -610,5 +610,17 @@
   "player_start": {
     "x": 1,
     "y": 1
-  }
+  },
+  "hazards": [
+    {
+      "x": 8,
+      "y": 2,
+      "type": "fire"
+    },
+    {
+      "x": 9,
+      "y": 3,
+      "type": "fire"
+    }
+  ]
 }
