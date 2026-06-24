@@ -622,5 +622,6 @@
       "y": 3,
       "type": "fire"
     }
-  ]
+  ],
+  "encounter_template": "narrow_corridor"
 }

@@ -82,7 +82,7 @@ static func augment_room_procedurally(room_data: Dictionary) -> void:
 
 	if not room_data.has("encounters") or (room_data["encounters"] as Array).is_empty():
 		var generated_encounters := EncounterSystem.buildEncounters(
-			biome_id, enc_seed, target_difficulty
+			biome_id, enc_seed, target_difficulty, room_data
 		)
 		room_data["encounters"] = generated_encounters
 	else:

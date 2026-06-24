@@ -16,54 +16,60 @@ const _BIOME_FALLBACK: Dictionary = {
 
 
 ## Builds a list of encounters for the given biome and seed, scaled by difficulty budget.
+## If room_data contains an "encounter_template" field, that specific template is used
+## directly instead of biome-based weighted selection.
 static func buildEncounters(
-	biomeId: String, encounterSeed: int, difficulty_budget: int = 1
+	biomeId: String, encounterSeed: int, difficulty_budget: int = 1, room_data: Dictionary = {}
 ) -> Array:
 	var config: Dictionary = _getConfig()
 	if config.is_empty():
 		return []
 
-	var compositions: Array = config.get("biome_compositions", {}).get(biomeId, [])
-	if compositions.is_empty():
-		return []
-
 	var groupTemplates: Dictionary = config.get("group_templates", {}) as Dictionary
 
-	var rng := RandomNumberGenerator.new()
-	rng.seed = encounterSeed
-
 	var allEnemyTypes: Array = []
-	var remaining_budget := difficulty_budget
 
-	# Budget-based loop to pick multiple groups if budget allows
-	while remaining_budget > 0:
-		var possible_comps: Array = []
-		for comp_v: Variant in compositions:
-			var comp := comp_v as Dictionary
-			if int(comp.get("difficulty", 1)) <= remaining_budget:
-				possible_comps.append(comp)
+	# Check for room-specific encounter template first
+	var room_template: String = str(room_data.get("encounter_template", ""))
+	if not room_template.is_empty() and groupTemplates.has(room_template):
+		allEnemyTypes = groupTemplates.get(room_template, []) as Array
+	else:
+		# Fall back to biome composition weighted selection
+		var compositions: Array = config.get("biome_compositions", {}).get(biomeId, [])
+		if compositions.is_empty():
+			return []
 
-		if possible_comps.is_empty():
-			break
+		var rng := RandomNumberGenerator.new()
+		rng.seed = encounterSeed
 
-		var selectedGroupId: String = _selectWeightedGroup(possible_comps, rng)
-		if selectedGroupId == "":
-			break
+		var remaining_budget := difficulty_budget
+		while remaining_budget > 0:
+			var possible_comps: Array = []
+			for comp_v: Variant in compositions:
+				var comp := comp_v as Dictionary
+				if int(comp.get("difficulty", 1)) <= remaining_budget:
+					possible_comps.append(comp)
 
-		# Find the selected composition to deduct its difficulty
-		var selected_comp: Dictionary = {}
-		for comp_v: Variant in possible_comps:
-			var comp := comp_v as Dictionary
-			if str(comp.get("group_id", "")) == selectedGroupId:
-				selected_comp = comp
+			if possible_comps.is_empty():
 				break
 
-		if not selected_comp.is_empty():
-			remaining_budget -= int(selected_comp.get("difficulty", 1))
-			var enemyEntries: Array = groupTemplates.get(selectedGroupId, []) as Array
-			allEnemyTypes.append_array(enemyEntries)
-		else:
-			break
+			var selectedGroupId: String = _selectWeightedGroup(possible_comps, rng)
+			if selectedGroupId == "":
+				break
+
+			var selected_comp: Dictionary = {}
+			for comp_v: Variant in possible_comps:
+				var comp := comp_v as Dictionary
+				if str(comp.get("group_id", "")) == selectedGroupId:
+					selected_comp = comp
+					break
+
+			if not selected_comp.is_empty():
+				remaining_budget -= int(selected_comp.get("difficulty", 1))
+				var enemyEntries: Array = groupTemplates.get(selectedGroupId, []) as Array
+				allEnemyTypes.append_array(enemyEntries)
+			else:
+				break
 
 	if allEnemyTypes.is_empty():
 		return []

@@ -1,42 +1,171 @@
 {
   "group_templates": {
     "scout_party": [
-      {"type": "grunt"},
-      {"type": "archer", "leader": true}
+      {
+        "type": "grunt"
+      },
+      {
+        "type": "archer",
+        "leader": true
+      }
     ],
     "heavy_patrol": [
-      {"type": "tank", "leader": true},
-      {"type": "grunt"},
-      {"type": "grunt"}
+      {
+        "type": "tank",
+        "leader": true
+      },
+      {
+        "type": "grunt"
+      },
+      {
+        "type": "grunt"
+      }
     ],
     "mage_coven": [
-      {"type": "mage", "leader": true},
-      {"type": "mage"},
-      {"type": "grunt"}
+      {
+        "type": "mage",
+        "leader": true
+      },
+      {
+        "type": "mage"
+      },
+      {
+        "type": "grunt"
+      }
     ],
     "mixed_force": [
-      {"type": "tank", "leader": true},
-      {"type": "archer"},
-      {"type": "mage"}
+      {
+        "type": "tank",
+        "leader": true
+      },
+      {
+        "type": "archer"
+      },
+      {
+        "type": "mage"
+      }
     ],
     "vanguard": [
-      {"type": "tank", "leader": true},
-      {"type": "tank"}
+      {
+        "type": "tank",
+        "leader": true
+      },
+      {
+        "type": "tank"
+      }
+    ],
+    "basic_patrol": [
+      {
+        "type": "grunt"
+      },
+      {
+        "type": "grunt"
+      }
+    ],
+    "narrow_corridor": [
+      {
+        "type": "tank",
+        "leader": true
+      },
+      {
+        "type": "grunt"
+      },
+      {
+        "type": "archer"
+      }
+    ],
+    "elevated_archers": [
+      {
+        "type": "archer",
+        "leader": true
+      },
+      {
+        "type": "archer"
+      },
+      {
+        "type": "grunt"
+      }
     ]
   },
   "biome_compositions": {
     "biome1": [
-      { "group_id": "scout_party", "weight": 0.7, "difficulty": 1 },
-      { "group_id": "heavy_patrol", "weight": 0.3, "difficulty": 2 }
+      {
+        "group_id": "scout_party",
+        "weight": 0.7,
+        "difficulty": 1
+      },
+      {
+        "group_id": "heavy_patrol",
+        "weight": 0.3,
+        "difficulty": 2
+      }
     ],
     "biome2": [
-      { "group_id": "heavy_patrol", "weight": 0.4, "difficulty": 2 },
-      { "group_id": "mage_coven", "weight": 0.4, "difficulty": 3 },
-      { "group_id": "mixed_force", "weight": 0.2, "difficulty": 4 }
+      {
+        "group_id": "heavy_patrol",
+        "weight": 0.4,
+        "difficulty": 2
+      },
+      {
+        "group_id": "mage_coven",
+        "weight": 0.4,
+        "difficulty": 3
+      },
+      {
+        "group_id": "mixed_force",
+        "weight": 0.2,
+        "difficulty": 4
+      }
     ],
     "biome3": [
-      { "group_id": "mixed_force", "weight": 0.5, "difficulty": 4 },
-      { "group_id": "vanguard", "weight": 0.5, "difficulty": 5 }
+      {
+        "group_id": "mixed_force",
+        "weight": 0.5,
+        "difficulty": 4
+      },
+      {
+        "group_id": "vanguard",
+        "weight": 0.5,
+        "difficulty": 5
+      }
+    ]
+  },
+  "room_compositions": {
+    "room_standard_01": [
+      {
+        "group_id": "basic_patrol",
+        "weight": 0.5,
+        "difficulty": 1
+      },
+      {
+        "group_id": "scout_party",
+        "weight": 0.5,
+        "difficulty": 1
+      }
+    ],
+    "room_standard_02": [
+      {
+        "group_id": "narrow_corridor",
+        "weight": 0.6,
+        "difficulty": 2
+      },
+      {
+        "group_id": "heavy_patrol",
+        "weight": 0.4,
+        "difficulty": 2
+      }
+    ],
+    "room_standard_03": [
+      {
+        "group_id": "elevated_archers",
+        "weight": 0.7,
+        "difficulty": 2
+      },
+      {
+        "group_id": "mage_coven",
+        "weight": 0.3,
+        "difficulty": 3
+      }
     ]
   }
 }
