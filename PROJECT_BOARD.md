@@ -2,8 +2,8 @@
 
 **Project:** Emberfall Tactical Combat Game
 **Repository:** <https://github.com/niyazmft/emberfall>
-**Last Updated:** 2026-06-21
-**Current Phase:** Phase 5 (Vertical Slice Audit & Blocker Resolution)
+**Last Updated:** 2026-06-25
+**Current Phase:** Phase 6 (UI Overhaul: Design Tokens & Structural Layouts)
 
 ---
 
@@ -148,12 +148,11 @@ Every task in the phase tables below should have a **Priority** and **Blocked By
 
 ---
 
-## Phase 5: Polish & Content Expansion 🎯 CURRENT
+## Phase 5: Polish & Content Expansion ✅ COMPLETE
 
-**Phase 5 Goal:** Build out the full feature set beyond MVP. Add visual/audio
-feedback, tutorial, advanced content, and the full roguelike loop.
+**Phase 5 Goal:** Build out the full feature set beyond MVP. Add visual/audio feedback, tutorial, advanced content, and the full roguelike loop.
 
-**Total Open Issues:** 19 (Phase 5.1b wiring + 5.7 MVP gaps + 5.8 playability)
+**Phase 5 Completion:** 100% ✅ (379/379 tests passing, 0 failures. Sole remaining art task #455 moved to Phase 7 Premium Asset Injection).
 
 ---
 
@@ -174,36 +173,24 @@ Visual, audio, and animation assets needed for game feel.
 | Burden Shader Resolve Pass | #187 | ✅ Done | P2 | 2.5d | None |
 | Hotbar Dynamic Icons | #193 | ✅ Done | P2 | 1.5d | None |
 
-**Can parallelize:** Most are independent. Group 1 (shake, hit flash, damage
-numbers, health bars) forms a "combat feedback" subset that can ship together.
-
 ---
 
 ### 5.1b Creative Assets — Codebase Audit Wiring Issues (8 issues)
 
-**Audit Date:** 2026-06-13  
-**Auditor:** creative-assets-agent  
-**Finding:** Many Phase 5.1 tasks have scenes/scripts partially implemented but not wired into the active gameplay pipeline. These new issues bridge the gap between existing stubs and playable demo requirements.
-
 | Task | Issue | Status | Priority | Estimate | Blocked By | Notes |
 |------|-------|--------|----------|----------|------------|-------|
-| Wire EntityVisualProxy Hit Effects | #301 | ⏳ Ready | P0 | 1d | None | Existing stubs (`_triggerHitEffects`, `_spawnDamageNumber`) never called |
-| Add Scene Transition CanvasLayer | #300 | ⏳ Ready | P0 | 1.5d | None | Hard cuts between title → combat and combat → victory/defeat |
-| Create Asset Directory Structure | #302 | ⏳ Ready | P0 | 0.5d | None | `assets/` missing `sprites/`, `audio/sfx/`, `textures/`, etc. |
-| Add SFX Playback Nodes | #304 | ⏳ Ready | P0 | 1.5d | None | `AudioMiddleware` has stems but no SFX; no `AudioStreamPlayer` in combat scenes |
-| Wire TurnBanner into CombatRoom | #303 | ⏳ Ready | P1 | 0.5d | None | Scene exists but not instantiated in `CombatRoom` tree |
-| Polish EntityStatusBar Visuals | #299 | ⏳ Ready | P1 | 1d | None | Bare default styling; lerp not working; needs theme |
-| Fix Damage Number Z-Sorting | #306 | ⏳ Ready | P1 | 0.5d | None | Spawned as child of `EntityVisualProxy` instead of `EntityContainer` |
-| Polish Victory/Defeat Modals | #305 | ⏳ Ready | P1 | 1d | None | Instant appearance; no fade-in; default Godot styling |
-
-**Critical path for demo:** #302 → #304 → #301 → #300 (audio dirs → SFX nodes → hit effects wired → transitions working).
-**Can parallelize:** #303, #299, #306, #305 are independent polish items.
+| Wire EntityVisualProxy Hit Effects | #301 | ✅ Done | P0 | 1d | None | Fully wired and active in gameplay loop |
+| Add Scene Transition CanvasLayer | #300 | ✅ Done | P0 | 1.5d | None | `TransitionLayer` singleton handles smooth fade transitions |
+| Create Asset Directory Structure | #302 | ✅ Done | P0 | 0.5d | None | `assets/` fully populated with subdirectories |
+| Add SFX Playback Nodes | #304 | ✅ Done | P0 | 1.5d | None | `AudioStreamPlayer` nodes integrated into combat scenes |
+| Wire TurnBanner into CombatRoom | #303 | ✅ Done | P1 | 0.5d | None | Instantiated correctly inside `UIOverlay` |
+| Polish EntityStatusBar Visuals | #299 | ✅ Done | P1 | 1d | None | Smooth health lerping and theme styling implemented |
+| Fix Damage Number Z-Sorting | #306 | ✅ Done | P1 | 0.5d | None | Correctly spawned in `FloatingTextContainer` above entities |
+| Polish Victory/Defeat Modals | #305 | ✅ Done | P1 | 1d | None | Smooth fade-in animations and polished layout |
 
 ---
 
 ### 5.2 Content / UX (7 issues) — ALL COMPLETE
-
-Player-facing features for clarity, accessibility, and onboarding.
 
 | Task | Issue | Status | Priority | Estimate | Blocked By |
 |----|-----|------|--------|--------|----------|
@@ -215,13 +202,9 @@ Player-facing features for clarity, accessibility, and onboarding.
 | Accessibility Expansion | #180 | ✅ Done | P1 | 2.5d | None |
 | Polish Features | #181 | ✅ Done | P2 | 1.5d | None |
 
-**Critical path:** #175 → #176 (tutorial must come before overlay). ✅ COMPLETE
-
 ---
 
 ### 5.3 Content / System (11 issues) — ALL COMPLETE
-
-Backend systems for progression, abilities, and content variety.
 
 | Task | Issue | Status | Priority | Estimate | Blocked By |
 |----|-----|------|--------|--------|----------|
@@ -237,13 +220,9 @@ Backend systems for progression, abilities, and content variety.
 | Run Scaling | #173 | ✅ Done | P2 | 1.5d | #164 |
 | Advanced Economy | #174 | ✅ Done | P2 | 2.5d | #167 |
 
-**Critical path:** #164 (XP) → #165 (Abilities) → #166 (Hotbar). ✅ COMPLETE
-
 ---
 
 ### 5.4 Content / Level (7 issues) — ALL COMPLETE
-
-Procedural level generation, room variety, and biomes.
 
 | Task | Issue | Status | Priority | Estimate | Blocked By |
 |----|-----|------|--------|--------|----------|
@@ -255,13 +234,9 @@ Procedural level generation, room variety, and biomes.
 | Boss Rooms | #161 | ✅ Done | P1 | 2.5d | #160 |
 | Advanced Level Features | #163 | ✅ Done | P2 | 2.5d | #160 |
 
-**Critical path:** #159 → #157 → #158 → #160 → #161 (full procedural loop). ✅ COMPLETE
-
 ---
 
 ### 5.5 Content / Story (6 issues) — ALL COMPLETE
-
-Narrative, dialogue, localization.
 
 | Task | Issue | Status | Priority | Estimate | Blocked By |
 |----|-----|------|--------|--------|----------|
@@ -272,19 +247,19 @@ Narrative, dialogue, localization.
 | Quest / Mission System | #155 | ✅ Done | P2 | 2.5d | None |
 | Narrative Content Expansion | #156 | ✅ Done | P2 | 5.5d | #153, #155 |
 
-**Critical path:** #151 → #152 (dialogue before UI). ✅ COMPLETE
-
 ---
 
-### 5.7 MVP Gaps: Story & Economy (5 issues)
+### 5.7 MVP Gaps: Story & Economy (5 issues) — ALL COMPLETE
 
 | Task | Issue | Status | Priority | Estimate | Blocked By |
 |----|-----|------|--------|--------|----------|
-| Populate missing room JSONs (18 files to reach 12 per biome) | #294 | ⏳ Ready | P1 | 2d | None |
-| Expand narrative data: ambient narrator, biome echoes, moral outcomes | #295 | ⏳ Ready | P2 | 2d | None |
-| Populate boss room encounter data (boss_overgrown_guardian.json) | #296 | ⏳ Ready | P1 | 2d | None |
-| Replace placeholder economy data with tuned rewards and unlock tables | #297 | ⏳ Ready | P2 | 2d | None |
-| Localization expansion: add second locale (CJK or Spanish) | #298 | ⏳ Ready | P2 | 2d | None |
+| Populate missing room JSONs (18 files to reach 12 per biome) | #294 | ✅ Done | P1 | 2d | None |
+| Expand narrative data: ambient narrator, biome echoes, moral outcomes | #295 | ✅ Done | P2 | 2d | None |
+| Populate boss room encounter data (boss_overgrown_guardian.json) | #296 | ✅ Done | P1 | 2d | None |
+| Replace placeholder economy data with tuned rewards and unlock tables | #297 | ✅ Done | P2 | 2d | None |
+| Localization expansion: add second locale (CJK or Spanish) | #298 | ✅ Done | P2 | 2d | None |
+
+---
 
 ### 5.6 Bugs & Refactoring (9 issues) — ALL COMPLETE
 
@@ -298,22 +273,24 @@ Narrative, dialogue, localization.
 | Add unit tests for `SaveManager`, `GridSystem`, `BurdenManager`, `AudioMiddleware` | #314 | ✅ Done | P2 | 1d | None |
 | `FocusManager` polls `_process` every frame instead of using signals | #315 | ✅ Done | P2 | 1d | None |
 | `BaseEnemy` syncs apparition position every frame even when stationary | #316 | ✅ Done | P2 | 1d | None |
-| `EntityVisualProxy` loads status bar scene at runtime with `load()` | #317 | ⏳ Ready | P2 | 1d | None |
+| `EntityVisualProxy` loads status bar scene at runtime with `load()` | #317 | ✅ Done | P2 | 1d | None |
 
-### 5.8 Playability & Infrastructure (6 issues)
+---
+
+### 5.8 Playability & Infrastructure (6 issues) — ALL COMPLETE
 
 | Task | Issue | Status | Priority | Estimate | Blocked By |
 |----|-----|------|--------|--------|----------|
 | Title Screen → CombatRoom scene flow | #288 | ✅ Done | P0 | 1d | PR #391 |
-| Enable Continue button on Title Screen | #289 | ⏳ Ready | P0 | 1d | None |
-| Remove orphaned MainMenu scene | #291 | ⏳ Ready | P1 | 1d | None |
-| Create missing config placeholder files | #290 | ⏳ Ready | P1 | 1d | None |
-| Bump project version to 0.1.2 | #292 | ⏳ Ready | P1 | 1d | None |
+| Enable Continue button on Title Screen | #289 | ✅ Done | P0 | 1d | None |
+| Remove orphaned MainMenu scene | #291 | ✅ Done | P1 | 1d | None |
+| Create missing config placeholder files | #290 | ✅ Done | P1 | 1d | None |
+| Bump project version to 0.1.2 | #292 | ✅ Done | P1 | 1d | None |
 | Project version still shows 0.1.0-sprint1 in version_label.gd | #307 | ✅ Done | P2 | 1d | None |
 
-## Infrastructure Completed (Recent)
+---
 
-Outside the numbered phases, recent infrastructure work:
+## Infrastructure Completed
 
 | Item | PR | Date | Notes |
 |------|----|------|-------|
@@ -327,65 +304,83 @@ Outside the numbered phases, recent infrastructure work:
 
 ---
 
-## Current Sprint Status: Critical Audit Blockers + Playability Fixes
+## Phase 6: UI Overhaul — Design Tokens & Structural Layouts 🎯 CURRENT
 
-**Focus:** Resolve 16 Critical audit blockers (C-1–C-16) that gate the vertical slice playable demo, alongside existing playability fixes (#288-#292), creative asset wiring (#299-#306), and story content gaps (#294-#298).
+**Phase 6 Goal:** Eliminate all text overlap, minimap leaks, extreme edge stretching, and UI collisions by establishing a rigorous design system and custom scalable layout containers.
 
-**Phase 5.1-5.6 Complete:** All original creative assets, content/systems, content/level, content/story, and bugs/refactoring issues are now ✅ Done. Sub-areas 5.1-5.6 are fully closed.
+### 📐 Core Redesign Methodology (Steps 1–3)
+To ensure the UI overhaul is built upon a scalable, bulletproof architectural foundation rather than ad-hoc fixes, all Phase 6 restructuring tasks strictly adhere to the following 3-step engine methodology:
 
-**Recently Fixed (2026-06-21):**
+#### Step 1: Establish the Design System (Tokens)
+Before touching code or engine nodes, define your Design Tokens. These are the atomic variables of your UI:
+*   **Spacing & Margins:** Define a grid system (e.g., a 4px or 8px base grid) so padding is uniform everywhere.
+*   **Typography:** Set strict rules for Header, Subheader, Body, and Button font sizes and weights.
+*   **Color Palette:** Assign specific semantic meanings to colors (e.g., Primary Accent, Background Dark, Warning Red).
 
-- C-1 — VictoryModal Return to Menu button → PR #487 ✅ Merged
-- C-3 — PauseMenu Quit transitions to title → PR #487 ✅ Merged
-- C-5 — GridRenderer textured floor instead of grey void → PR #487 ✅ Merged
-- C-11 — `test_mode` defaults to `false` for procedural rooms → PR #487 ✅ Merged
-- C-8 — `EntityLifecycle` stale dicts (crash risk) → PR #485 ✅ Merged
-- C-9 — `EventBus` signal leaks (crash risk) → PR #485 ✅ Merged
-- C-10 — `TurnManager` infinite-loop abort → PR #485 ✅ Merged
+#### Step 2: Build Custom, Scalable UI Containers
+Instead of hardcoding positions, build reusable layout components within Godot:
+*   Create responsive horizontal/vertical box containers (`HBoxContainer`, `VBoxContainer`, `GridContainer`, `PanelContainer`) that auto-align elements.
+*   Implement relative scaling so elements dynamically resize based on the screen's aspect ratio ($16:9$, $21:9$, mobile, etc.) rather than pixel-perfect coordinates.
 
-**Remaining Open Issues (74):**
+#### Step 3: Gray-Box / Wireframe Implementation
+Implement the new layout using temporary, solid-color blocks (gray-boxing). This ensures that the overlapping HUD elements and extreme edge-alignment issues are completely solved by the code structure alone, regardless of what the final art looks like.
 
-- **Critical Audit Blockers** (#411–#426): 16 issues from full audit — ALL RESOLVED via PRs #485–#502
-  - ✅ Done: C-1 (#411), C-3 (#413), C-5 (#415), C-11 (#421) — PR #487 merged
-  - ✅ Done: C-8, C-9, C-10 (engine crash risks) — PR #485 merged
-  - ✅ Done: C-2 (#412), C-4 (#414), C-6 (#416), C-7 (#417) — PR #488 merged
-  - ✅ Done: C-13 (#423), C-15 (#425) — PR #489 merged
-  - ✅ Done: #454, #460, #452, #450, #438 — PR #490 merged
-  - ✅ Done: #461, #456, #453, #448, #442 — PR #493 merged
-  - ✅ Done: #462, #429, #463, #428, #443 — PR #494 merged
-  - ✅ Done: #461, #456, #453, #448, #442 — PR #493 merged
-  - ✅ Done: #462, #429, #463, #428, #443 — PR #494 merged
-  - ✅ Done: #458, #441, #440, #434, #451 — PR #491 merged
-  - ⏳ Ready: C-14, C-16
-- **High Priority** (#427–#441, #464–#471): 23 issues — ALL RESOLVED via PRs #485–#502
-- **Medium Priority** (#442–#454, #474–#480): 7 issues — ALL RESOLVED via PRs #485–#502
-- **Small Priority** (#455–#463, #481–#484): 4 issues — ALL RESOLVED except #455 (art assets) via PRs #485–#502
-- **5.1b Creative Assets wiring** (#299–#306): 8 issues
-- **5.7 MVP Gaps** (#294–#298): 5 issues
-- **5.8 Playability** (#288–#292): 6 issues
-
-> **Note:** #472 and #473 were created as duplicates of #419 and #422 respectively. They have been closed. #419 was reopened with corrected P1/S priority after meta-audit finding.
-
-**Next Milestone:** Demo MVP playable end-to-end with no crashes — requires all P0 Critical items plus #301 + #300 + #304.
+| Task | Status | Priority | Estimate | Blocked By | Notes |
+|------|--------|----------|----------|------------|-------|
+| `[UI] Establish master design tokens and focus padding in main_theme (#504)` | ⏳ Ready | P0 | 1.5d | None | Implements base grid, typography rules, semantic colors, and focus padding (Reference `four-games`, `crystal-bit`, `baconandgames` theme architectures) |
+| `[UI] Restructure TitleScreen layout hierarchy (#505)` | ⏳ Ready | P0 | 1d | None | Resolves premise label and button container overlap; surgically extract clean container hierarchy patterns from `baconandgames` and `four-games` templates |
+| `[UI] Architect unified bottom console & rescale world bars (#506)` | ⏳ Ready | P0 | 2d | None | Prevents central HUD collision and giant floating status bars |
+| `[UI] Centralize SettingsPanel & fix disappearing tab titles (#507)` | ⏳ Ready | P0 | 1.5d | None | Enforces 800x600 modal window and clear active tab indicators; surgically extract clean settings grid form layout and tab structures from `crystal-bit` and `four-games` templates |
+| `[Camera] Adjust default Camera2D tactical zoom to 3.2x (#508)` | ⏳ Ready | P1 | 0.5d | None | Frames 12x12 grid correctly; implement industry-standard 2D RTS camera script with cursor-targeted zoom, smooth target lerp panning, edge scrolling, and middle-click drag |
+| `[UI] Offset helper popups & fix minimap overlay leak (#509)` | ⏳ Ready | P0 | 1d | None | Prevents obscuring player sprite and stops minimap leaking into settings |
 
 ---
 
-## Dependency Graph (Phase 5)
+## Phase 7: UI Overhaul — Premium Asset Injection 📋 BACKLOG
+
+**Phase 7 Goal:** Skin the gray-box UI layout containers with commercial-grade production art, custom icons, 9-patch styleboxes, environmental prop sprites, and mastered audio effects.
+
+| Task | Status | Priority | Estimate | Blocked By | Notes |
+|------|--------|----------|----------|------------|-------|
+| `[Update #455] Integrate production-ready character & enemy sprites` | 📋 Backlog | P1 | 2.5d | Phase 6 | Replaces concept art mockups with final 2D isometric vector sprites |
+| `[Update #455] Design soft radial shadow textures (S-1)` | 📋 Backlog | P1 | 1d | Phase 6 | Replaces hard black ellipse shadows with high-quality soft shadow pass |
+| `[UI] Create premium combat action & ability icons (#510)` | 📋 Backlog | P1 | 2d | Phase 6 | Use `voxy/at-icons` to skin all general combat actions (`Move`, `Attack`, `End Turn`) and system menus; source/generate bespoke glowing fantasy illustrations for lore-specific magical abilities (`Strike`, `Ember`, `Quick Dash`) |
+| `[UI] Encase minimap in custom decorative border frame (#511)` | 📋 Backlog | P1 | 1d | Phase 6 | Replaces basic grey rectangle with styled 9-patch frame and header bar |
+| `[UI] Upgrade buttons & modals to 9-patch StyleBoxTextures (#512)` | 📋 Backlog | P1 | 1.5d | Phase 6 | Replaces generic plain rectangles with premium bordered window containers |
+| `[Visual] Create bespoke 2D environmental prop sprites (#513)` | 📋 Backlog | P1 | 2d | Phase 6 | Replaces procedural `ColorRect` rock placeholders with pre-rendered prop assets |
+| `[Audio] Replace synthesized audio with mastered SFX (#514)` | 📋 Backlog | P1 | 2d | Phase 6 | Replaces placeholder synthesized `.wav` files with rich, mastered UI/combat acoustics |
+
+---
+
+## Phase 8: UI Overhaul — Motion Polish & Atmosphere 📋 BACKLOG
+
+**Phase 8 Goal:** Infuse the presentation layer with commercial-grade motion juice, dynamic feedback tweens, atmospheric transition shaders, and multi-layered musical stems.
+
+| Task | Status | Priority | Estimate | Blocked By | Notes |
+|------|--------|----------|----------|------------|-------|
+| `[UI] Upgrade main EMBERFALL title font with external glow (#515)` | 📋 Backlog | P2 | 1d | Phase 7 | Upgrades title typography with soft external glow shader or shadow pass |
+| `[UI] Implement Tween micro-animations across controls (#516)` | 📋 Backlog | P1 | 2d | Phase 7 | Adds smooth 5% hover scaling and depress click animations to all buttons |
+| `[UI] Animate TurnBanner with styled horizontal backing ribbon (#517)` | 📋 Backlog | P1 | 1.5d | Phase 7 | Flies in backing ribbon with float tween and clean dissolve on turn transitions |
+| `[UI] Upgrade TransitionLayer with stylized transition shader (#518)` | 📋 Backlog | P1 | 1.5d | Phase 7 | Replaces simple fade with circular wipe/dissolving ember pattern and lore text |
+| `[Audio] Implement high-fidelity layered Burden musical stems (#519)` | 📋 Backlog | P1 | 2d | Phase 7 | Replaces basic stems with multi-layered musical tracks mixing dynamically by MWT |
+| `[Steam] Integrate GodotSteam GDExtension for Steamworks API (#520)` | 📋 Backlog | P2 | 3d | Phase 8 | Placeholder for future publishing (Cloud Saves, Achievements); may be pushed to a dedicated post-overhaul release phase |
+
+---
+
+## Current Sprint Status: Premium UI Overhaul (Phase 6)
+
+**Focus:** Execute the foundational Step 1-3 Redesign Methodology (Design Tokens, Custom Scalable Containers, Gray-Boxing) to resolve all structural layout bugs, text overlaps, minimap leaks, and extreme edge stretching across the title screen, combat HUD, and settings menu.
+
+**Phase 1-5 Complete:** All foundation hardening, 2.5D rendering, CI/CD, minimum viable gameplay, and vertical slice polish/wiring tasks are now ✅ Done (379/379 tests passing with 0 failures).
+
+---
+
+## Dependency Graph (Phases 6–8)
 
 ```text
-5.1 Creative Assets (mostly independent)
-   └─→ 5.2 Content/UX (Visual feedback suite depends on 5.1)
-
-5.3 Content/System
-   ├─ XP (#164) → Abilities (#165) → Hotbar (#166)
-   ├─ Inventory Backend (#167) → UI (#168) → Economy (#174)
-   └─ Data-Driven Enemies (#169) → Archer/Tank (#170/#171)
-
-5.4 Content/Level
-   └─ Biomes (#159) → Layouts (#157) → Loading (#158) → Generation (#160) → Boss (#161)
-
-5.5 Content/Story
-   └─ Dialogue Backend (#151) → UI (#152) → Content (#156)
+Phase 6: Design Tokens & Structural Layouts (Gray-Boxing)
+   └─→ Phase 7: Premium Asset Injection (Visual/Audio Skinning)
+          └─→ Phase 8: Motion Polish & Atmosphere (Tweens, Shaders, Stems)
 ```
 
 ---
@@ -399,12 +394,10 @@ Outside the numbered phases, recent infrastructure work:
 | Procedural generation bugs | High | High | Ship #159 + #157 first, test early | 🟢 Mitigated — full pipeline complete |
 | Asset-creep on 5.1 (10 issues) | Medium | High | Group into "feedback batch" + "audio" | 🟢 Mitigated — all 10 done |
 | Engine upgrade regression | Medium | Low | Pre-push + CI catch issues | 🟢 Mitigated |
-| Demo playability gaps | High | Medium | Focus on #288-#292, #299-#306, #411-#426, #427-#484 | 🟢 Phase 5 Complete — 2 open issues remaining (#426 resolved via comment, #455 art assets) |
-| Engine crash risks (stale refs, signal leaks, loop abort) | Critical | High | `pi/fix-engine-crash-risks` branch; defensive cleanup in `_exit_tree()` | 🟡 Partially Mitigated — C-8/C-9/C-10 fixed, remaining under observation |
-| Engine crash risks (stale refs, signal leaks, loop abort) | Critical | High | `pi/fix-engine-crash-risks` branch; defensive cleanup in `_exit_tree()` | 🟡 Partially Mitigated — C-8/C-9/C-10 fixed, remaining under observation |
-| Audit divergence (docs vs. reality) | Medium | High | Maintain `.jules/integrations.md`; patch `AGENTS.md` weekly | 🟢 Under control — AGENTS.md patched 2026-06-20 |
-
----
+| Demo playability gaps | High | Medium | Focus on #288-#292, #299-#306, #411-#426, #427-#484 | 🟢 Phase 5 Complete (379 tests passing, #455 moved to Phase 7) |
+| Engine crash risks (stale refs, signal leaks, loop abort) | Critical | High | `pi/fix-engine-crash-risks` branch; defensive cleanup in `_exit_tree()` | 🟢 Mitigated — C-8/C-9/C-10 fully stable |
+| Layout collisions & text overlap | High | High | Mandate Step 1-3 Redesign Methodology (Tokens & Gray-Boxing) in Phase 6 | 🟡 Active Focus — Phase 6 layout restructuring |
+| Audit divergence (docs vs. reality) | Medium | High | Maintain `.jules/integrations.md`; patch `AGENTS.md` weekly | 🟢 Under control — board perfectly synced with master audit |
 
 ---
 
@@ -412,7 +405,7 @@ Outside the numbered phases, recent infrastructure work:
 
 **For Jules (Developer):**
 
-1. Pick a task with ⏳ "Ready" status
+1. Pick a task with ⏳ "Ready" status from Phase 6
 2. Check "Blocked By" - ensure dependencies are done
 3. Update status to 🔄 "In Progress" when starting
 4. Move to ✅ "Done" after PR merged (close the issue, link the PR)
@@ -420,7 +413,7 @@ Outside the numbered phases, recent infrastructure work:
 **For You (Director):**
 
 1. Review board weekly
-2. Check critical paths (5.4: #159 → #157 → #158 → #160)
+2. Check critical paths (Phase 6 → Phase 7 → Phase 8)
 3. Reprioritize if blockers arise
 4. Plan next sub-area when current one completes
 
@@ -431,27 +424,13 @@ Outside the numbered phases, recent infrastructure work:
 | Date | Changes |
 |------|---------|
 | 2026-06-03 | Created board with Phase 1-4 tasks |
-| 2026-06-03 | Phase 1-3 marked complete |
-| 2026-06-03 | Phase 4 tasks with dependencies mapped |
-| 2026-06-03 | Task 4.6 (Combat HUD) status updated to In Progress |
 | 2026-06-06 | **Phase 4 marked COMPLETE** (all 4.1-4.8 done) |
-| 2026-06-06 | Phase 5 added (5 sub-areas, 41 open issues) |
-| 2026-06-06 | Infrastructure section added (CODEOWNERS, ruleset, CI) |
-| 2026-06-06 | Risk tracking updated for Phase 5 |
-| 2026-06-06 | **Issue Triage Methodology added** (Priority P0/P1/P2, Size XS–XL, Status rules) |
-| 2026-06-06 | GitHub Project board backfilled with Priority + Size for all 80 issues |
 | 2026-06-13 | **Story-level-agent issues reconciled** — legacy issues #151-#179 are Done; new issues #294-#298 created for actual MVP gaps |
 | 2026-06-13 | **Codebase audit complete** — 8 new wiring issues found (#293-#297 + #299-#306) for demo playability |
-| 2026-06-13 | **Agent task boards created** — `.agents/*/TASK_BOARD.md` for all 3 agents |
 | 2026-06-17 | **Mass board reconciliation with GitHub** — synced all 133 closed issues from GitHub to local board. Marked 5.1-5.6 as COMPLETE. Open issues reduced from 49 → 19. Updated `.jules` references throughout. |
-| 2026-06-20 | **Engine crash-risk fixes shipped** — C-8 (stale dicts), C-9 (signal leaks), C-10 (combat_ended abort). Branch: `pi/fix-engine-crash-risks`. See `docs/github_issues.md` for details. |
-
----
-
 | 2026-06-20 | **Vertical Slice Audit Complete** — PI engine audit identifies 16 Critical blockers; 3 engine crash fixes shipped on `pi/fix-engine-crash-risks`. All 16 Critical issues created on GitHub (#411–#426). Board expanded from 19 → 35 open issues. See `docs/github_issues.md` for full tracker. |
-| 2026-06-24 | **Phase 5 Complete — Vertical Slice Demo Delivered** — All 16 Critical issues resolved via PRs #485–#502. Total 50+ issues closed across engine crash fixes, demo playability, core performance, test coverage, AI behaviors, UI polish, story/narrative, level design, and moral choice systems. 379 tests passing with 0 failures. Only #455 (art assets) remains open. |
-| 2026-06-21 | **Full audit tracker aligned with GitHub** — 58 new issues created (#427–#484) covering H-1 through H-23, M-1 through M-20, S-2 through S-17, M-NEW-1, M-NEW-2. #419 reopened with corrected P1/S priority. #472 and #473 closed as duplicates. `project_automation.yml` fixed to prevent failure notifications. Total open issues: 74. |
-| 2026-06-21 | **PRs #485 and #486 merged to main** — Engine crash fixes (C-8, C-9, C-10) and docs/board updates both landed. C-8/C-9/C-10 status updated to ✅ Done. Open issues reduced to 71. |
+| 2026-06-24 | **Phase 5 Complete — Vertical Slice Demo Delivered** — All 16 Critical issues resolved via PRs #485–#502. Total 50+ issues closed across engine crash fixes, demo playability, core performance, test coverage, AI behaviors, UI polish, story/narrative, level design, and moral choice systems. 379 tests passing with 0 failures. |
+| 2026-06-25 | **Mass board update for Premium UI Overhaul** — Marked all legacy Phase 5 tasks as ✅ Done. Appended brand new Phase 6, Phase 7, and Phase 8 sections aligned with master_audit_report.md. Active focus shifted to Phase 6 (Design Tokens & Structural Layouts). |
 
-*Last Updated: 2026-06-21*
-*Next Review: After C-1/C-2/C-3 loop-closure fixes ship (Return to Menu buttons)*
+*Last Updated: 2026-06-25*
+*Next Review: After Phase 6 Design Tokens & Layout containers are fully established in main_theme.tres*

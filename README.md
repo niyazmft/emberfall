@@ -12,9 +12,7 @@ A deterministic, grid-based tactics engine built entirely in **Godot 4.6.3**, de
 
 ## Gameplay
 
-> 📸 *Screenshots and gameplay GIFs coming soon. The project is in pre-production
-> with the AP economy, deterministic combat math, and grid system implemented
-> in GDScript.*
+> 📸 *Screenshots and gameplay GIFs coming soon. The project has successfully delivered its Phase 5 Vertical Slice Demo (all 379 unit tests passing with 0 failures) and is currently undergoing its Option B Premium UI Overhaul (Phases 6–8).*
 
 ## Features
 
@@ -77,11 +75,13 @@ For contribution guidelines and agent instructions, see [AGENTS.md](AGENTS.md) a
 ## Tech Stack
 
 - **Engine:** [Godot 4.6.3](https://godotengine.org/) (GDScript)
+- **Testing:** [GdUnit4](https://github.com/MikeSchulze/gdUnit4) for automated unit test suite
 - **Validation:** [Python 3.10+](https://www.python.org/) for cross-platform math checks
-- **Formatting:** [gdtoolkit](https://github.com/Scony/godot-gdscript-toolkit) (`gdformat` / `gdlint`)
+- **Formatting:** [gdtoolkit](https://github.com/Scony/godot-gdscript-toolkit) (`gdformat` / `gdlint`) and `gdscript_formatter` addon
 - **Pre-commit Hooks:** [pre-commit](https://pre-commit.com/) framework
 - **CI:** [GitHub Actions](https://github.com/features/actions)
 - **Linting:** [markdownlint-cli](https://github.com/igorshubovych/markdownlint-cli)
+- **Platform API:** [GodotSteam](https://godotsteam.com/) GDExtension for Steamworks integration
 
 ## Project Structure
 
@@ -160,13 +160,17 @@ emberfall/
 - [x] Dynamic audio routing and burden stems (`AudioMiddleware`, `BurdenStemCaptionRouter`)
 - [x] Subtitle and narrative captioning (`CaptionManager`, `AmbientNarrator`)
 - [x] UI Accessibility and aesthetics (CVD mode, dynamic styling, focus management)
-- [ ] Vertical slice playable demo
-  - [ ] Loop closure: Return to Menu from Victory/Defeat/Pause (#411, #412, #413)
-  - [ ] End condition: cap rooms or add run-complete screen (#414)
-  - [ ] Visual identity: title art, environment props, hit effects (#415, #416, #417)
-  - [ ] Engine stability: stale refs, signal leaks, infinite-loop abort (#418, #419, #420) ✅ *Fixed 2026-06-20*
-  - [ ] Level design: biome rooms, boss variety, hazards (#421, #422, #423)
-  - [ ] Narrative: premise, burden variants, ambient captions (#424, #425, #426)
+- [x] Vertical slice playable demo (Phase 5 Complete)
+  - [x] Loop closure: Return to Menu from Victory/Defeat/Pause (#411, #412, #413)
+  - [x] End condition: cap rooms or add run-complete screen (#414)
+  - [x] Visual identity: title art, environment props, hit effects (#415, #416, #417)
+  - [x] Engine stability: stale refs, signal leaks, infinite-loop abort (#418, #419, #420)
+  - [x] Level design: biome rooms, boss variety, hazards (#421, #422, #423)
+  - [x] Narrative: premise, burden variants, ambient captions (#424, #425, #426)
+- [ ] Option B Premium UI Overhaul (Phases 6–8 Active)
+  - [ ] Phase 6: Design Tokens & Structural Layouts (main_theme, TitleScreen, bottom console, SettingsPanel, camera zoom, popups)
+  - [ ] Phase 7: Premium Asset Injection (production sprites, soft shadows, `voxy/at-icons`, 9-patch frames, prop sprites, mastered SFX)
+  - [ ] Phase 8: Motion Polish & Atmosphere (title glow, micro-animation tweens, TurnBanner ribbon, dissolving ember transition shader, layered musical stems, GodotSteam bindings)
 
 ## Contributing
 
@@ -193,5 +197,10 @@ for the disclosure process.
 ## Acknowledgments
 
 - [Godot Engine](https://godotengine.org/) — open-source game engine
+- [GdUnit4](https://github.com/MikeSchulze/gdUnit4) by MikeSchulze for automated unit testing framework
+- [gdscript_formatter](https://github.com/jmlee2k/gdscript-formatter) by jmlee2k for in-editor formatting automation
+- `voxy/at-icons` for premium combat action and system menu icon assets
+- `crystal-bit/godot-game-template`, `baconandgames/godot4-game-template`, and `four-games` for UI container hierarchy patterns, modal settings form layouts, and master theme token structures
+- [GodotSteam](https://godotsteam.com/) for Steamworks API GDExtension bindings
 - The GDScript community for tools, patterns, and shader techniques
 - AI agent infrastructure: PaperclipAI, Google Jules
