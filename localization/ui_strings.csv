@@ -175,3 +175,7 @@ DIALOGUE_BOSS_INTRO,"You carry the old fire. So did we. It changes nothing.","Du
 TUTORIAL_MOVE_HINT,"Use WASD to move. Get close to the enemy.","Bewegen Sie sich mit WASD. Kommen Sie dem Feind nahe.","Usa WASD para moverte. Acércate al enemigo.","Utilisez WASD pour vous déplacer. Approchez-vous de l'ennemi."
 TUTORIAL_ATTACK_HINT,"Press Space to enter targeting mode, then Enter to attack.","Drücken Sie Leertaste für Zielmodus, dann Eingabe zum Angreifen.","Presiona Espacio para entrar en modo de apuntado, luego Enter para atacar.","Appuyez sur Espace pour entrer en mode ciblage, puis Entrée pour attaquer."
 TUTORIAL_END_TURN_HINT,"Press Tab to end your turn when you are out of AP.","Drücken Sie Tab um Ihren Zug zu beenden wenn Sie keine AP mehr haben.","Presiona Tab para terminar tu turno cuando te quedes sin PA.","Appuyez sur Tab pour terminer votre tour quand vous n'avez plus de PA."
+
+REFLECTION_VICTORY_1,The silence returns. You remain.,Die Stille kehrt zurück. Du bleibst.,El silencio vuelve. Tú permaneces.,Le silence revient. Vous restez.
+REFLECTION_VICTORY_2,Another room. Another weight.,Ein weiterer Raum. Ein weiteres Gewicht.,Otra sala. Otro peso.,Une autre salle. Un autre poids.
+REFLECTION_VICTORY_3,The burden grows. So do you.,Die Last wächst. Du auch.,La carga crece. Tú también.,Le fardeau grandit. Vous aussi.
