@@ -29,6 +29,15 @@ var _reinforcements_spawned: bool = false
 @onready var ui_overlay: CanvasLayer = $UIOverlay
 @onready var camera: Camera2D = $Camera2D
 
+## Camera follow / shake state
+var _camera_target: Node2D = null
+var _camera_shake_time: float = 0.0
+var _camera_shake_intensity: float = 0.0
+var _camera_shake_seed: int = 0
+const CAMERA_FOLLOW_SPEED: float = 3.0
+const CAMERA_SHAKE_DURATION: float = 0.2
+const CAMERA_SHAKE_MAX_OFFSET: float = 4.0
+
 
 func _ready() -> void:
 	_grid_system = AutoloadHelper.grid_system()
@@ -70,6 +79,12 @@ func _exit_tree() -> void:
 			_turn_manager.combat_ended.disconnect(_on_combat_ended)
 		if _turn_manager.reflection_started.is_connected(_on_reflection_started):
 			_turn_manager.reflection_started.disconnect(_on_reflection_started)
+		if _turn_manager.turn_started.is_connected(_on_turn_started):
+			_turn_manager.turn_started.disconnect(_on_turn_started)
+
+	if is_instance_valid(_combat_input):
+		if _combat_input.attack_executed.is_connected(_on_attack_executed):
+			_combat_input.attack_executed.disconnect(_on_attack_executed)
 
 	var lifecycle := AutoloadHelper.entity_lifecycle()
 	if lifecycle:
@@ -126,6 +141,7 @@ func _on_room_entered(p_room_index: int, room_data: Dictionary) -> void:
 		_combat_input.queue_free()
 	_combat_input = CombatInput.new(_player, _enemies_node, grid_renderer)
 	add_child(_combat_input)
+	_combat_input.attack_executed.connect(_on_attack_executed)
 
 	if _turn_manager:
 		_turn_manager.queue_free()
@@ -163,6 +179,7 @@ func _setup_turn_manager() -> void:
 
 	_turn_manager.combat_ended.connect(_on_combat_ended)
 	_turn_manager.reflection_started.connect(_on_reflection_started)
+	_turn_manager.turn_started.connect(_on_turn_started)
 
 	if not is_instance_valid(_player) or not is_instance_valid(_enemies_node):
 		return
@@ -266,6 +283,51 @@ func _load_tutorial_room_data() -> Dictionary:
 	return room_data
 
 
+func _process(delta: float) -> void:
+	_update_camera(delta)
+
+
+func _update_camera(delta: float) -> void:
+	## Smoothly interpolate camera position toward the target entity.
+	var desired_pos: Vector2 = camera.position
+	if _camera_target != null and is_instance_valid(_camera_target):
+		desired_pos = _camera_target.position
+	elif grid_renderer:
+		desired_pos = grid_renderer.grid_to_world(5, 5, 0)
+
+	var follow_weight: float = DeterministicMath.clampf(CAMERA_FOLLOW_SPEED * delta, 0.0, 1.0)
+
+	if _camera_shake_time > 0.0:
+		var decay: float = _camera_shake_time / CAMERA_SHAKE_DURATION
+		var current_intensity: float = _camera_shake_intensity * decay
+		var seed_x: int = _camera_shake_seed + int(_camera_shake_time * 1000.0)
+		var seed_y: int = _camera_shake_seed + int(_camera_shake_time * 1000.0) + 1
+		var frac_x: float = SeedGovernance.fract_from_seed(seed_x)
+		var frac_y: float = SeedGovernance.fract_from_seed(seed_y)
+		var offset_x: float = DeterministicMath.clampf(
+			(frac_x * 2.0 - 1.0) * current_intensity,
+			-CAMERA_SHAKE_MAX_OFFSET,
+			CAMERA_SHAKE_MAX_OFFSET
+		)
+		var offset_y: float = DeterministicMath.clampf(
+			(frac_y * 2.0 - 1.0) * current_intensity,
+			-CAMERA_SHAKE_MAX_OFFSET,
+			CAMERA_SHAKE_MAX_OFFSET
+		)
+		desired_pos += Vector2(offset_x, offset_y)
+		_camera_shake_time = DeterministicMath.clampf(
+			_camera_shake_time - delta, 0.0, CAMERA_SHAKE_DURATION
+		)
+
+	camera.position = camera.position.lerp(desired_pos, follow_weight)
+
+
+func trigger_camera_shake(intensity: float = CAMERA_SHAKE_MAX_OFFSET) -> void:
+	_camera_shake_seed += 1
+	_camera_shake_time = CAMERA_SHAKE_DURATION
+	_camera_shake_intensity = intensity
+
+
 func _setup_camera() -> void:
 	# Camera centered on grid (approximate center of 12x12 grid)
 	camera.zoom = Vector2(4.5, 4.5)
@@ -337,6 +399,25 @@ func _on_combat_ended(victory: bool) -> void:
 
 func _on_reflection_started(text: String) -> void:
 	_reflection_text = text
+
+
+func _on_turn_started(entity: Entity, is_player: bool) -> void:
+	## Set camera target to the active entity's visual node.
+	if is_player and _player != null and is_instance_valid(_player):
+		_camera_target = _player
+	else:
+		## Find the enemy Node2D that owns this entity.
+		for child: Node in _enemies_node.get_children():
+			if child is Node2D:
+				var child_ent := CombatEntity.get_entity(child)
+				if child_ent == entity:
+					_camera_target = child
+					break
+
+
+func _on_attack_executed(_target: Node2D, _damage: int) -> void:
+	## Brief camera shake on attack impact.
+	trigger_camera_shake(CAMERA_SHAKE_MAX_OFFSET)
 
 
 func _on_boss_hp_changed(new_hp: int, _old_hp: int) -> void:

@@ -18,6 +18,27 @@ func _ready() -> void:
 	settings_btn.text = tr("menu.title.settings")
 	quit_btn.text = tr("menu.title.quit")
 
+	# Add story premise subtitle below the title
+	var premise_label := Label.new()
+	premise_label.name = "PremiseLabel"
+	premise_label.text = tr("TITLE_PREMISE")
+	premise_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	premise_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	premise_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	premise_label.add_theme_font_size_override("font_size", 14)
+	premise_label.modulate = Color(0.8, 0.8, 0.8, 0.85)
+	premise_label.custom_minimum_size = Vector2(400, 0)
+	# Insert before the button container in the VBox
+	if button_container.get_parent() is VBoxContainer:
+		var vbox: VBoxContainer = button_container.get_parent() as VBoxContainer
+		var btn_idx: int = vbox.get_child_count() - 1
+		for i: int in range(vbox.get_child_count()):
+			if vbox.get_child(i) == button_container:
+				btn_idx = i
+				break
+		vbox.add_child(premise_label)
+		vbox.move_child(premise_label, btn_idx)
+
 	# Enable Continue if a save exists
 	var save_manager: _SaveManager = AutoloadHelper.save_manager()
 	if save_manager != null and save_manager.has_save():
