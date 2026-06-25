@@ -528,6 +528,16 @@ func _action_increment_room(_ctx: Dictionary) -> void:
 ## Check if secret room conditions are met after a room is cleared.
 ## If met, append a secret room to the run queue.
 func _check_and_append_secret_room() -> void:
+	## Guard: only check after a room with actual combat data.
+	## In tests, room data may be empty (all zeros), which would falsely
+	## trigger "no_damage_taken" and "fast_clear" conditions.
+	var room_data := get_current_room_data()
+	var turn_count: int = int(room_data.get("turn_count", 0))
+	var room_kills: int = int(room_data.get("room_kills", 0))
+	var enemies_spared: int = int(room_data.get("enemies_spared", 0))
+	if turn_count == 0 and room_kills == 0 and enemies_spared == 0:
+		return
+
 	var srt: _SecretRoomTrigger = AutoloadHelper.secret_room_trigger()
 	if srt == null:
 		return
