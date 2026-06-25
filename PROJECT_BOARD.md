@@ -309,20 +309,24 @@ Visual, audio, and animation assets needed for game feel.
 **Phase 6 Goal:** Eliminate all text overlap, minimap leaks, extreme edge stretching, and UI collisions by establishing a rigorous design system and custom scalable layout containers.
 
 ### 📐 Core Redesign Methodology (Steps 1–3)
+
 To ensure the UI overhaul is built upon a scalable, bulletproof architectural foundation rather than ad-hoc fixes, all Phase 6 restructuring tasks strictly adhere to the following 3-step engine methodology:
 
 #### Step 1: Establish the Design System (Tokens)
+
 Before touching code or engine nodes, define your Design Tokens. These are the atomic variables of your UI:
-*   **Spacing & Margins:** Define a grid system (e.g., a 4px or 8px base grid) so padding is uniform everywhere.
-*   **Typography:** Set strict rules for Header, Subheader, Body, and Button font sizes and weights.
-*   **Color Palette:** Assign specific semantic meanings to colors (e.g., Primary Accent, Background Dark, Warning Red).
+- **Spacing & Margins:** Define a grid system (e.g., a 4px or 8px base grid) so padding is uniform everywhere.
+- **Typography:** Set strict rules for Header, Subheader, Body, and Button font sizes and weights.
+- **Color Palette:** Assign specific semantic meanings to colors (e.g., Primary Accent, Background Dark, Warning Red).
 
 #### Step 2: Build Custom, Scalable UI Containers
+
 Instead of hardcoding positions, build reusable layout components within Godot:
-*   Create responsive horizontal/vertical box containers (`HBoxContainer`, `VBoxContainer`, `GridContainer`, `PanelContainer`) that auto-align elements.
-*   Implement relative scaling so elements dynamically resize based on the screen's aspect ratio ($16:9$, $21:9$, mobile, etc.) rather than pixel-perfect coordinates.
+- Create responsive horizontal/vertical box containers (`HBoxContainer`, `VBoxContainer`, `GridContainer`, `PanelContainer`) that auto-align elements.
+- Implement relative scaling so elements dynamically resize based on the screen's aspect ratio ($16:9$, $21:9$, mobile, etc.) rather than pixel-perfect coordinates.
 
 #### Step 3: Gray-Box / Wireframe Implementation
+
 Implement the new layout using temporary, solid-color blocks (gray-boxing). This ensures that the overlapping HUD elements and extreme edge-alignment issues are completely solved by the code structure alone, regardless of what the final art looks like.
 
 | Task | Status | Priority | Estimate | Blocked By | Notes |

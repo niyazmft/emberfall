@@ -627,21 +627,26 @@ gh project field-list 1 --owner niyazmft --format json
 To maintain professional commercial standards and accelerate feature delivery, all agents must respect and incorporate the following designated external assets, addons, and community templates:
 
 ### 1. In-Editor Formatting Automation
+
 - **Addon:** `gdscript_formatter` (by jmlee2k)
 - **Integration:** Enabled in `project.godot` to automatically format GDScript files on save via `gdformat`. Agents modifying scripts must ensure strict adherence to `gdtoolkit` standards.
 
 ### 2. Premium UI Assets & Icons
+
 - **Icon Package:** `voxy/at-icons`
 - **Application:** Designated asset suite for all general combat actions (`Move`, `Attack`, `End Turn`) and system navigation menus in Phase 7.
 - **Bespoke Art:** Magical abilities (`Strike`, `Ember`, `Quick Dash`) utilize bespoke fantasy illustrations rather than generic icons.
 
 ### 3. Community Architectural Templates
+
 When building or refactoring UI layouts in Phase 6, agents must surgically extract and adhere to proven scalable container hierarchy patterns from the following community reference templates:
+
 - **`crystal-bit/godot-game-template`** — Reference for clean settings grid form layouts, audio bus sliders, and modal window centralization.
 - **`baconandgames/godot4-game-template`** — Reference for robust title screen container hierarchies and non-overlapping button stacks.
 - **`four-games`** — Reference for master design token structures, focus padding rules, and consistent `main_theme.tres` styling.
 
 ### 4. Platform API & Publishing
+
 - **GDExtension:** `GodotSteam`
 - **Application:** Provides robust GDExtension bindings for the Steamworks API (`_SteamManager`). All initialization logic must include graceful offline fallbacks to safeguard against engine crashes during standalone or headless CI execution.
 
