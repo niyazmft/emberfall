@@ -631,5 +631,6 @@
       "y": 5,
       "type": "oil"
     }
-  ]
+  ],
+  "encounter_template": "elevated_archers"
 }

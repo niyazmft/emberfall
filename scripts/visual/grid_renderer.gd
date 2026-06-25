@@ -8,8 +8,8 @@ extends Node2D
 ## Art Style: Greybox vector-like diamonds
 
 # Greybox colors based on specification
-const COLOR_FLOOR: Color = Color(0.5, 0.5, 0.5)  # Grey
-const COLOR_ELEV_1: Color = Color(0.75, 0.75, 0.75)  # Light Grey
+const COLOR_FLOOR: Color = Color(0.6, 0.55, 0.5)  # Warm stone/beige
+const COLOR_ELEV_1: Color = Color(0.6, 0.65, 0.75)  # Cool grey-blue
 const COLOR_ELEV_2: Color = Color(1.0, 1.0, 1.0)  # White
 const COLOR_COVER: Color = Color(0.55, 0.27, 0.07)  # Brown
 const COLOR_OIL: Color = Color(0.0, 0.0, 0.55)  # Dark Blue

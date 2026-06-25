@@ -631,5 +631,6 @@
       "y": 6,
       "type": "oil"
     }
-  ]
+  ],
+  "encounter_template": "basic_patrol"
 }
