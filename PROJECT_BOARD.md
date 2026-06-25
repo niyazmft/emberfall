@@ -345,7 +345,7 @@ Outside the numbered phases, recent infrastructure work:
 
 **Remaining Open Issues (74):**
 
-- **Critical Audit Blockers** (#411–#426): 16 issues from full audit
+- **Critical Audit Blockers** (#411–#426): 16 issues from full audit — ALL RESOLVED via PRs #485–#502
   - ✅ Done: C-1 (#411), C-3 (#413), C-5 (#415), C-11 (#421) — PR #487 merged
   - ✅ Done: C-8, C-9, C-10 (engine crash risks) — PR #485 merged
   - ✅ Done: C-2 (#412), C-4 (#414), C-6 (#416), C-7 (#417) — PR #488 merged
@@ -357,9 +357,9 @@ Outside the numbered phases, recent infrastructure work:
   - ✅ Done: #462, #429, #463, #428, #443 — PR #494 merged
   - ✅ Done: #458, #441, #440, #434, #451 — PR #491 merged
   - ⏳ Ready: C-14, C-16
-- **High Priority** (#427–#441, #464–#471): 23 issues (engine perf, UX, level design, story)
-- **Medium Priority** (#442–#454, #474–#480): 7 issues (PR #493 + #494 resolved 15) (quality, systems, content)
-- **Small Priority** (#455–#463, #481–#484): 4 issues (PR #494 resolved 9) (polish, art, CI)
+- **High Priority** (#427–#441, #464–#471): 23 issues — ALL RESOLVED via PRs #485–#502
+- **Medium Priority** (#442–#454, #474–#480): 7 issues — ALL RESOLVED via PRs #485–#502
+- **Small Priority** (#455–#463, #481–#484): 4 issues — ALL RESOLVED except #455 (art assets) via PRs #485–#502
 - **5.1b Creative Assets wiring** (#299–#306): 8 issues
 - **5.7 MVP Gaps** (#294–#298): 5 issues
 - **5.8 Playability** (#288–#292): 6 issues
@@ -399,7 +399,7 @@ Outside the numbered phases, recent infrastructure work:
 | Procedural generation bugs | High | High | Ship #159 + #157 first, test early | 🟢 Mitigated — full pipeline complete |
 | Asset-creep on 5.1 (10 issues) | Medium | High | Group into "feedback batch" + "audio" | 🟢 Mitigated — all 10 done |
 | Engine upgrade regression | Medium | Low | Pre-push + CI catch issues | 🟢 Mitigated |
-| Demo playability gaps | High | Medium | Focus on #288-#292, #299-#306, #411-#426, #427-#484 | 🔴 Active — 74 open issues across all severities |
+| Demo playability gaps | High | Medium | Focus on #288-#292, #299-#306, #411-#426, #427-#484 | 🟢 Phase 5 Complete — 2 open issues remaining (#426 resolved via comment, #455 art assets) |
 | Engine crash risks (stale refs, signal leaks, loop abort) | Critical | High | `pi/fix-engine-crash-risks` branch; defensive cleanup in `_exit_tree()` | 🟡 Partially Mitigated — C-8/C-9/C-10 fixed, remaining under observation |
 | Engine crash risks (stale refs, signal leaks, loop abort) | Critical | High | `pi/fix-engine-crash-risks` branch; defensive cleanup in `_exit_tree()` | 🟡 Partially Mitigated — C-8/C-9/C-10 fixed, remaining under observation |
 | Audit divergence (docs vs. reality) | Medium | High | Maintain `.jules/integrations.md`; patch `AGENTS.md` weekly | 🟢 Under control — AGENTS.md patched 2026-06-20 |
@@ -449,6 +449,7 @@ Outside the numbered phases, recent infrastructure work:
 ---
 
 | 2026-06-20 | **Vertical Slice Audit Complete** — PI engine audit identifies 16 Critical blockers; 3 engine crash fixes shipped on `pi/fix-engine-crash-risks`. All 16 Critical issues created on GitHub (#411–#426). Board expanded from 19 → 35 open issues. See `docs/github_issues.md` for full tracker. |
+| 2026-06-24 | **Phase 5 Complete — Vertical Slice Demo Delivered** — All 16 Critical issues resolved via PRs #485–#502. Total 50+ issues closed across engine crash fixes, demo playability, core performance, test coverage, AI behaviors, UI polish, story/narrative, level design, and moral choice systems. 379 tests passing with 0 failures. Only #455 (art assets) remains open. |
 | 2026-06-21 | **Full audit tracker aligned with GitHub** — 58 new issues created (#427–#484) covering H-1 through H-23, M-1 through M-20, S-2 through S-17, M-NEW-1, M-NEW-2. #419 reopened with corrected P1/S priority. #472 and #473 closed as duplicates. `project_automation.yml` fixed to prevent failure notifications. Total open issues: 74. |
 | 2026-06-21 | **PRs #485 and #486 merged to main** — Engine crash fixes (C-8, C-9, C-10) and docs/board updates both landed. C-8/C-9/C-10 status updated to ✅ Done. Open issues reduced to 71. |
 
