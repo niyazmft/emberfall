@@ -218,6 +218,32 @@ func get_lore_text() -> String:
 	return tr(loc_key)
 
 
+## Applies moral consequence from BurdenManager to this enemy.
+## Adjusts retreat threshold and max HP based on the consequence dict.
+func apply_moral_consequence(consequence: Dictionary) -> void:
+	if consequence.is_empty() or entity == null:
+		return
+
+	# Adjust retreat threshold (aggressive mode)
+	var retreat_mult: float = float(consequence.get("retreat_mult", 1.0))
+	if retreat_mult != 1.0:
+		# Read current threshold from config or default
+		var config_loader: _ConfigLoader = AutoloadHelper.config_loader()
+		var threshold: float = 0.3
+		if config_loader != null:
+			var enemies_config: Variant = config_loader.getValue("enemies")
+			if enemies_config is Dictionary and enemies_config.has(archetype_id):
+				var data: Dictionary = enemies_config[archetype_id]
+				threshold = float(data.get("retreat_hp_threshold", 0.3))
+		entity.retreat_hp_threshold = threshold * retreat_mult
+
+	# Boss HP multiplier
+	var boss_hp_mult: float = float(consequence.get("boss_hp_mult", 1.0))
+	if boss_hp_mult != 1.0 and archetype_id == "boss":
+		entity.hp_max = DeterministicMath.damage_floor(float(entity.hp_max) * boss_hp_mult)
+		entity.hp = entity.hp_max
+
+
 ## Combat API
 func take_turn() -> void:
 	## Called by combat system when it's this enemy's turn
