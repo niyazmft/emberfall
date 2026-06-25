@@ -101,6 +101,16 @@ static func buildEncounters(
 			}
 		)
 
+	# Apply moral consequence: extra spawns at high MWT
+	var bm: _BurdenManager = AutoloadHelper.burden_manager()
+	if bm != null:
+		var consequence: Dictionary = bm.get_moral_consequence()
+		var extra_spawn: int = int(consequence.get("extra_spawn", 0))
+		if extra_spawn > 0 and not encounters.is_empty():
+			# Add extra_spawn grunts to the first encounter group
+			var first: Dictionary = encounters[0] as Dictionary
+			first["count"] = int(first.get("count", 0)) + extra_spawn
+
 	return encounters
 
 

@@ -522,6 +522,59 @@ func _action_generate_rooms(_ctx: Dictionary) -> void:
 
 func _action_increment_room(_ctx: Dictionary) -> void:
 	room_index += 1
+	_check_and_append_secret_room()
+
+
+## Check if secret room conditions are met after a room is cleared.
+## If met, append a secret room to the run queue.
+func _check_and_append_secret_room() -> void:
+	## Guard: only check after a room with actual combat data.
+	## In tests, room data may be empty (all zeros), which would falsely
+	## trigger "no_damage_taken" and "fast_clear" conditions.
+	var room_data := get_current_room_data()
+	var turn_count: int = int(room_data.get("turn_count", 0))
+	var room_kills: int = int(room_data.get("room_kills", 0))
+	var enemies_spared: int = int(room_data.get("enemies_spared", 0))
+	if turn_count == 0 and room_kills == 0 and enemies_spared == 0:
+		return
+
+	var srt: _SecretRoomTrigger = AutoloadHelper.secret_room_trigger()
+	if srt == null:
+		return
+
+	var run_data := _build_run_data_for_secret_check()
+	if srt.check_secret_conditions(run_data):
+		var secret_room_id: String = srt.get_secret_room_id(run_data)
+		if not secret_room_id.is_empty():
+			var secret_room_data: Dictionary = {
+				"room_id": secret_room_id,
+				"biome": _get_current_biome_index(),
+				"room_in_biome": -1,
+				"topology_seed": SeedGovernance.hash_int(run_seed, "SECRET" + str(room_index)),
+				"encounter_seed": SeedGovernance.hash_int(run_seed, "SECRET_ENC" + str(room_index)),
+				"is_secret": true,
+			}
+			# Insert the secret room after the current room
+			if room_index + 1 < room_queue.size():
+				room_queue.insert(room_index + 1, secret_room_data)
+			else:
+				room_queue.append(secret_room_data)
+			print("RunManager: Secret room %s appended to queue" % secret_room_id)
+
+
+## Build run data snapshot for secret room condition checking.
+func _build_run_data_for_secret_check() -> Dictionary:
+	var room_data: Dictionary = get_current_room_data()
+	var room_kills: int = int(room_data.get("room_kills", 0))
+	var room_damage_taken: int = int(room_data.get("room_damage_taken", 0))
+	var enemies_spared: int = int(room_data.get("enemies_spared", 0))
+	var turn_count: int = int(room_data.get("turn_count", 0))
+	return {
+		"room_kills": room_kills,
+		"room_damage_taken": room_damage_taken,
+		"enemies_spared": enemies_spared,
+		"turn_count": turn_count,
+	}
 
 
 func _action_reset_run(_ctx: Dictionary) -> void:

@@ -206,6 +206,39 @@ func _config_int(key: String, fallback: int) -> int:
 	return AutoloadHelper.config_int(key, fallback)
 
 
+## Returns a Dictionary describing narrative consequences based on moral weight (total sentient kills).
+## Keys:
+##   "aggressive"    : bool — enemies retreat at lower HP threshold (MWT >= 3)
+##   "extra_spawn"   : int  — additional enemies per room (MWT >= 6)
+##   "boss_hp_mult"  : float — multiplier applied to boss max HP (MWT >= 9)
+##   "pure_shield"   : bool — player gets shield on first turn (MWT == 0)
+##   "retreat_mult"  : float — multiplier for retreat_hp_threshold (0.6 at >=3)
+func get_moral_consequence() -> Dictionary:
+	var mwt: int = total_sentient_kills
+	var result: Dictionary = {
+		"aggressive": false,
+		"extra_spawn": 0,
+		"boss_hp_mult": 1.0,
+		"pure_shield": false,
+		"retreat_mult": 1.0,
+	}
+
+	if mwt == 0:
+		result["pure_shield"] = true
+
+	if mwt >= 3:
+		result["aggressive"] = true
+		result["retreat_mult"] = 0.6
+
+	if mwt >= 6:
+		result["extra_spawn"] = 1
+
+	if mwt >= 9:
+		result["boss_hp_mult"] = 1.2
+
+	return result
+
+
 func update_moral_weight(moral_flag: int) -> void:
 	var threshold: int = _config_int("MWT", GameConstants.MWT)
 

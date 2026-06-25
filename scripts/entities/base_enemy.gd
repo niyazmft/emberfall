@@ -6,6 +6,7 @@ extends CombatEntity
 @export var elite_type: String = ""
 @export var behavior_override: String = ""
 @export var is_leader: bool = false
+@export var retreat_hp_threshold: float = 0.3
 @export var ai_controller: Node  ## Will integrate with behavior tree
 @export var visual_proxy: EntityVisualProxy
 @export var debug_color: Color = Color.WHITE
@@ -216,6 +217,24 @@ func get_lore_text() -> String:
 
 	var loc_key: String = str(data["lore_text"])
 	return tr(loc_key)
+
+
+## Applies moral consequence from BurdenManager to this enemy.
+## Adjusts retreat threshold and max HP based on the consequence dict.
+func apply_moral_consequence(consequence: Dictionary) -> void:
+	if consequence.is_empty() or entity == null:
+		return
+
+	# Adjust retreat threshold (aggressive mode)
+	var retreat_mult: float = float(consequence.get("retreat_mult", 1.0))
+	if retreat_mult != 1.0:
+		retreat_hp_threshold = retreat_hp_threshold * retreat_mult
+
+	# Boss HP multiplier
+	var boss_hp_mult: float = float(consequence.get("boss_hp_mult", 1.0))
+	if boss_hp_mult != 1.0 and archetype_id == "boss":
+		entity.hp_max = DeterministicMath.damage_floor(float(entity.hp_max) * boss_hp_mult)
+		entity.hp = entity.hp_max
 
 
 ## Combat API

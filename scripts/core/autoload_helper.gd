@@ -60,6 +60,11 @@ static func caption_manager() -> _CaptionManager:
 	return get_autoload("CaptionManager") as _CaptionManager
 
 
+## Returns the DialogueManager autoload, or null.
+static func dialogue_manager() -> _DialogueManager:
+	return get_autoload("DialogueManager") as _DialogueManager
+
+
 ## Returns the EntityLifecycle autoload, or null.
 static func entity_lifecycle() -> _EntityLifecycle:
 	return get_autoload("EntityLifecycle") as _EntityLifecycle

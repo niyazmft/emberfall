@@ -18,6 +18,7 @@ var _enemies_node: Node2D
 var _combat_input: CombatInput
 var _turn_manager: TurnManager
 var _room_kills: int = 0
+var _reflection_text: String = ""
 var _current_room_data: Dictionary = {}
 var _boss_entity: Entity = null
 var _reinforcements_spawned: bool = false
@@ -38,7 +39,12 @@ func _ready() -> void:
 			run_manager.room_entered.connect(_on_room_entered)
 		# If we are already in a room, trigger it manually
 		if run_manager.current_state == _RunManager.RunState.ROOM:
-			_on_room_entered(run_manager.room_index, run_manager.get_current_room_data())
+			var room_data: Dictionary = run_manager.get_current_room_data()
+			var sm: _SaveManager = AutoloadHelper.save_manager()
+			var is_first_play: bool = sm != null and not sm.has_save()
+			if run_manager.room_index == 0 and is_first_play:
+				room_data = _load_tutorial_room_data()
+			_on_room_entered(run_manager.room_index, room_data)
 	elif demo_mode:
 		_load_demo_room()
 
@@ -58,6 +64,12 @@ func _exit_tree() -> void:
 	var eb := AutoloadHelper.event_bus()
 	if eb and eb.entity_state_changed.is_connected(_on_entity_state_changed):
 		eb.entity_state_changed.disconnect(_on_entity_state_changed)
+
+	if is_instance_valid(_turn_manager):
+		if _turn_manager.combat_ended.is_connected(_on_combat_ended):
+			_turn_manager.combat_ended.disconnect(_on_combat_ended)
+		if _turn_manager.reflection_started.is_connected(_on_reflection_started):
+			_turn_manager.reflection_started.disconnect(_on_reflection_started)
 
 	var lifecycle := AutoloadHelper.entity_lifecycle()
 	if lifecycle:
@@ -103,6 +115,12 @@ func _on_room_entered(p_room_index: int, room_data: Dictionary) -> void:
 			_boss_entity.hp_changed.connect(_on_boss_hp_changed)
 			break
 
+	# Show internal monologue on first room entry (room_index 0)
+	if p_room_index == 0:
+		var dm: _DialogueManager = AutoloadHelper.dialogue_manager()
+		if dm != null:
+			dm.show_internal_monologue("DIALOGUE_KEEPER_INTRO_1")
+
 	# Setup combat systems
 	if _combat_input:
 		_combat_input.queue_free()
@@ -144,6 +162,7 @@ func _setup_turn_manager() -> void:
 	add_child(_turn_manager)
 
 	_turn_manager.combat_ended.connect(_on_combat_ended)
+	_turn_manager.reflection_started.connect(_on_reflection_started)
 
 	if not is_instance_valid(_player) or not is_instance_valid(_enemies_node):
 		return
@@ -216,6 +235,37 @@ func _load_demo_room() -> void:
 	_on_room_entered(0, room_data)
 
 
+func _load_tutorial_room_data() -> Dictionary:
+	"""Load the tutorial room for first-time players (room 0, no save)."""
+	var room_data := RoomLoader.load_room_data("room_tutorial")
+	if room_data.is_empty():
+		# Fallback if tutorial room file not found
+		room_data = {
+			"id": "room_tutorial",
+			"encounter_seed": 12345,
+			"biome": 0,
+			"room_in_biome": 0,
+			"player_start": {"x": 1, "y": 1},
+			"encounters": [{"enemy_type": "grunt", "count": 1, "positions": [{"x": 10, "y": 10}]}],
+			"layout": {"elevation": [], "cover": [], "blocked": [], "vision_blocked": []},
+			"tutorial_hint": "TUTORIAL_MOVE_HINT"
+		}
+	# Ensure layout arrays are sized to 144 if empty
+	var layout: Dictionary = room_data.get("layout", {}) as Dictionary
+	for key: String in ["elevation", "cover"]:
+		var arr: Array = layout.get(key, []) as Array
+		while arr.size() < 144:
+			arr.append(0)
+		layout[key] = arr
+	for key: String in ["blocked", "vision_blocked"]:
+		var arr: Array = layout.get(key, []) as Array
+		while arr.size() < 144:
+			arr.append(false)
+		layout[key] = arr
+	room_data["layout"] = layout
+	return room_data
+
+
 func _setup_camera() -> void:
 	# Camera centered on grid (approximate center of 12x12 grid)
 	camera.zoom = Vector2(4.5, 4.5)
@@ -283,6 +333,10 @@ func _on_combat_ended(victory: bool) -> void:
 		_show_victory_modal()
 	else:
 		_show_defeat_modal()
+
+
+func _on_reflection_started(text: String) -> void:
+	_reflection_text = text
 
 
 func _on_boss_hp_changed(new_hp: int, _old_hp: int) -> void:
@@ -377,6 +431,8 @@ func _show_victory_modal() -> void:
 		var modal := scene.instantiate() as _VictoryModal
 		ui_overlay.add_child(modal)
 		if modal:
+			if not _reflection_text.is_empty():
+				modal.show_reflection(_reflection_text)
 			var summary: Dictionary = {
 				"turns": _turn_manager.round_number,
 				"kills": _room_kills,
