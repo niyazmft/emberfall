@@ -78,7 +78,7 @@ func test_moral_consequence_applies_to_enemy() -> void:
 	enemy.apply_moral_consequence(consequence)
 
 	# Verify retreat threshold was reduced
-	assert_float(enemy.entity.retreat_hp_threshold).is_equal(0.18)
+	assert_float(enemy.retreat_hp_threshold).is_equal(0.18)
 
 	# Verify HP unchanged for non-boss
 	assert_int(enemy.entity.hp_max).is_equal(original_hp)

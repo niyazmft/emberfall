@@ -6,6 +6,7 @@ extends CombatEntity
 @export var elite_type: String = ""
 @export var behavior_override: String = ""
 @export var is_leader: bool = false
+@export var retreat_hp_threshold: float = 0.3
 @export var ai_controller: Node  ## Will integrate with behavior tree
 @export var visual_proxy: EntityVisualProxy
 @export var debug_color: Color = Color.WHITE
@@ -227,15 +228,7 @@ func apply_moral_consequence(consequence: Dictionary) -> void:
 	# Adjust retreat threshold (aggressive mode)
 	var retreat_mult: float = float(consequence.get("retreat_mult", 1.0))
 	if retreat_mult != 1.0:
-		# Read current threshold from config or default
-		var config_loader: _ConfigLoader = AutoloadHelper.config_loader()
-		var threshold: float = 0.3
-		if config_loader != null:
-			var enemies_config: Variant = config_loader.getValue("enemies")
-			if enemies_config is Dictionary and enemies_config.has(archetype_id):
-				var data: Dictionary = enemies_config[archetype_id]
-				threshold = float(data.get("retreat_hp_threshold", 0.3))
-		entity.retreat_hp_threshold = threshold * retreat_mult
+		retreat_hp_threshold = retreat_hp_threshold * retreat_mult
 
 	# Boss HP multiplier
 	var boss_hp_mult: float = float(consequence.get("boss_hp_mult", 1.0))
