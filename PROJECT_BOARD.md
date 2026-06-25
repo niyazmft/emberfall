@@ -315,6 +315,7 @@ To ensure the UI overhaul is built upon a scalable, bulletproof architectural fo
 #### Step 1: Establish the Design System (Tokens)
 
 Before touching code or engine nodes, define your Design Tokens. These are the atomic variables of your UI:
+
 - **Spacing & Margins:** Define a grid system (e.g., a 4px or 8px base grid) so padding is uniform everywhere.
 - **Typography:** Set strict rules for Header, Subheader, Body, and Button font sizes and weights.
 - **Color Palette:** Assign specific semantic meanings to colors (e.g., Primary Accent, Background Dark, Warning Red).
@@ -322,6 +323,7 @@ Before touching code or engine nodes, define your Design Tokens. These are the a
 #### Step 2: Build Custom, Scalable UI Containers
 
 Instead of hardcoding positions, build reusable layout components within Godot:
+
 - Create responsive horizontal/vertical box containers (`HBoxContainer`, `VBoxContainer`, `GridContainer`, `PanelContainer`) that auto-align elements.
 - Implement relative scaling so elements dynamically resize based on the screen's aspect ratio ($16:9$, $21:9$, mobile, etc.) rather than pixel-perfect coordinates.
 
