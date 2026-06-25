@@ -30,6 +30,22 @@ func setup(p_summary_data: Dictionary) -> void:
 	_update_summary_display()
 
 
+## Displays a brief narrative reflection line before stats.
+func show_reflection(p_text: String) -> void:
+	if summary_container == null:
+		return
+	# Clear any previous content to ensure reflection is shown first
+	for child: Node in summary_container.get_children():
+		child.queue_free()
+	var lbl: Label = Label.new()
+	lbl.text = p_text
+	lbl.add_theme_font_size_override("font_size", 16)
+	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	lbl.add_theme_color_override("font_color", Color(0.9, 0.85, 0.7))
+	summary_container.add_child(lbl)
+
+
 func _setup_from_config() -> void:
 	var config: _ConfigLoader = AutoloadHelper.config_loader()
 	if not config:

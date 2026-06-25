@@ -6,6 +6,7 @@ extends Node
 signal turn_started(entity: Entity, is_player: bool)
 signal turn_ended(entity: Entity)
 signal round_started(round_number: int)
+signal reflection_started(text: String)
 signal combat_ended(victory: bool)
 
 # ── Enums ───────────────────────────────────────────────────────────
@@ -262,10 +263,20 @@ func _is_combat_over() -> bool:
 
 	if not enemies_alive:
 		_change_state(CombatState.COMBAT_END)
-		combat_ended.emit(true)
-		var eb := AutoloadHelper.event_bus()
-		if eb:
-			eb.combat_ended.emit(true)
+		var reflection_text: String = _select_reflection_text()
+		reflection_started.emit(reflection_text)
+		# Show ambient caption during the reflection pause
+		var cm := AutoloadHelper.caption_manager()
+		if cm:
+			cm.schedule(reflection_text, 2, 0.0, 3.0)  # Channel.AMBIENT = 2
+		# Delay victory modal by 1.5s to create reflection pause
+		get_tree().create_timer(1.5).timeout.connect(
+			func() -> void:
+				combat_ended.emit(true)
+				var eb: Node = AutoloadHelper.event_bus()
+				if eb:
+					eb.combat_ended.emit(true)
+		)
 		return true
 
 	return false
@@ -274,6 +285,20 @@ func _is_combat_over() -> bool:
 func _check_end_conditions() -> void:
 	if not _is_combat_over():
 		_advance_turn_logic()
+
+
+## Select reflection text based on current moral weight tier.
+## MWT 0 → light, MWT 1–2 → neutral, MWT 3+ → heavy.
+func _select_reflection_text() -> String:
+	var bm: Node = AutoloadHelper.burden_manager()
+	var mwt_level: int = bm.current_mwt_level if bm else 0
+	var variant: int = clampi(mwt_level, 0, 2) + 1
+	var key: String = "REFLECTION_VICTORY_%d" % variant
+	var text: String = tr(key)
+	# Guard against missing localization (tr returns the key itself)
+	if text == key or text.begins_with("REFLECTION_VICTORY"):
+		return "The stillness returns."
+	return text
 
 
 func _on_entity_state_changed(_entity: Entity, _old_state: int, new_state: int) -> void:

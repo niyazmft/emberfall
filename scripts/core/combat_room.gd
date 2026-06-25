@@ -18,6 +18,7 @@ var _enemies_node: Node2D
 var _combat_input: CombatInput
 var _turn_manager: TurnManager
 var _room_kills: int = 0
+var _reflection_text: String = ""
 var _current_room_data: Dictionary = {}
 var _boss_entity: Entity = null
 var _reinforcements_spawned: bool = false
@@ -63,6 +64,12 @@ func _exit_tree() -> void:
 	var eb := AutoloadHelper.event_bus()
 	if eb and eb.entity_state_changed.is_connected(_on_entity_state_changed):
 		eb.entity_state_changed.disconnect(_on_entity_state_changed)
+
+	if is_instance_valid(_turn_manager):
+		if _turn_manager.combat_ended.is_connected(_on_combat_ended):
+			_turn_manager.combat_ended.disconnect(_on_combat_ended)
+		if _turn_manager.reflection_started.is_connected(_on_reflection_started):
+			_turn_manager.reflection_started.disconnect(_on_reflection_started)
 
 	var lifecycle := AutoloadHelper.entity_lifecycle()
 	if lifecycle:
@@ -155,6 +162,7 @@ func _setup_turn_manager() -> void:
 	add_child(_turn_manager)
 
 	_turn_manager.combat_ended.connect(_on_combat_ended)
+	_turn_manager.reflection_started.connect(_on_reflection_started)
 
 	if not is_instance_valid(_player) or not is_instance_valid(_enemies_node):
 		return
@@ -327,6 +335,10 @@ func _on_combat_ended(victory: bool) -> void:
 		_show_defeat_modal()
 
 
+func _on_reflection_started(text: String) -> void:
+	_reflection_text = text
+
+
 func _on_boss_hp_changed(new_hp: int, _old_hp: int) -> void:
 	if _boss_entity == null or _reinforcements_spawned:
 		return
@@ -419,6 +431,8 @@ func _show_victory_modal() -> void:
 		var modal := scene.instantiate() as _VictoryModal
 		ui_overlay.add_child(modal)
 		if modal:
+			if not _reflection_text.is_empty():
+				modal.show_reflection(_reflection_text)
 			var summary: Dictionary = {
 				"turns": _turn_manager.round_number,
 				"kills": _room_kills,

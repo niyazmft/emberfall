@@ -125,6 +125,8 @@ func test_combat_victory() -> void:
 	_turn_manager._process_state_loop()
 
 	assert_int(_turn_manager.current_state).is_equal(TurnManager.CombatState.COMBAT_END)
+	# combat_ended is now delayed by 1.5s; wait for it
+	await get_tree().create_timer(2.0).timeout
 	assert_bool(results.emitted).is_true()
 	assert_bool(results.victory).is_true()
 
