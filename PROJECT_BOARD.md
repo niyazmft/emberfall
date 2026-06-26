@@ -333,12 +333,12 @@ Implement the new layout using temporary, solid-color blocks (gray-boxing). This
 
 | Task | Status | Priority | Estimate | Blocked By | Notes |
 |------|--------|----------|----------|------------|-------|
-| `[UI] Establish master design tokens and focus padding in main_theme (#504)` | ⏳ Ready | P0 | 1.5d | None | Implements base grid, typography rules, semantic colors, and focus padding (Reference `four-games`, `crystal-bit`, `baconandgames` theme architectures) |
-| `[UI] Restructure TitleScreen layout hierarchy (#505)` | ⏳ Ready | P0 | 1d | None | Resolves premise label and button container overlap; surgically extract clean container hierarchy patterns from `baconandgames` and `four-games` templates |
+| `[UI] Establish master design tokens and focus padding in main_theme (#504)` | 🔄 In Progress | P0 | 1.5d | None | Implements base grid, typography rules, semantic colors, and focus padding (Reference `four-games`, `crystal-bit`, `baconandgames` theme architectures) |
+| `[UI] Restructure TitleScreen layout hierarchy (#505)` | 🔄 In Progress | P0 | 1d | None | Resolves premise label and button container overlap; surgically extract clean container hierarchy patterns from `baconandgames` and `four-games` templates |
 | `[UI] Architect unified bottom console & rescale world bars (#506)` | ⏳ Ready | P0 | 2d | None | Prevents central HUD collision and giant floating status bars |
-| `[UI] Centralize SettingsPanel & fix disappearing tab titles (#507)` | ⏳ Ready | P0 | 1.5d | None | Enforces 800x600 modal window and clear active tab indicators; surgically extract clean settings grid form layout and tab structures from `crystal-bit` and `four-games` templates |
-| `[Camera] Adjust default Camera2D tactical zoom to 3.2x (#508)` | ⏳ Ready | P1 | 0.5d | None | Frames 12x12 grid correctly; implement industry-standard 2D RTS camera script with cursor-targeted zoom, smooth target lerp panning, edge scrolling, and middle-click drag |
-| `[UI] Offset helper popups & fix minimap overlay leak (#509)` | ⏳ Ready | P0 | 1d | None | Prevents obscuring player sprite and stops minimap leaking into settings |
+| `[UI] Centralize SettingsPanel & fix disappearing tab titles (#507)` | 🔄 In Progress | P0 | 1.5d | None | Enforces 800x600 modal window and clear active tab indicators; surgically extract clean settings grid form layout and tab structures from `crystal-bit` and `four-games` templates |
+| `[Camera] Adjust default Camera2D tactical zoom to 3.2x (#508)` | 🔄 In Progress | P1 | 0.5d | None | Frames 12x12 grid correctly; implement industry-standard 2D RTS camera script with cursor-targeted zoom, smooth target lerp panning, edge scrolling, and middle-click drag |
+| `[UI] Offset helper popups & fix minimap overlay leak (#509)` | 🔄 In Progress | P0 | 1d | None | Prevents obscuring player sprite and stops minimap leaking into settings |
 
 ---
 
