@@ -333,16 +333,16 @@ Implement the new layout using temporary, solid-color blocks (gray-boxing). This
 
 | Task | Status | Priority | Estimate | Blocked By | Notes |
 |------|--------|----------|----------|------------|-------|
-| `[UI] Establish master design tokens and focus padding in main_theme (#504)` | 🔄 In Progress | P0 | 1.5d | None | Implements base grid, typography rules, semantic colors, and focus padding (Reference `four-games`, `crystal-bit`, `baconandgames` theme architectures) |
-| `[UI] Restructure TitleScreen layout hierarchy (#505)` | 🔄 In Progress | P0 | 1d | None | Resolves premise label and button container overlap; surgically extract clean container hierarchy patterns from `baconandgames` and `four-games` templates |
-| `[UI] Architect unified bottom console & rescale world bars (#506)` | ⏳ Ready | P0 | 2d | None | Prevents central HUD collision and giant floating status bars |
-| `[UI] Centralize SettingsPanel & fix disappearing tab titles (#507)` | 🔄 In Progress | P0 | 1.5d | None | Enforces 800x600 modal window and clear active tab indicators; surgically extract clean settings grid form layout and tab structures from `crystal-bit` and `four-games` templates |
-| `[Camera] Adjust default Camera2D tactical zoom to 3.2x (#508)` | 🔄 In Progress | P1 | 0.5d | None | Frames 12x12 grid correctly; implement industry-standard 2D RTS camera script with cursor-targeted zoom, smooth target lerp panning, edge scrolling, and middle-click drag |
-| `[UI] Offset helper popups & fix minimap overlay leak (#509)` | 🔄 In Progress | P0 | 1d | None | Prevents obscuring player sprite and stops minimap leaking into settings |
+| `[UI] Establish master design tokens and focus padding in main_theme (#504)` | ✅ Done | P0 | 1.5d | None | Implements base grid, typography rules, semantic colors, and focus padding (Reference `four-games`, `crystal-bit`, `baconandgames` theme architectures) |
+| `[UI] Restructure TitleScreen layout hierarchy (#505)` | ✅ Done | P0 | 1d | None | Resolves premise label and button container overlap; surgically extract clean container hierarchy patterns from `baconandgames` and `four-games` templates |
+| `[UI] Architect unified bottom console & rescale world bars (#506)` | 🔄 In Progress | P0 | 2d | None | Prevents central HUD collision and giant floating status bars |
+| `[UI] Centralize SettingsPanel & fix disappearing tab titles (#507)` | ✅ Done | P0 | 1.5d | None | Enforces 800x600 modal window and clear active tab indicators; surgically extract clean settings grid form layout and tab structures from `crystal-bit` and `four-games` templates |
+| `[Camera] Adjust default Camera2D tactical zoom to 3.2x (#508)` | ✅ Done | P1 | 0.5d | None | Frames 12x12 grid correctly; implement industry-standard 2D RTS camera script with cursor-targeted zoom, smooth target lerp panning, edge scrolling, and middle-click drag |
+| `[UI] Offset helper popups & fix minimap overlay leak (#509)` | ✅ Done | P0 | 1d | None | Prevents obscuring player sprite and stops minimap leaking into settings |
 
 ---
 
-## Phase 7: UI Overhaul — Premium Asset Injection 📋 BACKLOG
+## Phase 7: UI Overhaul — Premium Asset Injection 🔄 IN PROGRESS
 
 **Phase 7 Goal:** Skin the gray-box UI layout containers with commercial-grade production art, custom icons, 9-patch styleboxes, environmental prop sprites, and mastered audio effects.
 
@@ -350,10 +350,10 @@ Implement the new layout using temporary, solid-color blocks (gray-boxing). This
 |------|--------|----------|----------|------------|-------|
 | `[Update #455] Integrate production-ready character & enemy sprites` | 📋 Backlog | P1 | 2.5d | Phase 6 | Replaces concept art mockups with final 2D isometric vector sprites |
 | `[Update #455] Design soft radial shadow textures (S-1)` | 📋 Backlog | P1 | 1d | Phase 6 | Replaces hard black ellipse shadows with high-quality soft shadow pass |
-| `[UI] Create premium combat action & ability icons (#510)` | 📋 Backlog | P1 | 2d | Phase 6 | Use `voxy/at-icons` to skin all general combat actions (`Move`, `Attack`, `End Turn`) and system menus; source/generate bespoke glowing fantasy illustrations for lore-specific magical abilities (`Strike`, `Ember`, `Quick Dash`) |
-| `[UI] Encase minimap in custom decorative border frame (#511)` | 📋 Backlog | P1 | 1d | Phase 6 | Replaces basic grey rectangle with styled 9-patch frame and header bar |
-| `[UI] Upgrade buttons & modals to 9-patch StyleBoxTextures (#512)` | 📋 Backlog | P1 | 1.5d | Phase 6 | Replaces generic plain rectangles with premium bordered window containers |
-| `[Visual] Create bespoke 2D environmental prop sprites (#513)` | 📋 Backlog | P1 | 2d | Phase 6 | Replaces procedural `ColorRect` rock placeholders with pre-rendered prop assets |
+| `[UI] Create premium combat action & ability icons (#510)` | 🔄 In Progress | P1 | 2d | None | Use `voxy/at-icons` to skin all general combat actions (`Move`, `Attack`, `End Turn`) and system menus; source/generate bespoke glowing fantasy illustrations for lore-specific magical abilities (`Strike`, `Ember`, `Quick Dash`) |
+| `[UI] Encase minimap in custom decorative border frame (#511)` | 🔄 In Progress | P1 | 1d | None | Replaces basic grey rectangle with styled 9-patch frame and header bar |
+| `[UI] Upgrade buttons & modals to 9-patch StyleBoxTextures (#512)` | 🔄 In Progress | P1 | 1.5d | None | Replaces generic plain rectangles with premium bordered window containers |
+| `[Visual] Create bespoke 2D environmental prop sprites (#513)` | 🔄 In Progress | P1 | 2d | None | Replaces procedural `ColorRect` rock placeholders with pre-rendered prop assets |
 | `[Audio] Replace synthesized audio with mastered SFX (#514)` | 📋 Backlog | P1 | 2d | Phase 6 | Replaces placeholder synthesized `.wav` files with rich, mastered UI/combat acoustics |
 
 ---
