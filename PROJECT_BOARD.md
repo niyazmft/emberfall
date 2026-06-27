@@ -2,8 +2,8 @@
 
 **Project:** Emberfall Tactical Combat Game
 **Repository:** <https://github.com/niyazmft/emberfall>
-**Last Updated:** 2026-06-25
-**Current Phase:** Phase 6 (UI Overhaul: Design Tokens & Structural Layouts)
+**Last Updated:** 2026-06-27
+**Current Phase:** Phase 6 → Phase 8 (UI structural completion, then motion polish while assets are sourced)
 
 ---
 
@@ -373,23 +373,50 @@ Implement the new layout using temporary, solid-color blocks (gray-boxing). This
 
 ---
 
-## Current Sprint Status: Premium UI Overhaul (Phase 6 Complete → Phase 7 Active)
+## Current Sprint Status: Phase 6 Structural Completion → Phase 8 Motion Polish (Phase 7 Asset-Blocked)
 
-**Phase 6 (Done — 5/6 tasks):** Design tokens, TitleScreen restructure, combat HUD world bars, SettingsPanel centralisation, and Camera2D zoom are all correctly implemented and merged. #509 (popup offset & minimap leak) remains Ready.
+**Phase 6 (5/6 done — #508 merged, #504–#507 partial, #509 ready):** 
+- #508 Camera zoom ✅ Done (merged in #526)
+- #504–#507 marked Ready after PR #526 audit revealed they were not actually complete
+- #509 (popup offset & minimap leak) still Ready
 
-**Phase 7 (Active — 0/7 tasks done):** All Phase 7 tasks reset to Ready after audit confirmed prior "Done" marks were incorrect (no real file changes existed). #514 is Blocked pending audio assets.
+**Phase 7 (0/7 done — ALL asset-dependent):** Every Phase 7 task requires actual art/audio assets (sprites, icons, 9-patch textures, SFX). None can proceed without asset delivery. #514 explicitly Blocked.
+
+**Phase 8 (0/6 done — 3 code-only, 3 asset-dependent):** Three tasks (#516, #517, #520) are pure code and can proceed immediately. Three (#515, #518, #519) require shader/audio assets.
 
 **Phase 1–5 Complete:** All foundation hardening, 2.5D rendering, CI/CD, minimum viable gameplay, and vertical slice tasks are ✅ Done (379/379 tests passing, 0 failures).
 
 ---
 
-## Dependency Graph (Phases 6–8)
+## Next Batch Plan (Phase 6 Structural + Phase 8 Code-Only)
 
-```text
-Phase 6: Design Tokens & Structural Layouts (Gray-Boxing)
-   └─→ Phase 7: Premium Asset Injection (Visual/Audio Skinning)
-          └─→ Phase 8: Motion Polish & Atmosphere (Tweens, Shaders, Stems)
-```
+**Batch 14 — Phase 6 Structural Completion (code-only, no assets required):**
+| Issue | What | Why Ready |
+|-------|------|-----------|
+| #504 | Complete design tokens: Theme constants, typography scale, type variations, semantic colors | Styleboxes exist; just need registration |
+| #505 | TitleScreen restructure: MarginContainer root, HeaderVBox/NavigationContainer, `%PremiseLabel` | PremiseLabel static node exists; needs hierarchy refactor |
+| #507 | SettingsPanel: centered modal anchoring, GridContainer form layout, active tab indicators | Two properties done; needs structural refactor |
+| #509 | Popup offset + minimap leak fix | Pure logic fix, no assets |
+
+**Batch 15 — Phase 8 Code-Only Motion Polish (no assets required):**
+| Issue | What | Why Ready |
+|-------|------|-----------|
+| #516 | Tween micro-animations: 5% hover scale, depress click on all buttons | Pure Tween code, no art needed |
+| #517 | TurnBanner ribbon: backing panel fly-in tween + dissolve | Pure Tween code, no art needed |
+| #520 | GodotSteam integration: Cloud Saves, Achievements wiring | Pure GDExtension code, no art needed |
+
+**Blocked — Phase 7 + Phase 8 Asset Items (require your input):**
+| Issue | Asset Needed | Estimated Size |
+|-------|-------------|----------------|
+| #455 (×2) | Final character/enemy sprite PNGs + soft radial shadow texture | ~20 sprites |
+| #510 | Combat action & ability icon PNGs (Move, Attack, Strike, Ember, Dash, End Turn) | ~6–8 icons |
+| #511 | Minimap decorative border frame (9-patch or StyleBoxFlat design) | 1 border asset |
+| #512 | 9-patch button/modal texture PNGs | ~3–4 textures |
+| #513 | Environmental prop sprite PNGs (rocks, crystals, debris) | ~5–10 props |
+| #514 | Mastered SFX `.wav` files (UI clicks, combat impacts, ambient loops) | ~15–20 sounds |
+| #515 | Title glow shader or pre-rendered glow overlay | Shader art |
+| #518 | Transition dissolve/wipe shader (ember pattern) | Shader art |
+| #519 | Layered musical stem `.ogg`/`.wav` files | Audio composition |
 
 ---
 
@@ -439,6 +466,7 @@ Phase 6: Design Tokens & Structural Layouts (Gray-Boxing)
 | 2026-06-20 | **Vertical Slice Audit Complete** — PI engine audit identifies 16 Critical blockers; 3 engine crash fixes shipped on `pi/fix-engine-crash-risks`. All 16 Critical issues created on GitHub (#411–#426). Board expanded from 19 → 35 open issues. See `docs/github_issues.md` for full tracker. |
 | 2026-06-24 | **Phase 5 Complete — Vertical Slice Demo Delivered** — All 16 Critical issues resolved via PRs #485–#502. Total 50+ issues closed across engine crash fixes, demo playability, core performance, test coverage, AI behaviors, UI polish, story/narrative, level design, and moral choice systems. 379 tests passing with 0 failures. |
 | 2026-06-25 | **Mass board update for Premium UI Overhaul** — Marked all legacy Phase 5 tasks as ✅ Done. Appended brand new Phase 6, Phase 7, and Phase 8 sections aligned with master_audit_report.md. Active focus shifted to Phase 6 (Design Tokens & Structural Layouts). |
+| 2026-06-27 | **PR #526 audited and closed** — Phase 6 audit revealed #504–#507 were only partially implemented. #508 (camera zoom) correctly merged. Phase 7 tasks confirmed as asset-dependent (0/7 done). PROJECT_BOARD updated with Next Batch Plan: Batch 14 (Phase 6 structural completion, code-only) and Batch 15 (Phase 8 motion polish, code-only). All asset-dependent items flagged for Director input. |
 
 *Last Updated: 2026-06-25*
 *Next Review: After Phase 6 Design Tokens & Layout containers are fully established in main_theme.tres*
