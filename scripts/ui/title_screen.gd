@@ -8,7 +8,7 @@ extends Control
 @onready var settings_btn: Button = %SettingsButton
 @onready var quit_btn: Button = %QuitButton
 @onready var button_container: VBoxContainer = %ButtonContainer
-@onready var premise_label: Label = $CenterContainer/VBoxContainer/PremiseLabel
+@onready var premise_label: Label = %PremiseLabel
 @onready var ember_particles: CPUParticles2D = $EmberParticles
 
 
