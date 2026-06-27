@@ -51,6 +51,17 @@ func _ready() -> void:
 	particles.scale_amount_max = 4.0
 	particles.color = COLOR_GOLD
 
+	# Configure ribbon style (ember gold, semi-transparent)
+	var ribbon_panel: Panel = banner_background.get_node_or_null("Ribbon")
+	if ribbon_panel != null:
+		var ribbon_style := StyleBoxFlat.new()
+		ribbon_style.bg_color = Color(0.9, 0.75, 0.2, 0.4)
+		ribbon_style.corner_radius_top_left = 4
+		ribbon_style.corner_radius_top_right = 4
+		ribbon_style.corner_radius_bottom_left = 4
+		ribbon_style.corner_radius_bottom_right = 4
+		ribbon_panel.add_theme_stylebox_override("panel", ribbon_style)
+
 	# Load config
 	var config: Node = AutoloadHelper.config_loader()
 	if config:
@@ -91,6 +102,16 @@ func _show_banner(p_text: String, p_is_player: bool) -> void:
 	visible = true
 	modulate.a = 1.0
 
+	# Ribbon fly-in from off-screen left
+	var ribbon: Panel = banner_background.get_node_or_null("Ribbon")
+	if ribbon != null:
+		ribbon.modulate.a = 1.0
+		ribbon.position.x = -ribbon.size.x
+		var ribbon_tween := create_tween()
+		ribbon_tween.tween_property(ribbon, "position:x", 0.0, _slide_duration * 0.8)
+		ribbon_tween.set_trans(Tween.TRANS_CUBIC)
+		ribbon_tween.set_ease(Tween.EASE_OUT)
+
 	# Scale in from zero with TRANS_BACK easing
 	scale = Vector2.ZERO
 	var scale_tween := create_tween()
@@ -112,6 +133,11 @@ func _show_banner(p_text: String, p_is_player: bool) -> void:
 
 	await scale_tween.finished
 	await get_tree().create_timer(_display_duration).timeout
+
+	# Fade ribbon out
+	if ribbon != null:
+		var ribbon_fade := create_tween()
+		ribbon_fade.tween_property(ribbon, "modulate:a", 0.0, _fade_duration)
 
 	# Fade out
 	var fade_out := create_tween()
