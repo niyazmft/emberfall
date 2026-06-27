@@ -15,18 +15,6 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_apply_nml"]
-bg_color = Color(0.2, 0.2, 0.2, 1)
-border_color = Color(0.9, 0.75, 0.2, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
-
 [node name="SettingsPanel" type="Control"]
 custom_minimum_size = Vector2(800, 600)
 layout_mode = 3
@@ -46,46 +34,48 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_bg")
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
+[node name="CenterContainer" type="CenterContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 100
-theme_override_constants/margin_top = 50
-theme_override_constants/margin_right = 100
-theme_override_constants/margin_bottom = 50
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="CenterContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 40
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/MarginContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="Label" type="Label" parent="CenterContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 48
 text = "SETTINGS_SETTINGS"
 horizontal_alignment = 1
 
-[node name="TabContainer" type="TabContainer" parent="MarginContainer/VBoxContainer"]
+[node name="TabContainer" type="TabContainer" parent="CenterContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 tab_alignment = 1
 
-[node name="SETTINGS_AUDIO" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
+[node name="SETTINGS_AUDIO" type="GridContainer" parent="CenterContainer/MarginContainer/VBoxContainer/TabContainer"]
+visible = false
 layout_mode = 2
-theme_override_constants/separation = 10
+columns = 2
+theme_override_constants/h_separation = 24
+theme_override_constants/v_separation = 16
 
-[node name="MasterVol" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO"]
+[node name="Label" type="Label" parent="CenterContainer/MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO"]
 layout_mode = 2
-
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO/MasterVol"]
-layout_mode = 2
-size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 16
 text = "SETTINGS_MASTER_VOL"
 
-[node name="MasterSlider" type="HSlider" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO/MasterVol"]
+[node name="MasterSlider" type="HSlider" parent="CenterContainer/MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
@@ -94,16 +84,12 @@ max_value = 1.0
 step = 0.05
 value = 1.0
 
-[node name="MusicVol" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO"]
+[node name="Label2" type="Label" parent="CenterContainer/MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO"]
 layout_mode = 2
-
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO/MusicVol"]
-layout_mode = 2
-size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 16
 text = "SETTINGS_MUSIC_VOL"
 
-[node name="MusicSlider" type="HSlider" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO/MusicVol"]
+[node name="MusicSlider" type="HSlider" parent="CenterContainer/MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
@@ -112,16 +98,12 @@ max_value = 1.0
 step = 0.05
 value = 0.8
 
-[node name="SFXVol" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO"]
+[node name="Label3" type="Label" parent="CenterContainer/MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO"]
 layout_mode = 2
-
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO/SFXVol"]
-layout_mode = 2
-size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 16
 text = "SETTINGS_SFX_VOL"
 
-[node name="SFXSlider" type="HSlider" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO/SFXVol"]
+[node name="SFXSlider" type="HSlider" parent="CenterContainer/MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
@@ -130,90 +112,73 @@ max_value = 1.0
 step = 0.05
 value = 0.8
 
-[node name="Mute" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO"]
+[node name="Label4" type="Label" parent="CenterContainer/MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO"]
 layout_mode = 2
-
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO/Mute"]
-layout_mode = 2
-size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 16
 text = "SETTINGS_MUTE"
 
-[node name="MuteCheck" type="CheckBox" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO/Mute"]
+[node name="MuteCheck" type="CheckBox" parent="CenterContainer/MarginContainer/VBoxContainer/TabContainer/SETTINGS_AUDIO"]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_default_cursor_shape = 2
 
-[node name="SETTINGS_VIDEO" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
+[node name="SETTINGS_VIDEO" type="GridContainer" parent="CenterContainer/MarginContainer/VBoxContainer/TabContainer"]
 visible = false
 layout_mode = 2
-theme_override_constants/separation = 10
+columns = 2
+theme_override_constants/h_separation = 24
+theme_override_constants/v_separation = 16
 
-[node name="Resolution" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_VIDEO"]
+[node name="Label" type="Label" parent="CenterContainer/MarginContainer/VBoxContainer/TabContainer/SETTINGS_VIDEO"]
 layout_mode = 2
-
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_VIDEO/Resolution"]
-layout_mode = 2
-size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 16
 text = "SETTINGS_RESOLUTION"
 
-[node name="ResolutionOption" type="OptionButton" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_VIDEO/Resolution"]
+[node name="ResolutionOption" type="OptionButton" parent="CenterContainer/MarginContainer/VBoxContainer/TabContainer/SETTINGS_VIDEO"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 
-[node name="Fullscreen" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_VIDEO"]
+[node name="Label2" type="Label" parent="CenterContainer/MarginContainer/VBoxContainer/TabContainer/SETTINGS_VIDEO"]
 layout_mode = 2
-
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_VIDEO/Fullscreen"]
-layout_mode = 2
-size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 16
 text = "SETTINGS_FULLSCREEN"
 
-[node name="FullscreenCheck" type="CheckBox" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_VIDEO/Fullscreen"]
+[node name="FullscreenCheck" type="CheckBox" parent="CenterContainer/MarginContainer/VBoxContainer/TabContainer/SETTINGS_VIDEO"]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_default_cursor_shape = 2
 
-[node name="VSync" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_VIDEO"]
+[node name="Label3" type="Label" parent="CenterContainer/MarginContainer/VBoxContainer/TabContainer/SETTINGS_VIDEO"]
 layout_mode = 2
-
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_VIDEO/VSync"]
-layout_mode = 2
-size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 16
 text = "SETTINGS_VSYNC"
 
-[node name="VSyncCheck" type="CheckBox" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_VIDEO/VSync"]
+[node name="VSyncCheck" type="CheckBox" parent="CenterContainer/MarginContainer/VBoxContainer/TabContainer/SETTINGS_VIDEO"]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_default_cursor_shape = 2
 
-[node name="ApplyButton" type="Button" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_VIDEO"]
+[node name="ApplyButton" type="Button" parent="CenterContainer/MarginContainer/VBoxContainer/TabContainer/SETTINGS_VIDEO"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_styles/normal = SubResource("StyleBoxFlat_apply_nml")
 text = "SETTINGS_APPLY"
 
-[node name="SETTINGS_ACCESSIBILITY" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
+[node name="SETTINGS_ACCESSIBILITY" type="GridContainer" parent="CenterContainer/MarginContainer/VBoxContainer/TabContainer"]
 visible = false
 layout_mode = 2
-theme_override_constants/separation = 10
+columns = 2
+theme_override_constants/h_separation = 24
+theme_override_constants/v_separation = 16
 
-[node name="ScreenShake" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_ACCESSIBILITY"]
+[node name="Label" type="Label" parent="CenterContainer/MarginContainer/VBoxContainer/TabContainer/SETTINGS_ACCESSIBILITY"]
 layout_mode = 2
-
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_ACCESSIBILITY/ScreenShake"]
-layout_mode = 2
-size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 16
 text = "SETTINGS_SCREEN_SHAKE"
 
-[node name="ShakeSlider" type="HSlider" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_ACCESSIBILITY/ScreenShake"]
+[node name="ShakeSlider" type="HSlider" parent="CenterContainer/MarginContainer/VBoxContainer/TabContainer/SETTINGS_ACCESSIBILITY"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
@@ -222,61 +187,57 @@ max_value = 2.0
 step = 0.1
 value = 1.0
 
-[node name="CVDSim" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_ACCESSIBILITY"]
+[node name="Label2" type="Label" parent="CenterContainer/MarginContainer/VBoxContainer/TabContainer/SETTINGS_ACCESSIBILITY"]
 layout_mode = 2
-
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_ACCESSIBILITY/CVDSim"]
-layout_mode = 2
-size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 16
 text = "SETTINGS_CVD_SIM"
 
-[node name="CVDOption" type="OptionButton" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_ACCESSIBILITY/CVDSim"]
+[node name="CVDOption" type="OptionButton" parent="CenterContainer/MarginContainer/VBoxContainer/TabContainer/SETTINGS_ACCESSIBILITY"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 
-[node name="SETTINGS_CONTROLS" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer"]
+[node name="SETTINGS_CONTROLS" type="VBoxContainer" parent="CenterContainer/MarginContainer/VBoxContainer/TabContainer"]
 visible = false
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="InputHints" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_CONTROLS"]
+[node name="InputHints" type="HBoxContainer" parent="CenterContainer/MarginContainer/VBoxContainer/TabContainer/SETTINGS_CONTROLS"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_CONTROLS/InputHints"]
+[node name="Label" type="Label" parent="CenterContainer/MarginContainer/VBoxContainer/TabContainer/SETTINGS_CONTROLS/InputHints"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 16
 text = "SETTINGS_INPUT_HINTS"
 
-[node name="InputHintsOption" type="OptionButton" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_CONTROLS/InputHints"]
+[node name="InputHintsOption" type="OptionButton" parent="CenterContainer/MarginContainer/VBoxContainer/TabContainer/SETTINGS_CONTROLS/InputHints"]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_default_cursor_shape = 2
 
-[node name="RemapPanel" parent="MarginContainer/VBoxContainer/TabContainer/SETTINGS_CONTROLS" instance=ExtResource("2_remap")]
+[node name="RemapPanel" parent="CenterContainer/MarginContainer/VBoxContainer/TabContainer/SETTINGS_CONTROLS" instance=ExtResource("2_remap")]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="CenterContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 20
 alignment = 1
 
-[node name="ResetButton" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="ResetButton" type="Button" parent="CenterContainer/MarginContainer/VBoxContainer/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "SETTINGS_RESET_DEFAULTS"
 
-[node name="BackButton" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="BackButton" type="Button" parent="CenterContainer/MarginContainer/VBoxContainer/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "MENU_BACK"
 
-[node name="HelpLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="HelpLabel" type="Label" parent="CenterContainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
