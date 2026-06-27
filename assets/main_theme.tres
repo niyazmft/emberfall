@@ -3,51 +3,95 @@
 [ext_resource type="FontFile" path="res://assets/fonts/PressStart2P-Regular.ttf" id="1_470mv"]
 [ext_resource type="FontFile" path="res://assets/fonts/OpenDyslexic-Regular.otf" id="2_dyslx"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_64js0"]
-content_margin_left = 12.0
-content_margin_top = 8.0
-content_margin_right = 12.0
-content_margin_bottom = 8.0
-bg_color = Color(0.95, 0.55, 0.2, 1)
-border_width_bottom = 2
-border_color = Color(0.85, 0.4, 0.1, 1)
-corner_radius_top_left = 4
-corner_radius_top_right = 4
-corner_radius_bottom_right = 4
-corner_radius_bottom_left = 4
+# --- Design Tokens ---
+# Accent: ember gold   Color(0.9, 0.72, 0.18, 1)
+# Surface dark:        Color(0.10, 0.10, 0.15, 0.95)
+# Surface mid:         Color(0.18, 0.18, 0.24, 0.90)
+# Border dim:          Color(0.08, 0.08, 0.12, 1)
+# HP fill:             Color(0.85, 0.20, 0.15, 1)
+# AP fill:             Color(0.80, 0.60, 0.10, 1)
 
+# Button — Normal (dark surface, 16px h-pad, 12px v-pad)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xgdp2"]
-content_margin_left = 12.0
-content_margin_top = 8.0
-content_margin_right = 12.0
-content_margin_bottom = 8.0
-bg_color = Color(0.18, 0.22, 0.30, 0.9)
-border_width_bottom = 2
-border_color = Color(0.1, 0.14, 0.2, 1)
-corner_radius_top_left = 4
-corner_radius_top_right = 4
-corner_radius_bottom_right = 4
-corner_radius_bottom_left = 4
+content_margin_left = 16.0
+content_margin_top = 12.0
+content_margin_right = 16.0
+content_margin_bottom = 12.0
+bg_color = Color(0.18, 0.18, 0.24, 0.9)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 4
+border_color = Color(0.08, 0.08, 0.12, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
 
+# Button — Hover (accent border)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_64js0"]
+content_margin_left = 16.0
+content_margin_top = 12.0
+content_margin_right = 16.0
+content_margin_bottom = 12.0
+bg_color = Color(0.26, 0.26, 0.34, 1.0)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 4
+border_color = Color(0.9, 0.72, 0.18, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+# Button — Pressed (inset feel)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_d80jv"]
-content_margin_left = 12.0
-content_margin_top = 10.0
-content_margin_right = 12.0
-content_margin_bottom = 6.0
-bg_color = Color(0.1, 0.1, 0.1, 1)
-border_color = Color(0.05, 0.05, 0.05, 1)
-corner_radius_top_left = 4
-corner_radius_top_right = 4
-corner_radius_bottom_right = 4
-corner_radius_bottom_left = 4
+content_margin_left = 16.0
+content_margin_top = 14.0
+content_margin_right = 16.0
+content_margin_bottom = 10.0
+bg_color = Color(0.10, 0.10, 0.14, 1.0)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.08, 0.08, 0.12, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
 
+# Button — Focus (ember accent glow outline, 4px padding inside)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_focus"]
+content_margin_left = 16.0
+content_margin_top = 12.0
+content_margin_right = 16.0
+content_margin_bottom = 12.0
+bg_color = Color(0.18, 0.18, 0.24, 0.0)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.9, 0.72, 0.18, 1)
+corner_radius_top_left = 7
+corner_radius_top_right = 7
+corner_radius_bottom_right = 7
+corner_radius_bottom_left = 7
+expand_margin_left = 2.0
+expand_margin_top = 2.0
+expand_margin_right = 2.0
+expand_margin_bottom = 2.0
+
+# ProgressBar — Background
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0arac"]
-bg_color = Color(0.05, 0.05, 0.05, 0.8)
+bg_color = Color(0.07, 0.07, 0.09, 0.85)
 corner_radius_top_left = 4
 corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
+# ProgressBar — Fill (HP green fallback; HUD overrides per-bar)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_611f8"]
 bg_color = Color(0.2, 0.6, 0.2, 1)
 corner_radius_top_left = 4
@@ -55,14 +99,30 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
+# Panel / modal surface
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.10, 0.10, 0.15, 0.97)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.9, 0.72, 0.18, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
 [resource]
 default_font = ExtResource("1_470mv")
 default_font_size = 16
 Button/font_sizes/font_size = 12
-Button/styles/hover = SubResource("StyleBoxFlat_64js0")
 Button/styles/normal = SubResource("StyleBoxFlat_xgdp2")
+Button/styles/hover = SubResource("StyleBoxFlat_64js0")
 Button/styles/pressed = SubResource("StyleBoxFlat_d80jv")
+Button/styles/focus = SubResource("StyleBoxFlat_focus")
 Label/font_sizes/font_size = 16
 Label/fonts/font = ExtResource("2_dyslx")
+Panel/styles/panel = SubResource("StyleBoxFlat_panel")
+PanelContainer/styles/panel = SubResource("StyleBoxFlat_panel")
 ProgressBar/styles/background = SubResource("StyleBoxFlat_0arac")
 ProgressBar/styles/fill = SubResource("StyleBoxFlat_611f8")

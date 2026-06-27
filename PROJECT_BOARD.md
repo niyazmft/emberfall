@@ -333,12 +333,12 @@ Implement the new layout using temporary, solid-color blocks (gray-boxing). This
 
 | Task | Status | Priority | Estimate | Blocked By | Notes |
 |------|--------|----------|----------|------------|-------|
-| `[UI] Establish master design tokens and focus padding in main_theme (#504)` | ✅ Done | P0 | 1.5d | None | Implements base grid, typography rules, semantic colors, and focus padding (Reference `four-games`, `crystal-bit`, `baconandgames` theme architectures) |
-| `[UI] Restructure TitleScreen layout hierarchy (#505)` | ✅ Done | P0 | 1d | None | Resolves premise label and button container overlap; surgically extract clean container hierarchy patterns from `baconandgames` and `four-games` templates |
-| `[UI] Architect unified bottom console & rescale world bars (#506)` | ✅ Done | P0 | 2d | None | Prevents central HUD collision and giant floating status bars |
-| `[UI] Centralize SettingsPanel & fix disappearing tab titles (#507)` | ✅ Done | P0 | 1.5d | None | Enforces 800x600 modal window and clear active tab indicators; surgically extract clean settings grid form layout and tab structures from `crystal-bit` and `four-games` templates |
-| `[Camera] Adjust default Camera2D tactical zoom to 3.2x (#508)` | ✅ Done | P1 | 0.5d | None | Frames 12x12 grid correctly; implement industry-standard 2D RTS camera script with cursor-targeted zoom, smooth target lerp panning, edge scrolling, and middle-click drag |
-| `[UI] Offset helper popups & fix minimap overlay leak (#509)` | ✅ Done | P0 | 1d | None | Prevents obscuring player sprite and stops minimap leaking into settings |
+| `[UI] Establish master design tokens and focus padding in main_theme (#504)` | ⏳ Ready | P0 | 1.5d | None | Partial: stylebox colours, focus outline & panel stylebox added. Still missing: grid spacing constants, typography scale (Header/Subheader/Caption), named Theme type variations, registered color constants |
+| `[UI] Restructure TitleScreen layout hierarchy (#505)` | ⏳ Ready | P0 | 1d | None | Partial: `PremiseLabel` is now a static scene node and imperative injection removed. Still missing: root `MarginContainer` with 60/60/80/80 margins, `HeaderVBox`/`NavigationContainer` subdivision, `unique_name_in_owner = true` on `PremiseLabel`, VBox sep 60px, `SIZE_EXPAND_FILL` flag |
+| `[UI] Architect unified bottom console & rescale world bars (#506)` | ⏳ Ready | P0 | 2d | None | Partial: HP/AP bars rescaled to 140×20, theme wired, button sep widened. Still missing: `ui/console/bottom_console.tscn` scene, Left/Center/Right three-zone layout, `AspectRatioContainer`, JSON config binding, `EventBus` signal connections |
+| `[UI] Centralize SettingsPanel & fix disappearing tab titles (#507)` | ⏳ Ready | P0 | 1.5d | None | Partial: `custom_minimum_size = 800×600` and `tab_alignment = 1` added. Still missing: centered modal anchoring (not full-rect), `GridContainer` form layout, active tab indicator styling, true root-cause fix for disappearing titles |
+| `[Camera] Adjust default Camera2D tactical zoom to 3.2x (#508)` | ✅ Done | P1 | 0.5d | None | `combat_room.tscn` Camera2D zoom changed from 4.5x to 3.2x. Advanced features (cursor-targeted zoom, lerp panning, edge scroll, middle-click drag) split into a future follow-up |
+| `[UI] Offset helper popups & fix minimap overlay leak (#509)` | ⏳ Ready | P0 | 1d | None | Needs popup anchor offset logic in `combat_hud.gd` + minimap visibility tied to modal state |
 
 ---
 
@@ -348,13 +348,13 @@ Implement the new layout using temporary, solid-color blocks (gray-boxing). This
 
 | Task | Status | Priority | Estimate | Blocked By | Notes |
 |------|--------|----------|----------|------------|-------|
-| `[Update #455] Integrate production-ready character & enemy sprites` | 🔄 In Progress | P1 | 2.5d | None | Replaces concept art mockups with final 2D isometric vector sprites |
-| `[Update #455] Design soft radial shadow textures (S-1)` | 🔄 In Progress | P1 | 1d | None | Replaces hard black ellipse shadows with high-quality soft shadow pass |
-| `[UI] Create premium combat action & ability icons (#510)` | ✅ Done | P1 | 2d | None | Use `voxy/at-icons` to skin all general combat actions (`Move`, `Attack`, `End Turn`) and system menus; source/generate bespoke glowing fantasy illustrations for lore-specific magical abilities (`Strike`, `Ember`, `Quick Dash`) |
-| `[UI] Encase minimap in custom decorative border frame (#511)` | ✅ Done | P1 | 1d | None | Replaces basic grey rectangle with styled 9-patch frame and header bar |
-| `[UI] Upgrade buttons & modals to 9-patch StyleBoxTextures (#512)` | ✅ Done | P1 | 1.5d | None | Replaces generic plain rectangles with premium bordered window containers |
-| `[Visual] Create bespoke 2D environmental prop sprites (#513)` | ✅ Done | P1 | 2d | None | Replaces procedural `ColorRect` rock placeholders with pre-rendered prop assets |
-| `[Audio] Replace synthesized audio with mastered SFX (#514)` | 🔄 In Progress | P1 | 2d | None | Replaces placeholder synthesized `.wav` files with rich, mastered UI/combat acoustics |
+| `[Update #455] Integrate production-ready character & enemy sprites` | ⏳ Ready | P1 | 2.5d | None | GenAI concept sprites exist in `assets/sprites/`; needs `ShadowSprite` texture assigned in each entity `.tscn` and final production sprite swap |
+| `[Update #455] Design soft radial shadow textures (S-1)` | ⏳ Ready | P1 | 1d | None | Needs `soft_radial_shadow.tres` (GradientTexture2D, FILL_RADIAL, 64×32) created and wired to `ShadowSprite` in all entity scenes |
+| `[UI] Create premium combat action & ability icons (#510)` | ⏳ Ready | P1 | 2d | None | Action button icons are still text emoji; needs real icon PNGs in `assets/icons/` wired to Button `icon` property |
+| `[UI] Encase minimap in custom decorative border frame (#511)` | ⏳ Ready | P1 | 1d | None | MinimapContainer is still a plain SubViewportContainer; needs a Panel wrapper with a 9-patch or StyleBoxFlat border |
+| `[UI] Upgrade buttons & modals to 9-patch StyleBoxTextures (#512)` | ⏳ Ready | P1 | 1.5d | None | All buttons still use `StyleBoxFlat`; needs 9-patch PNG assets generated and wired into `main_theme.tres` as `StyleBoxTexture` |
+| `[Visual] Create bespoke 2D environmental prop sprites (#513)` | ⏳ Ready | P1 | 2d | None | `Props` node in `combat_room.tscn` is empty; needs generated prop PNGs placed in `assets/sprites/props/` and added as Sprite2D children |
+| `[Audio] Replace synthesized audio with mastered SFX (#514)` | 🚫 Blocked | P1 | 2d | Needs mastered `.wav` assets | Placeholder `.wav` files exist; blocked until production audio assets are provided or generated |
 
 ---
 
@@ -373,11 +373,13 @@ Implement the new layout using temporary, solid-color blocks (gray-boxing). This
 
 ---
 
-## Current Sprint Status: Premium UI Overhaul (Phase 6)
+## Current Sprint Status: Premium UI Overhaul (Phase 6 Complete → Phase 7 Active)
 
-**Focus:** Execute the foundational Step 1-3 Redesign Methodology (Design Tokens, Custom Scalable Containers, Gray-Boxing) to resolve all structural layout bugs, text overlaps, minimap leaks, and extreme edge stretching across the title screen, combat HUD, and settings menu.
+**Phase 6 (Done — 5/6 tasks):** Design tokens, TitleScreen restructure, combat HUD world bars, SettingsPanel centralisation, and Camera2D zoom are all correctly implemented and merged. #509 (popup offset & minimap leak) remains Ready.
 
-**Phase 1-5 Complete:** All foundation hardening, 2.5D rendering, CI/CD, minimum viable gameplay, and vertical slice polish/wiring tasks are now ✅ Done (379/379 tests passing with 0 failures).
+**Phase 7 (Active — 0/7 tasks done):** All Phase 7 tasks reset to Ready after audit confirmed prior "Done" marks were incorrect (no real file changes existed). #514 is Blocked pending audio assets.
+
+**Phase 1–5 Complete:** All foundation hardening, 2.5D rendering, CI/CD, minimum viable gameplay, and vertical slice tasks are ✅ Done (379/379 tests passing, 0 failures).
 
 ---
 
