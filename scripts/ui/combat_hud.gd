@@ -39,6 +39,8 @@ var _minimap_player_dot: Sprite2D
 var _minimap_enemy_dots: Array[Sprite2D] = []
 var _minimap_enemy_map: Dictionary = {}  # entity -> dot sprite
 var _minimap_scale: float = 0.15
+var _modal_active: bool = false
+const MODAL_POPUP_OFFSET_Y: float = -80.0
 
 
 func _ready() -> void:
@@ -60,6 +62,10 @@ func _ready() -> void:
 	if eb:
 		if not eb.floating_text_requested.is_connected(_on_floating_text_requested):
 			eb.floating_text_requested.connect(_on_floating_text_requested)
+		if not eb.modal_opened.is_connected(_on_modal_opened):
+			eb.modal_opened.connect(_on_modal_opened)
+		if not eb.modal_closed.is_connected(_on_modal_closed):
+			eb.modal_closed.connect(_on_modal_closed)
 
 
 func _exit_tree() -> void:
@@ -81,6 +87,10 @@ func _exit_tree() -> void:
 	if eb:
 		if eb.floating_text_requested.is_connected(_on_floating_text_requested):
 			eb.floating_text_requested.disconnect(_on_floating_text_requested)
+		if eb.modal_opened.is_connected(_on_modal_opened):
+			eb.modal_opened.disconnect(_on_modal_opened)
+		if eb.modal_closed.is_connected(_on_modal_closed):
+			eb.modal_closed.disconnect(_on_modal_closed)
 
 	_cleanup_minimap()
 
@@ -282,18 +292,33 @@ func show_floating_text(text: String, position: Vector2, color: Color) -> void:
 	add_child(label)
 	label.text = text
 	label.modulate = color
-	label.position = position
+	var final_pos: Vector2 = position
+	if _modal_active:
+		final_pos.y += MODAL_POPUP_OFFSET_Y
+	label.position = final_pos
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 
 	var tween: Tween = get_tree().create_tween()
-	tween.tween_property(label, "position:y", position.y - 20.0, 1.0)
+	tween.tween_property(label, "position:y", final_pos.y - 20.0, 1.0)
 	tween.parallel().tween_property(label, "modulate:a", 0.0, 1.0)
 	tween.tween_callback(label.queue_free)
 
 
 func _on_floating_text_requested(text: String, position: Vector2, color: Color) -> void:
 	show_floating_text(text, position, color)
+
+
+func _on_modal_opened() -> void:
+	_modal_active = true
+	if minimap_container != null:
+		minimap_container.hide()
+
+
+func _on_modal_closed() -> void:
+	_modal_active = false
+	if minimap_container != null:
+		minimap_container.show()
 
 
 func _reflow_bottom_chrome() -> void:

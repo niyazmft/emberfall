@@ -5,7 +5,7 @@ extends Control
 
 signal back_pressed
 
-@onready var _margin_container: MarginContainer = $MarginContainer
+@onready var _margin_container: MarginContainer = $CenterContainer/MarginContainer
 
 @onready var _master_slider: HSlider = %MasterSlider
 @onready var _music_slider: HSlider = %MusicSlider
@@ -26,8 +26,9 @@ signal back_pressed
 @onready var _back_button: Button = %BackButton
 @onready var helpLabel: Label = %HelpLabel
 
-@onready
-var _tab_container: TabContainer = $MarginContainer/VBoxContainer/TabContainer as TabContainer
+@onready var _tab_container: TabContainer = (
+	$CenterContainer/MarginContainer/VBoxContainer/TabContainer as TabContainer
+)
 
 var settingsHelp: Dictionary = {}
 var _bound_callables: Dictionary = {}
@@ -50,7 +51,6 @@ func _ready() -> void:
 	_load_ui_from_settings()
 	_connect_signals()
 	_setupHelpListeners()
-	_style_tab_container()
 	_style_apply_button()
 
 
@@ -299,34 +299,6 @@ func _on_reset_pressed() -> void:
 			var lm: _LayerManager = AutoloadHelper.layer_manager()
 			if lm:
 				lm.add_modal(modal)
-
-
-func _style_tab_container() -> void:
-	## Make the active tab visually distinct so players can tell which
-	## settings category is selected. Uses bright accent for foreground
-	## and muted dark for inactive tabs.
-	if not _tab_container:
-		return
-	# Accent colour used elsewhere in the UI (yellow-gold)
-	var active_bg: Color = Color(0.9, 0.75, 0.2)
-	var active_fg: Color = Color(0.1, 0.1, 0.1)
-	var inactive_bg: Color = Color(0.15, 0.15, 0.15)
-	var inactive_fg: Color = Color(0.6, 0.6, 0.6)
-
-	_tab_container.add_theme_color_override("font_selected_color", active_fg)
-	_tab_container.add_theme_color_override("font_unselected_color", inactive_fg)
-	_tab_container.add_theme_color_override("tab_selected", active_bg)
-	_tab_container.add_theme_color_override("tab_unselected", inactive_bg)
-
-	# Listen to tab changes and force a restyle so Godot re-applies overrides.
-	if not _tab_container.tab_changed.is_connected(_on_tab_changed):
-		_tab_container.tab_changed.connect(_on_tab_changed)
-
-
-func _on_tab_changed(_idx: int) -> void:
-	# Force immediate redraw so theme overrides take effect on the new active tab.
-	if _tab_container:
-		_tab_container.queue_redraw()
 
 
 func _style_apply_button() -> void:
