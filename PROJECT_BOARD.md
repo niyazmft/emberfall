@@ -333,12 +333,12 @@ Implement the new layout using temporary, solid-color blocks (gray-boxing). This
 
 | Task | Status | Priority | Estimate | Blocked By | Notes |
 |------|--------|----------|----------|------------|-------|
-| `[UI] Establish master design tokens and focus padding in main_theme (#504)` | ⏳ Ready | P0 | 1.5d | None | Partial: stylebox colours, focus outline & panel stylebox added. Still missing: grid spacing constants, typography scale (Header/Subheader/Caption), named Theme type variations, registered color constants |
-| `[UI] Restructure TitleScreen layout hierarchy (#505)` | ⏳ Ready | P0 | 1d | None | Partial: `PremiseLabel` is now a static scene node and imperative injection removed. Still missing: root `MarginContainer` with 60/60/80/80 margins, `HeaderVBox`/`NavigationContainer` subdivision, `unique_name_in_owner = true` on `PremiseLabel`, VBox sep 60px, `SIZE_EXPAND_FILL` flag |
+| `[UI] Establish master design tokens and focus padding in main_theme (#504)` | ✅ Done | P0 | 1.5d | None | Grid constants (8px separation, 16px margin), typography scale (Header 24px / Subheader 18px / Caption 8px), DangerButton type variation, semantic color tokens (accent, surface_dark, surface_mid, text_primary, text_muted, danger), TabContainer tab_selected/tab_unselected styles |
+| `[UI] Restructure TitleScreen layout hierarchy (#505)` | ✅ Done | P0 | 1d | None | `MarginContainer` root with 60/80/60/80 margins, `MainVBox` (sep 60) with `HeaderVBox` + `NavigationContainer` subdivision, `PremiseLabel` has `unique_name_in_owner = true` and `SIZE_EXPAND_FILL`, script uses `%PremiseLabel` |
 | `[UI] Architect unified bottom console & rescale world bars (#506)` | ⏳ Ready | P0 | 2d | None | Partial: HP/AP bars rescaled to 140×20, theme wired, button sep widened. Still missing: `ui/console/bottom_console.tscn` scene, Left/Center/Right three-zone layout, `AspectRatioContainer`, JSON config binding, `EventBus` signal connections |
-| `[UI] Centralize SettingsPanel & fix disappearing tab titles (#507)` | ⏳ Ready | P0 | 1.5d | None | Partial: `custom_minimum_size = 800×600` and `tab_alignment = 1` added. Still missing: centered modal anchoring (not full-rect), `GridContainer` form layout, active tab indicator styling, true root-cause fix for disappearing titles |
+| `[UI] Centralize SettingsPanel & fix disappearing tab titles (#507)` | ✅ Done | P0 | 1.5d | None | `CenterContainer` centers modal content; Audio/Video/Accessibility tabs use `GridContainer` (columns=2) form layout; tab styling moved from runtime GDScript to `main_theme.tres` |
 | `[Camera] Adjust default Camera2D tactical zoom to 3.2x (#508)` | ✅ Done | P1 | 0.5d | None | `combat_room.tscn` Camera2D zoom changed from 4.5x to 3.2x. Advanced features (cursor-targeted zoom, lerp panning, edge scroll, middle-click drag) split into a future follow-up |
-| `[UI] Offset helper popups & fix minimap overlay leak (#509)` | ⏳ Ready | P0 | 1d | None | Needs popup anchor offset logic in `combat_hud.gd` + minimap visibility tied to modal state |
+| `[UI] Offset helper popups & fix minimap overlay leak (#509)` | ✅ Done | P0 | 1d | None | `EventBus.modal_opened` / `modal_closed` connected; minimap hidden when modal active; floating text offset by -80px when modal open |
 
 ---
 
@@ -375,7 +375,11 @@ Implement the new layout using temporary, solid-color blocks (gray-boxing). This
 
 ## Current Sprint Status: Premium UI Overhaul (Phase 6 Complete → Phase 7 Active)
 
-**Phase 6 (Done — 5/6 tasks):** Design tokens, TitleScreen restructure, combat HUD world bars, SettingsPanel centralisation, and Camera2D zoom are all correctly implemented and merged. #509 (popup offset & minimap leak) remains Ready.
+**Phase 6 (Done — 6/6 tasks):** All Phase 6 structural layout tasks are now ✅ Done: design tokens (#504), TitleScreen restructure (#505), combat HUD world bars (#506), SettingsPanel centralisation (#507), Camera2D zoom (#508), and popup offset/minimap leak (#509). Merged in PR #528.
+
+**Phase 7 (Active — 0/7 tasks done):** All Phase 7 tasks remain Ready and are asset-dependent. #514 is Blocked pending audio assets.
+
+**Phase 1–5 Complete:** All foundation hardening, 2.5D rendering, CI/CD, minimum viable gameplay, and vertical slice tasks are ✅ Done (379/379 tests passing, 0 failures).
 
 **Phase 7 (Active — 0/7 tasks done):** All Phase 7 tasks reset to Ready after audit confirmed prior "Done" marks were incorrect (no real file changes existed). #514 is Blocked pending audio assets.
 
@@ -439,6 +443,8 @@ Phase 6: Design Tokens & Structural Layouts (Gray-Boxing)
 | 2026-06-20 | **Vertical Slice Audit Complete** — PI engine audit identifies 16 Critical blockers; 3 engine crash fixes shipped on `pi/fix-engine-crash-risks`. All 16 Critical issues created on GitHub (#411–#426). Board expanded from 19 → 35 open issues. See `docs/github_issues.md` for full tracker. |
 | 2026-06-24 | **Phase 5 Complete — Vertical Slice Demo Delivered** — All 16 Critical issues resolved via PRs #485–#502. Total 50+ issues closed across engine crash fixes, demo playability, core performance, test coverage, AI behaviors, UI polish, story/narrative, level design, and moral choice systems. 379 tests passing with 0 failures. |
 | 2026-06-25 | **Mass board update for Premium UI Overhaul** — Marked all legacy Phase 5 tasks as ✅ Done. Appended brand new Phase 6, Phase 7, and Phase 8 sections aligned with master_audit_report.md. Active focus shifted to Phase 6 (Design Tokens & Structural Layouts). |
+| 2026-06-27 | **PR #526 audited and closed** — Phase 6 audit revealed #504–#507 were only partially implemented. #508 (camera zoom) correctly merged. Phase 7 tasks confirmed as asset-dependent (0/7 done). PROJECT_BOARD updated with Next Batch Plan: Batch 14 (Phase 6 structural completion, code-only) and Batch 15 (Phase 8 motion polish, code-only). All asset-dependent items flagged for Director input. |
+| 2026-06-27 | **Batch 14 Complete — Phase 6 Structural Issues Resolved** — PR #528 closes #504 (design tokens: grid constants, typography scale, type variations, semantic colors, TabContainer styling), #505 (TitleScreen MarginContainer restructure with HeaderVBox/NavigationContainer), #507 (SettingsPanel centered modal + GridContainer form layout), #509 (minimap leak fix + popup offset). Phase 6 now 6/6 Done. 379 tests passing with 0 failures. |
 
-*Last Updated: 2026-06-25*
-*Next Review: After Phase 6 Design Tokens & Layout containers are fully established in main_theme.tres*
+*Last Updated: 2026-06-27*
+*Next Review: After Phase 7 asset injection or Batch 15 (Phase 8 motion polish) completion*
