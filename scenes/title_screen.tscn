@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://ddy3r8j1m7n6b"]
+[gd_scene load_steps=5 format=3 uid="uid://ddy3r8j1m7n6b"]
 
 [ext_resource type="Script" path="res://scripts/ui/title_screen.gd" id="1_script"]
 [ext_resource type="Texture2D" uid="uid://blyrn4i3ndjjl" path="res://assets/sprites/keeper_concept.jpg" id="2_bg"]
+[ext_resource type="Shader" path="res://shaders/title_glow.gdshader" id="3_glow"]
 
 [sub_resource type="Gradient" id="Gradient_overlay"]
 colors = PackedColorArray(0.0431373, 0.0470588, 0.0627451, 0.85, 0.0431373, 0.0470588, 0.0627451, 0.5, 0.0431373, 0.0470588, 0.0627451, 0.85)
@@ -9,6 +10,12 @@ offsets = PackedFloat32Array(0, 0.5, 1)
 
 [sub_resource type="GradientTexture1D" id="GradientTexture_overlay"]
 gradient = SubResource("Gradient_overlay")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_glow"]
+shader = ExtResource("3_glow")
+shader_parameter/glow_color = Color(0.9, 0.72, 0.18, 0.6)
+shader_parameter/glow_intensity = 1.0
+shader_parameter/glow_radius = 4.0
 
 [node name="TitleScreen" type="Control"]
 layout_mode = 3
@@ -79,6 +86,7 @@ theme_override_constants/separation = 16
 alignment = 1
 
 [node name="TitleLabel" type="Label" parent="MarginContainer/MainVBox/HeaderVBox"]
+material = SubResource("ShaderMaterial_glow")
 layout_mode = 2
 theme_override_font_sizes/font_size = 72
 text = "EMBERFALL"

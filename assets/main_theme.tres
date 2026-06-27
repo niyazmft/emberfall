@@ -228,3 +228,10 @@ TabContainer/colors/font_selected_color = Color(0.1, 0.1, 0.1, 1)
 TabContainer/colors/font_unselected_color = Color(0.6, 0.6, 0.6, 1)
 TabContainer/styles/tab_selected = SubResource("StyleBoxFlat_tab_sel")
 TabContainer/styles/tab_unselected = SubResource("StyleBoxFlat_tab_unsel")
+
+; --- Button Animation Constants ---
+; Stored as integer percentages * 100 for Godot Theme constant compatibility
+Button/constants/hover_scale = 105
+Button/constants/press_scale = 95
+Button/constants/hover_duration_ms = 150
+Button/constants/press_duration_ms = 50
