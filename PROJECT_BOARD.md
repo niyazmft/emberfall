@@ -333,11 +333,11 @@ Implement the new layout using temporary, solid-color blocks (gray-boxing). This
 
 | Task | Status | Priority | Estimate | Blocked By | Notes |
 |------|--------|----------|----------|------------|-------|
-| `[UI] Establish master design tokens and focus padding in main_theme (#504)` | ✅ Done | P0 | 1.5d | None | `main_theme.tres` updated with semantic colors, focus padding stylebox, upgraded button margins and panel stylebox |
-| `[UI] Restructure TitleScreen layout hierarchy (#505)` | ✅ Done | P0 | 1d | None | `PremiseLabel` now a static scene node in `title_screen.tscn`; imperative injection removed from `_ready()`; VBox separation set to 48px |
-| `[UI] Architect unified bottom console & rescale world bars (#506)` | ✅ Done | P0 | 2d | None | HP/AP bars rescaled to 140×20; action button panel separation widened; `main_theme.tres` wired as `CombatHUD` theme |
-| `[UI] Centralize SettingsPanel & fix disappearing tab titles (#507)` | ✅ Done | P0 | 1.5d | None | `custom_minimum_size` set to 800×600; `tab_alignment = 1` (center) applied in `.tscn` |
-| `[Camera] Adjust default Camera2D tactical zoom to 3.2x (#508)` | ✅ Done | P1 | 0.5d | None | `combat_room.tscn` Camera2D zoom changed from 4.5x to 3.2x |
+| `[UI] Establish master design tokens and focus padding in main_theme (#504)` | ⏳ Ready | P0 | 1.5d | None | Partial: stylebox colours, focus outline & panel stylebox added. Still missing: grid spacing constants, typography scale (Header/Subheader/Caption), named Theme type variations, registered color constants |
+| `[UI] Restructure TitleScreen layout hierarchy (#505)` | ⏳ Ready | P0 | 1d | None | Partial: `PremiseLabel` is now a static scene node and imperative injection removed. Still missing: root `MarginContainer` with 60/60/80/80 margins, `HeaderVBox`/`NavigationContainer` subdivision, `unique_name_in_owner = true` on `PremiseLabel`, VBox sep 60px, `SIZE_EXPAND_FILL` flag |
+| `[UI] Architect unified bottom console & rescale world bars (#506)` | ⏳ Ready | P0 | 2d | None | Partial: HP/AP bars rescaled to 140×20, theme wired, button sep widened. Still missing: `ui/console/bottom_console.tscn` scene, Left/Center/Right three-zone layout, `AspectRatioContainer`, JSON config binding, `EventBus` signal connections |
+| `[UI] Centralize SettingsPanel & fix disappearing tab titles (#507)` | ⏳ Ready | P0 | 1.5d | None | Partial: `custom_minimum_size = 800×600` and `tab_alignment = 1` added. Still missing: centered modal anchoring (not full-rect), `GridContainer` form layout, active tab indicator styling, true root-cause fix for disappearing titles |
+| `[Camera] Adjust default Camera2D tactical zoom to 3.2x (#508)` | ✅ Done | P1 | 0.5d | None | `combat_room.tscn` Camera2D zoom changed from 4.5x to 3.2x. Advanced features (cursor-targeted zoom, lerp panning, edge scroll, middle-click drag) split into a future follow-up |
 | `[UI] Offset helper popups & fix minimap overlay leak (#509)` | ⏳ Ready | P0 | 1d | None | Needs popup anchor offset logic in `combat_hud.gd` + minimap visibility tied to modal state |
 
 ---
