@@ -11,10 +11,12 @@ var _modal_stack: Array[Node] = []
 var _dim_rect: ColorRect
 var _dim_tween: Tween
 var _pp_rect: ColorRect
+var _pause_menu: PauseMenu
 
 
 func _ready() -> void:
 	layer = 100  # Ensure UI is on top
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	_setup_pp_rect()
 	_dim_rect = ColorRect.new()
 	_dim_rect.color = Color(0, 0, 0, 0)
@@ -22,6 +24,35 @@ func _ready() -> void:
 	_dim_rect.mouse_filter = Control.MOUSE_FILTER_STOP
 	_dim_rect.visible = false
 	add_child(_dim_rect)
+
+	var pause_scene: PackedScene = load("res://scenes/ui/pause_menu.tscn") as PackedScene
+	if pause_scene:
+		_pause_menu = pause_scene.instantiate() as PauseMenu
+		add_child(_pause_menu)
+
+
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel"):
+		var current_scene := get_tree().current_scene
+		if current_scene != null and current_scene.name == "TitleScreen":
+			return
+
+		if not _modal_stack.is_empty():
+			var top_modal: Node = _modal_stack.back()
+			if top_modal is SettingsModal:
+				(top_modal as SettingsModal)._on_back_pressed()
+				get_viewport().set_input_as_handled()
+			elif top_modal is _ConfirmModal:
+				(top_modal as _ConfirmModal)._on_cancel_pressed()
+				get_viewport().set_input_as_handled()
+			elif top_modal is _Modal:
+				(top_modal as _Modal).dismiss()
+				get_viewport().set_input_as_handled()
+			return
+
+		if _pause_menu != null:
+			_pause_menu.toggle_pause()
+			get_viewport().set_input_as_handled()
 
 
 func _setup_pp_rect() -> void:
@@ -89,15 +120,41 @@ func _update_dim(show_dim: bool) -> void:
 	if _dim_tween and _dim_tween.is_valid():
 		_dim_tween.kill()
 
-	_dim_tween = create_tween()
+	_dim_tween = create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	_dim_tween.set_parallel(true)
 	var target_alpha: float = 0.5 if show_dim else 0.0
+	var target_blur: float = 3.0 if show_dim else 0.0
+	var start_blur: float = 0.0 if show_dim else 3.0
 
 	if show_dim:
 		_dim_rect.visible = true
+		if _pp_rect != null:
+			_pp_rect.visible = true
+			if _pp_rect.material is ShaderMaterial:
+				var mat := _pp_rect.material as ShaderMaterial
+				_dim_tween.tween_method(
+					func(val: float) -> void: mat.set_shader_parameter("u_blur_amount", val),
+					start_blur,
+					target_blur,
+					0.2
+				)
 		_dim_tween.tween_property(_dim_rect, "color:a", target_alpha, 0.2)
 	else:
 		_dim_tween.tween_property(_dim_rect, "color:a", target_alpha, 0.2)
-		_dim_tween.finished.connect(func() -> void: _dim_rect.visible = false)
+		if _pp_rect != null and _pp_rect.material is ShaderMaterial:
+			var mat := _pp_rect.material as ShaderMaterial
+			_dim_tween.tween_method(
+				func(val: float) -> void: mat.set_shader_parameter("u_blur_amount", val),
+				start_blur,
+				target_blur,
+				0.2
+			)
+		_dim_tween.chain().tween_callback(
+			func() -> void:
+				_dim_rect.visible = false
+				if _pp_rect != null:
+					_pp_rect.visible = false
+		)
 
 
 func is_modal_active() -> bool:

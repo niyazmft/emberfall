@@ -331,16 +331,24 @@ func test_cover_tile_renders_cover_sprite() -> void:
 	add_child(renderer)
 	await get_tree().process_frame
 
-	# Look for a cover sprite with COLOR_COVER modulate
+	# Look for a cover sprite with COLOR_COVER modulate or premium prop texture
 	var found_cover: bool = false
 	for child: Node in renderer.get_children():
 		if child is Sprite2D:
 			var sprite: Sprite2D = child as Sprite2D
-			if (
+			var is_mod_cover: bool = (
 				is_equal_approx(sprite.modulate.r, GridRenderer.COLOR_COVER.r)
 				and is_equal_approx(sprite.modulate.g, GridRenderer.COLOR_COVER.g)
 				and is_equal_approx(sprite.modulate.b, GridRenderer.COLOR_COVER.b)
-			):
+			)
+			var is_premium_prop: bool = (
+				sprite.texture != null
+				and (
+					sprite.texture.resource_path.contains("prop_rock")
+					or sprite.texture.resource_path.contains("prop_broken_pillar")
+				)
+			)
+			if is_mod_cover or is_premium_prop:
 				found_cover = true
 				break
 

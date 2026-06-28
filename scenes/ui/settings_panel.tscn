@@ -4,12 +4,11 @@
 [ext_resource type="PackedScene" uid="uid://c6r2j8w1v4p5m" path="res://scenes/ui/remap_panel.tscn" id="2_remap"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
-bg_color = Color(0.10196, 0.10196, 0.18039, 0.98)
-border_color = Color(0.9, 0.75, 0.2, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
+bg_color = Color(0.10196, 0.10196, 0.18039, 0.0)
+border_width_left = 0
+border_width_top = 0
+border_width_right = 0
+border_width_bottom = 0
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
@@ -50,7 +49,9 @@ theme_override_constants/margin_right = 40
 theme_override_constants/margin_bottom = 40
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/MarginContainer"]
+custom_minimum_size = Vector2(800, 600)
 layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="Label" type="Label" parent="CenterContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -201,10 +202,12 @@ mouse_default_cursor_shape = 2
 [node name="SETTINGS_CONTROLS" type="VBoxContainer" parent="CenterContainer/MarginContainer/VBoxContainer/TabContainer"]
 visible = false
 layout_mode = 2
+size_flags_horizontal = 3
 theme_override_constants/separation = 10
 
 [node name="InputHints" type="HBoxContainer" parent="CenterContainer/MarginContainer/VBoxContainer/TabContainer/SETTINGS_CONTROLS"]
 layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="Label" type="Label" parent="CenterContainer/MarginContainer/VBoxContainer/TabContainer/SETTINGS_CONTROLS/InputHints"]
 layout_mode = 2
@@ -222,8 +225,26 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 
+[node name="HelpPanel" type="PanelContainer" parent="CenterContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HelpLabel" type="Label" parent="CenterContainer/MarginContainer/VBoxContainer/HelpPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 1
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
+theme_override_font_sizes/font_size = 24
+text = " "
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
 [node name="HBoxContainer" type="HBoxContainer" parent="CenterContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
+size_flags_horizontal = 3
 theme_override_constants/separation = 20
 alignment = 1
 
@@ -236,12 +257,3 @@ text = "SETTINGS_RESET_DEFAULTS"
 unique_name_in_owner = true
 layout_mode = 2
 text = "MENU_BACK"
-
-[node name="HelpLabel" type="Label" parent="CenterContainer/MarginContainer/VBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
-theme_override_font_sizes/font_size = 24
-text = " "
-horizontal_alignment = 1
-autowrap_mode = 3

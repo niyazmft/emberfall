@@ -263,14 +263,24 @@ func grid_to_world(p_x: int, p_y: int, p_elevation: int) -> Vector2:
 	return Vector2.ZERO
 
 
+signal occlusion_state_changed(is_occluded: bool)
+
+
 func _setup_status_bar() -> void:
 	if status_bar_scene:
 		_status_bar = status_bar_scene.instantiate() as EntityStatusBar
+		_status_bar.target_entity_node = self
 		add_child(_status_bar)
 		_status_bar.position = Vector2(-32, -60)  # Position above entity
+		if not occlusion_state_changed.is_connected(_status_bar.set_occluded):
+			occlusion_state_changed.connect(_status_bar.set_occluded)
 		if entity:
 			_status_bar.update_hp(entity.hp, entity.hp_max)
 			_status_bar.update_ap(entity.ap, GameConstants.AP_MAX)
+
+
+func set_occluded(is_occluded: bool) -> void:
+	occlusion_state_changed.emit(is_occluded)
 
 
 func _trigger_hit_effects(p_damage: int, p_damage_type: String = "PHYSICAL") -> void:

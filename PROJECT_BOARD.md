@@ -348,13 +348,14 @@ Implement the new layout using temporary, solid-color blocks (gray-boxing). This
 
 | Task | Status | Priority | Estimate | Blocked By | Notes |
 |------|--------|----------|----------|------------|-------|
-| `[Update #455] Integrate production-ready character & enemy sprites` | ⏳ Ready | P1 | 2.5d | None | GenAI concept sprites exist in `assets/sprites/`; needs `ShadowSprite` texture assigned in each entity `.tscn` and final production sprite swap |
-| `[Update #455] Design soft radial shadow textures (S-1)` | ⏳ Ready | P1 | 1d | None | Needs `soft_radial_shadow.tres` (GradientTexture2D, FILL_RADIAL, 64×32) created and wired to `ShadowSprite` in all entity scenes |
-| `[UI] Create premium combat action & ability icons (#510)` | ⏳ Ready | P1 | 2d | None | Action button icons are still text emoji; needs real icon PNGs in `assets/icons/` wired to Button `icon` property |
+| `[Update #455] Integrate production-ready character & enemy sprites` | ✅ Done | P1 | 2.5d | None | Production sprites generated and swapped into `.tscn` scenes; concept art removed |
+| `[Update #455] Design soft radial shadow textures (S-1)` | ✅ Done | P1 | 1d | None | `soft_radial_shadow.tres` (GradientTexture2D, FILL_RADIAL, 64×32) created and wired to `ShadowSprite` in all entity scenes |
+| `[UI] Create premium combat action & ability icons (#510)` | ✅ Done | P1 | 2d | None | Generated and wired premium combat action PNGs (move, attack, end turn) and ability icons (strike, ember, quick dash) in normal, hover, and disabled states |
 | `[UI] Encase minimap in custom decorative border frame (#511)` | ⏳ Ready | P1 | 1d | None | MinimapContainer is still a plain SubViewportContainer; needs a Panel wrapper with a 9-patch or StyleBoxFlat border |
 | `[UI] Upgrade buttons & modals to 9-patch StyleBoxTextures (#512)` | ⏳ Ready | P1 | 1.5d | None | All buttons still use `StyleBoxFlat`; needs 9-patch PNG assets generated and wired into `main_theme.tres` as `StyleBoxTexture` |
-| `[Visual] Create bespoke 2D environmental prop sprites (#513)` | ⏳ Ready | P1 | 2d | None | `Props` node in `combat_room.tscn` is empty; needs generated prop PNGs placed in `assets/sprites/props/` and added as Sprite2D children |
+| `[Visual] Create bespoke 2D environmental prop sprites (#513)` | ✅ Done | P1 | 2d | None | Generated 8 premium environmental prop PNGs in `assets/sprites/props/` and populated `Props` node in `combat_room.tscn` |
 | `[Audio] Replace synthesized audio with mastered SFX (#514)` | 🚫 Blocked | P1 | 2d | Needs mastered `.wav` assets | Placeholder `.wav` files exist; blocked until production audio assets are provided or generated |
+| `[UI] Polish CombatHUD container hierarchy, eliminate frame-sync jitter, and implement occlusion fading (#533)` | 🔄 In Progress | P1 | 3d | None | Enhances CombatHUD layout, eliminates frame-sync jitter, and adds occlusion fading |
 
 ---
 
@@ -377,11 +378,7 @@ Implement the new layout using temporary, solid-color blocks (gray-boxing). This
 
 **Phase 6 (Done — 6/6 tasks):** All Phase 6 structural layout tasks are now ✅ Done: design tokens (#504), TitleScreen restructure (#505), combat HUD world bars (#506), SettingsPanel centralisation (#507), Camera2D zoom (#508), and popup offset/minimap leak (#509). Merged in PR #528.
 
-**Phase 7 (Active — 0/7 tasks done):** All Phase 7 tasks remain Ready and are asset-dependent. #514 is Blocked pending audio assets.
-
-**Phase 1–5 Complete:** All foundation hardening, 2.5D rendering, CI/CD, minimum viable gameplay, and vertical slice tasks are ✅ Done (379/379 tests passing, 0 failures).
-
-**Phase 7 (Active — 0/7 tasks done):** All Phase 7 tasks reset to Ready after audit confirmed prior "Done" marks were incorrect (no real file changes existed). #514 is Blocked pending audio assets.
+**Phase 7 (Active — 4/7 tasks done):** Production sprites (#455), combat icons (#510), environmental props (#513), and soft radial shadows are ✅ Done. Remaining Phase 7 tasks are asset-dependent. #514 is Blocked pending audio assets.
 
 **Phase 1–5 Complete:** All foundation hardening, 2.5D rendering, CI/CD, minimum viable gameplay, and vertical slice tasks are ✅ Done (379/379 tests passing, 0 failures).
 
@@ -445,6 +442,7 @@ Phase 6: Design Tokens & Structural Layouts (Gray-Boxing)
 | 2026-06-25 | **Mass board update for Premium UI Overhaul** — Marked all legacy Phase 5 tasks as ✅ Done. Appended brand new Phase 6, Phase 7, and Phase 8 sections aligned with master_audit_report.md. Active focus shifted to Phase 6 (Design Tokens & Structural Layouts). |
 | 2026-06-27 | **PR #526 audited and closed** — Phase 6 audit revealed #504–#507 were only partially implemented. #508 (camera zoom) correctly merged. Phase 7 tasks confirmed as asset-dependent (0/7 done). PROJECT_BOARD updated with Next Batch Plan: Batch 14 (Phase 6 structural completion, code-only) and Batch 15 (Phase 8 motion polish, code-only). All asset-dependent items flagged for Director input. |
 | 2026-06-27 | **Batch 14 Complete — Phase 6 Structural Issues Resolved** — PR #528 closes #504 (design tokens: grid constants, typography scale, type variations, semantic colors, TabContainer styling), #505 (TitleScreen MarginContainer restructure with HeaderVBox/NavigationContainer), #507 (SettingsPanel centered modal + GridContainer form layout), #509 (minimap leak fix + popup offset). Phase 6 now 6/6 Done. 379 tests passing with 0 failures. |
+| 2026-06-28 | **Phase 7 Premium Asset Injection Started** — Generated production sprites for Keeper, Grunt, Archer, Tank, Boss, and Tileset. Created `soft_radial_shadow.tres` and wired it into `ShadowSprite` across all entity scenes (#455). |
 
-*Last Updated: 2026-06-27*
-*Next Review: After Phase 7 asset injection or Batch 15 (Phase 8 motion polish) completion*
+*Last Updated: 2026-06-28*
+*Next Review: After remaining Phase 7 asset injection or Batch 15 (Phase 8 motion polish) completion*

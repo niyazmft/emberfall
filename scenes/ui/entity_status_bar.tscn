@@ -31,7 +31,7 @@ alignment = 1
 
 [node name="HPBar" type="ProgressBar" parent="VBoxContainer/HPHBox" unique_id=1702522432]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 6)
+custom_minimum_size = Vector2(60, 10)
 layout_mode = 2
 size_flags_horizontal = 3
 value = 50.0
@@ -39,6 +39,7 @@ show_percentage = false
 
 [node name="HPLabel" type="Label" parent="VBoxContainer/HPHBox" unique_id=1702522433]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
 theme_override_font_sizes/font_size = 8
 text = "HP: 25/30"

@@ -1,8 +1,12 @@
 [gd_scene format=3]
 
 [ext_resource type="Theme" path="res://assets/main_theme.tres" id="0_theme"]
+[ext_resource type="FontFile" path="res://assets/fonts/Cinzel-Bold.ttf" id="cinzel_bold"]
 
 [ext_resource type="Script" path="res://scripts/ui/combat_hud.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_move_normal.png" id="icon_move"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_attack_normal.png" id="icon_attack"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_end_turn_normal.png" id="icon_end_turn"]
 [ext_resource type="PackedScene" path="res://scenes/ui/bottom_console.tscn" id="5_bottom"]
 [ext_resource type="FontFile" path="res://assets/fonts/PressStart2P-Regular.ttf" id="1_wc2to"]
 [ext_resource type="PackedScene" path="res://scenes/ui/hotbar.tscn" id="2_hotbar"]
@@ -76,6 +80,7 @@ corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
 [node name="CombatHUD" type="Control" unique_id=1694207348]
+texture_filter = 2
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -97,34 +102,45 @@ theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 16
 theme_override_constants/margin_bottom = 16
 
-[node name="TopInfo" type="VBoxContainer" parent="MarginContainer" unique_id=1609407671]
+[node name="MasterVBox" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="TopInfo" type="VBoxContainer" parent="MarginContainer/MasterVBox" unique_id=1609407671]
 layout_mode = 2
 size_flags_vertical = 0
 
-[node name="TurnLabel" type="Label" parent="MarginContainer/TopInfo" unique_id=2124916337]
+[node name="TurnLabel" type="Label" parent="MarginContainer/MasterVBox/TopInfo" unique_id=2124916337]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_fonts/font = ExtResource("cinzel_bold")
 text = "Your Turn"
 horizontal_alignment = 1
 
-[node name="RoundLabel" type="Label" parent="MarginContainer/TopInfo" unique_id=2087559899]
+[node name="RoundLabel" type="Label" parent="MarginContainer/MasterVBox/TopInfo" unique_id=2087559899]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Round 1"
 horizontal_alignment = 1
 
-[node name="BottomChrome" type="VBoxContainer" parent="MarginContainer" unique_id=1692163553]
+[node name="MiddleSpacer" type="Control" parent="MarginContainer/MasterVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="BottomSlot" type="MarginContainer" parent="MarginContainer/MasterVBox"]
+layout_mode = 2
+
+[node name="BottomChrome" type="VBoxContainer" parent="MarginContainer/MasterVBox/BottomSlot" unique_id=1692163553]
 layout_mode = 2
 size_flags_vertical = 8
 theme_override_constants/separation = 8
 alignment = 2
 
-[node name="StatusIcons" type="HBoxContainer" parent="MarginContainer/BottomChrome" unique_id=1163043075]
+[node name="StatusIcons" type="HBoxContainer" parent="MarginContainer/MasterVBox/BottomSlot/BottomChrome" unique_id=1163043075]
 layout_mode = 2
 theme_override_constants/separation = 10
 alignment = 1
 
-[node name="HPBar" type="ProgressBar" parent="MarginContainer/BottomChrome/StatusIcons" unique_id=14819860]
+[node name="HPBar" type="ProgressBar" parent="MarginContainer/MasterVBox/BottomSlot/BottomChrome/StatusIcons" unique_id=14819860]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(140, 20)
 layout_mode = 2
@@ -134,12 +150,12 @@ theme_override_styles/fill = SubResource("StyleBoxFlat_hp_fill")
 value = 50.0
 show_percentage = false
 
-[node name="HPLabel" type="Label" parent="MarginContainer/BottomChrome/StatusIcons" unique_id=1114876940]
+[node name="HPLabel" type="Label" parent="MarginContainer/MasterVBox/BottomSlot/BottomChrome/StatusIcons" unique_id=1114876940]
 unique_name_in_owner = true
 layout_mode = 2
 text = "0 / 0"
 
-[node name="APBar" type="ProgressBar" parent="MarginContainer/BottomChrome/StatusIcons" unique_id=1352002314]
+[node name="APBar" type="ProgressBar" parent="MarginContainer/MasterVBox/BottomSlot/BottomChrome/StatusIcons" unique_id=1352002314]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(140, 20)
 layout_mode = 2
@@ -149,44 +165,56 @@ theme_override_styles/fill = SubResource("StyleBoxFlat_ap_fill")
 value = 50.0
 show_percentage = false
 
-[node name="APLabel" type="Label" parent="MarginContainer/BottomChrome/StatusIcons" unique_id=660805588]
+[node name="APLabel" type="Label" parent="MarginContainer/MasterVBox/BottomSlot/BottomChrome/StatusIcons" unique_id=660805588]
 unique_name_in_owner = true
 layout_mode = 2
 text = "0 / 0"
 
-[node name="ActionButtonsPanel" type="PanelContainer" parent="MarginContainer/BottomChrome" unique_id=893368708]
+[node name="ActionButtonsPanel" type="PanelContainer" parent="MarginContainer/MasterVBox/BottomSlot/BottomChrome" unique_id=893368708]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_btn_panel")
 
-[node name="ActionButtons" type="HBoxContainer" parent="MarginContainer/BottomChrome/ActionButtonsPanel" unique_id=893368709]
+[node name="ActionButtons" type="HBoxContainer" parent="MarginContainer/MasterVBox/BottomSlot/BottomChrome/ActionButtonsPanel" unique_id=893368709]
 layout_mode = 2
 theme_override_constants/separation = 24
 alignment = 1
 
-[node name="MoveButton" type="Button" parent="MarginContainer/BottomChrome/ActionButtonsPanel/ActionButtons" unique_id=233566378]
+[node name="MoveButton" type="Button" parent="MarginContainer/MasterVBox/BottomSlot/BottomChrome/ActionButtonsPanel/ActionButtons" unique_id=233566378]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(110, 36)
 layout_mode = 2
 text = "⬆ Move"
+icon = ExtResource("icon_move")
+expand_icon = true
 
-[node name="AttackButton" type="Button" parent="MarginContainer/BottomChrome/ActionButtonsPanel/ActionButtons" unique_id=758992100]
+[node name="AttackButton" type="Button" parent="MarginContainer/MasterVBox/BottomSlot/BottomChrome/ActionButtonsPanel/ActionButtons" unique_id=758992100]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(110, 36)
 layout_mode = 2
 text = "⚔ Attack"
+icon = ExtResource("icon_attack")
+expand_icon = true
 
-[node name="EndTurnButton" type="Button" parent="MarginContainer/BottomChrome/ActionButtonsPanel/ActionButtons" unique_id=185299671]
+[node name="EndTurnButton" type="Button" parent="MarginContainer/MasterVBox/BottomSlot/BottomChrome/ActionButtonsPanel/ActionButtons" unique_id=185299671]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(110, 36)
 layout_mode = 2
 text = "✓ End Turn"
+icon = ExtResource("icon_end_turn")
+expand_icon = true
 
-[node name="Prompts" type="Label" parent="MarginContainer/BottomChrome" unique_id=490054073]
+[node name="Prompts" type="Label" parent="MarginContainer/MasterVBox/BottomSlot/BottomChrome" unique_id=490054073]
 layout_mode = 2
 text = "SELECT ACTION"
 horizontal_alignment = 1
 
-[node name="Hotbar" type="Control" parent="MarginContainer/BottomChrome" unique_id=2049820780 instance=ExtResource("2_hotbar")]
+[node name="Hotbar" type="Control" parent="MarginContainer/MasterVBox/BottomSlot/BottomChrome" unique_id=2049820780 instance=ExtResource("2_hotbar")]
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 script = ExtResource("3_3too6")
+
+[node name="BottomConsole" parent="MarginContainer/MasterVBox/BottomSlot" instance=ExtResource("5_bottom")]
+layout_mode = 2
 
 [node name="TutorialOverlay" parent="." instance=ExtResource("4_tutorial")]
 unique_name_in_owner = true
@@ -196,39 +224,3 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-
-[node name="MinimapBorder" type="Panel" parent="."]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -136.0
-offset_top = -136.0
-offset_right = -16.0
-offset_bottom = -16.0
-grow_horizontal = 0
-grow_vertical = 0
-
-[node name="MinimapContainer" type="SubViewportContainer" parent="MinimapBorder"]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="SubViewport" type="SubViewport" parent="MinimapBorder/MinimapContainer"]
-handle_input_locally = false
-size = Vector2i(120, 120)
-
-[node name="Camera2D" type="Camera2D" parent="MinimapBorder/MinimapContainer/SubViewport"]
-anchor_mode = 0
-position = Vector2(60, 60)
-
-[node name="BottomConsole" parent="." instance=ExtResource("5_bottom")]
-layout_mode = 1
-anchors_preset = 12

@@ -10,11 +10,12 @@ var _turn_manager: TurnManager
 var _combat_input: CombatInput
 
 @onready var margin_container: MarginContainer = $MarginContainer
-@onready var bottom_chrome: VBoxContainer = $MarginContainer/BottomChrome
-@onready var hotbar: Control = $MarginContainer/BottomChrome/Hotbar
-@onready var prompts: Label = $MarginContainer/BottomChrome/Prompts
-@onready var status_icons: Control = $MarginContainer/BottomChrome/StatusIcons
-@onready var action_buttons: Control = $MarginContainer/BottomChrome/ActionButtonsPanel
+@onready var bottom_chrome: VBoxContainer = $MarginContainer/MasterVBox/BottomSlot/BottomChrome
+@onready var hotbar: Control = $MarginContainer/MasterVBox/BottomSlot/BottomChrome/Hotbar
+@onready var prompts: Label = $MarginContainer/MasterVBox/BottomSlot/BottomChrome/Prompts
+@onready var status_icons: Control = $MarginContainer/MasterVBox/BottomSlot/BottomChrome/StatusIcons
+@onready
+var action_buttons: Control = $MarginContainer/MasterVBox/BottomSlot/BottomChrome/ActionButtonsPanel
 @onready var tutorial_overlay: _TutorialOverlay = %TutorialOverlay
 
 # HP/AP Display
@@ -32,9 +33,9 @@ var _combat_input: CombatInput
 @onready var turn_label: Label = %TurnLabel
 @onready var round_label: Label = %RoundLabel
 
-# Minimap
-@onready var minimap_container: SubViewportContainer = $MinimapBorder/MinimapContainer
-@onready var bottom_console: _BottomConsole = $BottomConsole
+# Minimap (Disabled/Removed)
+var minimap_container: SubViewportContainer = null
+@onready var bottom_console: _BottomConsole = $MarginContainer/MasterVBox/BottomSlot/BottomConsole
 var _minimap_grid: GridRenderer
 var _minimap_player_dot: Sprite2D
 var _minimap_enemy_dots: Array[Sprite2D] = []
@@ -138,6 +139,8 @@ func setup(player_entity: Entity, turn_manager: TurnManager, combat_input: Comba
 	# Wire bottom console
 	if bottom_console != null:
 		bottom_console.setup(player_entity)
+		if bottom_chrome != null:
+			bottom_chrome.hide()
 
 	# Apply button micro-animations
 	var animator: _ButtonAnimator = _ButtonAnimator.new()

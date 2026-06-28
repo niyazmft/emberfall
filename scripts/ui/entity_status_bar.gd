@@ -8,6 +8,7 @@ extends Control
 var _lerp_speed: float = 10.0
 var _target_hp: float = 0.0
 var _max_hp: int = 1
+var target_entity_node: Node2D = null
 
 @onready var hp_bar: ProgressBar = %HPBar
 @onready var hp_label: Label = %HPLabel
@@ -15,8 +16,15 @@ var _max_hp: int = 1
 
 
 func _ready() -> void:
+	process_priority = 100
 	_load_config()
 	_style_hp_bar()
+
+
+func set_occluded(is_occluded: bool) -> void:
+	var tween: Tween = create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	var target_alpha: float = 0.15 if is_occluded else 1.0
+	tween.tween_property(self, "modulate:a", target_alpha, 0.25)
 
 
 func _load_config() -> void:
@@ -44,7 +52,7 @@ func _style_hp_bar() -> void:
 	bg_style.corner_radius_top_right = 3
 	bg_style.corner_radius_bottom_right = 3
 	bg_style.corner_radius_bottom_left = 3
-	hp_bar.add_theme_stylebox_override("bg", bg_style)
+	hp_bar.add_theme_stylebox_override("background", bg_style)
 
 	# Fill style will be set dynamically in _process based on HP percentage
 	var fill_style: StyleBoxFlat = StyleBoxFlat.new()
@@ -52,12 +60,20 @@ func _style_hp_bar() -> void:
 	fill_style.corner_radius_top_right = 2
 	fill_style.corner_radius_bottom_right = 2
 	fill_style.corner_radius_bottom_left = 2
-	hp_bar.add_theme_stylebox_override("fg", fill_style)
+	hp_bar.add_theme_stylebox_override("fill", fill_style)
 
 
 func _process(delta: float) -> void:
 	if hp_bar == null:
 		return
+	if is_instance_valid(target_entity_node):
+		var viewport: Viewport = get_viewport()
+		var camera: Camera2D = viewport.get_camera_2d() if viewport else null
+		if camera != null and get_parent() is CanvasLayer:
+			position = camera.unproject_position(
+				target_entity_node.global_position + Vector2(-32, -60)
+			)
+
 	if DeterministicMath.absf(hp_bar.value - _target_hp) > 0.1:
 		hp_bar.value = lerpf(hp_bar.value, _target_hp, _lerp_speed * delta)
 	else:
@@ -84,7 +100,7 @@ func _update_hp_color() -> void:
 		# High HP: green
 		fill_color = Color(0.2, 0.85, 0.25)
 
-	var fg_style: StyleBoxFlat = hp_bar.get_theme_stylebox("fg") as StyleBoxFlat
+	var fg_style: StyleBoxFlat = hp_bar.get_theme_stylebox("fill") as StyleBoxFlat
 	if fg_style != null and fg_style.bg_color != fill_color:
 		fg_style.bg_color = fill_color
 

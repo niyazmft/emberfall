@@ -24,6 +24,22 @@ var _hover_sprite: Sprite2D
 var _hovered_tile: Vector2i = Vector2i(-1, -1)
 var _diamond_tex: Texture2D
 
+var _prop_rock: Texture2D = load("res://assets/sprites/props/prop_rock.png") as Texture2D
+var _prop_broken_pillar: Texture2D = (
+	load("res://assets/sprites/props/prop_broken_pillar.png") as Texture2D
+)
+var _prop_cracked_tile: Texture2D = (
+	load("res://assets/sprites/props/prop_cracked_tile.png") as Texture2D
+)
+var _prop_debris: Texture2D = load("res://assets/sprites/props/prop_debris.png") as Texture2D
+var _prop_burnt_wood: Texture2D = (
+	load("res://assets/sprites/props/prop_burnt_wood.png") as Texture2D
+)
+var _prop_crystal: Texture2D = load("res://assets/sprites/props/prop_crystal.png") as Texture2D
+var _prop_scattered_bones: Texture2D = (
+	load("res://assets/sprites/props/prop_scattered_bones.png") as Texture2D
+)
+
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
@@ -173,19 +189,55 @@ func _render_tile(x: int, y: int, tile: TacTileData) -> void:
 		add_child(sprite)
 		_tile_sprites.append(sprite)
 
-	# 2. Cover Visual (Greybox)
+	# 2. Cover Visual (Greybox -> Premium Props)
 	if tile.cover != TacTileData.CoverType.NONE:
 		var cover_sprite: Sprite2D = Sprite2D.new()
-		cover_sprite.texture = _diamond_tex
-		cover_sprite.scale = Vector2(0.4, 0.4)
-		cover_sprite.modulate = COLOR_COVER
+		var is_real_prop: bool = false
+		if tile_seed % 2 == 0 and _prop_rock != null:
+			cover_sprite.texture = _prop_rock
+			cover_sprite.scale = Vector2(0.5, 0.5)
+			cover_sprite.offset = Vector2(0, -16)
+			is_real_prop = true
+		elif _prop_broken_pillar != null:
+			cover_sprite.texture = _prop_broken_pillar
+			cover_sprite.scale = Vector2(0.5, 0.5)
+			cover_sprite.offset = Vector2(0, -16)
+			is_real_prop = true
+		else:
+			cover_sprite.texture = _diamond_tex
+			cover_sprite.scale = Vector2(0.4, 0.4)
+			cover_sprite.modulate = COLOR_COVER
 
 		# Position on top of the highest terrace
 		var pos: Vector2 = _grid_to_world(x, y, elev_val)
-		pos.y -= 4.0  # Floating slightly above
+		if not is_real_prop:
+			pos.y -= 4.0  # Floating slightly above
 		cover_sprite.position = pos
 		add_child(cover_sprite)
 		_tile_sprites.append(cover_sprite)
+	elif not _grid_system.has_oil_tile(x, y):
+		# Deterministically sprinkle floor detail props (cracked tiles, debris, burnt wood, bones) on empty tiles
+		var detail_val: int = tile_seed % 100
+		var detail_tex: Texture2D = null
+		if detail_val < 8 and _prop_cracked_tile != null:
+			detail_tex = _prop_cracked_tile
+		elif detail_val >= 8 and detail_val < 15 and _prop_debris != null:
+			detail_tex = _prop_debris
+		elif detail_val >= 15 and detail_val < 20 and _prop_burnt_wood != null:
+			detail_tex = _prop_burnt_wood
+		elif detail_val >= 20 and detail_val < 24 and _prop_scattered_bones != null:
+			detail_tex = _prop_scattered_bones
+		elif detail_val >= 24 and detail_val < 27 and _prop_crystal != null:
+			detail_tex = _prop_crystal
+
+		if detail_tex != null:
+			var detail_sprite: Sprite2D = Sprite2D.new()
+			detail_sprite.texture = detail_tex
+			detail_sprite.scale = Vector2(0.45, 0.45)
+			detail_sprite.position = _grid_to_world(x, y, elev_val)
+			detail_sprite.modulate = Color(0.9, 0.9, 0.9, 0.85)
+			add_child(detail_sprite)
+			_tile_sprites.append(detail_sprite)
 
 	# 3. Elemental Effects (Oil)
 	if _grid_system.has_oil_tile(x, y):

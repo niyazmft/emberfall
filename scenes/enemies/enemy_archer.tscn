@@ -2,8 +2,9 @@
 
 [ext_resource type="Script" path="res://scripts/entities/enemies/enemy_archer.gd" id="2_archer_script"]
 [ext_resource type="Script" path="res://scripts/visual/entity_visual_proxy.gd" id="2_hs3bi"]
-[ext_resource type="Texture2D" path="res://assets/sprites/archer_concept.png" id="3_48pmb"]
+[ext_resource type="Texture2D" path="res://assets/sprites/archer_sprite.png" id="3_48pmb"]
 [ext_resource type="Script" path="res://scripts/ai/archer_ai.gd" id="3_archer_ai"]
+[ext_resource type="Texture2D" path="res://assets/sprites/soft_radial_shadow.tres" id="shadow_tex"]
 [ext_resource type="Script" path="res://scripts/entities/apparition_renderer.gd" id="4_jco3c"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_1"]
@@ -22,10 +23,14 @@ shadow_sprite = NodePath("ShadowSprite")
 height_indicator = NodePath("HeightIndicator")
 
 [node name="BaseSprite" type="Sprite2D" parent="EntityVisualProxy" unique_id=1047189592]
-scale = Vector2(0.03125, 0.046875)
+scale = Vector2(0.22, 0.22)
 texture = ExtResource("3_48pmb")
+texture_filter = 2
+region_enabled = true
+region_rect = Rect2(16, 16, 160, 160)
 
 [node name="ShadowSprite" type="Sprite2D" parent="EntityVisualProxy" unique_id=1689580937]
+texture = ExtResource("shadow_tex")
 
 [node name="HeightIndicator" type="ColorRect" parent="EntityVisualProxy" unique_id=1341823956]
 offset_left = -16.0

@@ -6,7 +6,7 @@ extends Control
 
 signal settings_requested
 
-@onready var margin_container: MarginContainer = $MarginContainer
+@onready var margin_container: MarginContainer = get_node_or_null("MarginContainer")
 @onready var _resume_button: Button = %ResumeButton
 @onready var _restart_button: Button = %RestartButton
 @onready var _settings_button: Button = %SettingsButton
@@ -48,7 +48,7 @@ func _on_safe_area_changed(_rect: Rect2) -> void:
 
 func _apply_safe_area() -> void:
 	var sz: _SafeZoneManager = AutoloadHelper.safe_zone_manager()
-	if sz == null:
+	if sz == null or margin_container == null:
 		return
 	var margins: Dictionary = sz.get_safe_margins() as Dictionary
 	margin_container.add_theme_constant_override("margin_left", int(margins.get("left", 0)))

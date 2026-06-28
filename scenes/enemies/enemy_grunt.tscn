@@ -2,8 +2,9 @@
 
 [ext_resource type="Script" path="res://scripts/visual/entity_visual_proxy.gd" id="2_4awob"]
 [ext_resource type="Script" path="res://scripts/entities/enemies/enemy_grunt.gd" id="2_grunt_script"]
-[ext_resource type="Texture2D" path="res://assets/sprites/grunt_concept.png" id="3_6xajn"]
+[ext_resource type="Texture2D" path="res://assets/sprites/grunt_sprite.png" id="3_6xajn"]
 [ext_resource type="Script" path="res://scripts/entities/apparition_renderer.gd" id="4_764eg"]
+[ext_resource type="Texture2D" path="res://assets/sprites/soft_radial_shadow.tres" id="shadow_tex"]
 [ext_resource type="Script" path="res://scripts/ai/simple_ai.gd" id="5_b7jfr"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_1"]
@@ -21,10 +22,14 @@ shadow_sprite = NodePath("ShadowSprite")
 height_indicator = NodePath("HeightIndicator")
 
 [node name="BaseSprite" type="Sprite2D" parent="EntityVisualProxy" unique_id=1708806959]
-scale = Vector2(0.03125, 0.046875)
+scale = Vector2(0.22, 0.22)
 texture = ExtResource("3_6xajn")
+texture_filter = 2
+region_enabled = true
+region_rect = Rect2(16, 16, 160, 160)
 
 [node name="ShadowSprite" type="Sprite2D" parent="EntityVisualProxy" unique_id=2142806798]
+texture = ExtResource("shadow_tex")
 
 [node name="HeightIndicator" type="ColorRect" parent="EntityVisualProxy" unique_id=761115061]
 offset_left = -16.0

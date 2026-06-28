@@ -73,7 +73,9 @@ enabled=PackedStringArray("res://addons/gdUnit4/plugin.cfg", "res://addons/gdscr
 [gui]
 
 theme/custom="res://main_theme.tres"
-theme/custom_font="res://assets/fonts/PressStart2P-Regular.ttf"
+theme/custom_font="uid://te0wij1gtn2k"
+theme/default_font_subpixel_positioning=1
+theme/default_font_multichannel_signed_distance_field=true
 
 [input]
 
@@ -141,3 +143,4 @@ combat_end_turn={
 
 textures/canvas_textures/default_texture_filter=0
 textures/vram_compression/import_etc2_astc=true
+environment/default_clear_color=Color(0.0431, 0.0471, 0.0627, 1)
