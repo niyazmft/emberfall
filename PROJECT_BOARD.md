@@ -355,6 +355,7 @@ Implement the new layout using temporary, solid-color blocks (gray-boxing). This
 | `[UI] Upgrade buttons & modals to 9-patch StyleBoxTextures (#512)` | ⏳ Ready | P1 | 1.5d | None | All buttons still use `StyleBoxFlat`; needs 9-patch PNG assets generated and wired into `main_theme.tres` as `StyleBoxTexture` |
 | `[Visual] Create bespoke 2D environmental prop sprites (#513)` | ✅ Done | P1 | 2d | None | Generated 8 premium environmental prop PNGs in `assets/sprites/props/` and populated `Props` node in `combat_room.tscn` |
 | `[Audio] Replace synthesized audio with mastered SFX (#514)` | 🚫 Blocked | P1 | 2d | Needs mastered `.wav` assets | Placeholder `.wav` files exist; blocked until production audio assets are provided or generated |
+| `[UI] Polish CombatHUD container hierarchy, eliminate frame-sync jitter, and implement occlusion fading (#533)` | 🔄 In Progress | P1 | 3d | None | Enhances CombatHUD layout, eliminates frame-sync jitter, and adds occlusion fading |
 
 ---
 

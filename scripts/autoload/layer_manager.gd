@@ -89,15 +89,22 @@ func _update_dim(show_dim: bool) -> void:
 	if _dim_tween and _dim_tween.is_valid():
 		_dim_tween.kill()
 
-	_dim_tween = create_tween()
+	_dim_tween = create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	var target_alpha: float = 0.5 if show_dim else 0.0
 
 	if show_dim:
 		_dim_rect.visible = true
+		if _pp_rect != null:
+			_pp_rect.visible = true
 		_dim_tween.tween_property(_dim_rect, "color:a", target_alpha, 0.2)
 	else:
 		_dim_tween.tween_property(_dim_rect, "color:a", target_alpha, 0.2)
-		_dim_tween.finished.connect(func() -> void: _dim_rect.visible = false)
+		_dim_tween.finished.connect(
+			func() -> void:
+				_dim_rect.visible = false
+				if _pp_rect != null:
+					_pp_rect.visible = false
+		)
 
 
 func is_modal_active() -> bool:
