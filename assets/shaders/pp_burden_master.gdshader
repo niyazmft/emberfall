@@ -17,6 +17,7 @@ global uniform sampler2D u_burden_scratch_buffer;
 
 // Godot 4 Screen Texture
 uniform sampler2D SCREEN_TEXTURE : hint_screen_texture, filter_linear_mipmap;
+uniform float u_blur_amount : hint_range(0.0, 5.0) = 0.0;
 
 // --- Vignette Uniforms ---
 group_uniforms Vignette_Shape;
@@ -97,7 +98,7 @@ vec3 apply_cvd(vec3 colour, int mode) {
 }
 
 void fragment() {
-	vec4 screen_col = texture(SCREEN_TEXTURE, SCREEN_UV);
+	vec4 screen_col = textureLod(SCREEN_TEXTURE, SCREEN_UV, u_blur_amount);
 	vec3 working_col = screen_col.rgb;
 
 	// 1. Burden Post-Process Stack

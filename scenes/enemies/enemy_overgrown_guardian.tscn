@@ -15,7 +15,7 @@ script = ExtResource("2_boss_script")
 ai_controller = NodePath("SimpleAI")
 visual_proxy = NodePath("EntityVisualProxy")
 debug_color = Color(0.2, 0.8, 0.2, 1)
-visual_scale = 1.5
+visual_scale = 1.0
 
 [node name="EntityVisualProxy" type="Node2D" parent="." node_paths=PackedStringArray("base_sprite", "shadow_sprite", "height_indicator")]
 script = ExtResource("2_dnuh1")
@@ -24,9 +24,11 @@ shadow_sprite = NodePath("ShadowSprite")
 height_indicator = NodePath("HeightIndicator")
 
 [node name="BaseSprite" type="Sprite2D" parent="EntityVisualProxy"]
-scale = Vector2(0.35, 0.35)
+scale = Vector2(0.22, 0.22)
 texture_filter = 2
 texture = ExtResource("3_guardian")
+region_enabled = true
+region_rect = Rect2(16, 16, 160, 160)
 
 [node name="ShadowSprite" type="Sprite2D" parent="EntityVisualProxy"]
 texture = ExtResource("shadow_tex")

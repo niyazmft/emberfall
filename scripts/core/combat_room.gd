@@ -196,7 +196,7 @@ func _setup_turn_manager() -> void:
 func _spawn_props(room_data: Dictionary) -> void:
 	"""Spawn purely visual environmental props using deterministic seed placement."""
 	var props_node: Node2D = $Environment/Props as Node2D
-	if props_node == null:
+	if props_node == null or entity_container == null:
 		return
 
 	# Clear existing props
@@ -208,7 +208,7 @@ func _spawn_props(room_data: Dictionary) -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = seed_val
 
-	# Spawn 2-3 rock/debris placeholders at static grid locations
+	# Spawn 2-3 rock/debris placeholders at static grid locations (for legacy Environment/Props tests)
 	var prop_count: int = rng.randi_range(2, 3)
 	for i: int in range(prop_count):
 		var gx: int = rng.randi_range(2, 9)
@@ -223,6 +223,28 @@ func _spawn_props(room_data: Dictionary) -> void:
 		rock.color = Color(0.4, 0.38, 0.36, 1.0)
 		rock.position = pos - Vector2(4, 3)
 		props_node.add_child(rock)
+
+	var pillar_tex: Texture2D = (
+		load("res://assets/sprites/props/prop_broken_pillar.png") as Texture2D
+	)
+	var rock_tex: Texture2D = load("res://assets/sprites/props/prop_rock.png") as Texture2D
+
+	# Spawn 3-5 tall environmental props in entity_container for YSort occlusion testing
+	var tall_count: int = rng.randi_range(3, 5)
+	for i: int in range(tall_count):
+		var gx: int = rng.randi_range(2, 9)
+		var gy: int = rng.randi_range(2, 9)
+		var pos: Vector2 = (
+			grid_renderer._grid_to_world(gx, gy, 0) if grid_renderer else Vector2(gx * 32, gy * 16)
+		)
+
+		var prop: Sprite2D = Sprite2D.new()
+		prop.name = "Prop_%d" % i
+		prop.texture = pillar_tex if i % 2 == 0 and pillar_tex != null else rock_tex
+		prop.position = pos
+		prop.scale = Vector2(0.4, 0.4)
+		prop.offset = Vector2(0, -32)  # Offset upwards so base aligns with YSort position
+		entity_container.add_child(prop)
 
 
 func _create_enemies_node() -> void:
@@ -330,7 +352,7 @@ func trigger_camera_shake(intensity: float = CAMERA_SHAKE_MAX_OFFSET) -> void:
 
 func _setup_camera() -> void:
 	# Camera centered on grid (approximate center of 12x12 grid)
-	camera.zoom = Vector2(1.2, 1.2)
+	camera.zoom = Vector2(3.2, 3.2)
 	if grid_renderer:
 		camera.position = grid_renderer.grid_to_world(5, 5, 0)
 

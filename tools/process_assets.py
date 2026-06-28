@@ -1,187 +1,210 @@
 import os
+import glob
+import math
 from PIL import Image, ImageEnhance, ImageDraw
 
 BRAIN_DIR = "/Users/niyaz/.gemini/antigravity-cli/brain/b97e40a6-50ba-48f4-972b-fb045cb11188"
-ASSETS_DIR = "/Volumes/external-hd/workspace/emberfall/assets"
-SPRITES_DIR = os.path.join(ASSETS_DIR, "sprites")
-PROPS_DIR = os.path.join(SPRITES_DIR, "props")
-ICONS_DIR = os.path.join(ASSETS_DIR, "icons")
+REPO_DIR = "/Volumes/external-hd/workspace/emberfall"
 
-os.makedirs(SPRITES_DIR, exist_ok=True)
-os.makedirs(PROPS_DIR, exist_ok=True)
-os.makedirs(ICONS_DIR, exist_ok=True)
+def get_latest_artifact(prefix):
+    files = glob.glob(os.path.join(BRAIN_DIR, f"*{prefix}*.jpg")) + glob.glob(os.path.join(BRAIN_DIR, f"*{prefix}*.png"))
+    if not files:
+        print(f"Warning: No artifact found for {prefix}")
+        return None
+    # Sort by modified time to get the latest
+    files.sort(key=os.path.getmtime, reverse=True)
+    return files[0]
 
-# 1. Process Entity Sprites
-entity_map = {
-    "keeper_sprite.png": ("keeper_isometric_sprite_1782503587192.jpg", (256, 256)),
-    "grunt_sprite.png": ("grunt_isometric_sprite_1782503595608.jpg", (256, 256)),
-    "archer_sprite.png": ("archer_isometric_sprite_1782503603535.jpg", (256, 256)),
-    "tank_sprite.png": ("tank_isometric_sprite_1782503612146.jpg", (256, 256)),
-    "mage_sprite.png": ("mage_sprite_1782651387744.jpg", (256, 256)),
-    "overgrown_guardian_sprite.png": ("overgrown_guardian_sprite_1782651395656.jpg", (320, 320)),
-    "crystal_sentinel_sprite.png": ("crystal_sentinel_sprite_1782651404090.jpg", (320, 320)),
-    "industrial_overseer_sprite.png": ("industrial_overseer_sprite_1782651414004.jpg", (320, 320)),
-    "boss_sprite.png": ("boss_isometric_sprite_1782647027464.jpg", (320, 320)),
-    "tileset_production.png": ("production_tileset_1782647036202.jpg", (512, 512)),
-}
+def remove_green_bg(img):
+    img = img.convert("RGBA")
+    datas = img.getdata()
+    new_data = []
+    for item in datas:
+        # Chroma key green detection: high green, lower red/blue
+        if item[1] > 150 and item[0] < 120 and item[2] < 120:
+            new_data.append((255, 255, 255, 0))
+        else:
+            new_data.append(item)
+    img.putdata(new_data)
+    return img
 
-for out_name, (src_name, size) in entity_map.items():
-    src_path = os.path.join(BRAIN_DIR, src_name)
-    if os.path.exists(src_path):
-        img = Image.open(src_path).convert("RGBA")
-        img = img.resize(size, Image.Resampling.LANCZOS)
-        img.save(os.path.join(SPRITES_DIR, out_name), "PNG")
-        print(f"Saved sprite: {out_name}")
+def remove_black_bg(img):
+    img = img.convert("RGBA")
+    datas = img.getdata()
+    new_data = []
+    for item in datas:
+        # Pure black detection
+        if item[0] < 30 and item[1] < 30 and item[2] < 30:
+            new_data.append((255, 255, 255, 0))
+        else:
+            new_data.append(item)
+    img.putdata(new_data)
+    return img
 
-# 2. Process Environmental Props
-prop_map = {
-    "prop_rock.png": "prop_rock_1782651423546.jpg",
-    "prop_crystal.png": "prop_crystal_1782651433526.jpg",
-    "prop_debris.png": "prop_debris_1782651443248.jpg",
-    "prop_broken_pillar.png": "prop_broken_pillar_1782651452182.jpg",
-    "prop_scattered_bones.png": "prop_scattered_bones_1782651461936.jpg",
-    "prop_fallen_lantern.png": "prop_fallen_lantern_1782651471418.jpg",
-    "prop_cracked_tile.png": "prop_cracked_tile_1782651482577.jpg",
-    "prop_burnt_wood.png": "prop_burnt_wood_1782651491180.jpg",
-}
+def remove_checkerboard_bg(img):
+    img = img.convert("RGBA")
+    width, height = img.size
+    
+    # Check if perimeter is already transparent (e.g. from remove_green_bg)
+    if img.getpixel((0,0))[3] == 0:
+        return img # Already processed
+        
+    perimeter_pixels = []
+    for x in range(width):
+        perimeter_pixels.append(img.getpixel((x, 0))[:3])
+        perimeter_pixels.append(img.getpixel((x, height-1))[:3])
+    for y in range(height):
+        perimeter_pixels.append(img.getpixel((0, y))[:3])
+        perimeter_pixels.append(img.getpixel((width-1, y))[:3])
+        
+    r_vals = sorted([p[0] for p in perimeter_pixels])
+    g_vals = sorted([p[1] for p in perimeter_pixels])
+    b_vals = sorted([p[2] for p in perimeter_pixels])
+    
+    # Take 5th and 95th percentile to filter out any outliers
+    p5 = int(len(r_vals) * 0.05)
+    p95 = int(len(r_vals) * 0.95)
+    
+    min_r, max_r = r_vals[p5] - 20, r_vals[p95] + 20
+    min_g, max_g = g_vals[p5] - 20, g_vals[p95] + 20
+    min_b, max_b = b_vals[p5] - 20, b_vals[p95] + 20
+    
+    # Iterative flood fill
+    visited = [[False for _ in range(height)] for _ in range(width)]
+    stack = []
+    
+    for x in range(width):
+        stack.append((x, 0))
+        stack.append((x, height-1))
+        visited[x][0] = True
+        visited[x][height-1] = True
+    for y in range(height):
+        stack.append((0, y))
+        stack.append((width-1, y))
+        visited[0][y] = True
+        visited[width-1][y] = True
+        
+    pixels = img.load()
+    
+    while stack:
+        cx, cy = stack.pop()
+        r, g, b, a = pixels[cx, cy]
+        if a == 0:
+            continue
+        if min_r <= r <= max_r and min_g <= g <= max_g and min_b <= b <= max_b:
+            pixels[cx, cy] = (255, 255, 255, 0)
+            for nx, ny in ((cx-1, cy), (cx+1, cy), (cx, cy-1), (cx, cy+1)):
+                if 0 <= nx < width and 0 <= ny < height and not visited[nx][ny]:
+                    visited[nx][ny] = True
+                    stack.append((nx, ny))
+                    
+    return img
 
-for out_name, src_name in prop_map.items():
-    src_path = os.path.join(BRAIN_DIR, src_name)
-    if os.path.exists(src_path):
-        img = Image.open(src_path).convert("RGBA")
-        img = img.resize((128, 128), Image.Resampling.LANCZOS)
-        img.save(os.path.join(PROPS_DIR, out_name), "PNG")
-        print(f"Saved prop: {out_name}")
+def generate_radial_shadow(width, height):
+    img = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    cx, cy = width / 2.0, height / 2.0
+    rx, ry = width / 2.0, height / 2.0
+    for x in range(width):
+        for y in range(height):
+            dx = (x - cx) / rx
+            dy = (y - cy) / ry
+            dist = math.sqrt(dx*dx + dy*dy)
+            if dist <= 1.0:
+                # 70% black (178 alpha) at center fading to 0
+                alpha = int(178 * (1.0 - dist))
+                img.putpixel((x, y), (0, 0, 0, alpha))
+    return img
 
-# 3. Process UI Icons (Move & Bespoke Abilities)
-icon_map = {
-    "icon_move_normal.png": "icon_move_normal_1782651568348.jpg",
-    "icon_move_hover.png": "icon_move_hover_1782651579133.jpg",
-    "icon_move_disabled.png": "icon_move_disabled_1782651587597.jpg",
-}
+def create_ui_states(img, base_save_path, icon_name):
+    # Normal state
+    normal_path = os.path.join(base_save_path, f"{icon_name}_normal.png")
+    img.save(normal_path, "PNG")
+    print(f"Saved {normal_path}")
 
-for out_name, src_name in icon_map.items():
-    src_path = os.path.join(BRAIN_DIR, src_name)
-    if os.path.exists(src_path):
-        img = Image.open(src_path).convert("RGBA")
-        img = img.resize((64, 64), Image.Resampling.LANCZOS)
-        img.save(os.path.join(ICONS_DIR, out_name), "PNG")
-        print(f"Saved icon: {out_name}")
+    # Hover state (enhanced brightness)
+    enhancer = ImageEnhance.Brightness(img)
+    hover_img = enhancer.enhance(1.4)
+    hover_path = os.path.join(base_save_path, f"{icon_name}_hover.png")
+    hover_img.save(hover_path, "PNG")
+    print(f"Saved {hover_path}")
 
-# Bespoke abilities (generate 3 states each)
-ability_map = {
-    "icon_strike": "strike_ability_icon_1782502744133.jpg",
-    "icon_ember": "ember_ability_icon_1782502753208.jpg",
-    "icon_quick_dash": "quick_dash_icon_1782502763105.jpg",
-}
+    # Disabled state (desaturated & dimmed)
+    # Convert to grayscale then back to RGBA to keep alpha
+    gray = img.convert("LA").convert("RGBA")
+    enhancer_dim = ImageEnhance.Brightness(gray)
+    disabled_img = enhancer_dim.enhance(0.6)
+    disabled_path = os.path.join(base_save_path, f"{icon_name}_disabled.png")
+    disabled_img.save(disabled_path, "PNG")
+    print(f"Saved {disabled_path}")
 
-for base_name, src_name in ability_map.items():
-    src_path = os.path.join(BRAIN_DIR, src_name)
-    if os.path.exists(src_path):
-        img = Image.open(src_path).convert("RGBA").resize((64, 64), Image.Resampling.LANCZOS)
-        # Normal
-        img.save(os.path.join(ICONS_DIR, f"{base_name}_normal.png"), "PNG")
-        # Hover
-        hover = ImageEnhance.Brightness(img).enhance(1.3)
-        hover.save(os.path.join(ICONS_DIR, f"{base_name}_hover.png"), "PNG")
-        # Disabled
-        disabled = img.convert("L").convert("RGBA")
-        disabled = ImageEnhance.Brightness(disabled).enhance(0.6)
-        disabled.save(os.path.join(ICONS_DIR, f"{base_name}_disabled.png"), "PNG")
-        print(f"Saved ability icons for: {base_name}")
+def main():
+    os.makedirs(os.path.join(REPO_DIR, "assets", "sprites"), exist_ok=True)
+    os.makedirs(os.path.join(REPO_DIR, "assets", "sprites", "props"), exist_ok=True)
+    os.makedirs(os.path.join(REPO_DIR, "assets", "icons"), exist_ok=True)
 
-# 4. Generate Attack and End Turn Icons via PIL ImageDraw
-# NOTE: These are procedural placeholders. For production-quality icons matching
-# the GenAI move/ability style, generate via the prompts in genai_prompts.md
-# and replace these files.
+    # 1. Character Sprites (256x256)
+    chars_256 = ["keeper_sprite", "grunt_sprite", "archer_sprite", "tank_sprite", "mage_sprite"]
+    for c in chars_256:
+        f = get_latest_artifact(c)
+        if f:
+            im = Image.open(f)
+            im = remove_green_bg(im)
+            im = remove_checkerboard_bg(im)
+            im = im.resize((256, 256), Image.Resampling.LANCZOS)
+            p = os.path.join(REPO_DIR, "assets", "sprites", f"{c}.png")
+            im.save(p, "PNG")
+            print(f"Saved {p}")
 
-def create_styled_icon(base_name, draw_func):
-    """Create a dark-fantasy-styled procedural icon with panel background."""
-    # Normal — dark panel with styled foreground
-    img = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(img)
-    # Dark rounded panel background
-    draw.rounded_rectangle(
-        [4, 4, 60, 60], radius=8, fill=(25, 22, 30, 240), outline=(60, 55, 70, 200), width=2
-    )
-    draw_func(draw)
-    img.save(os.path.join(ICONS_DIR, f"{base_name}_normal.png"), "PNG")
+    # Bosses (320x320)
+    bosses_320 = ["overgrown_guardian_sprite", "crystal_sentinel_sprite", "industrial_overseer_sprite", "boss_sprite"]
+    for b in bosses_320:
+        f = get_latest_artifact(b)
+        if f:
+            im = Image.open(f)
+            im = remove_green_bg(im)
+            im = remove_checkerboard_bg(im)
+            im = im.resize((320, 320), Image.Resampling.LANCZOS)
+            p = os.path.join(REPO_DIR, "assets", "sprites", f"{b}.png")
+            im.save(p, "PNG")
+            print(f"Saved {p}")
 
-    # Hover — brighten panel + white rim glow
-    hover = img.copy()
-    hover_draw = ImageDraw.Draw(hover)
-    hover_draw.rounded_rectangle(
-        [4, 4, 60, 60], radius=8, outline=(255, 255, 255, 120), width=2
-    )
-    hover = ImageEnhance.Brightness(hover).enhance(1.3)
-    hover.save(os.path.join(ICONS_DIR, f"{base_name}_hover.png"), "PNG")
+    # 2. UI Icons & 3. Ability Icons (64x64, 3 states)
+    # Map prefix to icon_name
+    icons = {
+        "icon_move_normal": "icon_move",
+        "icon_attack_normal": "icon_attack",
+        "icon_end_normal": "icon_end_turn",
+        "icon_empty_normal": "icon_empty_slot",
+        "icon_strike_normal": "icon_strike",
+        "icon_ember_normal": "icon_ember",
+        "icon_dash_normal": "icon_quick_dash"
+    }
+    for prefix, name in icons.items():
+        f = get_latest_artifact(prefix)
+        if f:
+            im = Image.open(f)
+            im = remove_black_bg(im)
+            im = im.resize((64, 64), Image.Resampling.LANCZOS)
+            create_ui_states(im, os.path.join(REPO_DIR, "assets", "icons"), name)
 
-    # Disabled — grayscale + dim
-    disabled = img.convert("L").convert("RGBA")
-    disabled = ImageEnhance.Brightness(disabled).enhance(0.6)
-    disabled.save(os.path.join(ICONS_DIR, f"{base_name}_disabled.png"), "PNG")
-    print(f"Saved styled icons for: {base_name}")
+    # 4. Environmental Props (128x128)
+    props = ["prop_rock", "prop_crystal", "prop_debris", "prop_broken_pillar", "prop_scattered_bones", "prop_fallen_lantern", "prop_cracked_tile", "prop_burnt_wood"]
+    for pr in props:
+        f = get_latest_artifact(pr)
+        if f:
+            im = Image.open(f)
+            im = remove_green_bg(im)
+            im = remove_checkerboard_bg(im)
+            im = im.resize((128, 128), Image.Resampling.LANCZOS)
+            p = os.path.join(REPO_DIR, "assets", "sprites", "props", f"{pr}.png")
+            im.save(p, "PNG")
+            print(f"Saved {p}")
 
+    # 5. Shadow Texture (64x32)
+    shadow = generate_radial_shadow(64, 32)
+    sp = os.path.join(REPO_DIR, "assets", "sprites", "soft_radial_shadow.png")
+    shadow.save(sp, "PNG")
+    print(f"Saved {sp}")
 
-def draw_attack_icon(draw):
-    # Stylized sword with ember-glow blade
-    # Blade
-    draw.polygon(
-        [(18, 20), (32, 8), (46, 20), (40, 28), (32, 22), (24, 28)],
-        fill=(220, 45, 55, 230),
-        outline=(255, 80, 90, 255),
-    )
-    # Crossguard
-    draw.rectangle([20, 28, 44, 32], fill=(180, 160, 120, 255), outline=(220, 200, 160, 255), width=1)
-    # Hilt
-    draw.rectangle([30, 32, 34, 48], fill=(140, 120, 90, 255), outline=(180, 160, 120, 255), width=1)
-    # Pommel
-    draw.ellipse([28, 48, 36, 52], fill=(180, 160, 120, 255), outline=(220, 200, 160, 255), width=1)
-    # Glow line on blade
-    draw.line([(26, 14), (32, 10), (38, 14)], fill=(255, 180, 160, 200), width=2)
-
-
-def draw_end_turn_icon(draw):
-    # Hourglass with ember falling sand
-    # Top funnel
-    draw.polygon(
-        [(20, 14), (44, 14), (32, 28)],
-        fill=(45, 170, 210, 200),
-        outline=(80, 210, 240, 255),
-        width=2,
-    )
-    # Neck
-    draw.polygon(
-        [(32, 28), (26, 38), (38, 38)],
-        fill=(45, 170, 210, 200),
-        outline=(80, 210, 240, 255),
-        width=1,
-    )
-    # Bottom funnel
-    draw.polygon(
-        [(26, 38), (38, 38), (44, 50), (20, 50)],
-        fill=(45, 170, 210, 200),
-        outline=(80, 210, 240, 255),
-        width=2,
-    )
-    # Ember particles falling
-    draw.ellipse([30, 30, 34, 34], fill=(255, 180, 60, 220))
-    draw.ellipse([31, 36, 33, 38], fill=(255, 200, 100, 180))
-    # Frame bars
-    draw.rectangle([18, 12, 46, 15], fill=(120, 130, 140, 255))
-    draw.rectangle([18, 49, 46, 52], fill=(120, 130, 140, 255))
-
-
-def draw_empty_slot_icon(draw):
-    # Subtle dashed-frame for unused hotbar slots
-    draw.rounded_rectangle([14, 14, 50, 50], radius=4, outline=(60, 55, 70, 120), width=1)
-    # Small plus in center
-    draw.rectangle([29, 22, 35, 42], fill=(60, 55, 70, 100))
-    draw.rectangle([22, 29, 42, 35], fill=(60, 55, 70, 100))
-
-
-create_styled_icon("icon_attack", draw_attack_icon)
-create_styled_icon("icon_end_turn", draw_end_turn_icon)
-create_styled_icon("icon_empty_slot", draw_empty_slot_icon)
-
-print("All assets processed successfully!")
+if __name__ == "__main__":
+    main()

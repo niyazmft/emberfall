@@ -1,6 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Theme" path="res://assets/main_theme.tres" id="0_theme"]
+[ext_resource type="FontFile" path="res://assets/fonts/Cinzel-Bold.ttf" id="cinzel_bold"]
 
 [ext_resource type="Script" path="res://scripts/ui/combat_hud.gd" id="1_script"]
 [ext_resource type="Texture2D" path="res://assets/icons/icon_move_normal.png" id="icon_move"]
@@ -79,6 +80,7 @@ corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
 [node name="CombatHUD" type="Control" unique_id=1694207348]
+texture_filter = 2
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -110,6 +112,7 @@ size_flags_vertical = 0
 [node name="TurnLabel" type="Label" parent="MarginContainer/MasterVBox/TopInfo" unique_id=2124916337]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_fonts/font = ExtResource("cinzel_bold")
 text = "Your Turn"
 horizontal_alignment = 1
 
@@ -178,21 +181,27 @@ alignment = 1
 
 [node name="MoveButton" type="Button" parent="MarginContainer/MasterVBox/BottomSlot/BottomChrome/ActionButtonsPanel/ActionButtons" unique_id=233566378]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(110, 36)
 layout_mode = 2
 text = "⬆ Move"
 icon = ExtResource("icon_move")
+expand_icon = true
 
 [node name="AttackButton" type="Button" parent="MarginContainer/MasterVBox/BottomSlot/BottomChrome/ActionButtonsPanel/ActionButtons" unique_id=758992100]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(110, 36)
 layout_mode = 2
 text = "⚔ Attack"
 icon = ExtResource("icon_attack")
+expand_icon = true
 
 [node name="EndTurnButton" type="Button" parent="MarginContainer/MasterVBox/BottomSlot/BottomChrome/ActionButtonsPanel/ActionButtons" unique_id=185299671]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(110, 36)
 layout_mode = 2
 text = "✓ End Turn"
 icon = ExtResource("icon_end_turn")
+expand_icon = true
 
 [node name="Prompts" type="Label" parent="MarginContainer/MasterVBox/BottomSlot/BottomChrome" unique_id=490054073]
 layout_mode = 2
@@ -215,35 +224,3 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-
-[node name="MinimapBorder" type="Panel" parent="."]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -136.0
-offset_top = -136.0
-offset_right = -16.0
-offset_bottom = -16.0
-grow_horizontal = 0
-grow_vertical = 0
-
-[node name="MinimapContainer" type="SubViewportContainer" parent="MinimapBorder"]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="SubViewport" type="SubViewport" parent="MinimapBorder/MinimapContainer"]
-handle_input_locally = false
-size = Vector2i(120, 120)
-
-[node name="Camera2D" type="Camera2D" parent="MinimapBorder/MinimapContainer/SubViewport"]
-anchor_mode = 0
-position = Vector2(60, 60)

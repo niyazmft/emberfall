@@ -6,8 +6,9 @@
 [ext_resource type="Texture2D" path="res://assets/icons/icon_attack_normal.png" id="icon_attack"]
 [ext_resource type="Texture2D" path="res://assets/icons/icon_end_turn_normal.png" id="icon_end_turn"]
 
-[node name="BottomConsole" type="Control"]
-layout_mode = 3
+[node name="BottomConsole" type="MarginContainer"]
+texture_filter = 2
+custom_minimum_size = Vector2(0, 80)
 anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
@@ -18,24 +19,22 @@ script = ExtResource("1_script")
 theme = ExtResource("1_theme")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/margin_left = 16
+layout_mode = 2
+theme_override_constants/margin_left = 24
 theme_override_constants/margin_top = 16
-theme_override_constants/margin_right = 16
+theme_override_constants/margin_right = 24
 theme_override_constants/margin_bottom = 16
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
 layout_mode = 2
 size_flags_vertical = 4
+theme_override_constants/separation = 40
+alignment = 1
 
 [node name="LeftWing" type="VBoxContainer" parent="MarginContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+alignment = 1
 
 [node name="HPLabel" type="Label" parent="MarginContainer/HBoxContainer/LeftWing"]
 layout_mode = 2
@@ -60,23 +59,29 @@ alignment = 1
 
 [node name="ActionButtons" type="HBoxContainer" parent="MarginContainer/HBoxContainer/CenterConsole"]
 layout_mode = 2
-theme_override_constants/separation = 24
+theme_override_constants/separation = 16
 alignment = 1
 
 [node name="MoveButton" type="Button" parent="MarginContainer/HBoxContainer/CenterConsole/ActionButtons"]
+custom_minimum_size = Vector2(110, 36)
 layout_mode = 2
 text = "Move"
 icon = ExtResource("icon_move")
+expand_icon = true
 
 [node name="AttackButton" type="Button" parent="MarginContainer/HBoxContainer/CenterConsole/ActionButtons"]
+custom_minimum_size = Vector2(110, 36)
 layout_mode = 2
 text = "Attack"
 icon = ExtResource("icon_attack")
+expand_icon = true
 
 [node name="EndTurnButton" type="Button" parent="MarginContainer/HBoxContainer/CenterConsole/ActionButtons"]
+custom_minimum_size = Vector2(110, 36)
 layout_mode = 2
 text = "End Turn"
 icon = ExtResource("icon_end_turn")
+expand_icon = true
 
 [node name="RightWing" type="VBoxContainer" parent="MarginContainer/HBoxContainer"]
 layout_mode = 2

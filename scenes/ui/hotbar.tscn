@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" path="res://assets/icons/icon_empty_slot_normal.png" id="icon_empty"]
 
 [node name="Hotbar" type="Control"]
+texture_filter = 2
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 3
 anchors_preset = 12

@@ -33,8 +33,8 @@ var action_buttons: Control = $MarginContainer/MasterVBox/BottomSlot/BottomChrom
 @onready var turn_label: Label = %TurnLabel
 @onready var round_label: Label = %RoundLabel
 
-# Minimap
-@onready var minimap_container: SubViewportContainer = $MinimapBorder/MinimapContainer
+# Minimap (Disabled/Removed)
+var minimap_container: SubViewportContainer = null
 @onready var bottom_console: _BottomConsole = $MarginContainer/MasterVBox/BottomSlot/BottomConsole
 var _minimap_grid: GridRenderer
 var _minimap_player_dot: Sprite2D

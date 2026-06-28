@@ -52,7 +52,7 @@ func _style_hp_bar() -> void:
 	bg_style.corner_radius_top_right = 3
 	bg_style.corner_radius_bottom_right = 3
 	bg_style.corner_radius_bottom_left = 3
-	hp_bar.add_theme_stylebox_override("bg", bg_style)
+	hp_bar.add_theme_stylebox_override("background", bg_style)
 
 	# Fill style will be set dynamically in _process based on HP percentage
 	var fill_style: StyleBoxFlat = StyleBoxFlat.new()
@@ -60,7 +60,7 @@ func _style_hp_bar() -> void:
 	fill_style.corner_radius_top_right = 2
 	fill_style.corner_radius_bottom_right = 2
 	fill_style.corner_radius_bottom_left = 2
-	hp_bar.add_theme_stylebox_override("fg", fill_style)
+	hp_bar.add_theme_stylebox_override("fill", fill_style)
 
 
 func _process(delta: float) -> void:
@@ -100,7 +100,7 @@ func _update_hp_color() -> void:
 		# High HP: green
 		fill_color = Color(0.2, 0.85, 0.25)
 
-	var fg_style: StyleBoxFlat = hp_bar.get_theme_stylebox("fg") as StyleBoxFlat
+	var fg_style: StyleBoxFlat = hp_bar.get_theme_stylebox("fill") as StyleBoxFlat
 	if fg_style != null and fg_style.bg_color != fill_color:
 		fg_style.bg_color = fill_color
 

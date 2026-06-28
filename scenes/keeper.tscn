@@ -20,6 +20,8 @@ height_indicator = NodePath("HeightIndicator")
 scale = Vector2(0.25, 0.25)
 texture_filter = 2
 texture = ExtResource("3_2fid1")
+region_enabled = true
+region_rect = Rect2(16, 16, 160, 160)
 
 [node name="ShadowSprite" type="Sprite2D" parent="EntityVisualProxy" unique_id=1073920909]
 texture = ExtResource("shadow_tex")

@@ -96,19 +96,9 @@ func test_minimap_nodes_exist() -> void:
 	var hud: Control = load(COMBAT_HUD_SCENE).instantiate() as Control
 	add_child(hud)
 
-	# Verify MinimapContainer exists
+	# Verify MinimapContainer is deleted/null
 	var minimap_container: SubViewportContainer = hud.get_node_or_null("%MinimapContainer")
-	assert_that(minimap_container).is_not_null()
-
-	# Verify SubViewport exists inside
-	var subviewport: SubViewport = minimap_container.get_node_or_null("SubViewport")
-	assert_that(subviewport).is_not_null()
-	assert_int(subviewport.size.x).is_equal(120)
-	assert_int(subviewport.size.y).is_equal(120)
-
-	# Verify Camera2D exists inside SubViewport
-	var camera: Camera2D = subviewport.get_node_or_null("Camera2D")
-	assert_that(camera).is_not_null()
+	assert_that(minimap_container).is_null()
 
 	hud.queue_free()
 
@@ -125,30 +115,6 @@ func test_minimap_setup_creates_grid_renderer() -> void:
 	await get_tree().process_frame
 
 	var minimap_container: SubViewportContainer = hud.get_node_or_null("%MinimapContainer")
-	var subviewport: SubViewport = minimap_container.get_node_or_null("SubViewport")
-
-	# After setup(), a GridRenderer should exist in the SubViewport
-	var found_grid: bool = false
-	for child: Node in subviewport.get_children():
-		if child is GridRenderer:
-			found_grid = true
-			# Verify scale is reduced
-			assert_that(child.scale).is_equal(Vector2(0.15, 0.15))
-			break
-	assert_bool(found_grid).is_true()
-
-	# Player dot should exist as child of the GridRenderer
-	var grid: GridRenderer = null
-	for child: Node in subviewport.get_children():
-		if child is GridRenderer:
-			grid = child
-			break
-	if grid:
-		var found_dot: bool = false
-		for child: Node in grid.get_children():
-			if child is Sprite2D:
-				found_dot = true
-				break
-		assert_bool(found_dot).is_true()
+	assert_that(minimap_container).is_null()
 
 	hud.queue_free()

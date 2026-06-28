@@ -52,6 +52,8 @@ func _ready() -> void:
 	_connect_signals()
 	_setupHelpListeners()
 	_style_apply_button()
+	_setup_hover_focus(self)
+	_setup_focus_neighbors()
 
 
 func _loadHelpData() -> void:
@@ -124,6 +126,8 @@ func _load_ui_from_settings() -> void:
 
 
 func _exit_tree() -> void:
+	if _tab_container.tab_changed.is_connected(_on_tab_changed):
+		_tab_container.tab_changed.disconnect(_on_tab_changed)
 	var sz: _SafeZoneManager = AutoloadHelper.safe_zone_manager()
 	if sz and sz.safe_area_changed.is_connected(_on_safe_area_changed):
 		sz.safe_area_changed.disconnect(_on_safe_area_changed)
@@ -214,6 +218,7 @@ func _exit_tree() -> void:
 
 
 func _connect_signals() -> void:
+	_tab_container.tab_changed.connect(_on_tab_changed)
 	_bound_callables["master_volume"] = _on_audio_changed.bind("master_volume")
 	_master_slider.value_changed.connect(_bound_callables["master_volume"])
 	_bound_callables["music_volume"] = _on_audio_changed.bind("music_volume")
@@ -235,6 +240,77 @@ func _connect_signals() -> void:
 
 	_reset_button.pressed.connect(_on_reset_pressed)
 	_back_button.pressed.connect(_on_back_pressed)
+
+
+func _on_tab_changed(tab_index: int) -> void:
+	if tab_index < 0 or tab_index >= _tab_container.get_child_count():
+		return
+	var current_tab: Node = _tab_container.get_child(tab_index)
+	var interactable: Control = _find_first_interactable(current_tab)
+	_setup_focus_neighbors()
+	if interactable != null:
+		interactable.call_deferred("grab_focus")
+
+
+func _find_first_interactable(node: Node) -> Control:
+	if node is Control and not (node as Control).visible:
+		return null
+	if node is CheckBox or node is Slider or node is OptionButton or node is Button:
+		if (node as Control).focus_mode != Control.FOCUS_NONE:
+			return node as Control
+	for child: Node in node.get_children():
+		var found: Control = _find_first_interactable(child)
+		if found != null:
+			return found
+	return null
+
+
+func _setup_hover_focus(node: Node) -> void:
+	if (
+		node != _tab_container
+		and node is Control
+		and (node as Control).focus_mode == Control.FOCUS_ALL
+	):
+		if not node.mouse_entered.is_connected(_on_control_mouse_entered.bind(node as Control)):
+			node.mouse_entered.connect(_on_control_mouse_entered.bind(node as Control))
+	for child: Node in node.get_children():
+		_setup_hover_focus(child)
+
+
+func _on_control_mouse_entered(control: Control) -> void:
+	if (
+		control != null
+		and control.is_visible_in_tree()
+		and control.focus_mode != Control.FOCUS_NONE
+	):
+		control.grab_focus()
+
+
+func _setup_focus_neighbors() -> void:
+	var items: Array[Control] = []
+	_gather_visible_interactables(self, items)
+	if items.size() > 1:
+		var first: Control = items[0]
+		var last: Control = items[items.size() - 1]
+		first.focus_neighbor_top = first.get_path_to(last)
+		last.focus_neighbor_bottom = last.get_path_to(first)
+		if _reset_button in items:
+			_reset_button.focus_neighbor_bottom = _reset_button.get_path_to(first)
+		if _back_button in items:
+			_back_button.focus_neighbor_bottom = _back_button.get_path_to(first)
+
+
+func _gather_visible_interactables(node: Node, list: Array[Control]) -> void:
+	if node is Control and not (node as Control).visible:
+		return
+	if (
+		node != _tab_container
+		and node is Control
+		and (node as Control).focus_mode == Control.FOCUS_ALL
+	):
+		list.append(node as Control)
+	for child: Node in node.get_children():
+		_gather_visible_interactables(child, list)
 
 
 func _on_audio_changed(value: Variant, key: String) -> void:

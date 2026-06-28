@@ -6,7 +6,7 @@ extends Control
 
 signal dismissed
 
-@onready var _panel: PanelContainer = $PanelContainer
+@onready var _panel: PanelContainer = $MarginContainerTopRight/PanelContainer
 @onready var _title_label: Label = %TitleLabel
 @onready var _hint_list: VBoxContainer = %HintList
 @onready var _got_it_button: Button = %GotItButton
