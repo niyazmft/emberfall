@@ -33,7 +33,8 @@ var _combat_input: CombatInput
 @onready var round_label: Label = %RoundLabel
 
 # Minimap
-@onready var minimap_container: SubViewportContainer = %MinimapContainer
+@onready var minimap_container: SubViewportContainer = $MinimapBorder/MinimapContainer
+@onready var bottom_console: _BottomConsole = $BottomConsole
 var _minimap_grid: GridRenderer
 var _minimap_player_dot: Sprite2D
 var _minimap_enemy_dots: Array[Sprite2D] = []
@@ -133,6 +134,15 @@ func setup(player_entity: Entity, turn_manager: TurnManager, combat_input: Comba
 		if not _turn_manager.round_started.is_connected(_on_round_started):
 			_turn_manager.round_started.connect(_on_round_started)
 		round_label.text = "Round %d" % _turn_manager.round_number
+
+	# Wire bottom console
+	if bottom_console != null:
+		bottom_console.setup(player_entity)
+
+	# Apply button micro-animations
+	var animator: _ButtonAnimator = _ButtonAnimator.new()
+	add_child(animator)
+	animator.apply_to_buttons(self)
 
 	if _combat_input:
 		if not _combat_input.targeting_started.is_connected(_on_targeting_started):

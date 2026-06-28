@@ -41,6 +41,11 @@ func _ready() -> void:
 	# Setup dynamic vertical wrap-around focus
 	_setup_focus_wrap()
 
+	# Apply button micro-animations
+	var animator: _ButtonAnimator = _ButtonAnimator.new()
+	add_child(animator)
+	animator.apply_to_buttons(button_container)
+
 	# Position ember particles across bottom of viewport
 	var viewport_size: Vector2 = get_viewport_rect().size
 	ember_particles.position = Vector2(viewport_size.x * 0.5, viewport_size.y * 0.95)
