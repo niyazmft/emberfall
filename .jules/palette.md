@@ -37,3 +37,9 @@
 **Learning:** Four burden audio stem placeholders (`bd_drone.ogg`, `bd_bells.ogg`, `bd_voices.ogg`, `bd_wind.ogg`) were created with identical file sizes and MD5 hashes, meaning they were copies of the same dummy file. Godot would load them without error, but all stems would sound identical in a debug build, making audio coordination bugs impossible to hear.
 
 **Action:** Always run `md5sum` on placeholder audio files after creation. If all hashes match, generate distinct content programmatically (different frequencies, waveforms, or amplitude envelopes) so each placeholder has a unique acoustic signature. Switch to `.wav` format during placeholder phase if Ogg Vorbis encoding tools are unavailable.
+
+## 2026-06-28 - Automated batch asset processing and Godot UID resolution
+
+**Learning:** When injecting batch GenAI visual assets or generating multiple interactive button states (Normal, Hover, Disabled) for UI icons, relying solely on real-time AI generation can hit quota limits and result in inconsistent styling or invalid UIDs in Godot scenes. Using Python's Pillow (PIL) library to programmatically derive hover/disabled states (via brightness enhancement and desaturation) and resize assets ensures uniform design tokens across all UI controls, while running `godot --headless --editor --quit` ensures all new `.png` files receive valid `.import` files and UIDs automatically without manual editor intervention.
+
+**Action:** When performing bulk asset updates or adding new UI button icons, write a Python script utilizing Pillow to process and save the assets as transparent PNGs into `assets/sprites/` and `assets/icons/`. Following the generation, execute `PATH="/usr/local/bin:/opt/homebrew/bin:$PATH" godot --headless --editor --quit` to verify and generate UIDs before running pre-push validation tests.
