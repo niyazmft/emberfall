@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/entities/keeper.gd" id="1_keeper"]
 [ext_resource type="Script" path="res://scripts/entities/apparition_renderer.gd" id="2_apparition"]
-[ext_resource type="Texture2D" path="res://assets/sprites/keeper_production.jpg" id="3_2fid1"]
+[ext_resource type="Texture2D" path="res://assets/sprites/keeper_sprite.png" id="3_2fid1"]
 [ext_resource type="Script" path="res://scripts/visual/entity_visual_proxy.gd" id="3_visual_proxy"]
 [ext_resource type="Texture2D" path="res://assets/sprites/soft_radial_shadow.tres" id="shadow_tex"]
 

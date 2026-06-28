@@ -350,10 +350,10 @@ Implement the new layout using temporary, solid-color blocks (gray-boxing). This
 |------|--------|----------|----------|------------|-------|
 | `[Update #455] Integrate production-ready character & enemy sprites` | ✅ Done | P1 | 2.5d | None | Production sprites generated and swapped into `.tscn` scenes; concept art removed |
 | `[Update #455] Design soft radial shadow textures (S-1)` | ✅ Done | P1 | 1d | None | `soft_radial_shadow.tres` (GradientTexture2D, FILL_RADIAL, 64×32) created and wired to `ShadowSprite` in all entity scenes |
-| `[UI] Create premium combat action & ability icons (#510)` | ⏳ Ready | P1 | 2d | None | Action button icons are still text emoji; needs real icon PNGs in `assets/icons/` wired to Button `icon` property |
+| `[UI] Create premium combat action & ability icons (#510)` | ✅ Done | P1 | 2d | None | Generated and wired premium combat action PNGs (move, attack, end turn) and ability icons (strike, ember, quick dash) in normal, hover, and disabled states |
 | `[UI] Encase minimap in custom decorative border frame (#511)` | ⏳ Ready | P1 | 1d | None | MinimapContainer is still a plain SubViewportContainer; needs a Panel wrapper with a 9-patch or StyleBoxFlat border |
 | `[UI] Upgrade buttons & modals to 9-patch StyleBoxTextures (#512)` | ⏳ Ready | P1 | 1.5d | None | All buttons still use `StyleBoxFlat`; needs 9-patch PNG assets generated and wired into `main_theme.tres` as `StyleBoxTexture` |
-| `[Visual] Create bespoke 2D environmental prop sprites (#513)` | ⏳ Ready | P1 | 2d | None | `Props` node in `combat_room.tscn` is empty; needs generated prop PNGs placed in `assets/sprites/props/` and added as Sprite2D children |
+| `[Visual] Create bespoke 2D environmental prop sprites (#513)` | ✅ Done | P1 | 2d | None | Generated 8 premium environmental prop PNGs in `assets/sprites/props/` and populated `Props` node in `combat_room.tscn` |
 | `[Audio] Replace synthesized audio with mastered SFX (#514)` | 🚫 Blocked | P1 | 2d | Needs mastered `.wav` assets | Placeholder `.wav` files exist; blocked until production audio assets are provided or generated |
 
 ---
@@ -377,7 +377,7 @@ Implement the new layout using temporary, solid-color blocks (gray-boxing). This
 
 **Phase 6 (Done — 6/6 tasks):** All Phase 6 structural layout tasks are now ✅ Done: design tokens (#504), TitleScreen restructure (#505), combat HUD world bars (#506), SettingsPanel centralisation (#507), Camera2D zoom (#508), and popup offset/minimap leak (#509). Merged in PR #528.
 
-**Phase 7 (Active — 2/7 tasks done):** Production sprites (#455) and soft radial shadows are ✅ Done. Remaining Phase 7 tasks are asset-dependent. #514 is Blocked pending audio assets.
+**Phase 7 (Active — 4/7 tasks done):** Production sprites (#455), combat icons (#510), environmental props (#513), and soft radial shadows are ✅ Done. Remaining Phase 7 tasks are asset-dependent. #514 is Blocked pending audio assets.
 
 **Phase 1–5 Complete:** All foundation hardening, 2.5D rendering, CI/CD, minimum viable gameplay, and vertical slice tasks are ✅ Done (379/379 tests passing, 0 failures).
 
