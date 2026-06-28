@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://d3vp06m1qg4w6"
-path="res://.godot/imported/tank_concept.jpg-e9955b4a22b9014a4a1c7b15c115bbbf.ctex"
+uid="uid://cfsn5gimss0od"
+path="res://.godot/imported/tileset_production.jpg-d0f2f1c743e4d063398bc2b61e0a9b62.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/tank_concept.jpg"
-dest_files=["res://.godot/imported/tank_concept.jpg-e9955b4a22b9014a4a1c7b15c115bbbf.ctex"]
+source_file="res://assets/sprites/tileset_production.jpg"
+dest_files=["res://.godot/imported/tileset_production.jpg-d0f2f1c743e4d063398bc2b61e0a9b62.ctex"]
 
 [params]
 

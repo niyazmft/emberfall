@@ -2,8 +2,9 @@
 
 [ext_resource type="Script" path="res://scripts/entities/enemies/enemy_tank.gd" id="2_tank_script"]
 [ext_resource type="Script" path="res://scripts/visual/entity_visual_proxy.gd" id="2_vs2kr"]
-[ext_resource type="Texture2D" path="res://assets/sprites/tank_concept.png" id="3_sib1e"]
+[ext_resource type="Texture2D" path="res://assets/sprites/tank_production.jpg" id="3_sib1e"]
 [ext_resource type="Script" path="res://scripts/entities/apparition_renderer.gd" id="4_2cuw7"]
+[ext_resource type="Texture2D" path="res://assets/sprites/soft_radial_shadow.tres" id="shadow_tex"]
 [ext_resource type="Script" path="res://scripts/ai/simple_ai.gd" id="5_0mfil"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_1"]
@@ -27,6 +28,7 @@ scale = Vector2(0.03125, 0.046875)
 texture = ExtResource("3_sib1e")
 
 [node name="ShadowSprite" type="Sprite2D" parent="EntityVisualProxy" unique_id=198344208]
+texture = ExtResource("shadow_tex")
 
 [node name="HeightIndicator" type="ColorRect" parent="EntityVisualProxy" unique_id=1562085413]
 offset_left = -16.0

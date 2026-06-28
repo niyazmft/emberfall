@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://d2ie8oideqnay"
-path="res://.godot/imported/grunt_concept.jpg-970776c492a4ca9f2590d45dd8a36f13.ctex"
+uid="uid://dq7oum4a76l6l"
+path="res://.godot/imported/archer_production.jpg-c3dcacce8a4bab2e2e28c9df6e9f415b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/grunt_concept.jpg"
-dest_files=["res://.godot/imported/grunt_concept.jpg-970776c492a4ca9f2590d45dd8a36f13.ctex"]
+source_file="res://assets/sprites/archer_production.jpg"
+dest_files=["res://.godot/imported/archer_production.jpg-c3dcacce8a4bab2e2e28c9df6e9f415b.ctex"]
 
 [params]
 

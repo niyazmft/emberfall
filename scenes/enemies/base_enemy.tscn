@@ -4,6 +4,7 @@
 [ext_resource type="Script" path="res://scripts/visual/entity_visual_proxy.gd" id="2_visual_proxy"]
 [ext_resource type="Script" path="res://scripts/entities/apparition_renderer.gd" id="3_apparition"]
 [ext_resource type="Script" path="res://scripts/ai/simple_ai.gd" id="4_simple_ai"]
+[ext_resource type="Texture2D" path="res://assets/sprites/soft_radial_shadow.tres" id="shadow_tex"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_1"]
 radius = 8.0
@@ -22,6 +23,7 @@ height_indicator = NodePath("HeightIndicator")
 [node name="BaseSprite" type="Sprite2D" parent="EntityVisualProxy"]
 
 [node name="ShadowSprite" type="Sprite2D" parent="EntityVisualProxy"]
+texture = ExtResource("shadow_tex")
 
 [node name="HeightIndicator" type="ColorRect" parent="EntityVisualProxy"]
 offset_left = -16.0

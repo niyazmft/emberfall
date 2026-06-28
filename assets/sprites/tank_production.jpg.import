@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://blyrn4i3ndjjl"
-path="res://.godot/imported/keeper_concept.jpg-c7111ded097222b0c579a8a9eb0fc412.ctex"
+uid="uid://dju2uqyiclc4k"
+path="res://.godot/imported/tank_production.jpg-1451ef7a5d4aca927d9c7ef630bd2cf5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/keeper_concept.jpg"
-dest_files=["res://.godot/imported/keeper_concept.jpg-c7111ded097222b0c579a8a9eb0fc412.ctex"]
+source_file="res://assets/sprites/tank_production.jpg"
+dest_files=["res://.godot/imported/tank_production.jpg-1451ef7a5d4aca927d9c7ef630bd2cf5.ctex"]
 
 [params]
 

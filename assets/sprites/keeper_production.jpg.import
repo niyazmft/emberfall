@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cxr6kcylwsnjt"
-path="res://.godot/imported/boss_concept.png-a15888ce3076c9d77558507250f72146.ctex"
+uid="uid://dg32ambav4ibp"
+path="res://.godot/imported/keeper_production.jpg-27b50404a36bfe9da1d4aff305127af0.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/boss_concept.png"
-dest_files=["res://.godot/imported/boss_concept.png-a15888ce3076c9d77558507250f72146.ctex"]
+source_file="res://assets/sprites/keeper_production.jpg"
+dest_files=["res://.godot/imported/keeper_production.jpg-27b50404a36bfe9da1d4aff305127af0.ctex"]
 
 [params]
 

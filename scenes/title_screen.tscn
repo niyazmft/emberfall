@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://ddy3r8j1m7n6b"]
 
 [ext_resource type="Script" path="res://scripts/ui/title_screen.gd" id="1_script"]
-[ext_resource type="Texture2D" uid="uid://blyrn4i3ndjjl" path="res://assets/sprites/keeper_concept.jpg" id="2_bg"]
+[ext_resource type="Texture2D" uid="uid://blyrn4i3ndjjl" path="res://assets/sprites/keeper_production.jpg" id="2_bg"]
 [ext_resource type="Shader" path="res://shaders/title_glow.gdshader" id="3_glow"]
 
 [sub_resource type="Gradient" id="Gradient_overlay"]
