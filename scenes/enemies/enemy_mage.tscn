@@ -3,10 +3,14 @@
 [ext_resource type="PackedScene" uid="uid://base_enemy_001" path="res://scenes/enemies/base_enemy.tscn" id="1_base_enemy"]
 [ext_resource type="Script" path="res://scripts/entities/enemies/enemy_mage.gd" id="2_mage_script"]
 [ext_resource type="Script" path="res://scripts/ai/archer_ai.gd" id="3_archer_ai"]
+[ext_resource type="Texture2D" path="res://assets/sprites/mage_sprite.png" id="4_mage_sprite"]
 
 [node name="EnemyMage" instance=ExtResource("1_base_enemy")]
 script = ExtResource("2_mage_script")
 debug_color = Color(1, 0, 1, 1)
+
+[node name="BaseSprite" parent="EntityVisualProxy" index="0"]
+texture = ExtResource("4_mage_sprite")
 
 [node name="SimpleAI" parent="." index="4"]
 script = ExtResource("3_archer_ai")

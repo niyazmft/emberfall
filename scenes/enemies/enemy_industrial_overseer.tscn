@@ -1,0 +1,46 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/entities/enemies/enemy_boss.gd" id="2_boss_script"]
+[ext_resource type="Script" path="res://scripts/visual/entity_visual_proxy.gd" id="2_dnuh1"]
+[ext_resource type="Texture2D" path="res://assets/sprites/industrial_overseer_sprite.png" id="3_overseer"]
+[ext_resource type="Script" path="res://scripts/entities/apparition_renderer.gd" id="4_pkga2"]
+[ext_resource type="Texture2D" path="res://assets/sprites/soft_radial_shadow.tres" id="shadow_tex"]
+[ext_resource type="Script" path="res://scripts/ai/simple_ai.gd" id="5_bfrxa"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_1"]
+radius = 8.0
+
+[node name="EnemyIndustrialOverseer" type="Node2D" node_paths=PackedStringArray("ai_controller", "visual_proxy")]
+script = ExtResource("2_boss_script")
+ai_controller = NodePath("SimpleAI")
+visual_proxy = NodePath("EntityVisualProxy")
+debug_color = Color(0.8, 0.4, 0.1, 1)
+visual_scale = 1.5
+
+[node name="EntityVisualProxy" type="Node2D" parent="." node_paths=PackedStringArray("base_sprite", "shadow_sprite", "height_indicator")]
+script = ExtResource("2_dnuh1")
+base_sprite = NodePath("BaseSprite")
+shadow_sprite = NodePath("ShadowSprite")
+height_indicator = NodePath("HeightIndicator")
+
+[node name="BaseSprite" type="Sprite2D" parent="EntityVisualProxy"]
+scale = Vector2(0.03125, 0.046875)
+texture = ExtResource("3_overseer")
+
+[node name="ShadowSprite" type="Sprite2D" parent="EntityVisualProxy"]
+texture = ExtResource("shadow_tex")
+
+[node name="HeightIndicator" type="ColorRect" parent="EntityVisualProxy"]
+offset_left = -16.0
+offset_top = 2.0
+offset_right = 16.0
+offset_bottom = 6.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_1")
+
+[node name="ApparitionRenderer" type="Node2D" parent="."]
+script = ExtResource("4_pkga2")
+
+[node name="SimpleAI" type="Node" parent="."]
+script = ExtResource("5_bfrxa")

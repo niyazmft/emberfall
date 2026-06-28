@@ -1,6 +1,9 @@
 [gd_scene load_steps=2 format=3 uid="uid://f3r5s7l0p4n6x"]
 
 [ext_resource type="Script" path="res://scripts/ui/hotbar.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_strike_normal.png" id="icon_strike"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_ember_normal.png" id="icon_ember"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_quick_dash_normal.png" id="icon_quick_dash"]
 
 [node name="Hotbar" type="Control"]
 custom_minimum_size = Vector2(0, 64)
@@ -45,16 +48,22 @@ alignment = 1
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 text = "1"
+icon = ExtResource("icon_strike")
+expand_icon = true
 
 [node name="Slot2" type="Button" parent="HBoxContainer/ScrollContainer/HBoxContainer"]
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 text = "2"
+icon = ExtResource("icon_ember")
+expand_icon = true
 
 [node name="Slot3" type="Button" parent="HBoxContainer/ScrollContainer/HBoxContainer"]
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 text = "3"
+icon = ExtResource("icon_quick_dash")
+expand_icon = true
 
 [node name="Slot4" type="Button" parent="HBoxContainer/ScrollContainer/HBoxContainer"]
 custom_minimum_size = Vector2(48, 48)
