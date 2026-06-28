@@ -159,13 +159,13 @@
 **States:** Normal, Hover, Disabled
 
 **Prompt — Normal:**
-> Flat vector game UI icon, 64×64, simple geometric crossed swords or blade slash, clean minimal design, deep crimson red color on dark background, transparent background, flat vector style, high readability, immediate recognition, voxy/at-icons design system inspired
+> Dark fantasy vector game UI icon, 64×64, stylized sword with ember-glow blade, dark rounded panel background, metallic crossguard and hilt, glowing crimson blade edge, clean bold shapes, deep crimson and ember gold palette, transparent background, flat vector style, high readability, immediate recognition, voxy/at-icons design system inspired
 
 **Prompt — Hover:**
-> Flat vector game UI icon, 64×64, simple geometric crossed swords or blade slash, clean minimal design, bright crimson red color with white glow highlight, transparent background, flat vector style, high readability, immediate recognition, voxy/at-icons design system inspired
+> Dark fantasy vector game UI icon, 64×64, stylized sword with bright ember-glow blade, dark rounded panel background with white rim highlight, metallic crossguard and hilt, intense glowing crimson blade edge, clean bold shapes, bright crimson and ember gold palette, transparent background, flat vector style, high readability, immediate recognition, voxy/at-icons design system inspired
 
 **Prompt — Disabled:**
-> Flat vector game UI icon, 64×64, simple geometric crossed swords or blade slash, clean minimal design, desaturated dark gray with muted red overlay, transparent background, flat vector style, high readability, immediate recognition, voxy/at-icons design system inspired
+> Dark fantasy vector game UI icon, 64×64, stylized sword with dim ember blade, dark rounded panel background, metallic crossguard and hilt, desaturated gray blade with muted red overlay, clean bold shapes, dark gray palette, transparent background, flat vector style, high readability, immediate recognition, voxy/at-icons design system inspired
 
 ---
 
@@ -177,13 +177,31 @@
 **States:** Normal, Hover, Disabled
 
 **Prompt — Normal:**
-> Flat vector game UI icon, 64×64, simple geometric flag or hourglass symbol, clean minimal design, cool cyan-blue color on dark background, transparent background, flat vector style, high readability, immediate recognition, voxy/at-icons design system inspired
+> Dark fantasy vector game UI icon, 64×64, stylized hourglass with ember sand particles falling, dark rounded panel background, translucent cyan-blue glass body, glowing ember particles inside, metallic frame bars, clean bold shapes, cool cyan and ember gold palette, transparent background, flat vector style, high readability, immediate recognition, voxy/at-icons design system inspired
 
 **Prompt — Hover:**
-> Flat vector game UI icon, 64×64, simple geometric flag or hourglass symbol, clean minimal design, bright cyan-blue color with white glow highlight, transparent background, flat vector style, high readability, immediate recognition, voxy/at-icons design system inspired
+> Dark fantasy vector game UI icon, 64×64, stylized hourglass with bright ember sand particles falling, dark rounded panel background with white rim highlight, translucent bright cyan-blue glass body, intense glowing ember particles inside, metallic frame bars, clean bold shapes, bright cyan and ember gold palette, transparent background, flat vector style, high readability, immediate recognition, voxy/at-icons design system inspired
 
 **Prompt — Disabled:**
-> Flat vector game UI icon, 64×64, simple geometric flag or hourglass symbol, clean minimal design, desaturated dark gray with muted blue overlay, transparent background, flat vector style, high readability, immediate recognition, voxy/at-icons design system inspired
+> Dark fantasy vector game UI icon, 64×64, stylized hourglass with dim sand particles, dark rounded panel background, translucent muted cyan glass body, desaturated gray with muted blue overlay, metallic frame bars, clean bold shapes, dark gray palette, transparent background, flat vector style, high readability, immediate recognition, voxy/at-icons design system inspired
+
+---
+
+### 2.4 — Empty Slot Icon (3 states)
+
+**Asset ID:** `icon_empty_slot`
+**Size:** 64×64 px per state
+**Format:** PNG (transparent)
+**States:** Normal, Hover, Disabled
+
+**Prompt — Normal:**
+> Dark fantasy vector game UI icon, 64×64, subtle dashed rounded square frame with small plus sign in center, dark rounded panel background, muted gray outline suggesting available slot, clean minimal design, dark gray palette, transparent background, flat vector style, high readability, immediate recognition, voxy/at-icons design system inspired
+
+**Prompt — Hover:**
+> Dark fantasy vector game UI icon, 64×64, subtle dashed rounded square frame with small plus sign in center, dark rounded panel background with white rim highlight, muted gray outline suggesting available slot, clean minimal design, dark gray palette, transparent background, flat vector style, high readability, immediate recognition, voxy/at-icons design system inspired
+
+**Prompt — Disabled:**
+> Dark fantasy vector game UI icon, 64×64, subtle dashed rounded square frame with small plus sign in center, dark rounded panel background, very dim gray outline, clean minimal design, dark gray palette, transparent background, flat vector style, high readability, immediate recognition, voxy/at-icons design system inspired
 
 ---
 

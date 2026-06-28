@@ -1,9 +1,10 @@
-[gd_scene load_steps=2 format=3 uid="uid://f3r5s7l0p4n6x"]
+[gd_scene load_steps=5 format=3 uid="uid://f3r5s7l0p4n6x"]
 
 [ext_resource type="Script" path="res://scripts/ui/hotbar.gd" id="1_script"]
 [ext_resource type="Texture2D" path="res://assets/icons/icon_strike_normal.png" id="icon_strike"]
 [ext_resource type="Texture2D" path="res://assets/icons/icon_ember_normal.png" id="icon_ember"]
 [ext_resource type="Texture2D" path="res://assets/icons/icon_quick_dash_normal.png" id="icon_quick_dash"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_empty_slot_normal.png" id="icon_empty"]
 
 [node name="Hotbar" type="Control"]
 custom_minimum_size = Vector2(0, 64)
@@ -68,22 +69,26 @@ expand_icon = true
 [node name="Slot4" type="Button" parent="HBoxContainer/ScrollContainer/HBoxContainer"]
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
-text = "4"
+icon = ExtResource("icon_empty")
+expand_icon = true
 
 [node name="Slot5" type="Button" parent="HBoxContainer/ScrollContainer/HBoxContainer"]
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
-text = "5"
+icon = ExtResource("icon_empty")
+expand_icon = true
 
 [node name="Slot6" type="Button" parent="HBoxContainer/ScrollContainer/HBoxContainer"]
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
-text = "6"
+icon = ExtResource("icon_empty")
+expand_icon = true
 
 [node name="Slot7" type="Button" parent="HBoxContainer/ScrollContainer/HBoxContainer"]
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
-text = "7"
+icon = ExtResource("icon_empty")
+expand_icon = true
 
 [node name="RightArrow" type="Button" parent="HBoxContainer"]
 custom_minimum_size = Vector2(44, 44)
