@@ -11,6 +11,7 @@ debug_color = Color(1, 0, 1, 1)
 
 [node name="BaseSprite" parent="EntityVisualProxy" index="0"]
 texture = ExtResource("4_mage_sprite")
+texture_filter = 2
 
 [node name="SimpleAI" parent="." index="4"]
 script = ExtResource("3_archer_ai")

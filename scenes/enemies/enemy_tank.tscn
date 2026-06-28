@@ -24,8 +24,8 @@ shadow_sprite = NodePath("ShadowSprite")
 height_indicator = NodePath("HeightIndicator")
 
 [node name="BaseSprite" type="Sprite2D" parent="EntityVisualProxy" unique_id=2138666799]
-scale = Vector2(0.03125, 0.046875)
 texture = ExtResource("3_sib1e")
+texture_filter = 2
 
 [node name="ShadowSprite" type="Sprite2D" parent="EntityVisualProxy" unique_id=198344208]
 texture = ExtResource("shadow_tex")
