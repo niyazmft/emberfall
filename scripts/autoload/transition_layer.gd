@@ -1,12 +1,13 @@
 class_name _TransitionLayer
 extends CanvasLayer
-## A global transition layer to handle screen fades.
+## A global transition layer to handle screen fades and dissolve transitions.
 
 signal fade_completed
 
 @onready var color_rect: ColorRect = ColorRect.new()
 var _loading_label: Label
 var _transition_count: int = 0
+var _shader_material: ShaderMaterial
 
 
 func _ready() -> void:
@@ -17,6 +18,17 @@ func _ready() -> void:
 	color_rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	color_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(color_rect)
+
+	# Setup dissolve shader material (optional, created on first use)
+	var shader: Shader = load("res://shaders/transition_dissolve.gdshader") as Shader
+	if shader != null:
+		_shader_material = ShaderMaterial.new()
+		_shader_material.shader = shader
+		_shader_material.set_shader_parameter("progress", 0.0)
+		_shader_material.set_shader_parameter("fade_color", Color.BLACK)
+		_shader_material.set_shader_parameter("edge_width", 0.1)
+		_shader_material.set_shader_parameter("noise_scale", 20.0)
+		_shader_material.set_shader_parameter("ember_intensity", 0.8)
 
 	_loading_label = Label.new()
 	_loading_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -55,7 +67,7 @@ func _show_loading_text() -> void:
 	_loading_label.modulate.a = 1.0
 
 
-func fade_out(duration: float = 0.5) -> void:
+func fade_out(duration: float = 0.5, use_dissolve: bool = false) -> void:
 	color_rect.mouse_filter = Control.MOUSE_FILTER_STOP  # Block clicks during transition
 	_show_loading_text()
 	if OS.has_feature("headless"):
@@ -64,13 +76,19 @@ func fade_out(duration: float = 0.5) -> void:
 		fade_completed.emit()
 		return
 
-	var tween: Tween = create_tween()
-	tween.tween_property(color_rect, "modulate:a", 1.0, duration)
-	await tween.finished
+	if use_dissolve and _shader_material != null:
+		color_rect.material = _shader_material
+		var tween: Tween = create_tween()
+		tween.tween_method(_set_dissolve_progress, 0.0, 1.0, duration)
+		await tween.finished
+	else:
+		var tween: Tween = create_tween()
+		tween.tween_property(color_rect, "modulate:a", 1.0, duration)
+		await tween.finished
 	fade_completed.emit()
 
 
-func fade_in(duration: float = 0.5) -> void:
+func fade_in(duration: float = 0.5, use_dissolve: bool = false) -> void:
 	if OS.has_feature("headless"):
 		color_rect.modulate.a = 0.0
 		_loading_label.modulate.a = 0.0
@@ -78,9 +96,20 @@ func fade_in(duration: float = 0.5) -> void:
 		fade_completed.emit()
 		return
 
-	var tween: Tween = create_tween()
-	tween.tween_property(color_rect, "modulate:a", 0.0, duration)
-	await tween.finished
+	if use_dissolve and _shader_material != null:
+		var tween: Tween = create_tween()
+		tween.tween_method(_set_dissolve_progress, 1.0, 0.0, duration)
+		await tween.finished
+		color_rect.material = null
+	else:
+		var tween: Tween = create_tween()
+		tween.tween_property(color_rect, "modulate:a", 0.0, duration)
+		await tween.finished
 	_loading_label.modulate.a = 0.0
 	color_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	fade_completed.emit()
+
+
+func _set_dissolve_progress(value: float) -> void:
+	if _shader_material != null:
+		_shader_material.set_shader_parameter("progress", value)
