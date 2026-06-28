@@ -52,10 +52,8 @@ func _ready() -> void:
 	ember_particles.emission_rect_extents = Vector2(viewport_size.x * 0.5, 20.0)
 
 	# Initial focus: Continue if enabled, otherwise New Game
-	if not continue_btn.disabled:
-		continue_btn.grab_focus.call_deferred()
-	else:
-		new_game_btn.grab_focus.call_deferred()
+	var target_btn: Button = continue_btn if not continue_btn.disabled else new_game_btn
+	get_tree().process_frame.connect(func() -> void: target_btn.grab_focus(), CONNECT_ONE_SHOT)
 
 
 func _exit_tree() -> void:
