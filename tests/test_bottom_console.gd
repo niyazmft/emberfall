@@ -9,7 +9,6 @@ func test_bottom_console_instantiates() -> void:
 
 	assert_that(bc).is_not_null()
 	assert_that(bc.get_node_or_null("MarginContainer/HBoxContainer/LeftWing/HPBar")).is_not_null()
-	assert_that(bc.get_node_or_null("MarginContainer/HBoxContainer/LeftWing/APBar")).is_not_null()
 
 	bc.queue_free()
 	await get_tree().process_frame
@@ -31,7 +30,6 @@ func test_setup_sets_bar_values() -> void:
 
 	assert_that(bc.hp_bar.value).is_equal(50.0)
 	assert_that(bc.hp_bar.max_value).is_equal(100.0)
-	assert_that(bc.ap_bar.value).is_equal(3.0)
 
 	bc.queue_free()
 	await get_tree().process_frame

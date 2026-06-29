@@ -78,7 +78,7 @@ func _populate_hints() -> void:
 
 		var key_label: Label = Label.new()
 		key_label.text = hint["key"]
-		key_label.modulate = Color(0.9, 0.75, 0.2)
+		key_label.modulate = Color(0.8, 0.6, 0.1, 1.0)
 		key_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 
 		var desc_label: Label = Label.new()
