@@ -17,7 +17,8 @@ static func show_modal() -> void:
 
 
 func _ready() -> void:
-	_panel.back_pressed.connect(_on_back_pressed)
+	if not _panel.back_pressed.is_connected(_on_back_pressed):
+		_panel.back_pressed.connect(_on_back_pressed)
 	_panel.show()
 	var fm: Node = AutoloadHelper.focus_manager()
 	if fm:

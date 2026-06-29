@@ -53,10 +53,17 @@ func _ready() -> void:
 
 	# Initial focus: Continue if enabled, otherwise New Game
 	var target_btn: Button = continue_btn if not continue_btn.disabled else new_game_btn
-	get_tree().process_frame.connect(func() -> void: target_btn.grab_focus(), CONNECT_ONE_SHOT)
+	var focus_callable := func() -> void: target_btn.grab_focus()
+	get_tree().process_frame.connect(focus_callable, CONNECT_ONE_SHOT)
+	set_meta("_focus_callable", focus_callable)
 
 
 func _exit_tree() -> void:
+	var focus_callable: Variant = get_meta("_focus_callable", null)
+	if focus_callable is Callable:
+		if get_tree() and get_tree().process_frame.is_connected(focus_callable as Callable):
+			get_tree().process_frame.disconnect(focus_callable as Callable)
+	remove_meta("_focus_callable")
 	if continue_btn and continue_btn.pressed.is_connected(_on_continue_pressed):
 		continue_btn.pressed.disconnect(_on_continue_pressed)
 	if new_game_btn and new_game_btn.pressed.is_connected(_on_new_game_pressed):

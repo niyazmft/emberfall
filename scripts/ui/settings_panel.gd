@@ -216,30 +216,43 @@ func _exit_tree() -> void:
 			if control.drag_ended.is_connected(_onControlClicked):
 				control.drag_ended.disconnect(_onControlClicked)
 
+	_disconnect_hover_focus(self)
+
 
 func _connect_signals() -> void:
-	_tab_container.tab_changed.connect(_on_tab_changed)
+	if not _tab_container.tab_changed.is_connected(_on_tab_changed):
+		_tab_container.tab_changed.connect(_on_tab_changed)
 	_bound_callables["master_volume"] = _on_audio_changed.bind("master_volume")
-	_master_slider.value_changed.connect(_bound_callables["master_volume"])
+	if not _master_slider.value_changed.is_connected(_bound_callables["master_volume"]):
+		_master_slider.value_changed.connect(_bound_callables["master_volume"])
 	_bound_callables["music_volume"] = _on_audio_changed.bind("music_volume")
-	_music_slider.value_changed.connect(_bound_callables["music_volume"])
+	if not _music_slider.value_changed.is_connected(_bound_callables["music_volume"]):
+		_music_slider.value_changed.connect(_bound_callables["music_volume"])
 	_bound_callables["sfx_volume"] = _on_audio_changed.bind("sfx_volume")
-	_sfx_slider.value_changed.connect(_bound_callables["sfx_volume"])
+	if not _sfx_slider.value_changed.is_connected(_bound_callables["sfx_volume"]):
+		_sfx_slider.value_changed.connect(_bound_callables["sfx_volume"])
 	_bound_callables["mute"] = _on_audio_changed.bind("mute")
-	_mute_check.toggled.connect(_bound_callables["mute"])
+	if not _mute_check.toggled.is_connected(_bound_callables["mute"]):
+		_mute_check.toggled.connect(_bound_callables["mute"])
 
-	_apply_button.pressed.connect(_on_apply_video_settings)
+	if not _apply_button.pressed.is_connected(_on_apply_video_settings):
+		_apply_button.pressed.connect(_on_apply_video_settings)
 
 	_bound_callables["screen_shake"] = _on_accessibility_changed.bind("screen_shake")
-	_shake_slider.value_changed.connect(_bound_callables["screen_shake"])
+	if not _shake_slider.value_changed.is_connected(_bound_callables["screen_shake"]):
+		_shake_slider.value_changed.connect(_bound_callables["screen_shake"])
 	_bound_callables["cvd_sim"] = _on_accessibility_changed.bind("cvd_sim")
-	_cvd_option.item_selected.connect(_bound_callables["cvd_sim"])
+	if not _cvd_option.item_selected.is_connected(_bound_callables["cvd_sim"]):
+		_cvd_option.item_selected.connect(_bound_callables["cvd_sim"])
 
 	_bound_callables["input_hints"] = _on_controls_changed.bind("input_hints")
-	_input_hints_option.item_selected.connect(_bound_callables["input_hints"])
+	if not _input_hints_option.item_selected.is_connected(_bound_callables["input_hints"]):
+		_input_hints_option.item_selected.connect(_bound_callables["input_hints"])
 
-	_reset_button.pressed.connect(_on_reset_pressed)
-	_back_button.pressed.connect(_on_back_pressed)
+	if not _reset_button.pressed.is_connected(_on_reset_pressed):
+		_reset_button.pressed.connect(_on_reset_pressed)
+	if not _back_button.pressed.is_connected(_on_back_pressed):
+		_back_button.pressed.connect(_on_back_pressed)
 
 
 func _on_tab_changed(tab_index: int) -> void:
@@ -266,20 +279,37 @@ func _find_first_interactable(node: Node) -> Control:
 
 
 func _setup_hover_focus(node: Node) -> void:
+	if node is Control and not (node as Control).visible:
+		return
 	if (
 		node != _tab_container
 		and node is Control
 		and (node as Control).focus_mode == Control.FOCUS_ALL
 	):
-		if not node.mouse_entered.is_connected(_on_control_mouse_entered.bind(node as Control)):
-			node.mouse_entered.connect(_on_control_mouse_entered.bind(node as Control))
+		var bound_callable: Callable = _on_control_mouse_entered.bind(node as Control)
+		if not node.mouse_entered.is_connected(bound_callable):
+			node.mouse_entered.connect(bound_callable)
 	for child: Node in node.get_children():
 		_setup_hover_focus(child)
 
 
+func _disconnect_hover_focus(node: Node) -> void:
+	if (
+		node != _tab_container
+		and node is Control
+		and (node as Control).focus_mode == Control.FOCUS_ALL
+	):
+		var bound_callable: Callable = _on_control_mouse_entered.bind(node as Control)
+		if node.mouse_entered.is_connected(bound_callable):
+			node.mouse_entered.disconnect(bound_callable)
+	for child: Node in node.get_children():
+		_disconnect_hover_focus(child)
+
+
 func _on_control_mouse_entered(control: Control) -> void:
 	if (
-		control != null
+		is_instance_valid(control)
+		and control != null
 		and control.is_visible_in_tree()
 		and control.focus_mode != Control.FOCUS_NONE
 	):
