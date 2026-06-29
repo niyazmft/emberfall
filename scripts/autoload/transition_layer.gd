@@ -21,17 +21,6 @@ func _ready() -> void:
 	color_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(color_rect)
 
-	# Setup dissolve shader material (optional, created on first use)
-	var shader: Shader = load("res://shaders/transition_dissolve.gdshader") as Shader
-	if shader != null:
-		_shader_material = ShaderMaterial.new()
-		_shader_material.shader = shader
-		_shader_material.set_shader_parameter("progress", 0.0)
-		_shader_material.set_shader_parameter("fade_color", Color.BLACK)
-		_shader_material.set_shader_parameter("edge_width", 0.1)
-		_shader_material.set_shader_parameter("noise_scale", 20.0)
-		_shader_material.set_shader_parameter("ember_intensity", 0.8)
-
 	_loading_label = Label.new()
 	_loading_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_loading_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -40,6 +29,21 @@ func _ready() -> void:
 	_loading_label.modulate.a = 0.0
 	_loading_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_loading_label)
+
+
+func _ensure_shader_material() -> void:
+	if _shader_material != null:
+		return
+	var shader: Shader = load("res://shaders/transition_dissolve.gdshader") as Shader
+	if shader == null:
+		return
+	_shader_material = ShaderMaterial.new()
+	_shader_material.shader = shader
+	_shader_material.set_shader_parameter("progress", 0.0)
+	_shader_material.set_shader_parameter("fade_color", Color.BLACK)
+	_shader_material.set_shader_parameter("edge_width", 0.1)
+	_shader_material.set_shader_parameter("noise_scale", 20.0)
+	_shader_material.set_shader_parameter("ember_intensity", 0.8)
 
 
 func _show_loading_text() -> void:
@@ -77,14 +81,17 @@ func fade_out(duration: float = 0.5, use_dissolve: bool = false) -> void:
 	_is_fading = true
 
 	color_rect.mouse_filter = Control.MOUSE_FILTER_STOP  # Block clicks during transition
-	_show_loading_text()
+
 	if OS.has_feature("headless"):
 		color_rect.modulate.a = 1.0
-		_loading_label.modulate.a = 0.0
 		_is_fading = false
 		fade_completed.emit()
 		return
 
+	_show_loading_text()
+
+	if use_dissolve:
+		_ensure_shader_material()
 	if use_dissolve and _shader_material != null:
 		color_rect.material = _shader_material
 		_current_tween = create_tween()
@@ -114,6 +121,8 @@ func fade_in(duration: float = 0.5, use_dissolve: bool = false) -> void:
 	if not use_dissolve:
 		color_rect.material = null
 
+	if use_dissolve:
+		_ensure_shader_material()
 	if use_dissolve and _shader_material != null:
 		_current_tween = create_tween()
 		_current_tween.tween_method(_set_dissolve_progress, 1.0, 0.0, duration)

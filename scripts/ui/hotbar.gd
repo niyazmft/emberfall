@@ -156,8 +156,10 @@ func _update_slot_states() -> void:
 				slot_btn.disabled = _player_entity.ap < ability.apCost
 			else:
 				slot_btn.disabled = true
+			slot_btn.focus_mode = Control.FOCUS_ALL
 		else:
 			slot_btn.disabled = true
+			slot_btn.focus_mode = Control.FOCUS_NONE
 
 
 func _on_slot_pressed(slot_index: int) -> void:

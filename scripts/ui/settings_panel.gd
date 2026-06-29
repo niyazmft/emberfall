@@ -24,7 +24,7 @@ signal back_pressed
 @onready var _remap_panel: Control = %RemapPanel
 @onready var _reset_button: Button = %ResetButton
 @onready var _back_button: Button = %BackButton
-@onready var helpLabel: Label = %HelpLabel
+@onready var _help_label: Label = %HelpLabel
 
 @onready var _tab_container: TabContainer = (
 	$CenterContainer/MarginContainer/VBoxContainer/TabContainer as TabContainer
@@ -499,11 +499,11 @@ func _onControlClicked(_extra: Variant = null) -> void:
 
 func _updateHelpText(control_name: String) -> void:
 	if settingsHelp.has(control_name):
-		helpLabel.text = tr(settingsHelp[control_name])
+		_help_label.text = tr(settingsHelp[control_name])
 
 
 func _clearHelpText() -> void:
-	helpLabel.text = " "
+	_help_label.text = " "
 
 
 func _on_back_pressed() -> void:

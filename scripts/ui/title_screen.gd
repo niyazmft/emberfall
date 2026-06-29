@@ -10,6 +10,7 @@ extends Control
 @onready var button_container: VBoxContainer = %ButtonContainer
 @onready var premise_label: Label = %PremiseLabel
 @onready var ember_particles: CPUParticles2D = $EmberParticles
+var _button_animator: _ButtonAnimator = null
 
 
 func _ready() -> void:
@@ -42,14 +43,17 @@ func _ready() -> void:
 	_setup_focus_wrap()
 
 	# Apply button micro-animations
-	var animator: _ButtonAnimator = _ButtonAnimator.new()
-	add_child(animator)
-	animator.apply_to_buttons(button_container)
+	_button_animator = _ButtonAnimator.new()
+	add_child(_button_animator)
+	_button_animator.apply_to_buttons(button_container)
 
 	# Position ember particles across bottom of viewport
 	var viewport_size: Vector2 = get_viewport_rect().size
 	ember_particles.position = Vector2(viewport_size.x * 0.5, viewport_size.y * 0.95)
 	ember_particles.emission_rect_extents = Vector2(viewport_size.x * 0.5, 20.0)
+
+	# Connect viewport resize for dynamic particle repositioning
+	get_viewport().size_changed.connect(_on_viewport_resized)
 
 	# Initial focus: Continue if enabled, otherwise New Game
 	var target_btn: Button = continue_btn if not continue_btn.disabled else new_game_btn
@@ -72,6 +76,16 @@ func _exit_tree() -> void:
 		settings_btn.pressed.disconnect(_on_settings_pressed)
 	if quit_btn and quit_btn.pressed.is_connected(_on_quit_pressed):
 		quit_btn.pressed.disconnect(_on_quit_pressed)
+	if get_viewport() and get_viewport().size_changed.is_connected(_on_viewport_resized):
+		get_viewport().size_changed.disconnect(_on_viewport_resized)
+	if is_instance_valid(_button_animator):
+		_button_animator.queue_free()
+
+
+func _on_viewport_resized() -> void:
+	var viewport_size: Vector2 = get_viewport_rect().size
+	ember_particles.position = Vector2(viewport_size.x * 0.5, viewport_size.y * 0.95)
+	ember_particles.emission_rect_extents = Vector2(viewport_size.x * 0.5, 20.0)
 
 
 func _setup_focus_wrap() -> void:
