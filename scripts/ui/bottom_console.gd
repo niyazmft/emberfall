@@ -5,7 +5,6 @@ extends Control
 ## in a single three-zone container.
 
 @onready var hp_bar: ProgressBar = $MarginContainer/HBoxContainer/LeftWing/HPBar
-@onready var ap_bar: ProgressBar = $MarginContainer/HBoxContainer/LeftWing/APBar
 @onready
 var move_button: Button = $MarginContainer/HBoxContainer/CenterConsole/ActionButtons/MoveButton
 @onready
@@ -32,10 +31,6 @@ func _update_bars() -> void:
 	if hp_bar != null:
 		hp_bar.max_value = _player_entity.hp_max
 		hp_bar.value = _player_entity.hp
-	if ap_bar != null:
-		var ap_max: int = _get_ap_max()
-		ap_bar.max_value = ap_max
-		ap_bar.value = _player_entity.ap
 
 
 func _update_burden_label() -> void:
@@ -46,13 +41,6 @@ func _update_burden_label() -> void:
 		burden_label.text = "Burden: %d" % bm.total_sentient_kills
 	else:
 		burden_label.text = "Burden: --"
-
-
-func _get_ap_max() -> int:
-	var config: Node = AutoloadHelper.config_loader()
-	if config:
-		return config.getValue("ap_bar", "segment_count", GameConstants.AP_MAX)
-	return GameConstants.AP_MAX
 
 
 func _on_entity_state_changed(entity: Entity, _old: Entity.State, _new: Entity.State) -> void:
