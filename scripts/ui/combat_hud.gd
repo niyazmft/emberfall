@@ -312,10 +312,15 @@ func show_floating_text(text: String, position: Vector2, color: Color) -> void:
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 
-	var tween: Tween = get_tree().create_tween()
+	# Use label.create_tween() instead of get_tree().create_tween() for lifecycle safety
+	var tween: Tween = label.create_tween()
 	tween.tween_property(label, "position:y", final_pos.y - 20.0, 1.0)
 	tween.parallel().tween_property(label, "modulate:a", 0.0, 1.0)
-	tween.tween_callback(label.queue_free)
+	tween.tween_callback(
+		func() -> void:
+			if is_instance_valid(label) and label.is_inside_tree():
+				label.queue_free()
+	)
 
 
 func _on_floating_text_requested(text: String, position: Vector2, color: Color) -> void:
@@ -371,6 +376,8 @@ func _setup_minimap() -> void:
 	_minimap_grid = GridRenderer.new()
 	subviewport.add_child(_minimap_grid)
 	await get_tree().process_frame
+	if not is_inside_tree():
+		return  # Guard against node destruction during await (#534)
 
 	_minimap_grid.scale = Vector2(_minimap_scale, _minimap_scale)
 

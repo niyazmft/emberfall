@@ -81,6 +81,11 @@ func toggle_pause() -> void:
 		var fm := AutoloadHelper.focus_manager()
 		if fm:
 			fm.push_modal_focus(self)
+	else:
+		# FIX #539: Pop modal focus when unpausing to prevent focus stack corruption
+		var fm := AutoloadHelper.focus_manager()
+		if fm:
+			fm.pop_modal_focus()
 
 
 func _on_restart_pressed() -> void:
@@ -109,8 +114,21 @@ func _on_quit_pressed() -> void:
 
 func _on_quit_confirmed() -> void:
 	get_tree().paused = false
+	hide()
+
+	# FIX #540: Use TransitionLayer for proper fade before scene change
+	var tl: _TransitionLayer = AutoloadHelper.transition_layer()
+	if tl:
+		tl.fade_out(0.3)
+		await tl.fade_completed
+
 	var rm: _RunManager = AutoloadHelper.run_manager()
 	if rm:
 		rm.cmd_return_to_sanctum()
-	hide()
+
+	# Now safe to change scene
 	get_tree().change_scene_to_file("res://scenes/title_screen.tscn")
+
+	# Fade back in after scene loads (async — may not execute if scene changes)
+	if tl:
+		tl.fade_in(0.3)

@@ -8,6 +8,8 @@ signal fade_completed
 var _loading_label: Label
 var _transition_count: int = 0
 var _shader_material: ShaderMaterial
+var _is_fading: bool = false
+var _current_tween: Tween = null
 
 
 func _ready() -> void:
@@ -68,23 +70,32 @@ func _show_loading_text() -> void:
 
 
 func fade_out(duration: float = 0.5, use_dissolve: bool = false) -> void:
+	# Guard against concurrent fade execution
+	if _is_fading:
+		if _current_tween != null and _current_tween.is_valid():
+			_current_tween.kill()
+	_is_fading = true
+
 	color_rect.mouse_filter = Control.MOUSE_FILTER_STOP  # Block clicks during transition
 	_show_loading_text()
 	if OS.has_feature("headless"):
 		color_rect.modulate.a = 1.0
 		_loading_label.modulate.a = 0.0
+		_is_fading = false
 		fade_completed.emit()
 		return
 
 	if use_dissolve and _shader_material != null:
 		color_rect.material = _shader_material
-		var tween: Tween = create_tween()
-		tween.tween_method(_set_dissolve_progress, 0.0, 1.0, duration)
-		await tween.finished
+		_current_tween = create_tween()
+		_current_tween.tween_method(_set_dissolve_progress, 0.0, 1.0, duration)
+		await _current_tween.finished
 	else:
-		var tween: Tween = create_tween()
-		tween.tween_property(color_rect, "modulate:a", 1.0, duration)
-		await tween.finished
+		_current_tween = create_tween()
+		_current_tween.tween_property(color_rect, "modulate:a", 1.0, duration)
+		await _current_tween.finished
+	_is_fading = false
+	_current_tween = null
 	fade_completed.emit()
 
 
@@ -93,18 +104,27 @@ func fade_in(duration: float = 0.5, use_dissolve: bool = false) -> void:
 		color_rect.modulate.a = 0.0
 		_loading_label.modulate.a = 0.0
 		color_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_is_fading = false
+		_current_tween = null
 		fade_completed.emit()
 		return
 
+	# Always clear dissolve material before non-dissolve fade
+	# to prevent shader from overriding modulate-based transparency
+	if not use_dissolve:
+		color_rect.material = null
+
 	if use_dissolve and _shader_material != null:
-		var tween: Tween = create_tween()
-		tween.tween_method(_set_dissolve_progress, 1.0, 0.0, duration)
-		await tween.finished
+		_current_tween = create_tween()
+		_current_tween.tween_method(_set_dissolve_progress, 1.0, 0.0, duration)
+		await _current_tween.finished
 		color_rect.material = null
 	else:
-		var tween: Tween = create_tween()
-		tween.tween_property(color_rect, "modulate:a", 0.0, duration)
-		await tween.finished
+		_current_tween = create_tween()
+		_current_tween.tween_property(color_rect, "modulate:a", 0.0, duration)
+		await _current_tween.finished
+	_is_fading = false
+	_current_tween = null
 	_loading_label.modulate.a = 0.0
 	color_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	fade_completed.emit()

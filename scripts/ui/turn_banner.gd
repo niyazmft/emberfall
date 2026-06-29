@@ -15,12 +15,17 @@ const COLOR_RED: Color = Color(0.9, 0.2, 0.2)
 @onready var particles: CPUParticles2D = $Particles
 
 var _is_player_turn: bool = true
+var _is_showing: bool = false
+var _is_exiting: bool = false
+var _active_tweens: Array[Tween] = []
 
 
 func _ready() -> void:
 	modulate.a = 0.0
 	visible = false
 	scale = Vector2.ZERO
+	_is_showing = false
+	_is_exiting = false
 
 	# Configure panel StyleBoxFlat for rounded decorative backing
 	var style: StyleBoxFlat = StyleBoxFlat.new()
@@ -72,11 +77,20 @@ func _ready() -> void:
 	# Connect to EventBus
 	var eb: _EventBus = AutoloadHelper.event_bus()
 	if eb:
-		eb.room_entered.connect(_on_combat_started)
-		eb.turn_started.connect(_on_turn_started)
+		if not eb.room_entered.is_connected(_on_combat_started):
+			eb.room_entered.connect(_on_combat_started)
+		if not eb.turn_started.is_connected(_on_turn_started):
+			eb.turn_started.connect(_on_turn_started)
 
 
 func _exit_tree() -> void:
+	_is_exiting = true
+	# Kill all active tweens
+	for tween: Tween in _active_tweens:
+		if tween != null and tween.is_valid():
+			tween.kill()
+	_active_tweens.clear()
+
 	var eb: _EventBus = AutoloadHelper.event_bus()
 	if eb:
 		if eb.room_entered.is_connected(_on_combat_started):
@@ -86,6 +100,14 @@ func _exit_tree() -> void:
 
 
 func _show_banner(p_text: String, p_is_player: bool) -> void:
+	if _is_showing:
+		# Kill existing tweens and restart
+		for tween: Tween in _active_tweens:
+			if tween != null and tween.is_valid():
+				tween.kill()
+		_active_tweens.clear()
+
+	_is_showing = true
 	_is_player_turn = p_is_player
 	turn_label.text = p_text
 
@@ -111,6 +133,7 @@ func _show_banner(p_text: String, p_is_player: bool) -> void:
 		ribbon_tween.tween_property(ribbon, "position:x", 0.0, _slide_duration * 0.8)
 		ribbon_tween.set_trans(Tween.TRANS_CUBIC)
 		ribbon_tween.set_ease(Tween.EASE_OUT)
+		_active_tweens.append(ribbon_tween)
 
 	# Scale in from zero with TRANS_BACK easing
 	scale = Vector2.ZERO
@@ -121,29 +144,44 @@ func _show_banner(p_text: String, p_is_player: bool) -> void:
 		. set_trans(Tween.TRANS_BACK)
 		. set_ease(Tween.EASE_OUT)
 	)
+	_active_tweens.append(scale_tween)
 
 	# Brief gold/red glow flash on label
 	var glow_tween := create_tween()
 	glow_tween.tween_property(turn_label, "modulate", Color.WHITE, 0.15)
 	glow_tween.tween_interval(0.1)
 	glow_tween.tween_property(turn_label, "modulate", accent_color, 0.15)
+	_active_tweens.append(glow_tween)
 
 	# Particle burst
 	particles.emitting = true
 
 	await scale_tween.finished
+	if _is_exiting or not is_inside_tree():
+		_is_showing = false
+		return
 	await get_tree().create_timer(_display_duration).timeout
+	if _is_exiting or not is_inside_tree():
+		_is_showing = false
+		return
 
 	# Fade ribbon out
 	if ribbon != null:
 		var ribbon_fade := create_tween()
 		ribbon_fade.tween_property(ribbon, "modulate:a", 0.0, _fade_duration)
+		_active_tweens.append(ribbon_fade)
 
 	# Fade out
-	var fade_out := create_tween()
-	fade_out.tween_property(self, "modulate:a", 0.0, _fade_duration)
-	await fade_out.finished
+	var fade_out_tween := create_tween()
+	fade_out_tween.tween_property(self, "modulate:a", 0.0, _fade_duration)
+	_active_tweens.append(fade_out_tween)
+	await fade_out_tween.finished
+	if _is_exiting or not is_inside_tree():
+		_is_showing = false
+		return
 	visible = false
+	_is_showing = false
+	_active_tweens.clear()
 
 
 func display_message(p_text: String, p_color: Color = Color.WHITE) -> void:

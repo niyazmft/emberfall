@@ -179,6 +179,11 @@ static func focus_manager() -> _FocusManager:
 	return get_autoload("FocusManager") as _FocusManager
 
 
+## Returns the TransitionLayer autoload, or null.
+static func transition_layer() -> _TransitionLayer:
+	return get_autoload("TransitionLayer") as _TransitionLayer
+
+
 ## Returns the UIAudioManager autoload, or null.
 static func ui_audio_manager() -> _UIAudioManager:
 	return get_autoload("UIAudioManager") as _UIAudioManager
