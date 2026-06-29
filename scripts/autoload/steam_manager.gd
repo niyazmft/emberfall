@@ -8,9 +8,10 @@ signal cloud_save_synced(success: bool)
 
 var _steam_available: bool = false
 var _steam_initialized: bool = false
+var _warning_shown: bool = false
 
 ## Steam app ID for Emberfall (replace with actual ID when publishing)
-const STEAM_APP_ID: int = 480  # 480 = Spacewar (Steam test app)
+const STEAM_APP_ID: int = 0  # Set to real app ID before release
 
 
 func _ready() -> void:
@@ -24,8 +25,9 @@ func _ready() -> void:
 		else:
 			push_warning("[SteamManager] Steamworks detection succeeded but init failed.")
 	else:
-		if OS.is_debug_build():
+		if OS.is_debug_build() and not _warning_shown:
 			push_warning("[SteamManager] Steamworks not available. Running in offline mode.")
+			_warning_shown = true
 
 
 func _detect_steam() -> bool:

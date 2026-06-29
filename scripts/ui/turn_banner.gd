@@ -14,7 +14,6 @@ const COLOR_RED: Color = Color(0.9, 0.2, 0.2)
 @onready var turn_label: Label = $Label
 @onready var particles: CPUParticles2D = $Particles
 
-var _is_player_turn: bool = true
 var _is_showing: bool = false
 var _is_exiting: bool = false
 var _active_tweens: Array[Tween] = []
@@ -108,7 +107,6 @@ func _show_banner(p_text: String, p_is_player: bool) -> void:
 		_active_tweens.clear()
 
 	_is_showing = true
-	_is_player_turn = p_is_player
 	turn_label.text = p_text
 
 	var accent_color: Color = COLOR_GOLD if p_is_player else COLOR_RED
