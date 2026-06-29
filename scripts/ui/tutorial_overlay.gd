@@ -22,7 +22,8 @@ func _ready() -> void:
 	process_mode = PROCESS_MODE_ALWAYS
 
 
-func _input(event: InputEvent) -> void:
+func _unhandled_input(event: InputEvent) -> void:
+	## Use _unhandled_input so LayerManager can consume ui_cancel first.
 	if not visible or _is_dismissed:
 		return
 	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
