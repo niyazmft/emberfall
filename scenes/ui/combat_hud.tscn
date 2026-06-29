@@ -119,6 +119,7 @@ horizontal_alignment = 1
 [node name="RoundLabel" type="Label" parent="MarginContainer/MasterVBox/TopInfo" unique_id=2087559899]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_fonts/font = ExtResource("cinzel_bold")
 text = "Round 1"
 horizontal_alignment = 1
 
@@ -142,7 +143,7 @@ alignment = 1
 
 [node name="HPBar" type="ProgressBar" parent="MarginContainer/MasterVBox/BottomSlot/BottomChrome/StatusIcons" unique_id=14819860]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(140, 20)
+custom_minimum_size = Vector2(70, 20)
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_styles/background = SubResource("StyleBoxFlat_hp_bg")
@@ -151,21 +152,6 @@ value = 50.0
 show_percentage = false
 
 [node name="HPLabel" type="Label" parent="MarginContainer/MasterVBox/BottomSlot/BottomChrome/StatusIcons" unique_id=1114876940]
-unique_name_in_owner = true
-layout_mode = 2
-text = "0 / 0"
-
-[node name="APBar" type="ProgressBar" parent="MarginContainer/MasterVBox/BottomSlot/BottomChrome/StatusIcons" unique_id=1352002314]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(140, 20)
-layout_mode = 2
-size_flags_vertical = 4
-theme_override_styles/background = SubResource("StyleBoxFlat_ap_bg")
-theme_override_styles/fill = SubResource("StyleBoxFlat_ap_fill")
-value = 50.0
-show_percentage = false
-
-[node name="APLabel" type="Label" parent="MarginContainer/MasterVBox/BottomSlot/BottomChrome/StatusIcons" unique_id=660805588]
 unique_name_in_owner = true
 layout_mode = 2
 text = "0 / 0"
