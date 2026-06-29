@@ -5,6 +5,9 @@ extends Control
 ## Displays HP via a styled ProgressBar with color-coded fill and numeric label,
 ## and AP via dynamic TextureRect pips (diamond shapes).
 
+const _AP_FULL: Texture2D = preload("res://assets/sprites/ap_gem.png")
+const _AP_EMPTY: Texture2D = preload("res://assets/sprites/ap_gem_empty.png")
+
 var _lerp_speed: float = 10.0
 var _target_hp: float = 0.0
 var _max_hp: int = 1
@@ -139,13 +142,10 @@ func update_ap(p_current: int, p_max_ap: int = -1) -> void:
 			ap_container.remove_child(child)
 			child.queue_free()
 
-	var tex_full: Texture2D = load("res://assets/sprites/ap_gem.png") as Texture2D
-	var tex_empty: Texture2D = load("res://assets/sprites/ap_gem_empty.png") as Texture2D
-
 	for i: int in range(actual_max_ap):
 		var pip: TextureRect = ap_container.get_child(i) as TextureRect
 		if pip:
-			pip.texture = tex_full if i < p_current else tex_empty
+			pip.texture = _AP_FULL if i < p_current else _AP_EMPTY
 
 
 ## Deprecated: Use update_ap

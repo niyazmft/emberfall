@@ -41,6 +41,16 @@ func _exit_tree() -> void:
 	if sz and sz.safe_area_changed.is_connected(_on_safe_area_changed):
 		sz.safe_area_changed.disconnect(_on_safe_area_changed)
 
+	# FIX #556: Disconnect button pressed signals
+	if _resume_button and _resume_button.pressed.is_connected(toggle_pause):
+		_resume_button.pressed.disconnect(toggle_pause)
+	if _restart_button and _restart_button.pressed.is_connected(_on_restart_pressed):
+		_restart_button.pressed.disconnect(_on_restart_pressed)
+	if _settings_button and _settings_button.pressed.is_connected(_on_settings_requested):
+		_settings_button.pressed.disconnect(_on_settings_requested)
+	if _quit_button and _quit_button.pressed.is_connected(_on_quit_pressed):
+		_quit_button.pressed.disconnect(_on_quit_pressed)
+
 
 func _on_safe_area_changed(_rect: Rect2) -> void:
 	_apply_safe_area()

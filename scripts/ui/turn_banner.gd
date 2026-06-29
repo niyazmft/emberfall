@@ -184,9 +184,9 @@ func _show_banner(p_text: String, p_is_player: bool) -> void:
 	_active_tweens.clear()
 
 
-func display_message(p_text: String, p_color: Color = Color.WHITE) -> void:
-	## Legacy API: delegates to _show_banner with player-turn treatment.
-	_show_banner(p_text, p_color == Color.GREEN or p_color == COLOR_GOLD)
+func display_message(p_text: String, p_is_player: bool = true) -> void:
+	## Legacy API: delegates to _show_banner with explicit player flag.
+	_show_banner(p_text, p_is_player)
 
 
 func _on_combat_started(_room_index: int, _room_data: Dictionary) -> void:

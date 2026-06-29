@@ -59,7 +59,6 @@ func _update_metrics() -> void:
 ## Returns the safe margins in design pixels.
 func get_safe_margins() -> Dictionary:
 	var safe_rect: Rect2i = DisplayServer.get_display_safe_area()
-	var screen_size: Vector2i = DisplayServer.screen_get_size()
 
 	# Coordinate conversion: screen to design pixels
 	var viewport_size: Vector2 = Vector2(get_viewport().get_visible_rect().size)
@@ -74,8 +73,8 @@ func get_safe_margins() -> Dictionary:
 	return {
 		"left": int(float(safe_rect.position.x) * scale.x),
 		"top": int(float(safe_rect.position.y) * scale.y),
-		"right": int(float(screen_size.x - safe_rect.end.x) * scale.x),
-		"bottom": int(float(screen_size.y - safe_rect.end.y) * scale.y)
+		"right": int(float(window_size.x - safe_rect.end.x) * scale.x),
+		"bottom": int(float(window_size.y - safe_rect.end.y) * scale.y)
 	}
 
 

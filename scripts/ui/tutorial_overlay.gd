@@ -22,6 +22,12 @@ func _ready() -> void:
 	process_mode = PROCESS_MODE_ALWAYS
 
 
+func _exit_tree() -> void:
+	## FIX #557: Disconnect _got_it_button signal
+	if _got_it_button and _got_it_button.pressed.is_connected(_on_got_it_pressed):
+		_got_it_button.pressed.disconnect(_on_got_it_pressed)
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	## Use _unhandled_input so LayerManager can consume ui_cancel first.
 	if not visible or _is_dismissed:
