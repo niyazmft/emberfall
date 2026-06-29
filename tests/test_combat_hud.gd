@@ -15,26 +15,15 @@ func test_stats_update() -> void:
 
 	var hp_bar: ProgressBar = hud.get_node("%HPBar") as ProgressBar
 	var hp_label: Label = hud.get_node("%HPLabel") as Label
-	var ap_bar: ProgressBar = hud.get_node("%APBar") as ProgressBar
-	var ap_label: Label = hud.get_node("%APLabel") as Label
 
 	assert_int(int(hp_bar.max_value)).is_equal(100)
 	assert_int(int(hp_bar.value)).is_equal(100)
 	assert_str(hp_label.text).is_equal("100 / 100")
 
-	assert_int(int(ap_bar.max_value)).is_equal(GameConstants.AP_MAX)
-	assert_int(int(ap_bar.value)).is_equal(6)
-	assert_str(ap_label.text).is_equal("6 / 6")
-
 	# Test HP change
 	entity.hp = 50
 	assert_int(int(hp_bar.value)).is_equal(50)
 	assert_str(hp_label.text).is_equal("50 / 100")
-
-	# Test AP change
-	entity.ap = 2
-	assert_int(int(ap_bar.value)).is_equal(2)
-	assert_str(ap_label.text).is_equal("2 / 6")
 
 	hud.queue_free()
 

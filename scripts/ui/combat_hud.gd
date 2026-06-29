@@ -18,11 +18,9 @@ var _combat_input: CombatInput
 var action_buttons: Control = $MarginContainer/MasterVBox/BottomSlot/BottomChrome/ActionButtonsPanel
 @onready var tutorial_overlay: _TutorialOverlay = %TutorialOverlay
 
-# HP/AP Display
+# HP Display
 @onready var hp_bar: ProgressBar = %HPBar
 @onready var hp_label: Label = %HPLabel
-@onready var ap_bar: ProgressBar = %APBar
-@onready var ap_label: Label = %APLabel
 
 # Action Buttons
 @onready var move_button: Button = %MoveButton
@@ -167,16 +165,6 @@ func update_player_stats(entity: Entity) -> void:
 	hp_bar.value = entity.hp
 	hp_label.text = "%d / %d" % [entity.hp, entity.hp_max]
 
-	var config: Node = AutoloadHelper.config_loader()
-	var ap_max: int = (
-		config.getValue("ap_bar", "segment_count", GameConstants.AP_MAX)
-		if config
-		else GameConstants.AP_MAX
-	)
-	ap_bar.max_value = ap_max
-	ap_bar.value = entity.ap
-	ap_label.text = "%d / %d" % [entity.ap, ap_max]
-
 
 func log_action(message: String) -> void:
 	prompts.text = message
@@ -276,8 +264,6 @@ func _setup_tooltips() -> void:
 	var tooltips: Dictionary = config.getValue("tooltips", "", {})
 	if tooltips.has("hp_bar"):
 		hp_bar.tooltip_text = tr(tooltips["hp_bar"])
-	if tooltips.has("ap_bar"):
-		ap_bar.tooltip_text = tr(tooltips["ap_bar"])
 	if tooltips.has("move_button"):
 		move_button.tooltip_text = tr(tooltips["move_button"])
 	if tooltips.has("attack_button"):
