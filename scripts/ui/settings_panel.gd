@@ -30,7 +30,7 @@ signal back_pressed
 	$CenterContainer/MarginContainer/VBoxContainer/TabContainer as TabContainer
 )
 
-var settingsHelp: Dictionary = {}
+var _settings_help: Dictionary = {}
 var _bound_callables: Dictionary = {}
 var _resolutions: Array[Vector2i] = [
 	Vector2i(1920, 1080),
@@ -46,28 +46,28 @@ func _ready() -> void:
 		sz.safe_area_changed.connect(_on_safe_area_changed)
 	_apply_safe_area()
 
-	_loadHelpData()
+	_load_help_data()
 	_setup_options()
 	_load_ui_from_settings()
 	_connect_signals()
-	_setupHelpListeners()
+	_setup_help_listeners()
 	_style_apply_button()
 	_setup_hover_focus(self)
 	_setup_focus_neighbors()
 
 
-func _loadHelpData() -> void:
+func _load_help_data() -> void:
 	var cl: _ConfigLoader = AutoloadHelper.config_loader()
 	if cl:
 		if not cl.isLoaded():
 			await cl.ready
 
-		var helpData: Variant = cl.getValue("settings_help")
-		if helpData is Dictionary:
-			for key: String in helpData:
-				var val: Variant = helpData[key]
+		var help_data: Variant = cl.getValue("settings_help")
+		if help_data is Dictionary:
+			for key: String in help_data:
+				var val: Variant = help_data[key]
 				if val is String:
-					settingsHelp[key] = val
+					_settings_help[key] = val
 
 
 func _setup_options() -> void:
@@ -199,22 +199,22 @@ func _exit_tree() -> void:
 		if bound_hover and control.focus_entered.is_connected(bound_hover):
 			control.focus_entered.disconnect(bound_hover)
 
-		if control.mouse_exited.is_connected(_clearHelpText):
-			control.mouse_exited.disconnect(_clearHelpText)
-		if control.focus_exited.is_connected(_clearHelpText):
-			control.focus_exited.disconnect(_clearHelpText)
+		if control.mouse_exited.is_connected(_clear_help_text):
+			control.mouse_exited.disconnect(_clear_help_text)
+		if control.focus_exited.is_connected(_clear_help_text):
+			control.focus_exited.disconnect(_clear_help_text)
 
 		if control is Button or control is CheckBox or control is OptionButton:
-			if control.has_signal("pressed") and control.pressed.is_connected(_onControlClicked):
-				control.pressed.disconnect(_onControlClicked)
+			if control.has_signal("pressed") and control.pressed.is_connected(_on_control_clicked):
+				control.pressed.disconnect(_on_control_clicked)
 			elif (
 				control.has_signal("item_selected")
-				and control.item_selected.is_connected(_onControlClicked)
+				and control.item_selected.is_connected(_on_control_clicked)
 			):
-				control.item_selected.disconnect(_onControlClicked)
+				control.item_selected.disconnect(_on_control_clicked)
 		elif control is HSlider:
-			if control.drag_ended.is_connected(_onControlClicked):
-				control.drag_ended.disconnect(_onControlClicked)
+			if control.drag_ended.is_connected(_on_control_clicked):
+				control.drag_ended.disconnect(_on_control_clicked)
 
 	_disconnect_hover_focus(self)
 
@@ -444,7 +444,7 @@ func _on_reset_confirmed() -> void:
 		_load_ui_from_settings()
 
 
-func _setupHelpListeners() -> void:
+func _setup_help_listeners() -> void:
 	var controls: Array[Control] = [
 		_master_slider,
 		_music_slider,
@@ -462,24 +462,24 @@ func _setupHelpListeners() -> void:
 	]
 
 	for control: Control in controls:
-		var bound_hover := _onControlHovered.bind(control.name)
+		var bound_hover := _on_control_hovered.bind(control.name)
 		_bound_callables["hover_" + control.name] = bound_hover
 		control.mouse_entered.connect(bound_hover)
 		control.focus_entered.connect(bound_hover)
-		control.mouse_exited.connect(_clearHelpText)
-		control.focus_exited.connect(_clearHelpText)
+		control.mouse_exited.connect(_clear_help_text)
+		control.focus_exited.connect(_clear_help_text)
 
 		if control is Button or control is CheckBox or control is OptionButton:
 			if control.has_signal("pressed"):
-				control.pressed.connect(_onControlClicked)
+				control.pressed.connect(_on_control_clicked)
 			elif control.has_signal("item_selected"):
-				control.item_selected.connect(_onControlClicked)
+				control.item_selected.connect(_on_control_clicked)
 		elif control is HSlider:
-			control.drag_ended.connect(_onControlClicked)
+			control.drag_ended.connect(_on_control_clicked)
 
 
-func _onControlHovered(control_name: String) -> void:
-	_updateHelpText(control_name)
+func _on_control_hovered(control_name: String) -> void:
+	_update_help_text(control_name)
 	var am: _UIAudioManager = AutoloadHelper.ui_audio_manager()
 	if am:
 		am.playUiSound("hover")
@@ -488,7 +488,7 @@ func _onControlHovered(control_name: String) -> void:
 		hm.triggerHaptic("hover")
 
 
-func _onControlClicked(_extra: Variant = null) -> void:
+func _on_control_clicked(_extra: Variant = null) -> void:
 	var am: _UIAudioManager = AutoloadHelper.ui_audio_manager()
 	if am:
 		am.playUiSound("click")
@@ -497,12 +497,12 @@ func _onControlClicked(_extra: Variant = null) -> void:
 		hm.triggerHaptic("click")
 
 
-func _updateHelpText(control_name: String) -> void:
-	if settingsHelp.has(control_name):
-		_help_label.text = tr(settingsHelp[control_name])
+func _update_help_text(control_name: String) -> void:
+	if _settings_help.has(control_name):
+		_help_label.text = tr(_settings_help[control_name])
 
 
-func _clearHelpText() -> void:
+func _clear_help_text() -> void:
 	_help_label.text = " "
 
 

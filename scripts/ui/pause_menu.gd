@@ -126,7 +126,8 @@ func _on_quit_confirmed() -> void:
 	get_tree().paused = false
 	hide()
 
-	# FIX #540: Use TransitionLayer for proper fade before scene change
+	# Fade out before scene change. TitleScreen._ready() handles fade_in
+	# to avoid calling fade_in on a node that gets freed mid-transition.
 	var tl: _TransitionLayer = AutoloadHelper.transition_layer()
 	if tl:
 		tl.fade_out(0.3)
@@ -136,9 +137,4 @@ func _on_quit_confirmed() -> void:
 	if rm:
 		rm.cmd_return_to_sanctum()
 
-	# Now safe to change scene
 	get_tree().change_scene_to_file("res://scenes/title_screen.tscn")
-
-	# Fade back in after scene loads (async — may not execute if scene changes)
-	if tl:
-		tl.fade_in(0.3)

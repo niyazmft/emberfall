@@ -52,6 +52,13 @@ func _ready() -> void:
 	ember_particles.position = Vector2(viewport_size.x * 0.5, viewport_size.y * 0.95)
 	ember_particles.emission_rect_extents = Vector2(viewport_size.x * 0.5, 20.0)
 
+	# Fade in from black when reached via direct scene change (e.g. PauseMenu quit).
+	# GameCoordinator._change_scene() also calls fade_in, but this covers
+	# the case where change_scene_to_file is used directly.
+	var tl: _TransitionLayer = AutoloadHelper.transition_layer()
+	if tl:
+		tl.fade_in(0.3)
+
 	# Connect viewport resize for dynamic particle repositioning
 	get_viewport().size_changed.connect(_on_viewport_resized)
 
