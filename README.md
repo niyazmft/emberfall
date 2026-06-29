@@ -12,7 +12,7 @@ A deterministic, grid-based tactics engine built entirely in **Godot 4.6.3**, de
 
 ## Gameplay
 
-> 📸 *Screenshots and gameplay GIFs coming soon. The project has successfully delivered its Phase 5 Vertical Slice Demo (all 379 unit tests passing with 0 failures) and is currently undergoing its Option B Premium UI Overhaul (Phases 6–8).*
+> 📸 *Screenshots and gameplay GIFs coming soon. The project has successfully delivered its Phase 5 Vertical Slice Demo (all 388 unit tests passing with 0 failures), completed Phase 6 (Design Tokens & Structural Layouts), and is wrapping up Phase 7 (Premium Asset Injection). Only 3 asset-dependent issues remain open before the Premium UI Overhaul is complete.*
 
 ## Features
 
@@ -167,10 +167,21 @@ emberfall/
   - [x] Engine stability: stale refs, signal leaks, infinite-loop abort (#418, #419, #420)
   - [x] Level design: biome rooms, boss variety, hazards (#421, #422, #423)
   - [x] Narrative: premise, burden variants, ambient captions (#424, #425, #426)
-- [ ] Option B Premium UI Overhaul (Phases 6–8 Active)
-  - [ ] Phase 6: Design Tokens & Structural Layouts (main_theme, TitleScreen, bottom console, SettingsPanel, camera zoom, popups)
-  - [ ] Phase 7: Premium Asset Injection (production sprites, soft shadows, `voxy/at-icons`, 9-patch frames, prop sprites, mastered SFX)
-  - [ ] Phase 8: Motion Polish & Atmosphere (title glow, micro-animation tweens, TurnBanner ribbon, dissolving ember transition shader, layered musical stems, GodotSteam bindings)
+- [x] Phase 6: Design Tokens & Structural Layouts (main_theme, TitleScreen, bottom console, SettingsPanel, camera zoom, popups) — Complete via PR #528
+- [x] Phase 7: Premium Asset Injection (production sprites, soft shadows, combat icons, prop sprites) — Nearly Complete via PRs #530–#532
+  - [x] Production entity sprites (9 characters) and soft radial shadows (#455)
+  - [x] Premium combat action & ability icons (move, attack, end turn, strike, ember, quick dash) (#510)
+  - [x] Bespoke 2D environmental prop sprites (8 props) (#513)
+  - [x] Minimap decorative border frame (#511)
+  - [ ] 9-patch StyleBoxTextures for buttons & modals (#512 — asset-dependent)
+  - [ ] Mastered SFX replacement (#514 — asset-dependent)
+- [x] Phase 8: Motion Polish & Atmosphere (title glow, micro-animation tweens, TurnBanner ribbon, dissolving ember transition shader, GodotSteam bindings) — Partially Complete via PRs #530–#531
+  - [x] Title glow shader (#515)
+  - [x] Button Tween micro-animations (#516)
+  - [x] TurnBanner ribbon animation (#517)
+  - [x] Transition dissolve shader (#518)
+  - [x] GodotSteam wrapper (#520)
+  - [ ] Layered musical stems (#519 — asset-dependent)
 
 ## Contributing
 

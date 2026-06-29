@@ -335,7 +335,7 @@ Implement the new layout using temporary, solid-color blocks (gray-boxing). This
 |------|--------|----------|----------|------------|-------|
 | `[UI] Establish master design tokens and focus padding in main_theme (#504)` | ✅ Done | P0 | 1.5d | None | Grid constants (8px separation, 16px margin), typography scale (Header 24px / Subheader 18px / Caption 8px), DangerButton type variation, semantic color tokens (accent, surface_dark, surface_mid, text_primary, text_muted, danger), TabContainer tab_selected/tab_unselected styles |
 | `[UI] Restructure TitleScreen layout hierarchy (#505)` | ✅ Done | P0 | 1d | None | `MarginContainer` root with 60/80/60/80 margins, `MainVBox` (sep 60) with `HeaderVBox` + `NavigationContainer` subdivision, `PremiseLabel` has `unique_name_in_owner = true` and `SIZE_EXPAND_FILL`, script uses `%PremiseLabel` |
-| `[UI] Architect unified bottom console & rescale world bars (#506)` | ⏳ Ready | P0 | 2d | None | Partial: HP/AP bars rescaled to 140×20, theme wired, button sep widened. Still missing: `ui/console/bottom_console.tscn` scene, Left/Center/Right three-zone layout, `AspectRatioContainer`, JSON config binding, `EventBus` signal connections |
+| `[UI] Architect unified bottom console & rescale world bars (#506)` | ✅ Done | P0 | 2d | None | `BottomConsole` scene created with LeftWing (HP/AP bars), CenterConsole (action buttons), RightWing (burden label); wired into `CombatHUD.setup()` via `EventBus`; bars rescaled to 140×20; theme constants applied |
 | `[UI] Centralize SettingsPanel & fix disappearing tab titles (#507)` | ✅ Done | P0 | 1.5d | None | `CenterContainer` centers modal content; Audio/Video/Accessibility tabs use `GridContainer` (columns=2) form layout; tab styling moved from runtime GDScript to `main_theme.tres` |
 | `[Camera] Adjust default Camera2D tactical zoom to 3.2x (#508)` | ✅ Done | P1 | 0.5d | None | `combat_room.tscn` Camera2D zoom changed from 4.5x to 3.2x. Advanced features (cursor-targeted zoom, lerp panning, edge scroll, middle-click drag) split into a future follow-up |
 | `[UI] Offset helper popups & fix minimap overlay leak (#509)` | ✅ Done | P0 | 1d | None | `EventBus.modal_opened` / `modal_closed` connected; minimap hidden when modal active; floating text offset by -80px when modal open |
@@ -351,7 +351,7 @@ Implement the new layout using temporary, solid-color blocks (gray-boxing). This
 | `[Update #455] Integrate production-ready character & enemy sprites` | ✅ Done | P1 | 2.5d | None | Production sprites generated and swapped into `.tscn` scenes; concept art removed |
 | `[Update #455] Design soft radial shadow textures (S-1)` | ✅ Done | P1 | 1d | None | `soft_radial_shadow.tres` (GradientTexture2D, FILL_RADIAL, 64×32) created and wired to `ShadowSprite` in all entity scenes |
 | `[UI] Create premium combat action & ability icons (#510)` | ✅ Done | P1 | 2d | None | Generated and wired premium combat action PNGs (move, attack, end turn) and ability icons (strike, ember, quick dash) in normal, hover, and disabled states |
-| `[UI] Encase minimap in custom decorative border frame (#511)` | ⏳ Ready | P1 | 1d | None | MinimapContainer is still a plain SubViewportContainer; needs a Panel wrapper with a 9-patch or StyleBoxFlat border |
+| `[UI] Encase minimap in custom decorative border frame (#511)` | ✅ Done | P1 | 1d | None | `MinimapContainer` wrapped in `MinimapBorder` Panel in `scenes/ui/combat_hud.tscn`; inherits `Panel/styles/panel` from `main_theme.tres` |
 | `[UI] Upgrade buttons & modals to 9-patch StyleBoxTextures (#512)` | ⏳ Ready | P1 | 1.5d | None | All buttons still use `StyleBoxFlat`; needs 9-patch PNG assets generated and wired into `main_theme.tres` as `StyleBoxTexture` |
 | `[Visual] Create bespoke 2D environmental prop sprites (#513)` | ✅ Done | P1 | 2d | None | Generated 8 premium environmental prop PNGs in `assets/sprites/props/` and populated `Props` node in `combat_room.tscn` |
 | `[Audio] Replace synthesized audio with mastered SFX (#514)` | 🚫 Blocked | P1 | 2d | Needs mastered `.wav` assets | Placeholder `.wav` files exist; blocked until production audio assets are provided or generated |
@@ -365,22 +365,24 @@ Implement the new layout using temporary, solid-color blocks (gray-boxing). This
 
 | Task | Status | Priority | Estimate | Blocked By | Notes |
 |------|--------|----------|----------|------------|-------|
-| `[UI] Upgrade main EMBERFALL title font with external glow (#515)` | 📋 Backlog | P2 | 1d | Phase 7 | Upgrades title typography with soft external glow shader or shadow pass |
-| `[UI] Implement Tween micro-animations across controls (#516)` | 📋 Backlog | P1 | 2d | Phase 7 | Adds smooth 5% hover scaling and depress click animations to all buttons |
-| `[UI] Animate TurnBanner with styled horizontal backing ribbon (#517)` | 📋 Backlog | P1 | 1.5d | Phase 7 | Flies in backing ribbon with float tween and clean dissolve on turn transitions |
-| `[UI] Upgrade TransitionLayer with stylized transition shader (#518)` | 📋 Backlog | P1 | 1.5d | Phase 7 | Replaces simple fade with circular wipe/dissolving ember pattern and lore text |
-| `[Audio] Implement high-fidelity layered Burden musical stems (#519)` | 📋 Backlog | P1 | 2d | Phase 7 | Replaces basic stems with multi-layered musical tracks mixing dynamically by MWT |
-| `[Steam] Integrate GodotSteam GDExtension for Steamworks API (#520)` | 📋 Backlog | P2 | 3d | Phase 8 | Placeholder for future publishing (Cloud Saves, Achievements); may be pushed to a dedicated post-overhaul release phase |
+| `[UI] Upgrade main EMBERFALL title font with external glow (#515)` | ✅ Done | P2 | 1d | None | `shaders/title_glow.gdshader` created (multi-sample canvas_item glow with ember gold color); wired to TitleLabel in `scenes/title_screen.tscn` |
+| `[UI] Implement Tween micro-animations across controls (#516)` | ✅ Done | P1 | 2d | None | `scripts/ui/button_animator.gd` created; hover scale (1.05×, 150ms), press scale (0.95×, 50ms), return-to-normal; applied to title screen buttons and combat HUD action buttons |
+| `[UI] Animate TurnBanner with styled horizontal backing ribbon (#517)` | ✅ Done | P1 | 1.5d | None | Ribbon Panel fly-in from off-screen left + fade-out dissolve; scale tween, gold/red glow, decorative backing panel, auto-hide |
+| `[UI] Upgrade TransitionLayer with stylized transition shader (#518)` | ✅ Done | P1 | 1.5d | None | `shaders/transition_dissolve.gdshader` created (circular wipe + ember glow edge via deterministic noise hash); `scripts/autoload/transition_layer.gd` modified with optional `use_dissolve` parameter |
+| `[Audio] Implement high-fidelity layered Burden musical stems (#519)` | 📋 Backlog | P1 | 2d | Phase 7 | Replaces basic stems with multi-layered musical tracks mixing dynamically by MWT; blocked until `.ogg` stem assets provided or generated |
+| `[Steam] Integrate GodotSteam GDExtension for Steamworks API (#520)` | ✅ Done | P2 | 3d | None | `scripts/autoload/steam_manager.gd` created using `ClassDB.class_exists("Steam")` detection and `Engine.get_singleton("Steam")` with `Callable` indirection; graceful offline fallback; added to `project.godot` autoloads |
 
 ---
 
 ## Current Sprint Status: Premium UI Overhaul (Phase 6 Complete → Phase 7 Active)
 
-**Phase 6 (Done — 6/6 tasks):** All Phase 6 structural layout tasks are now ✅ Done: design tokens (#504), TitleScreen restructure (#505), combat HUD world bars (#506), SettingsPanel centralisation (#507), Camera2D zoom (#508), and popup offset/minimap leak (#509). Merged in PR #528.
+**Phase 6 (Done — 6/6 tasks):** All Phase 6 structural layout tasks are now ✅ Done: design tokens (#504), TitleScreen restructure (#505), bottom console (#506), SettingsPanel centralisation (#507), Camera2D zoom (#508), and popup offset/minimap leak (#509). Merged in PRs #528 and #530.
 
-**Phase 7 (Active — 4/7 tasks done):** Production sprites (#455), combat icons (#510), environmental props (#513), and soft radial shadows are ✅ Done. Remaining Phase 7 tasks are asset-dependent. #514 is Blocked pending audio assets.
+**Phase 7 (Nearly Complete — 5/7 tasks done):** Production sprites (#455), combat icons (#510), environmental props (#513), soft radial shadows, and minimap border (#511) are ✅ Done. Remaining Phase 7 tasks are asset-dependent: #512 (9-patch textures) and #514 (mastered SFX). #533 (CombatHUD polish) is 🔄 In Progress.
 
-**Phase 1–5 Complete:** All foundation hardening, 2.5D rendering, CI/CD, minimum viable gameplay, and vertical slice tasks are ✅ Done (379/379 tests passing, 0 failures).
+**Phase 8 (Partially Complete — 5/6 tasks done):** Title glow (#515), button tweens (#516), TurnBanner ribbon (#517), transition dissolve shader (#518), and GodotSteam wrapper (#520) are ✅ Done via PRs #530–#531. Only #519 (layered musical stems) remains 📋 Backlog pending audio assets.
+
+**Phase 1–5 Complete:** All foundation hardening, 2.5D rendering, CI/CD, minimum viable gameplay, and vertical slice tasks are ✅ Done (388/388 tests passing, 0 failures).
 
 ---
 
@@ -442,7 +444,9 @@ Phase 6: Design Tokens & Structural Layouts (Gray-Boxing)
 | 2026-06-25 | **Mass board update for Premium UI Overhaul** — Marked all legacy Phase 5 tasks as ✅ Done. Appended brand new Phase 6, Phase 7, and Phase 8 sections aligned with master_audit_report.md. Active focus shifted to Phase 6 (Design Tokens & Structural Layouts). |
 | 2026-06-27 | **PR #526 audited and closed** — Phase 6 audit revealed #504–#507 were only partially implemented. #508 (camera zoom) correctly merged. Phase 7 tasks confirmed as asset-dependent (0/7 done). PROJECT_BOARD updated with Next Batch Plan: Batch 14 (Phase 6 structural completion, code-only) and Batch 15 (Phase 8 motion polish, code-only). All asset-dependent items flagged for Director input. |
 | 2026-06-27 | **Batch 14 Complete — Phase 6 Structural Issues Resolved** — PR #528 closes #504 (design tokens: grid constants, typography scale, type variations, semantic colors, TabContainer styling), #505 (TitleScreen MarginContainer restructure with HeaderVBox/NavigationContainer), #507 (SettingsPanel centered modal + GridContainer form layout), #509 (minimap leak fix + popup offset). Phase 6 now 6/6 Done. 379 tests passing with 0 failures. |
-| 2026-06-28 | **Phase 7 Premium Asset Injection Started** — Generated production sprites for Keeper, Grunt, Archer, Tank, Boss, and Tileset. Created `soft_radial_shadow.tres` and wired it into `ShadowSprite` across all entity scenes (#455). |
+| 2026-06-28 | **PR #532 merged** — Premium GenAI asset batch: 9 production sprites (256×256 / 320×320), 18 UI icons (3 states each for 3 actions + 3 abilities), 8 environmental props (128×128), soft radial shadow texture, and `tileset_production.png`. Fixed critical sprite scale mismatch (old scales were for 2048px concept art, causing 26px invisible enemies). All 9 sprites wired to scenes. 3 new boss scenes created. 388 tests passing. |
+| 2026-06-28 | **PR #531 merged** — Batch 16: Transition dissolve shader (#518), GodotSteam wrapper (#520), minimap border (#511), plus wiring of Batch 15 components into CombatHUD and TitleScreen. |
+| 2026-06-28 | **PR #530 merged** — Batch 15: TurnBanner ribbon (#517), title glow shader (#515), button tweens (#516), bottom console (#506). 388 tests, 0 failures. |
 
 *Last Updated: 2026-06-28*
 *Next Review: After remaining Phase 7 asset injection or Batch 15 (Phase 8 motion polish) completion*

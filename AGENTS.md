@@ -101,11 +101,12 @@ emberfall/
 │   │   ├── keeper.gd          # Player scene
 │   │   ├── base_enemy.gd      # Enemy base class
 │   │   └── entity_lifecycle.gd # State management autoload
-│   ├── autoload/              # 15 global systems
+│   ├── autoload/              # ~28 global systems
 │   │   ├── grid_system.gd     # 12x12 tactical grid
 │   │   ├── run_manager.gd     # Game state machine
 │   │   ├── burden_manager.gd  # Moral weight system
-│   │   └── [12 more...]
+│   │   ├── steam_manager.gd   # Steamworks API wrapper (GodotSteam)
+│   │   └── [24 more...]
 │   ├── state_machine/         # FSM framework
 │   │   ├── base_state_machine.gd
 │   │   └── run_manager.gd
@@ -118,7 +119,6 @@ emberfall/
 └── .jules/                    # Learning memory
     ├── bolt.md                # Performance learnings
     ├── palette.md             # UI/UX learnings
-    ├── integrations.md        # External tools, CI, git hooks (create as needed)
     └── sentinel.md            # Security vulnerabilities and codebase protection
 ```
 
@@ -178,7 +178,7 @@ func _ready():
 
 ---
 
-## Autoload Systems (15 Total)
+## Autoload Systems (~28 Total)
 
 Key systems Jules interacts with:
 
@@ -405,7 +405,6 @@ Create or append to the file that best matches the topic:
 | `.jules/bolt.md` | **"Bolt"** - a performance-obsessed agent who makes the codebase faster, one optimization at a time. |
 | `.jules/palette.md` | **"Palette"** - a UX-focused agent who adds small touches of delight and accessibility to the user interface. |
 | `.jules/sentinel.md` | **"Sentinel"** - a security-focused agent who protects the codebase from vulnerabilities and security risks. |
-| `.jules/integrations.md` | (create if needed) External tools, CI, git hooks |
 | `.jules/<topic>.md` | Create a new file if the topic is distinct |
 
 If a file doesn't exist for your topic, **create it** with the same format
@@ -664,7 +663,7 @@ When building or refactoring UI layouts in Phase 6, agents must surgically extra
 - **Jules Protocol:** `.jules/JULES_PROTOCOL.md`
 - **Jules QA Checklist:** `.jules/JULES_QA_CHECKLIST.md`
 - **Release Checklist:** `.jules/RELEASE_CHECKLIST.md`
-- **Learnings:** `.jules/bolt.md`, `.jules/palette.md`, `.jules/integrations.md`, `.jules/sentinel.md`
+- **Learnings:** `.jules/bolt.md`, `.jules/palette.md`, `.jules/sentinel.md`
 - **Config:** `config/game_config.json`
 - **Apparition Specs:** `docs/apparition_animation_lead_notes.md`, `docs/apparition_composite_spec.md`, `docs/apparition_material_pipeline.md`
 - **Shader Budget:** `docs/SHADER_BUDGET_DON-253.md`
