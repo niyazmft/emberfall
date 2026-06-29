@@ -447,37 +447,108 @@ Phase 6: Design Tokens & Structural Layouts (Gray-Boxing)
 | 2026-06-28 | **PR #532 merged** — Premium GenAI asset batch: 9 production sprites (256×256 / 320×320), 18 UI icons (3 states each for 3 actions + 3 abilities), 8 environmental props (128×128), soft radial shadow texture, and `tileset_production.png`. Fixed critical sprite scale mismatch (old scales were for 2048px concept art, causing 26px invisible enemies). All 9 sprites wired to scenes. 3 new boss scenes created. 388 tests passing. |
 | 2026-06-28 | **PR #531 merged** — Batch 16: Transition dissolve shader (#518), GodotSteam wrapper (#520), minimap border (#511), plus wiring of Batch 15 components into CombatHUD and TitleScreen. |
 | 2026-06-28 | **PR #530 merged** — Batch 15: TurnBanner ribbon (#517), title glow shader (#515), button tweens (#516), bottom console (#506). 388 tests, 0 failures. |
-| 2026-06-29 | **Sprint 3 batch spawned** — 3 parallel worker agents (UI Core, UI Title, System). Extracted clean changes from contaminated branches. 6 files modified. 388 tests / 0 errors / 0 failures. PR #578 opened. |
+| 2026-06-29 | **PR #578 merged** — Sprint 3 complete: all 12 low-priority audit fixes (#562–#573) plus Sprint 2 subsumed (#546–#561). 40 audit issues total now closed across 3 sprints. Remaining open issues: #512 (9-patch, Ready), #514 (SFX, Blocked), #519 (musical stems, Backlog). 388 tests passing with 0 failures. |
 
 *Last Updated: 2026-06-29*
-*Next Review: After PR #578 merge*
+*Next Review: After Phase 7 asset injection (#512, #514) or Director decision on remaining audio tasks*
 
 ---
 
 ## Audit Resolution Sprint 3 — Low-Priority Polish
 
-**Status:** 🔄 In Review (PR #578 open)
-**Integration Branch:** `integration/batch-fixes`
+**Status:** ✅ MERGED (PR #578)
+**Integration Branch:** `integration/batch-fixes` (deleted after merge)
 **PR:** #578
+**Commit:** `fcdf2a1`
+**Files Modified:** 6 (+48 / −23 lines)
 
 | Issue | Title | Status | File |
 |-------|-------|--------|------|
-| #562 | SettingsPanel `helpLabel` snake_case rename | ✅ Done | `scripts/ui/settings_panel.gd` — renamed to `_help_label` |
-| #565 | Hotbar empty slots remain focusable | ✅ Done | `scripts/ui/hotbar.gd` — `FOCUS_NONE` on empty, `FOCUS_ALL` on ability |
-| #566 | TitleScreen ember particles not repositioned on resize | ✅ Done | `scripts/ui/title_screen.gd` — `_on_viewport_resized()` connected to `size_changed` |
-| #567 | TitleScreen ButtonAnimator signals never disconnected | ✅ Done | `scripts/ui/title_screen.gd` — `_button_animator.queue_free()` in `_exit_tree()` |
-| #568 | TurnBanner unused `_is_player_turn` variable | ✅ Done | `scripts/ui/turn_banner.gd` — removed `_is_player_turn` |
-| #569 | TransitionLayer eager ShaderMaterial allocation | ✅ Done | `scripts/autoload/transition_layer.gd` — `_ensure_shader_material()` lazy init |
-| #570 | TransitionLayer headless-mode wasteful loading text | ✅ Done | `scripts/autoload/transition_layer.gd` — headless guard before `_show_loading_text()` |
-| #572 | SteamManager STEAM_APP_ID is test value 480 | ✅ Done | `scripts/autoload/steam_manager.gd` — `STEAM_APP_ID = 0` |
-| #573 | SteamManager push_warning spams logs | ✅ Done | `scripts/autoload/steam_manager.gd` — `_warning_shown` rate limit |
-| #563 | SettingsPanel `_bound_callables` already typed | ✅ Done | `scripts/ui/settings_panel.gd` — already `Dictionary` |
-| #564 | Hotbar `_slot_callables` already typed | ✅ Done | `scripts/ui/hotbar.gd` — already `Array[Callable]` |
-| #571 | TransitionLayer `_loading_label` already typed | ✅ Done | `scripts/autoload/transition_layer.gd` — already `Label` |
+| #562 | SettingsPanel `helpLabel` snake_case rename | ✅ MERGED | `scripts/ui/settings_panel.gd` — renamed to `_help_label` |
+| #565 | Hotbar empty slots remain focusable | ✅ MERGED | `scripts/ui/hotbar.gd` — `FOCUS_NONE` on empty, `FOCUS_ALL` on ability |
+| #566 | TitleScreen ember particles not repositioned on resize | ✅ MERGED | `scripts/ui/title_screen.gd` — `_on_viewport_resized()` connected to `size_changed` |
+| #567 | TitleScreen ButtonAnimator signals never disconnected | ✅ MERGED | `scripts/ui/title_screen.gd` — `_button_animator.queue_free()` in `_exit_tree()` |
+| #568 | TurnBanner unused `_is_player_turn` variable | ✅ MERGED | `scripts/ui/turn_banner.gd` — removed `_is_player_turn` |
+| #569 | TransitionLayer eager ShaderMaterial allocation | ✅ MERGED | `scripts/autoload/transition_layer.gd` — `_ensure_shader_material()` lazy init |
+| #570 | TransitionLayer headless-mode wasteful loading text | ✅ MERGED | `scripts/autoload/transition_layer.gd` — headless guard before `_show_loading_text()` |
+| #572 | SteamManager STEAM_APP_ID is test value 480 | ✅ MERGED | `scripts/autoload/steam_manager.gd` — `STEAM_APP_ID = 0` |
+| #573 | SteamManager push_warning spams logs | ✅ MERGED | `scripts/autoload/steam_manager.gd` — `_warning_shown` rate limit |
+| #563 | SettingsPanel `_bound_callables` already typed | ✅ MERGED | `scripts/ui/settings_panel.gd` — already `Dictionary` |
+| #564 | Hotbar `_slot_callables` already typed | ✅ MERGED | `scripts/ui/hotbar.gd` — already `Array[Callable]` |
+| #571 | TransitionLayer `_loading_label` already typed | ✅ MERGED | `scripts/autoload/transition_layer.gd` — already `Label` |
 
-**Sprint 2 Status:** Subsumed by PR #578 (branch `integration/batch-fixes` includes Sprint 2 commits)
+---
 
-**Sprint 1 Status:** Merged via PR #576
+## Audit Resolution Sprint 2 — Signal Hygiene & Focus
+
+**Status:** ✅ MERGED (subsumed by PR #578)
+**Original PR:** #577 (closed, superseded)
+**Commit:** `1a064f1` (in main via #578 merge)
+**Files Modified:** 8 (+79 / −26 lines)
+
+| Issue | Title | Status | File |
+|-------|-------|--------|------|
+| #546 | SettingsPanel `_connect_signals` lacks guards | ✅ MERGED | `scripts/ui/settings_panel.gd` |
+| #547 | SettingsPanel hover-focus never disconnected | ✅ MERGED | `scripts/ui/settings_panel.gd` |
+| #548 | SettingsPanel `grab_focus` without `is_instance_valid` | ✅ MERGED | `scripts/ui/settings_panel.gd` |
+| #549 | SettingsMenu back_pressed lacks guard | ✅ MERGED | `scripts/ui/settings_menu.gd` |
+| #550 | SettingsPanel hover-focus steals from inactive tabs | ✅ MERGED | `scripts/ui/settings_panel.gd` |
+| #553 | EntityStatusBar texture reload every call | ✅ MERGED | `scripts/ui/entity_status_bar.gd` |
+| #555 | TitleScreen lambda disconnect gap | ✅ MERGED | `scripts/ui/title_screen.gd` |
+| #556 | PauseMenu button signals never disconnected | ✅ MERGED | `scripts/ui/pause_menu.gd` |
+| #557 | TutorialOverlay `_got_it_button` disconnect gap | ✅ MERGED | `scripts/ui/tutorial_overlay.gd` |
+| #558 | TurnBanner `display_message` Color equality | ✅ MERGED | `scripts/ui/turn_banner.gd` |
+| #561 | SafeZoneManager screen/window math | ✅ MERGED | `scripts/autoload/safe_zone_manager.gd` |
+| #551 | CombatHUD floating text Tween | ✅ MERGED | `scripts/ui/combat_hud.gd` |
+| #552 | CombatHUD `_cleanup_minimap` unsafe iteration | ✅ MERGED | `scripts/ui/combat_hud.gd` |
+| #554 | BottomConsole EventBus lacks guard | ✅ MERGED | `scripts/ui/bottom_console.gd` |
+| #559 | TurnBanner unguarded `create_timer` | ✅ MERGED | `scripts/ui/turn_banner.gd` |
+| #560 | TurnBanner redundant `get_theme_stylebox` | ✅ MERGED | `scripts/ui/turn_banner.gd` |
+
+---
+
+## Audit Resolution Sprint 1 — Crash Blockers
+
+**Status:** ✅ MERGED (PR #576)
+**Commit:** `7fe5ac2`
+**Files Modified:** 6
+
+| Issue | Title | Status | File |
+|-------|-------|--------|------|
+| #534 | CombatHUD `_setup_minimap` await crash | ✅ MERGED | `scripts/ui/combat_hud.gd` |
+| #535 | TurnBanner `_show_banner` re-entrant corruption | ✅ MERGED | `scripts/ui/turn_banner.gd` |
+| #536 | TurnBanner `_exit_tree` active tweens dangling | ✅ MERGED | `scripts/ui/turn_banner.gd` |
+| #537 | TransitionLayer fade concurrent overlap | ✅ MERGED | `scripts/autoload/transition_layer.gd` |
+| #538 | TransitionLayer dissolve flat black screen | ✅ MERGED | `scripts/autoload/transition_layer.gd` |
+| #539 | PauseMenu focus stack corruption | ✅ MERGED | `scripts/ui/pause_menu.gd` |
+| #540 | PauseMenu quit bypasses fade protocol | ✅ MERGED | `scripts/ui/pause_menu.gd` |
+| #541 | TutorialOverlay Escape conflict | ✅ MERGED | `scripts/ui/tutorial_overlay.gd` |
+| #542 | ButtonAnimator nested button recursion | ✅ MERGED | `scripts/ui/button_animator.gd` |
+| #543 | TurnBanner EventBus missing guards | ✅ MERGED | `scripts/ui/turn_banner.gd` |
+| #544 | ButtonAnimator tween stacking | ✅ MERGED | `scripts/ui/button_animator.gd` |
+| #545 | CombatHUD floating text callback crash | ✅ MERGED | `scripts/ui/combat_hud.gd` |
+
+---
+
+## Audit Sprint Summary
+
+**All 40 audit issues (#534–#573) are now CLOSED across 3 PRs:**
+
+- PR #576 (Sprint 1): 12 critical/high crash blockers
+- PR #577 (Sprint 2): 16 medium signal hygiene fixes (subsumed by #578)
+- PR #578 (Sprint 3): 12 low-priority polish + Sprint 2 subsumed
+
+**Test coverage:** 388 tests / 0 errors / 0 failures throughout all 3 sprints.
+
+---
+
+## Remaining Open Issues (Post-Audit)
+
+| Issue | Title | Status | Priority | Blocked By | Notes |
+|-------|-------|--------|----------|------------|-------|
+| #512 | Upgrade buttons to 9-patch StyleBoxTextures | ⏳ Ready | P1 | None | Asset-dependent; needs 9-patch PNG generation |
+| #514 | Replace synthesized audio with mastered SFX | 🚫 Blocked | P1 | Mastered `.wav` assets | Placeholder `.wav` files exist |
+| #519 | Implement layered Burden musical stems | 📋 Backlog | P1 | Phase 7 | Needs `.ogg` stem assets |
 
 ---
 
