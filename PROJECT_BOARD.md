@@ -447,6 +447,38 @@ Phase 6: Design Tokens & Structural Layouts (Gray-Boxing)
 | 2026-06-28 | **PR #532 merged** — Premium GenAI asset batch: 9 production sprites (256×256 / 320×320), 18 UI icons (3 states each for 3 actions + 3 abilities), 8 environmental props (128×128), soft radial shadow texture, and `tileset_production.png`. Fixed critical sprite scale mismatch (old scales were for 2048px concept art, causing 26px invisible enemies). All 9 sprites wired to scenes. 3 new boss scenes created. 388 tests passing. |
 | 2026-06-28 | **PR #531 merged** — Batch 16: Transition dissolve shader (#518), GodotSteam wrapper (#520), minimap border (#511), plus wiring of Batch 15 components into CombatHUD and TitleScreen. |
 | 2026-06-28 | **PR #530 merged** — Batch 15: TurnBanner ribbon (#517), title glow shader (#515), button tweens (#516), bottom console (#506). 388 tests, 0 failures. |
+| 2026-06-29 | **Sprint 3 batch spawned** — 3 parallel worker agents (UI Core, UI Title, System). Extracted clean changes from contaminated branches. 6 files modified. 388 tests / 0 errors / 0 failures. PR #578 opened. |
 
-*Last Updated: 2026-06-28*
-*Next Review: After remaining Phase 7 asset injection or Batch 15 (Phase 8 motion polish) completion*
+*Last Updated: 2026-06-29*
+*Next Review: After PR #578 merge*
+
+---
+
+## Audit Resolution Sprint 3 — Low-Priority Polish
+
+**Status:** 🔄 In Review (PR #578 open)
+**Integration Branch:** `integration/batch-fixes`
+**PR:** #578
+
+| Issue | Title | Status | File |
+|-------|-------|--------|------|
+| #562 | SettingsPanel `helpLabel` snake_case rename | ✅ Done | `scripts/ui/settings_panel.gd` — renamed to `_help_label` |
+| #565 | Hotbar empty slots remain focusable | ✅ Done | `scripts/ui/hotbar.gd` — `FOCUS_NONE` on empty, `FOCUS_ALL` on ability |
+| #566 | TitleScreen ember particles not repositioned on resize | ✅ Done | `scripts/ui/title_screen.gd` — `_on_viewport_resized()` connected to `size_changed` |
+| #567 | TitleScreen ButtonAnimator signals never disconnected | ✅ Done | `scripts/ui/title_screen.gd` — `_button_animator.queue_free()` in `_exit_tree()` |
+| #568 | TurnBanner unused `_is_player_turn` variable | ✅ Done | `scripts/ui/turn_banner.gd` — removed `_is_player_turn` |
+| #569 | TransitionLayer eager ShaderMaterial allocation | ✅ Done | `scripts/autoload/transition_layer.gd` — `_ensure_shader_material()` lazy init |
+| #570 | TransitionLayer headless-mode wasteful loading text | ✅ Done | `scripts/autoload/transition_layer.gd` — headless guard before `_show_loading_text()` |
+| #572 | SteamManager STEAM_APP_ID is test value 480 | ✅ Done | `scripts/autoload/steam_manager.gd` — `STEAM_APP_ID = 0` |
+| #573 | SteamManager push_warning spams logs | ✅ Done | `scripts/autoload/steam_manager.gd` — `_warning_shown` rate limit |
+| #563 | SettingsPanel `_bound_callables` already typed | ✅ Done | `scripts/ui/settings_panel.gd` — already `Dictionary` |
+| #564 | Hotbar `_slot_callables` already typed | ✅ Done | `scripts/ui/hotbar.gd` — already `Array[Callable]` |
+| #571 | TransitionLayer `_loading_label` already typed | ✅ Done | `scripts/autoload/transition_layer.gd` — already `Label` |
+
+**Sprint 2 Status:** Subsumed by PR #578 (branch `integration/batch-fixes` includes Sprint 2 commits)
+
+**Sprint 1 Status:** Merged via PR #576
+
+---
+
+Board maintained by Coordinator Agent · Emberfall Sprint Planning
