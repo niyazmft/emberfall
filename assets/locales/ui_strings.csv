@@ -52,3 +52,8 @@ HUD_VICTORY_CONTINUE,Continue
 HUD_SUMMARY_TURNS,Turns: %d
 HUD_SUMMARY_KILLS,Kills: %d
 HUD_SUMMARY_SHARDS,Shards: %d
+MODAL_CONFIRM,Confirm
+CANCEL,Cancel
+MODAL_CLOSE,Close
+SETTINGS_SCREEN_READER,Screen Reader
+SETTINGS_HELP_SCREEN_READER,Enable text-to-speech narration for UI and combat events.

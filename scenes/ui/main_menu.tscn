@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://d8m4n7k8p9q2r"]
+[gd_scene load_steps=3 format=3 uid="uid://d8m4n7k8p9q2r"]
 
 [ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="1_m7n8p"]
+[ext_resource type="FontFile" path="res://assets/fonts/Cinzel-Bold.ttf" id="cinzel_bold"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -25,6 +26,7 @@ theme_override_constants/separation = 20
 
 [node name="Title" type="Label" parent="CenterContainer/VBoxContainer"]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("cinzel_bold")
 theme_override_font_sizes/font_size = 72
 text = "MENU_TITLE"
 horizontal_alignment = 1

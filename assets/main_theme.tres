@@ -198,7 +198,8 @@ corner_radius_bottom_left = 0
 [resource]
 default_font = ExtResource("1_470mv")
 default_font_size = 16
-Button/font_sizes/font_size = 12
+Button/font_sizes/font_size = 16
+Button/fonts/font = ExtResource("1_470mv")
 Button/styles/normal = SubResource("StyleBoxFlat_xgdp2")
 Button/styles/hover = SubResource("StyleBoxFlat_64js0")
 Button/styles/pressed = SubResource("StyleBoxFlat_d80jv")
@@ -222,7 +223,7 @@ HeaderLabel/font_sizes/font_size = 24
 HeaderLabel/fonts/font = ExtResource("1_470mv")
 SubheaderLabel/font_sizes/font_size = 18
 SubheaderLabel/fonts/font = ExtResource("1_470mv")
-CaptionLabel/font_sizes/font_size = 8
+CaptionLabel/font_sizes/font_size = 10
 CaptionLabel/fonts/font = ExtResource("1_470mv")
 
 ; --- Semantic Color Tokens ---
@@ -242,6 +243,8 @@ DangerButton/styles/focus = SubResource("StyleBoxFlat_focus")
 ; --- TabContainer Styling ---
 TabContainer/colors/font_selected_color = Color(0.9, 0.75, 0.2, 1)
 TabContainer/colors/font_unselected_color = Color(0.6, 0.6, 0.6, 1)
+TabBar/font_sizes/font_size = 18
+TabBar/fonts/font = ExtResource("1_470mv")
 TabContainer/styles/panel = SubResource("StyleBoxFlat_panel")
 TabContainer/styles/tab_selected = SubResource("StyleBoxFlat_tab_sel")
 TabContainer/styles/tab_unselected = SubResource("StyleBoxFlat_tab_unsel")

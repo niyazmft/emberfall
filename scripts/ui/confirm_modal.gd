@@ -10,6 +10,8 @@ signal cancelled
 
 func _ready() -> void:
 	super._ready()
+	if close_button:
+		close_button.hide()
 	confirm_button.pressed.connect(_on_confirm_pressed)
 	cancel_button.pressed.connect(_on_cancel_pressed)
 

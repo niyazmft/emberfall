@@ -19,12 +19,18 @@ signal back_pressed
 
 @onready var _shake_slider: HSlider = %ShakeSlider
 @onready var _cvd_option: OptionButton = %CVDOption
+@onready var _text_scale_slider: HSlider = %TextScaleSlider
+@onready var _dyslexia_check: CheckBox = %DyslexiaCheck
+@onready var _high_contrast_check: CheckBox = %HighContrastCheck
+@onready var _slow_mode_slider: HSlider = %SlowModeSlider
 
 @onready var _input_hints_option: OptionButton = %InputHintsOption
 @onready var _remap_panel: Control = %RemapPanel
 @onready var _reset_button: Button = %ResetButton
 @onready var _back_button: Button = %BackButton
 @onready var _help_label: Label = %HelpLabel
+
+@onready var _screen_reader_check: CheckBox = %ScreenReaderCheck
 
 @onready var _tab_container: TabContainer = (
 	$CenterContainer/MarginContainer/VBoxContainer/TabContainer as TabContainer
@@ -126,6 +132,11 @@ func _load_ui_from_settings() -> void:
 	var access_cfg: Dictionary = s.get("accessibility", {}) as Dictionary
 	_shake_slider.value = access_cfg.get("screen_shake", 1.0)
 	_cvd_option.selected = access_cfg.get("cvd_sim", 0)
+	_text_scale_slider.value = access_cfg.get("text_scale", 1.0)
+	_dyslexia_check.button_pressed = access_cfg.get("dyslexia_font_enabled", false)
+	_high_contrast_check.button_pressed = access_cfg.get("high_contrast_enabled", false)
+	_slow_mode_slider.value = access_cfg.get("slow_mode", 1.0)
+	_screen_reader_check.button_pressed = access_cfg.get("screen_reader_enabled", false)
 
 	# Controls
 	var controls_cfg: Dictionary = s.get("controls", {}) as Dictionary
@@ -178,6 +189,31 @@ func _exit_tree() -> void:
 		and _cvd_option.item_selected.is_connected(_bound_callables["cvd_sim"])
 	):
 		_cvd_option.item_selected.disconnect(_bound_callables["cvd_sim"])
+	if (
+		_bound_callables.has("text_scale")
+		and _text_scale_slider.value_changed.is_connected(_bound_callables["text_scale"])
+	):
+		_text_scale_slider.value_changed.disconnect(_bound_callables["text_scale"])
+	if (
+		_bound_callables.has("dyslexia_font_enabled")
+		and _dyslexia_check.toggled.is_connected(_bound_callables["dyslexia_font_enabled"])
+	):
+		_dyslexia_check.toggled.disconnect(_bound_callables["dyslexia_font_enabled"])
+	if (
+		_bound_callables.has("high_contrast_enabled")
+		and _high_contrast_check.toggled.is_connected(_bound_callables["high_contrast_enabled"])
+	):
+		_high_contrast_check.toggled.disconnect(_bound_callables["high_contrast_enabled"])
+	if (
+		_bound_callables.has("slow_mode")
+		and _slow_mode_slider.value_changed.is_connected(_bound_callables["slow_mode"])
+	):
+		_slow_mode_slider.value_changed.disconnect(_bound_callables["slow_mode"])
+	if (
+		_bound_callables.has("screen_reader_enabled")
+		and _screen_reader_check.toggled.is_connected(_bound_callables["screen_reader_enabled"])
+	):
+		_screen_reader_check.toggled.disconnect(_bound_callables["screen_reader_enabled"])
 
 	# Controls & Navigation
 	if (
@@ -202,6 +238,11 @@ func _exit_tree() -> void:
 		_apply_button,
 		_shake_slider,
 		_cvd_option,
+		_text_scale_slider,
+		_dyslexia_check,
+		_high_contrast_check,
+		_slow_mode_slider,
+		_screen_reader_check,
 		_input_hints_option,
 		_reset_button,
 		_back_button
@@ -258,6 +299,27 @@ func _connect_signals() -> void:
 	_bound_callables["cvd_sim"] = _on_accessibility_changed.bind("cvd_sim")
 	if not _cvd_option.item_selected.is_connected(_bound_callables["cvd_sim"]):
 		_cvd_option.item_selected.connect(_bound_callables["cvd_sim"])
+
+	_bound_callables["text_scale"] = _on_accessibility_changed.bind("text_scale")
+	if not _text_scale_slider.value_changed.is_connected(_bound_callables["text_scale"]):
+		_text_scale_slider.value_changed.connect(_bound_callables["text_scale"])
+	_bound_callables["dyslexia_font_enabled"] = _on_accessibility_changed.bind(
+		"dyslexia_font_enabled"
+	)
+	if not _dyslexia_check.toggled.is_connected(_bound_callables["dyslexia_font_enabled"]):
+		_dyslexia_check.toggled.connect(_bound_callables["dyslexia_font_enabled"])
+	_bound_callables["high_contrast_enabled"] = _on_accessibility_changed.bind(
+		"high_contrast_enabled"
+	)
+	if not _high_contrast_check.toggled.is_connected(_bound_callables["high_contrast_enabled"]):
+		_high_contrast_check.toggled.connect(_bound_callables["high_contrast_enabled"])
+	_bound_callables["slow_mode"] = _on_accessibility_changed.bind("slow_mode")
+	if not _slow_mode_slider.value_changed.is_connected(_bound_callables["slow_mode"]):
+		_slow_mode_slider.value_changed.connect(_bound_callables["slow_mode"])
+
+	_bound_callables["screen_reader_enabled"] = _on_screen_reader_toggled
+	if not _screen_reader_check.toggled.is_connected(_bound_callables["screen_reader_enabled"]):
+		_screen_reader_check.toggled.connect(_bound_callables["screen_reader_enabled"])
 
 	_bound_callables["input_hints"] = _on_controls_changed.bind("input_hints")
 	if not _input_hints_option.item_selected.is_connected(_bound_callables["input_hints"]):
@@ -410,6 +472,21 @@ func _on_accessibility_changed(value: Variant, key: String) -> void:
 			sm.apply_accessibility_settings()
 
 
+func _on_screen_reader_toggled(value: bool) -> void:
+	var srm: _ScreenReaderManager = AutoloadHelper.screen_reader_manager()
+	if srm != null:
+		if value:
+			srm.enable()
+		else:
+			srm.disable()
+	var sm := AutoloadHelper.settings_manager()
+	if sm != null:
+		var s: Dictionary = sm.settings
+		if s.has("accessibility"):
+			s["accessibility"]["screen_reader_enabled"] = value
+			sm.save_settings()
+
+
 func _on_controls_changed(index: int, key: String) -> void:
 	var sm := AutoloadHelper.settings_manager()
 	if sm != null:
@@ -479,6 +556,11 @@ func _setup_help_listeners() -> void:
 		_apply_button,
 		_shake_slider,
 		_cvd_option,
+		_text_scale_slider,
+		_dyslexia_check,
+		_high_contrast_check,
+		_slow_mode_slider,
+		_screen_reader_check,
 		_input_hints_option,
 		_reset_button,
 		_back_button

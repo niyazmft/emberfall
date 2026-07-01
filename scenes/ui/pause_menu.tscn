@@ -1,6 +1,19 @@
-[gd_scene load_steps=2 format=3 uid="uid://e1m4n7k8p9q2r"]
+[gd_scene load_steps=4 format=3 uid="uid://e1m4n7k8p9q2r"]
 
 [ext_resource type="Script" path="res://scripts/ui/pause_menu.gd" id="1_p7n8r"]
+[ext_resource type="FontFile" path="res://assets/fonts/Cinzel-Bold.ttf" id="cinzel_bold"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pause_bg"]
+bg_color = Color(0.10196, 0.10196, 0.18039, 0.98)
+border_color = Color(0.9, 0.75, 0.2, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
 
 [node name="PauseMenu" type="Control"]
 process_mode = 3
@@ -12,14 +25,14 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_p7n8r")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="Panel" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 0.5)
+theme_override_styles/panel = SubResource("StyleBoxFlat_pause_bg")
 
 [node name="CenterContainer" type="CenterContainer" parent="."]
 layout_mode = 1
@@ -35,6 +48,7 @@ theme_override_constants/separation = 20
 
 [node name="Label" type="Label" parent="CenterContainer/VBoxContainer"]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("cinzel_bold")
 theme_override_font_sizes/font_size = 48
 text = "PAUSED"
 horizontal_alignment = 1
