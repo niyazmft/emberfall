@@ -208,22 +208,6 @@ func _spawn_props(room_data: Dictionary) -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = seed_val
 
-	# Spawn 2-3 rock/debris placeholders at static grid locations (for legacy Environment/Props tests)
-	var prop_count: int = rng.randi_range(2, 3)
-	for i: int in range(prop_count):
-		var gx: int = rng.randi_range(2, 9)
-		var gy: int = rng.randi_range(2, 9)
-		var pos: Vector2 = (
-			grid_renderer._grid_to_world(gx, gy, 0) if grid_renderer else Vector2(gx * 32, gy * 16)
-		)
-
-		var rock: ColorRect = ColorRect.new()
-		rock.name = "Rock_%d" % i
-		rock.size = Vector2(8, 6)
-		rock.color = Color(0.4, 0.38, 0.36, 1.0)
-		rock.position = pos - Vector2(4, 3)
-		props_node.add_child(rock)
-
 	var pillar_tex: Texture2D = (
 		load("res://assets/sprites/props/prop_broken_pillar.png") as Texture2D
 	)

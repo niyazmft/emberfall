@@ -1,10 +1,10 @@
 class_name _BottomConsole
 extends Control
 ## Unified bottom console for combat HUD.
-## Encapsulates HP/AP bars, action buttons, and burden display
-## in a single three-zone container.
+## Encapsulates action buttons and burden display
+## in a three-zone container. HP and AP are displayed via
+## in-world floating bars above entities.
 
-@onready var hp_bar: ProgressBar = $MarginContainer/HBoxContainer/LeftWing/HPBar
 @onready
 var move_button: Button = $MarginContainer/HBoxContainer/CenterConsole/ActionButtons/MoveButton
 @onready
@@ -21,16 +21,7 @@ func setup(player_entity: Entity) -> void:
 	var eb := AutoloadHelper.event_bus()
 	if eb and not eb.entity_state_changed.is_connected(_on_entity_state_changed):
 		eb.entity_state_changed.connect(_on_entity_state_changed)
-	_update_bars()
 	_update_burden_label()
-
-
-func _update_bars() -> void:
-	if _player_entity == null:
-		return
-	if hp_bar != null:
-		hp_bar.max_value = _player_entity.hp_max
-		hp_bar.value = _player_entity.hp
 
 
 func _update_burden_label() -> void:
@@ -45,7 +36,6 @@ func _update_burden_label() -> void:
 
 func _on_entity_state_changed(entity: Entity, _old: Entity.State, _new: Entity.State) -> void:
 	if entity == _player_entity:
-		_update_bars()
 		_update_burden_label()
 
 

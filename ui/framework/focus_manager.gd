@@ -68,15 +68,16 @@ func _create_focus_ring() -> void:
 	_focus_ring = ColorRect.new()
 	_focus_ring.name = "FocusRing"
 	_focus_ring.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_focus_ring.color = Color(1, 1, 1, 0.2)
+	_focus_ring.color = Color(1, 1, 1, 0.0)  # Hide visual background
 
 	# Add a border
 	var border: ReferenceRect = ReferenceRect.new()
 	border.name = "Border"
 	border.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	border.border_color = Color.WHITE
-	border.border_width = 2.0
+	border.border_color = Color(1, 1, 1, 0)  # Hide visual border
+	border.border_width = 0.0
 	border.editor_only = false
+	border.mouse_filter = Control.MOUSE_FILTER_IGNORE  # Fix mouse interception
 	_focus_ring.add_child(border)
 
 	_focus_ring.visible = false
@@ -122,14 +123,11 @@ func _disconnect_signals(control: Control) -> void:
 
 
 func _update_focus_ring_position() -> void:
-	if not is_instance_valid(_current_focused) or not _current_focused.is_visible_in_tree():
+	# The focus ring visuals are intentionally hidden so that custom theme
+	# focus styleboxes (subtle highlights) take precedence.
+	if _focus_ring:
 		_focus_ring.visible = false
-		return
-
-	_focus_ring.visible = true
-	var global_rect: Rect2 = _current_focused.get_global_rect()
-	_focus_ring.global_position = global_rect.position
-	_focus_ring.size = global_rect.size
+	return
 
 
 func _disable_focus_outside(node: Node, modal: Control, disabled_nodes: Dictionary) -> void:
