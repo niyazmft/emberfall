@@ -36,7 +36,7 @@ corner_radius_bottom_left = 4
 
 [sub_resource type="Theme" id="Theme_wc2to"]
 default_font = ExtResource("1_wc2to")
-default_font_size = 12
+default_font_size = 14
 Button/fonts/font = ExtResource("1_wc2to")
 Button/styles/focus = SubResource("StyleBoxFlat_470mv")
 Button/styles/hover = SubResource("StyleBoxFlat_a2l2q")

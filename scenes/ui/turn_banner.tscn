@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://p4u4jtlxv83t_scene"]
+[gd_scene load_steps=3 format=3 uid="uid://p4u4jtlxv83t_scene"]
 
 [ext_resource type="Script" path="res://scripts/ui/turn_banner.gd" id="1_script"]
+[ext_resource type="FontFile" path="res://assets/fonts/Cinzel-Bold.ttf" id="cinzel_bold"]
 
 [node name="TurnBanner" type="Control"]
 layout_mode = 3
@@ -59,6 +60,7 @@ offset_right = 500.0
 offset_bottom = 40.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_fonts/font = ExtResource("cinzel_bold")
 theme_override_font_sizes/font_size = 48
 text = "PHASE START"
 horizontal_alignment = 1

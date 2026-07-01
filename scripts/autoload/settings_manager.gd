@@ -27,6 +27,11 @@ const DEFAULT_SETTINGS: Dictionary = {
 	{
 		"screen_shake": 1.0,
 		"cvd_sim": 0,
+		"text_scale": 1.0,
+		"dyslexia_font_enabled": false,
+		"high_contrast_enabled": false,
+		"slow_mode": 1.0,
+		"screen_reader_enabled": false,
 	},
 	"controls": {"input_hints": 0, "bindings": {}}
 }
@@ -152,10 +157,39 @@ func apply_video_settings() -> void:
 
 func apply_accessibility_settings() -> void:
 	var access_cfg: Dictionary = settings.get("accessibility", {}) as Dictionary
-	# Use AutoloadHelper for consistency and safety
 	var bsm := AutoloadHelper.burden_shader_manager()
 	if bsm != null:
 		bsm.set_cvd_mode(int(access_cfg.get("cvd_sim", 0)))
+
+	var high_contrast_enabled: bool = bool(access_cfg.get("high_contrast_enabled", false))
+	if high_contrast_enabled:
+		var hc_theme: Theme = load("res://assets/palettes/high_contrast.tres") as Theme
+		if hc_theme != null:
+			get_tree().root.theme = hc_theme
+
+	var text_scale: float = float(access_cfg.get("text_scale", 1.0))
+	var root := get_tree().root
+	if root.theme == null:
+		root.theme = Theme.new()
+	root.theme.default_font_size = int(16 * text_scale)
+
+	var dyslexia_enabled: bool = bool(access_cfg.get("dyslexia_font_enabled", false))
+	var font_path: String = (
+		"res://assets/fonts/OpenDyslexic-Regular.otf"
+		if dyslexia_enabled
+		else "res://assets/fonts/Cinzel-Bold.ttf"
+	)
+	var font: FontFile = load(font_path) as FontFile
+	if font != null:
+		root.theme.default_font = font
+
+	var screen_reader_enabled: bool = bool(access_cfg.get("screen_reader_enabled", false))
+	var srm: _ScreenReaderManager = AutoloadHelper.screen_reader_manager()
+	if srm != null:
+		if screen_reader_enabled:
+			srm.enable()
+		else:
+			srm.disable()
 
 
 func _apply_bus_volume(bus_name: String, volume_linear: float, mute: bool) -> void:

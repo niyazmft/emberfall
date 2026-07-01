@@ -120,6 +120,11 @@ static func ambient_narrator() -> _AmbientNarrator:
 	return get_autoload("AmbientNarrator") as _AmbientNarrator
 
 
+## Returns the ScreenReaderManager autoload, or null.
+static func screen_reader_manager() -> _ScreenReaderManager:
+	return get_autoload("ScreenReaderManager") as _ScreenReaderManager
+
+
 ## Returns the SecretRoomTrigger autoload, or null.
 static func secret_room_trigger() -> _SecretRoomTrigger:
 	return get_autoload("SecretRoomTrigger") as _SecretRoomTrigger

@@ -90,7 +90,7 @@ func _update_summary_display() -> void:
 	if not narrative.is_empty():
 		var narr_lbl: Label = Label.new()
 		narr_lbl.text = narrative
-		narr_lbl.add_theme_font_size_override("font_size", 14)
+		narr_lbl.add_theme_font_size_override("font_size", 16)
 		narr_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		narr_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		summary_container.add_child(narr_lbl)
