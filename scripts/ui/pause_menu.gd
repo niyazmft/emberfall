@@ -36,9 +36,9 @@ func _ready() -> void:
 	_apply_safe_area()
 
 	# Restore buttons when any modal (Settings, Confirm) closes
-	var eb: Node = AutoloadHelper.event_bus()
-	if eb:
-		eb.modal_closed.connect(_on_modal_closed)
+	var lm: _LayerManager = AutoloadHelper.layer_manager()
+	if lm:
+		lm.modal_closed.connect(_on_modal_closed)
 
 
 func _exit_tree() -> void:
@@ -50,9 +50,9 @@ func _exit_tree() -> void:
 	if sz and sz.safe_area_changed.is_connected(_on_safe_area_changed):
 		sz.safe_area_changed.disconnect(_on_safe_area_changed)
 
-	var eb: Node = AutoloadHelper.event_bus()
-	if eb and eb.modal_closed.is_connected(_on_modal_closed):
-		eb.modal_closed.disconnect(_on_modal_closed)
+	var lm: _LayerManager = AutoloadHelper.layer_manager()
+	if lm and lm.modal_closed.is_connected(_on_modal_closed):
+		lm.modal_closed.disconnect(_on_modal_closed)
 
 	# FIX #556: Disconnect button pressed signals
 	if _resume_button and _resume_button.pressed.is_connected(toggle_pause):
