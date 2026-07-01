@@ -23,6 +23,28 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
+[sub_resource type="StyleBoxFlat" id="TabSelected"]
+content_margin_left = 12.0
+content_margin_top = 6.0
+content_margin_right = 12.0
+content_margin_bottom = 6.0
+bg_color = Color(0.18, 0.16, 0.12, 1)
+border_width_bottom = 2
+border_color = Color(0.9, 0.72, 0.18, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+
+[sub_resource type="StyleBoxFlat" id="TabUnselected"]
+content_margin_left = 12.0
+content_margin_top = 6.0
+content_margin_right = 12.0
+content_margin_bottom = 6.0
+bg_color = Color(0.1, 0.1, 0.1, 0)
+
+[sub_resource type="StyleBoxEmpty" id="TabFocus"]
+
+[sub_resource type="StyleBoxEmpty" id="TabPanel"]
+
 [resource]
 default_font = ExtResource("1_470mv")
 default_font_size = 12
@@ -32,3 +54,7 @@ Button/styles/hover = SubResource("StyleBoxFlat_a2l2q")
 Button/styles/normal = SubResource("StyleBoxFlat_470mv")
 Button/styles/pressed = SubResource("StyleBoxFlat_0omi4")
 Label/fonts/font = ExtResource("1_470mv")
+TabContainer/styles/tab_selected = SubResource("TabSelected")
+TabContainer/styles/tab_unselected = SubResource("TabUnselected")
+TabContainer/styles/tab_focus = SubResource("TabFocus")
+TabContainer/styles/panel = SubResource("TabPanel")

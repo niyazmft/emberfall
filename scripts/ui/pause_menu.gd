@@ -12,6 +12,10 @@ signal settings_requested
 @onready var _settings_button: Button = %SettingsButton
 @onready var _quit_button: Button = %QuitButton
 @onready var _hint_label: Label = %HintLabel
+# The VBoxContainer that holds all pause buttons — hidden while settings is open
+@onready var _buttons_container: VBoxContainer = (
+	get_node_or_null("CenterContainer/VBoxContainer") as VBoxContainer
+)
 
 
 func _ready() -> void:
@@ -31,6 +35,11 @@ func _ready() -> void:
 		sz.safe_area_changed.connect(_on_safe_area_changed)
 	_apply_safe_area()
 
+	# Restore buttons when any modal (Settings, Confirm) closes
+	var eb: Node = AutoloadHelper.event_bus()
+	if eb:
+		eb.modal_closed.connect(_on_modal_closed)
+
 
 func _exit_tree() -> void:
 	var ir: _InputRouter = AutoloadHelper.input_router()
@@ -40,6 +49,10 @@ func _exit_tree() -> void:
 	var sz: _SafeZoneManager = AutoloadHelper.safe_zone_manager()
 	if sz and sz.safe_area_changed.is_connected(_on_safe_area_changed):
 		sz.safe_area_changed.disconnect(_on_safe_area_changed)
+
+	var eb: Node = AutoloadHelper.event_bus()
+	if eb and eb.modal_closed.is_connected(_on_modal_closed):
+		eb.modal_closed.disconnect(_on_modal_closed)
 
 	# FIX #556: Disconnect button pressed signals
 	if _resume_button and _resume_button.pressed.is_connected(toggle_pause):
@@ -106,8 +119,25 @@ func _on_restart_pressed() -> void:
 
 
 func _on_settings_requested() -> void:
+	# Hide the pause buttons while settings panel is visible to prevent text bleed-through
+	if is_instance_valid(_buttons_container):
+		_buttons_container.hide()
 	SettingsModal.show_modal()
 	settings_requested.emit()
+
+
+## Called by SettingsMenu/SettingsPanel when the Back button is pressed.
+func _on_modal_closed() -> void:
+	if not visible:
+		return
+	if is_instance_valid(_buttons_container):
+		_buttons_container.show()
+	if is_instance_valid(_resume_button):
+		_resume_button.grab_focus.call_deferred()
+
+
+func on_settings_closed() -> void:
+	_on_modal_closed()
 
 
 func _on_quit_pressed() -> void:

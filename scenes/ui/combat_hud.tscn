@@ -143,6 +143,7 @@ alignment = 1
 
 [node name="HPBar" type="ProgressBar" parent="MarginContainer/MasterVBox/BottomSlot/BottomChrome/StatusIcons" unique_id=14819860]
 unique_name_in_owner = true
+visible = false
 custom_minimum_size = Vector2(70, 20)
 layout_mode = 2
 size_flags_vertical = 4
@@ -167,26 +168,29 @@ alignment = 1
 
 [node name="MoveButton" type="Button" parent="MarginContainer/MasterVBox/BottomSlot/BottomChrome/ActionButtonsPanel/ActionButtons" unique_id=233566378]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(110, 36)
+custom_minimum_size = Vector2(150, 52)
 layout_mode = 2
 text = "⬆ Move"
 icon = ExtResource("icon_move")
+icon_alignment = 0
 expand_icon = true
 
 [node name="AttackButton" type="Button" parent="MarginContainer/MasterVBox/BottomSlot/BottomChrome/ActionButtonsPanel/ActionButtons" unique_id=758992100]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(110, 36)
+custom_minimum_size = Vector2(150, 52)
 layout_mode = 2
 text = "⚔ Attack"
 icon = ExtResource("icon_attack")
+icon_alignment = 0
 expand_icon = true
 
 [node name="EndTurnButton" type="Button" parent="MarginContainer/MasterVBox/BottomSlot/BottomChrome/ActionButtonsPanel/ActionButtons" unique_id=185299671]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(110, 36)
+custom_minimum_size = Vector2(150, 52)
 layout_mode = 2
 text = "✓ End Turn"
 icon = ExtResource("icon_end_turn")
+icon_alignment = 0
 expand_icon = true
 
 [node name="Prompts" type="Label" parent="MarginContainer/MasterVBox/BottomSlot/BottomChrome" unique_id=490054073]

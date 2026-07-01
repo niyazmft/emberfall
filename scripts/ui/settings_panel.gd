@@ -32,6 +32,9 @@ signal back_pressed
 
 var _settings_help: Dictionary = {}
 var _bound_callables: Dictionary = {}
+# FIX: Tracks whether the last input was keyboard/gamepad.
+# Mouse hover only grabs focus in keyboard mode to avoid locking out mouse clicks.
+var _is_keyboard_mode: bool = false
 var _resolutions: Array[Vector2i] = [
 	Vector2i(1920, 1080),
 	Vector2i(1600, 900),
@@ -45,6 +48,13 @@ func _ready() -> void:
 	if sz:
 		sz.safe_area_changed.connect(_on_safe_area_changed)
 	_apply_safe_area()
+
+	# Track the active input device so hover-focus only fires in keyboard mode
+	var ir: _InputRouter = AutoloadHelper.input_router()
+	if ir:
+		_is_keyboard_mode = ir.current_device != _InputRouter.InputDevice.KEYBOARD_MOUSE
+		if not ir.device_changed.is_connected(_on_input_device_changed):
+			ir.device_changed.connect(_on_input_device_changed)
 
 	_load_help_data()
 	_setup_options()
@@ -131,6 +141,10 @@ func _exit_tree() -> void:
 	var sz: _SafeZoneManager = AutoloadHelper.safe_zone_manager()
 	if sz and sz.safe_area_changed.is_connected(_on_safe_area_changed):
 		sz.safe_area_changed.disconnect(_on_safe_area_changed)
+	# FIX 5: Disconnect InputRouter signal to prevent leak
+	var ir: _InputRouter = AutoloadHelper.input_router()
+	if ir and ir.device_changed.is_connected(_on_input_device_changed):
+		ir.device_changed.disconnect(_on_input_device_changed)
 
 	# Audio
 	if (
@@ -307,6 +321,11 @@ func _disconnect_hover_focus(node: Node) -> void:
 
 
 func _on_control_mouse_entered(control: Control) -> void:
+	# Switching to mouse mode: stop grabbing focus on hover so mouse clicks work freely.
+	# In keyboard/gamepad mode: grabbing focus on hover lets the player resume
+	# keyboard navigation by hovering without needing to click first.
+	if not _is_keyboard_mode:
+		return
 	if (
 		is_instance_valid(control)
 		and control != null
@@ -314,6 +333,10 @@ func _on_control_mouse_entered(control: Control) -> void:
 		and control.focus_mode != Control.FOCUS_NONE
 	):
 		control.grab_focus()
+
+
+func _on_input_device_changed(device: _InputRouter.InputDevice) -> void:
+	_is_keyboard_mode = device != _InputRouter.InputDevice.KEYBOARD_MOUSE
 
 
 func _setup_focus_neighbors() -> void:
