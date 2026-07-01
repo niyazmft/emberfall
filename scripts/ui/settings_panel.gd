@@ -52,7 +52,7 @@ func _ready() -> void:
 	# Track the active input device so hover-focus only fires in keyboard mode
 	var ir: _InputRouter = AutoloadHelper.input_router()
 	if ir:
-		_is_keyboard_mode = ir.current_device != _InputRouter.InputDevice.MOUSE
+		_is_keyboard_mode = ir.current_device != _InputRouter.InputDevice.KEYBOARD_MOUSE
 		if not ir.device_changed.is_connected(_on_input_device_changed):
 			ir.device_changed.connect(_on_input_device_changed)
 
@@ -336,7 +336,7 @@ func _on_control_mouse_entered(control: Control) -> void:
 
 
 func _on_input_device_changed(device: _InputRouter.InputDevice) -> void:
-	_is_keyboard_mode = device != _InputRouter.InputDevice.MOUSE
+	_is_keyboard_mode = device != _InputRouter.InputDevice.KEYBOARD_MOUSE
 
 
 func _setup_focus_neighbors() -> void:
