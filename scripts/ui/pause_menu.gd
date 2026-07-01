@@ -13,9 +13,9 @@ signal settings_requested
 @onready var _quit_button: Button = %QuitButton
 @onready var _hint_label: Label = %HintLabel
 # The VBoxContainer that holds all pause buttons — hidden while settings is open
-@onready var _buttons_container: VBoxContainer = get_node_or_null(
-	"CenterContainer/VBoxContainer"
-) as VBoxContainer
+@onready var _buttons_container: VBoxContainer = (
+	get_node_or_null("CenterContainer/VBoxContainer") as VBoxContainer
+)
 
 
 func _ready() -> void:
