@@ -27,6 +27,7 @@ region_rect = Rect2(16, 16, 160, 160)
 texture = ExtResource("shadow_tex")
 
 [node name="HeightIndicator" type="ColorRect" parent="EntityVisualProxy" unique_id=1263129899]
+visible = false
 offset_left = -16.0
 offset_top = 2.0
 offset_right = 16.0
