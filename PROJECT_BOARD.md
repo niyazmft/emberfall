@@ -550,6 +550,8 @@ Phase 6: Design Tokens & Structural Layouts (Gray-Boxing)
 | #514 | Replace synthesized audio with mastered SFX | 🚫 Blocked | P1 | Mastered `.wav` assets | Placeholder `.wav` files exist |
 | #519 | Implement layered Burden musical stems | 📋 Backlog | P1 | Phase 7 | Needs `.ogg` stem assets |
 | #588 | Mouse-based tile targeting for movement and attack | ⏳ Ready | P1 | None | Enhancement: mouse click for move/attack targeting + right-click cancel |
+| #589 | Fix combat end flow: save progress, victory advance, defeat retry | ⏳ Ready | P0 | None | Blocks full game loop; victory currently returns to title instead of next room |
+| #590 | Verify end-to-end Burden Event player flow | 📋 Backlog | P2 | None | Untested burden modal UI flow; nice-to-have for vertical slice |
 
 ---
 
