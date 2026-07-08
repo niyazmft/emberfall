@@ -546,9 +546,10 @@ Phase 6: Design Tokens & Structural Layouts (Gray-Boxing)
 
 | Issue | Title | Status | Priority | Blocked By | Notes |
 |-------|-------|--------|----------|------------|-------|
-| #512 | Upgrade buttons to 9-patch StyleBoxTextures | ⏳ Ready | P1 | None | Asset-dependent; needs 9-patch PNG generation |
+| #512 | Upgrade buttons to 9-patch StyleBoxTextures | ✅ Done | P1 | None | Procedural 9-patch system implemented with `tools/generate_9patch.py` |
 | #514 | Replace synthesized audio with mastered SFX | 🚫 Blocked | P1 | Mastered `.wav` assets | Placeholder `.wav` files exist |
 | #519 | Implement layered Burden musical stems | 📋 Backlog | P1 | Phase 7 | Needs `.ogg` stem assets |
+| #588 | Mouse-based tile targeting for movement and attack | ⏳ Ready | P1 | None | Enhancement: mouse click for move/attack targeting + right-click cancel |
 
 ---
 
