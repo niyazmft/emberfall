@@ -12,6 +12,7 @@ var _summary_data: Dictionary = {}
 
 
 func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	retry_button.pressed.connect(_on_retry_pressed)
 	menu_button.pressed.connect(_on_return_to_menu_pressed)
 	_setup_from_config()
@@ -97,13 +98,15 @@ func _select_defeat_narrative() -> String:
 
 
 func _on_retry_pressed() -> void:
-	# Typically would reload main menu or restart run
+	get_tree().paused = false
+	queue_free()
+
 	var rm: _RunManager = AutoloadHelper.run_manager()
 	if rm:
-		rm.cmd_start_run(GameConstants.GOLDEN_SEED)
-	queue_free()
+		rm.cmd_restart_room()
 
 
 func _on_return_to_menu_pressed() -> void:
-	get_tree().change_scene_to_file("res://scenes/title_screen.tscn")
+	get_tree().paused = false
 	queue_free()
+	get_tree().change_scene_to_file("res://scenes/title_screen.tscn")
