@@ -73,10 +73,9 @@ enabled=PackedStringArray("res://addons/gdUnit4/plugin.cfg", "res://addons/gdscr
 
 [gui]
 
+theme/default_font_multichannel_signed_distance_field=true
 theme/custom="res://main_theme.tres"
 theme/custom_font="uid://te0wij1gtn2k"
-theme/default_font_subpixel_positioning=1
-theme/default_font_multichannel_signed_distance_field=true
 
 [input]
 

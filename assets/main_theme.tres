@@ -2,6 +2,16 @@
 
 [ext_resource type="FontFile" path="res://assets/fonts/Cinzel-Regular.ttf" id="1_470mv"]
 [ext_resource type="FontFile" path="res://assets/fonts/OpenDyslexic-Regular.otf" id="2_dyslx"]
+[ext_resource type="Texture2D" path="res://assets/ui/9patch/button_normal.png" id="btn_nml"]
+[ext_resource type="Texture2D" path="res://assets/ui/9patch/button_hover.png" id="btn_hov"]
+[ext_resource type="Texture2D" path="res://assets/ui/9patch/button_pressed.png" id="btn_prs"]
+[ext_resource type="Texture2D" path="res://assets/ui/9patch/button_focus.png" id="btn_fcs"]
+[ext_resource type="Texture2D" path="res://assets/ui/9patch/button_danger_normal.png" id="btn_dng_nml"]
+[ext_resource type="Texture2D" path="res://assets/ui/9patch/button_danger_hover.png" id="btn_dng_hov"]
+[ext_resource type="Texture2D" path="res://assets/ui/9patch/button_danger_pressed.png" id="btn_dng_prs"]
+[ext_resource type="Texture2D" path="res://assets/ui/9patch/panel_modal.png" id="pnl_modal"]
+[ext_resource type="Texture2D" path="res://assets/ui/9patch/panel_tab_selected.png" id="tab_sel"]
+[ext_resource type="Texture2D" path="res://assets/ui/9patch/panel_tab_unselected.png" id="tab_unsel"]
 
 ; --- Design Tokens ---
 ; Accent: ember gold   Color(0.9, 0.72, 0.18, 1)
@@ -11,73 +21,61 @@
 ; HP fill:             Color(0.85, 0.20, 0.15, 1)
 ; AP fill:             Color(0.80, 0.60, 0.10, 1)
 
-; Button — Normal (dark surface, 16px h-pad, 12px v-pad)
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xgdp2"]
+; Button — Normal (9-patch texture)
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_nml"]
+texture = ExtResource("btn_nml")
+patch_margin_left = 8
+patch_margin_top = 8
+patch_margin_right = 8
+patch_margin_bottom = 8
 content_margin_left = 16.0
 content_margin_top = 12.0
 content_margin_right = 16.0
 content_margin_bottom = 12.0
-bg_color = Color(0.18, 0.18, 0.24, 0.9)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 4
-border_color = Color(0.08, 0.08, 0.12, 1)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
 
-; Button — Hover (accent border)
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_64js0"]
+; Button — Hover (9-patch texture)
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_hov"]
+texture = ExtResource("btn_hov")
+patch_margin_left = 8
+patch_margin_top = 8
+patch_margin_right = 8
+patch_margin_bottom = 8
 content_margin_left = 16.0
 content_margin_top = 12.0
 content_margin_right = 16.0
 content_margin_bottom = 12.0
-bg_color = Color(0.26, 0.26, 0.34, 1.0)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 4
-border_color = Color(0.9, 0.72, 0.18, 1)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
 
-; Button — Pressed (inset feel)
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_d80jv"]
+; Button — Pressed (9-patch texture)
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_prs"]
+texture = ExtResource("btn_prs")
+patch_margin_left = 8
+patch_margin_top = 8
+patch_margin_right = 8
+patch_margin_bottom = 8
 content_margin_left = 16.0
 content_margin_top = 12.0
 content_margin_right = 16.0
 content_margin_bottom = 12.0
-bg_color = Color(0.10, 0.10, 0.14, 1.0)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.08, 0.08, 0.12, 1)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
 
-; Button — Focus (solid semi-transparent ember gold highlight)
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_focus"]
+; Button — Focus (9-patch texture)
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_fcs"]
+texture = ExtResource("btn_fcs")
+patch_margin_left = 8
+patch_margin_top = 8
+patch_margin_right = 8
+patch_margin_bottom = 8
 content_margin_left = 16.0
 content_margin_top = 12.0
 content_margin_right = 16.0
 content_margin_bottom = 12.0
-bg_color = Color(0.8, 0.6, 0.1, 0.25)
-draw_center = true
-border_width_left = 0
-border_width_top = 0
-border_width_right = 0
-border_width_bottom = 0
-corner_radius_top_left = 7
-corner_radius_top_right = 7
-corner_radius_bottom_right = 7
-corner_radius_bottom_left = 7
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
 expand_margin_left = 6.0
 expand_margin_top = 2.0
 expand_margin_right = 6.0
@@ -99,115 +97,99 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
-; Panel / modal surface
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
-bg_color = Color(0.10, 0.10, 0.15, 0.0)
-border_width_left = 0
-border_width_top = 0
-border_width_right = 0
-border_width_bottom = 0
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
+; Panel / modal surface (9-patch texture)
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_panel"]
+texture = ExtResource("pnl_modal")
+patch_margin_left = 12
+patch_margin_top = 12
+patch_margin_right = 12
+patch_margin_bottom = 12
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
 
-; DangerButton — Normal (red accent border)
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_danger_nml"]
+; DangerButton — Normal (9-patch texture)
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_dng_nml"]
+texture = ExtResource("btn_dng_nml")
+patch_margin_left = 8
+patch_margin_top = 8
+patch_margin_right = 8
+patch_margin_bottom = 8
 content_margin_left = 16.0
 content_margin_top = 12.0
 content_margin_right = 16.0
 content_margin_bottom = 12.0
-bg_color = Color(0.18, 0.18, 0.24, 0.9)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 4
-border_color = Color(0.85, 0.20, 0.15, 1)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
 
-; DangerButton — Hover (brighter red)
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_danger_hov"]
+; DangerButton — Hover (9-patch texture)
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_dng_hov"]
+texture = ExtResource("btn_dng_hov")
+patch_margin_left = 8
+patch_margin_top = 8
+patch_margin_right = 8
+patch_margin_bottom = 8
 content_margin_left = 16.0
 content_margin_top = 12.0
 content_margin_right = 16.0
 content_margin_bottom = 12.0
-bg_color = Color(0.35, 0.15, 0.15, 1.0)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 4
-border_color = Color(1.0, 0.35, 0.25, 1)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
 
-; DangerButton — Pressed (dark red inset)
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_danger_prs"]
+; DangerButton — Pressed (9-patch texture)
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_dng_prs"]
+texture = ExtResource("btn_dng_prs")
+patch_margin_left = 8
+patch_margin_top = 8
+patch_margin_right = 8
+patch_margin_bottom = 8
 content_margin_left = 16.0
 content_margin_top = 12.0
 content_margin_right = 16.0
 content_margin_bottom = 12.0
-bg_color = Color(0.12, 0.08, 0.08, 1.0)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.6, 0.15, 0.1, 1)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
 
-; TabContainer — Selected tab (transparent bg, gold bottom border)
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tab_sel"]
+; TabContainer — Selected tab (9-patch texture)
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_tab_sel"]
+texture = ExtResource("tab_sel")
+patch_margin_left = 8
+patch_margin_top = 8
+patch_margin_right = 8
+patch_margin_bottom = 8
 content_margin_left = 16.0
 content_margin_top = 8.0
 content_margin_right = 16.0
 content_margin_bottom = 8.0
-bg_color = Color(0.9, 0.75, 0.2, 0.0)
-border_width_left = 0
-border_width_top = 0
-border_width_right = 0
-border_width_bottom = 2
-border_color = Color(0.9, 0.75, 0.2, 1)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 0
-corner_radius_bottom_left = 0
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
 
-; TabContainer — Unselected tab (transparent bg, no border)
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tab_unsel"]
+; TabContainer — Unselected tab (9-patch texture)
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_tab_unsel"]
+texture = ExtResource("tab_unsel")
+patch_margin_left = 8
+patch_margin_top = 8
+patch_margin_right = 8
+patch_margin_bottom = 8
 content_margin_left = 16.0
 content_margin_top = 8.0
 content_margin_right = 16.0
 content_margin_bottom = 8.0
-bg_color = Color(0.15, 0.15, 0.15, 0.0)
-border_width_left = 0
-border_width_top = 0
-border_width_right = 0
-border_width_bottom = 0
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 0
-corner_radius_bottom_left = 0
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
 
 [resource]
 default_font = ExtResource("1_470mv")
 default_font_size = 16
 Button/font_sizes/font_size = 16
 Button/fonts/font = ExtResource("1_470mv")
-Button/styles/normal = SubResource("StyleBoxFlat_xgdp2")
-Button/styles/hover = SubResource("StyleBoxFlat_64js0")
-Button/styles/pressed = SubResource("StyleBoxFlat_d80jv")
-Button/styles/focus = SubResource("StyleBoxFlat_focus")
+Button/styles/normal = SubResource("StyleBoxTexture_btn_nml")
+Button/styles/hover = SubResource("StyleBoxTexture_btn_hov")
+Button/styles/pressed = SubResource("StyleBoxTexture_btn_prs")
+Button/styles/focus = SubResource("StyleBoxTexture_btn_fcs")
 Label/font_sizes/font_size = 16
 Label/fonts/font = ExtResource("2_dyslx")
-Panel/styles/panel = SubResource("StyleBoxFlat_panel")
-PanelContainer/styles/panel = SubResource("StyleBoxFlat_panel")
+Panel/styles/panel = SubResource("StyleBoxTexture_panel")
+PanelContainer/styles/panel = SubResource("StyleBoxTexture_panel")
 ProgressBar/styles/background = SubResource("StyleBoxFlat_0arac")
 ProgressBar/styles/fill = SubResource("StyleBoxFlat_611f8")
 
@@ -235,19 +217,19 @@ Theme/colors/text_muted = Color(0.6, 0.6, 0.6, 1)
 Theme/colors/danger = Color(0.85, 0.20, 0.15, 1)
 
 ; --- Type Variations ---
-DangerButton/styles/normal = SubResource("StyleBoxFlat_danger_nml")
-DangerButton/styles/hover = SubResource("StyleBoxFlat_danger_hov")
-DangerButton/styles/pressed = SubResource("StyleBoxFlat_danger_prs")
-DangerButton/styles/focus = SubResource("StyleBoxFlat_focus")
+DangerButton/styles/normal = SubResource("StyleBoxTexture_dng_nml")
+DangerButton/styles/hover = SubResource("StyleBoxTexture_dng_hov")
+DangerButton/styles/pressed = SubResource("StyleBoxTexture_dng_prs")
+DangerButton/styles/focus = SubResource("StyleBoxTexture_btn_fcs")
 
 ; --- TabContainer Styling ---
 TabContainer/colors/font_selected_color = Color(0.9, 0.75, 0.2, 1)
 TabContainer/colors/font_unselected_color = Color(0.6, 0.6, 0.6, 1)
 TabBar/font_sizes/font_size = 18
 TabBar/fonts/font = ExtResource("1_470mv")
-TabContainer/styles/panel = SubResource("StyleBoxFlat_panel")
-TabContainer/styles/tab_selected = SubResource("StyleBoxFlat_tab_sel")
-TabContainer/styles/tab_unselected = SubResource("StyleBoxFlat_tab_unsel")
+TabContainer/styles/panel = SubResource("StyleBoxTexture_panel")
+TabContainer/styles/tab_selected = SubResource("StyleBoxTexture_tab_sel")
+TabContainer/styles/tab_unselected = SubResource("StyleBoxTexture_tab_unsel")
 
 ; --- Button Animation Constants ---
 ; Stored as integer percentages * 100 for Godot Theme constant compatibility

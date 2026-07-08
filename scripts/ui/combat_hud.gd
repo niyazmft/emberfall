@@ -76,6 +76,15 @@ func _exit_tree() -> void:
 		if sz.aspect_ratio_changed.is_connected(_on_aspect_ratio_changed):
 			sz.aspect_ratio_changed.disconnect(_on_aspect_ratio_changed)
 
+	if bottom_console != null:
+		if bottom_console.move_button.pressed.is_connected(_on_move_pressed):
+			bottom_console.move_button.pressed.disconnect(_on_move_pressed)
+		if bottom_console.attack_button.pressed.is_connected(_on_attack_pressed):
+			bottom_console.attack_button.pressed.disconnect(_on_attack_pressed)
+		if bottom_console.end_turn_button.pressed.is_connected(_on_end_turn_pressed):
+			bottom_console.end_turn_button.pressed.disconnect(_on_end_turn_pressed)
+
+	# Disconnect direct chrome button signals
 	if move_button.pressed.is_connected(_on_move_pressed):
 		move_button.pressed.disconnect(_on_move_pressed)
 	if attack_button.pressed.is_connected(_on_attack_pressed):
@@ -133,12 +142,29 @@ func setup(player_entity: Entity, turn_manager: TurnManager, combat_input: Comba
 		if not _turn_manager.round_started.is_connected(_on_round_started):
 			_turn_manager.round_started.connect(_on_round_started)
 		round_label.text = "Round %d" % _turn_manager.round_number
+		# FIX: TurnManager may have already emitted turn_started before HUD connected.
+		# Sync button state immediately if combat is already running.
+		if _turn_manager.current_state == TurnManager.CombatState.PLAYER_TURN:
+			_enable_action_buttons(true)
+		elif _turn_manager.current_state == TurnManager.CombatState.ENEMY_TURN:
+			_enable_action_buttons(false)
 
 	# Wire bottom console
 	if bottom_console != null:
 		bottom_console.setup(player_entity)
 		if bottom_chrome != null:
 			bottom_chrome.hide()
+		# FIX #512: BottomConsole buttons were visible but had no signal connections.
+		# Connect them to the same callbacks as the hidden BottomChrome buttons.
+		if bottom_console.move_button.pressed.is_connected(_on_move_pressed):
+			bottom_console.move_button.pressed.disconnect(_on_move_pressed)
+		if bottom_console.attack_button.pressed.is_connected(_on_attack_pressed):
+			bottom_console.attack_button.pressed.disconnect(_on_attack_pressed)
+		if bottom_console.end_turn_button.pressed.is_connected(_on_end_turn_pressed):
+			bottom_console.end_turn_button.pressed.disconnect(_on_end_turn_pressed)
+		bottom_console.move_button.pressed.connect(_on_move_pressed)
+		bottom_console.attack_button.pressed.connect(_on_attack_pressed)
+		bottom_console.end_turn_button.pressed.connect(_on_end_turn_pressed)
 
 	# Apply button micro-animations
 	var animator: _ButtonAnimator = _ButtonAnimator.new()
@@ -230,11 +256,26 @@ func _enable_action_buttons(enabled: bool) -> void:
 	move_button.disabled = !enabled
 	attack_button.disabled = !enabled
 	end_turn_button.disabled = !enabled
+	# FIX #512: Also sync BottomConsole buttons so both sets stay consistent.
+	if bottom_console != null:
+		if is_instance_valid(bottom_console.move_button):
+			bottom_console.move_button.disabled = !enabled
+		if is_instance_valid(bottom_console.attack_button):
+			bottom_console.attack_button.disabled = !enabled
+		if is_instance_valid(bottom_console.end_turn_button):
+			bottom_console.end_turn_button.disabled = !enabled
 	# Visual feedback: dim buttons when disabled
 	var target_alpha: float = 1.0 if enabled else 0.4
 	move_button.modulate.a = target_alpha
 	attack_button.modulate.a = target_alpha
 	end_turn_button.modulate.a = target_alpha
+	if bottom_console != null:
+		if is_instance_valid(bottom_console.move_button):
+			bottom_console.move_button.modulate.a = target_alpha
+		if is_instance_valid(bottom_console.attack_button):
+			bottom_console.attack_button.modulate.a = target_alpha
+		if is_instance_valid(bottom_console.end_turn_button):
+			bottom_console.end_turn_button.modulate.a = target_alpha
 
 
 func _on_safe_area_changed(_rect: Rect2) -> void:
