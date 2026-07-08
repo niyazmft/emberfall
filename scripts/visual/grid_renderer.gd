@@ -96,6 +96,12 @@ func _world_to_grid(world_pos: Vector2) -> Vector2i:
 	return Vector2i(int(round(gx / 2.0)), int(round(gy / 2.0)))
 
 
+## Public: converts global mouse position to grid coordinates.
+func mouse_to_grid() -> Vector2i:
+	var local_pos: Vector2 = to_local(get_global_mouse_position())
+	return _world_to_grid(local_pos)
+
+
 func _ready() -> void:
 	# Idiomatic access to Autoloaded systems
 	_grid_system = AutoloadHelper.grid_system()
