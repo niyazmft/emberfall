@@ -238,6 +238,8 @@ func _on_attack_executed(target: Node2D, damage: int) -> void:
 
 
 func _on_move_pressed() -> void:
+	if _combat_input:
+		_combat_input.enter_move_targeting_mode()
 	move_pressed.emit()
 	_log_from_config("move_hint")
 
