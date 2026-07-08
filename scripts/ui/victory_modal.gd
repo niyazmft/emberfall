@@ -2,6 +2,7 @@ class_name _VictoryModal
 extends Control
 ## VictoryModal
 ## Displayed when the player wins a combat encounter.
+## Pauses the scene tree so background combat does not continue.
 
 var _summary_data: Dictionary = {}
 
@@ -12,10 +13,20 @@ var _summary_data: Dictionary = {}
 
 
 func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	continue_button.pressed.connect(_on_continue_pressed)
 	menu_button.pressed.connect(_on_return_to_menu_pressed)
 	_setup_from_config()
-	continue_button.text = "RETURN TO MENU"
+
+	var rm: _RunManager = AutoloadHelper.run_manager()
+	var is_last_room: bool = false
+	if rm:
+		is_last_room = rm.room_index + 1 >= rm.room_queue.size()
+
+	if is_last_room:
+		continue_button.text = tr("HUD_VICTORY_RETURN_MENU")
+	else:
+		continue_button.text = tr("HUD_VICTORY_NEXT_ROOM")
 
 
 func _exit_tree() -> void:
@@ -115,10 +126,16 @@ func _select_victory_narrative() -> String:
 
 
 func _on_continue_pressed() -> void:
-	get_tree().change_scene_to_file("res://scenes/title_screen.tscn")
+	get_tree().paused = false
 	queue_free()
+
+	var rm: _RunManager = AutoloadHelper.run_manager()
+	if rm:
+		rm.cmd_combat_resolved()
+		rm.cmd_next_room()
 
 
 func _on_return_to_menu_pressed() -> void:
-	get_tree().change_scene_to_file("res://scenes/title_screen.tscn")
+	get_tree().paused = false
 	queue_free()
+	get_tree().change_scene_to_file("res://scenes/title_screen.tscn")

@@ -398,9 +398,66 @@ func _on_combat_ended(victory: bool) -> void:
 			var rm := AutoloadHelper.run_manager()
 			if rm:
 				rm.cmd_final_encounter_won()
+		# FIX #589: Save progress before showing victory modal.
+		_save_run_progress()
 		_show_victory_modal()
 	else:
 		_show_defeat_modal()
+
+
+func _save_run_progress() -> void:
+	"""Build and persist the current run state so Continue works across rooms."""
+	var sm: _SaveManager = AutoloadHelper.save_manager()
+	var rm: _RunManager = AutoloadHelper.run_manager()
+	if sm == null or rm == null:
+		push_warning("CombatRoom: Cannot save — SaveManager or RunManager missing.")
+		return
+
+	var run_state: Dictionary = rm.save_run_state()
+	var player_snapshot: Dictionary = {}
+	var burden_snapshot: Dictionary = {}
+	var inventory_snapshot: Dictionary = {}
+
+	if _player != null and is_instance_valid(_player):
+		var player_ent: Entity = CombatEntity.get_entity(_player)
+		if player_ent != null:
+			player_snapshot = {
+				"hp": player_ent.hp,
+				"hp_max": player_ent.hp_max,
+				"ap": player_ent.ap,
+			}
+
+	var bm: _BurdenManager = AutoloadHelper.burden_manager()
+	if bm != null:
+		burden_snapshot = {
+			"mwt_level": bm.current_mwt_level,
+			"total_sentient_kills": bm.total_sentient_kills,
+		}
+
+	var inv_mgr: _InventoryManager = AutoloadHelper.inventory_manager()
+	if inv_mgr != null:
+		inventory_snapshot = {
+			"items": inv_mgr.inventory.duplicate(true),
+			"equipment": inv_mgr.equipment.duplicate(true),
+		}
+
+	var state: Dictionary = {
+		"version": 1,
+		"run_state": run_state,
+		"player_entity_snapshot": player_snapshot,
+		"burden_run_snapshot": burden_snapshot,
+		"inventory_snapshot": inventory_snapshot,
+		"meta":
+		{
+			"schema_version": "1.0.0",
+			"save_timestamp_iso": Time.get_datetime_string_from_system(),
+			"platform": OS.get_name(),
+		},
+	}
+
+	var err: Error = sm.save_game(state)
+	if err != OK:
+		push_warning("CombatRoom: save_game failed with error %d." % err)
 
 
 func _on_reflection_started(text: String) -> void:
@@ -513,6 +570,7 @@ func _calculate_shards() -> int:
 
 
 func _show_victory_modal() -> void:
+	get_tree().paused = true
 	var scene: PackedScene = load(VICTORY_MODAL_SCENE_PATH)
 	if scene:
 		var modal := scene.instantiate() as _VictoryModal
@@ -529,6 +587,7 @@ func _show_victory_modal() -> void:
 
 
 func _show_defeat_modal() -> void:
+	get_tree().paused = true
 	var scene: PackedScene = load(DEFEAT_MODAL_SCENE_PATH)
 	if scene:
 		var modal := scene.instantiate() as _DefeatModal
