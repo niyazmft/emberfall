@@ -62,6 +62,11 @@ func _ready() -> void:
 		if not eb.entity_state_changed.is_connected(_on_entity_state_changed):
 			eb.entity_state_changed.connect(_on_entity_state_changed)
 
+	# FIX #590: Wire burden narrative modal when moral weight threshold is crossed.
+	var lifecycle := AutoloadHelper.entity_lifecycle()
+	if lifecycle and not lifecycle.mwt_reached.is_connected(_on_mwt_reached):
+		lifecycle.mwt_reached.connect(_on_mwt_reached)
+
 	_setup_camera()
 
 
@@ -74,20 +79,11 @@ func _exit_tree() -> void:
 	if eb and eb.entity_state_changed.is_connected(_on_entity_state_changed):
 		eb.entity_state_changed.disconnect(_on_entity_state_changed)
 
-	if is_instance_valid(_turn_manager):
-		if _turn_manager.combat_ended.is_connected(_on_combat_ended):
-			_turn_manager.combat_ended.disconnect(_on_combat_ended)
-		if _turn_manager.reflection_started.is_connected(_on_reflection_started):
-			_turn_manager.reflection_started.disconnect(_on_reflection_started)
-		if _turn_manager.turn_started.is_connected(_on_turn_started):
-			_turn_manager.turn_started.disconnect(_on_turn_started)
-
-	if is_instance_valid(_combat_input):
-		if _combat_input.attack_executed.is_connected(_on_attack_executed):
-			_combat_input.attack_executed.disconnect(_on_attack_executed)
-
+	# FIX #590: Disconnect burden narrative signal and clear timers.
 	var lifecycle := AutoloadHelper.entity_lifecycle()
 	if lifecycle:
+		if lifecycle.mwt_reached.is_connected(_on_mwt_reached):
+			lifecycle.mwt_reached.disconnect(_on_mwt_reached)
 		lifecycle.clear_timers()
 
 
@@ -403,6 +399,34 @@ func _on_combat_ended(victory: bool) -> void:
 		_show_victory_modal()
 	else:
 		_show_defeat_modal()
+
+
+func _on_mwt_reached(_moral_flag: int, _remaining_deltas: int) -> void:
+	"""FIX #590: Show burden narrative modal when moral weight threshold is crossed."""
+	var rm: _RunManager = AutoloadHelper.run_manager()
+	var bm: _BurdenManager = AutoloadHelper.burden_manager()
+	if rm == null or bm == null:
+		return
+
+	# Generate the burden event narrative deterministically.
+	var is_first: bool = bm._burden_trigger_count == 0
+	var result: BurdenEventResult = bm.trigger_burden_event(
+		rm.run_seed, rm.run_seed, rm.room_index, 0, is_first
+	)
+
+	# Pause and show modal.
+	get_tree().paused = true
+	var modal := _BurdenNarrativeModal.new()
+	modal.process_mode = Node.PROCESS_MODE_ALWAYS
+	modal.setup(result)
+	ui_overlay.add_child(modal)
+
+	modal.continued.connect(
+		func() -> void:
+			get_tree().paused = false
+			if rm:
+				rm.cmd_flags_updated()
+	)
 
 
 func _save_run_progress() -> void:
