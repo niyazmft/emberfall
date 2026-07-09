@@ -31,28 +31,6 @@ func test_camera_shake_applies_offset() -> void:
 	room.queue_free()
 
 
-func test_camera_panning_skips_auto_follow() -> void:
-	var room: CombatRoom = CombatRoom.new()
-	room.camera = Camera2D.new()
-	room.add_child(room.camera)
-	room._camera_target = Node2D.new()
-	room._camera_target.position = Vector2(100, 100)
-	room.add_child(room._camera_target)
-
-	room.camera.position = Vector2.ZERO
-	room._start_panning()
-	room._update_camera(1.0)
-	# During panning, auto-follow should not move the camera.
-	assert_that(room.camera.position).is_equal(Vector2.ZERO)
-
-	room._stop_panning()
-	room._update_camera(1.0)
-	# After stopping panning, auto-follow should resume.
-	assert_that(room.camera.position).is_not_equal(Vector2.ZERO)
-
-	room.queue_free()
-
-
 func test_title_screen_has_premise() -> void:
 	# Verify the localization key exists (actual UI instantiation requires scene nodes)
 	var premise_text: String = tr("TITLE_PREMISE")

@@ -38,11 +38,6 @@ const CAMERA_FOLLOW_SPEED: float = 3.0
 const CAMERA_SHAKE_DURATION: float = 0.2
 const CAMERA_SHAKE_MAX_OFFSET: float = 4.0
 
-## Camera panning state
-var _panning_active: bool = false
-var _pan_start_mouse_pos: Vector2 = Vector2.ZERO
-var _pan_start_camera_pos: Vector2 = Vector2.ZERO
-
 
 func _ready() -> void:
 	_grid_system = AutoloadHelper.grid_system()
@@ -291,12 +286,6 @@ func _load_tutorial_room_data() -> Dictionary:
 
 
 func _process(delta: float) -> void:
-	# If right mouse button was released outside _unhandled_input (e.g. during
-	# enemy turn or a modal), stop panning gracefully.
-	if _panning_active and not Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
-		_stop_panning()
-	if _panning_active:
-		_update_panning()
 	_update_camera(delta)
 
 
@@ -304,14 +293,13 @@ func _update_camera(delta: float) -> void:
 	## Smoothly interpolate camera position toward the target entity.
 	var desired_pos: Vector2 = camera.position
 
-	if not _panning_active:
-		if _camera_target != null and is_instance_valid(_camera_target):
-			desired_pos = _camera_target.position
-		elif grid_renderer:
-			desired_pos = grid_renderer.grid_to_world(5, 5, 0)
+	if _camera_target != null and is_instance_valid(_camera_target):
+		desired_pos = _camera_target.position
+	elif grid_renderer:
+		desired_pos = grid_renderer.grid_to_world(5, 5, 0)
 
-		var follow_weight: float = DeterministicMath.clampf(CAMERA_FOLLOW_SPEED * delta, 0.0, 1.0)
-		desired_pos = camera.position.lerp(desired_pos, follow_weight)
+	var follow_weight: float = DeterministicMath.clampf(CAMERA_FOLLOW_SPEED * delta, 0.0, 1.0)
+	desired_pos = camera.position.lerp(desired_pos, follow_weight)
 
 	if _camera_shake_time > 0.0:
 		var decay: float = _camera_shake_time / CAMERA_SHAKE_DURATION
@@ -337,8 +325,7 @@ func _update_camera(delta: float) -> void:
 
 	camera.position = desired_pos
 
-	if not _panning_active:
-		_clamp_camera_position()
+	_clamp_camera_position()
 
 
 func trigger_camera_shake(intensity: float = CAMERA_SHAKE_MAX_OFFSET) -> void:
@@ -349,25 +336,9 @@ func trigger_camera_shake(intensity: float = CAMERA_SHAKE_MAX_OFFSET) -> void:
 
 func _setup_camera() -> void:
 	# Camera centered on grid (approximate center of 12x12 grid)
-	camera.zoom = Vector2(3.2, 3.2)
+	camera.zoom = Vector2(1.2, 1.2)
 	if grid_renderer:
 		camera.position = grid_renderer.grid_to_world(5, 5, 0)
-
-
-func _start_panning() -> void:
-	_panning_active = true
-	_pan_start_mouse_pos = get_global_mouse_position()
-	_pan_start_camera_pos = camera.position
-
-
-func _stop_panning() -> void:
-	_panning_active = false
-
-
-func _update_panning() -> void:
-	var mouse_delta: Vector2 = get_global_mouse_position() - _pan_start_mouse_pos
-	camera.position = _pan_start_camera_pos - (mouse_delta / camera.zoom)
-	_clamp_camera_position()
 
 
 func _clamp_camera_position() -> void:
@@ -424,15 +395,6 @@ func _unhandled_input(event: InputEvent) -> void:
 	# Delegate to combat input handler first (handles targeting cancel on right-click)
 	if _combat_input and _combat_input.handle_input(event):
 		return
-
-	# Handle right-click drag panning (only when CombatInput is in IDLE)
-	if event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_RIGHT:
-			if event.pressed:
-				_start_panning()
-			else:
-				_stop_panning()
-			return
 
 	# Handle player movement via Input Actions
 	if event.is_action_pressed("move_up"):
