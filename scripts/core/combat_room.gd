@@ -336,7 +336,7 @@ func trigger_camera_shake(intensity: float = CAMERA_SHAKE_MAX_OFFSET) -> void:
 
 func _setup_camera() -> void:
 	# Camera centered on grid (approximate center of 12x12 grid)
-	camera.zoom = Vector2(2.8, 2.8)
+	camera.zoom = Vector2(2.5, 2.5)
 	if grid_renderer:
 		camera.position = grid_renderer.grid_to_world(5, 5, 0)
 
