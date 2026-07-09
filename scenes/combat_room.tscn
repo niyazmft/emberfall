@@ -109,7 +109,7 @@ mouse_filter = 2
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=2110801437]
 position = Vector2(0, 192)
-zoom = Vector2(1.2, 1.2)
+zoom = Vector2(2.0, 2.0)
 
 [node name="GridRenderer" type="Node2D" parent="." unique_id=1240770257]
 script = ExtResource("2_grid_renderer")
