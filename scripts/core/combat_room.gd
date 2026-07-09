@@ -38,6 +38,11 @@ const CAMERA_FOLLOW_SPEED: float = 3.0
 const CAMERA_SHAKE_DURATION: float = 0.2
 const CAMERA_SHAKE_MAX_OFFSET: float = 4.0
 
+## Camera panning state
+var _panning_active: bool = false
+var _pan_start_mouse_pos: Vector2 = Vector2.ZERO
+var _pan_start_camera_pos: Vector2 = Vector2.ZERO
+
 
 func _ready() -> void:
 	_grid_system = AutoloadHelper.grid_system()
@@ -286,18 +291,27 @@ func _load_tutorial_room_data() -> Dictionary:
 
 
 func _process(delta: float) -> void:
+	# If right mouse button was released outside _unhandled_input (e.g. during
+	# enemy turn or a modal), stop panning gracefully.
+	if _panning_active and not Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
+		_stop_panning()
+	if _panning_active:
+		_update_panning()
 	_update_camera(delta)
 
 
 func _update_camera(delta: float) -> void:
 	## Smoothly interpolate camera position toward the target entity.
 	var desired_pos: Vector2 = camera.position
-	if _camera_target != null and is_instance_valid(_camera_target):
-		desired_pos = _camera_target.position
-	elif grid_renderer:
-		desired_pos = grid_renderer.grid_to_world(5, 5, 0)
 
-	var follow_weight: float = DeterministicMath.clampf(CAMERA_FOLLOW_SPEED * delta, 0.0, 1.0)
+	if not _panning_active:
+		if _camera_target != null and is_instance_valid(_camera_target):
+			desired_pos = _camera_target.position
+		elif grid_renderer:
+			desired_pos = grid_renderer.grid_to_world(5, 5, 0)
+
+		var follow_weight: float = DeterministicMath.clampf(CAMERA_FOLLOW_SPEED * delta, 0.0, 1.0)
+		desired_pos = camera.position.lerp(desired_pos, follow_weight)
 
 	if _camera_shake_time > 0.0:
 		var decay: float = _camera_shake_time / CAMERA_SHAKE_DURATION
@@ -321,7 +335,10 @@ func _update_camera(delta: float) -> void:
 			_camera_shake_time - delta, 0.0, CAMERA_SHAKE_DURATION
 		)
 
-	camera.position = camera.position.lerp(desired_pos, follow_weight)
+	camera.position = desired_pos
+
+	if not _panning_active:
+		_clamp_camera_position()
 
 
 func trigger_camera_shake(intensity: float = CAMERA_SHAKE_MAX_OFFSET) -> void:
@@ -337,13 +354,85 @@ func _setup_camera() -> void:
 		camera.position = grid_renderer.grid_to_world(5, 5, 0)
 
 
+func _start_panning() -> void:
+	_panning_active = true
+	_pan_start_mouse_pos = get_global_mouse_position()
+	_pan_start_camera_pos = camera.position
+
+
+func _stop_panning() -> void:
+	_panning_active = false
+
+
+func _update_panning() -> void:
+	var mouse_delta: Vector2 = get_global_mouse_position() - _pan_start_mouse_pos
+	camera.position = _pan_start_camera_pos - (mouse_delta / camera.zoom)
+	_clamp_camera_position()
+
+
+func _clamp_camera_position() -> void:
+	if not grid_renderer:
+		return
+
+	var viewport_size: Vector2 = get_viewport().get_visible_rect().size / camera.zoom
+	var half_view: Vector2 = viewport_size / 2.0
+
+	# Compute grid world bounds from the four corners.
+	var corners: Array[Vector2] = [
+		grid_renderer.grid_to_world(0, 0, 0),
+		grid_renderer.grid_to_world(11, 0, 0),
+		grid_renderer.grid_to_world(0, 11, 0),
+		grid_renderer.grid_to_world(11, 11, 0),
+	]
+
+	var min_x: float = corners[0].x
+	var max_x: float = corners[0].x
+	var min_y: float = corners[0].y
+	var max_y: float = corners[0].y
+	for corner: Vector2 in corners:
+		min_x = minf(min_x, corner.x)
+		max_x = maxf(max_x, corner.x)
+		min_y = minf(min_y, corner.y)
+		max_y = maxf(max_y, corner.y)
+
+	# Add padding (half a tile)
+	var pad: float = 32.0
+	min_x -= pad
+	max_x += pad
+	min_y -= pad
+	max_y += pad
+
+	var clamp_min: Vector2 = Vector2(min_x + half_view.x, min_y + half_view.y)
+	var clamp_max: Vector2 = Vector2(max_x - half_view.x, max_y - half_view.y)
+
+	# If viewport is larger than the padded grid, clamp to center.
+	if clamp_min.x > clamp_max.x:
+		clamp_min.x = (min_x + max_x) / 2.0
+		clamp_max.x = clamp_min.x
+	if clamp_min.y > clamp_max.y:
+		clamp_min.y = (min_y + max_y) / 2.0
+		clamp_max.y = clamp_min.y
+
+	camera.position.x = DeterministicMath.clampf(camera.position.x, clamp_min.x, clamp_max.x)
+	camera.position.y = DeterministicMath.clampf(camera.position.y, clamp_min.y, clamp_max.y)
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if _turn_manager == null or _turn_manager.current_state != TurnManager.CombatState.PLAYER_TURN:
 		return
 
-	# Delegate to combat input handler
+	# Delegate to combat input handler first (handles targeting cancel on right-click)
 	if _combat_input and _combat_input.handle_input(event):
 		return
+
+	# Handle right-click drag panning (only when CombatInput is in IDLE)
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_RIGHT:
+			if event.pressed:
+				_start_panning()
+			else:
+				_stop_panning()
+			return
 
 	# Handle player movement via Input Actions
 	if event.is_action_pressed("move_up"):
