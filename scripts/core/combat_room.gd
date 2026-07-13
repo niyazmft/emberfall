@@ -74,6 +74,10 @@ func _ready() -> void:
 
 
 func _exit_tree() -> void:
+	# FIX #602: Reset time scale to prevent stuck slow-motion.
+	if Engine.time_scale != 1.0:
+		Engine.time_scale = 1.0
+
 	var run_manager := AutoloadHelper.run_manager()
 	if run_manager and run_manager.room_entered.is_connected(_on_room_entered):
 		run_manager.room_entered.disconnect(_on_room_entered)
@@ -320,6 +324,16 @@ func _load_tutorial_room_data() -> Dictionary:
 func _process(delta: float) -> void:
 	_update_camera(delta)
 
+	# FIX #602: Slow-motion preview during enemy turn (hold Shift).
+	if _turn_manager != null and _turn_manager.current_state == TurnManager.CombatState.ENEMY_TURN:
+		if Input.is_key_pressed(KEY_SHIFT):
+			if Engine.time_scale != 0.5:
+				Engine.time_scale = 0.5
+		elif Engine.time_scale != 1.0:
+			Engine.time_scale = 1.0
+	elif Engine.time_scale != 1.0:
+		Engine.time_scale = 1.0
+
 
 func _update_camera(delta: float) -> void:
 	## Smoothly interpolate camera position toward the target entity.
@@ -361,9 +375,55 @@ func _update_camera(delta: float) -> void:
 
 
 func trigger_camera_shake(intensity: float = CAMERA_SHAKE_MAX_OFFSET) -> void:
+	# FIX #602: Respect accessibility screen_shake setting.
+	var sm: _SettingsManager = AutoloadHelper.settings_manager()
+	var shake_scale: float = 1.0
+	if sm != null:
+		shake_scale = sm.get_value("accessibility", "screen_shake", 1.0) as float
+	if shake_scale <= 0.0:
+		return
+
 	_camera_shake_seed += 1
 	_camera_shake_time = CAMERA_SHAKE_DURATION
-	_camera_shake_intensity = intensity
+	_camera_shake_intensity = intensity * shake_scale
+
+
+## FIX #602: Skip all active animations and show final state immediately.
+func _skip_animations() -> void:
+	# 1. Stop camera shake immediately.
+	_camera_shake_time = 0.0
+	_camera_shake_intensity = 0.0
+
+	# 2. Hide turn banner immediately.
+	var turn_banner: Control = ui_overlay.get_node_or_null("TurnBanner")
+	if turn_banner != null and turn_banner.visible:
+		turn_banner.visible = false
+		turn_banner.modulate.a = 0.0
+
+	# 3. Kill all floating text labels immediately.
+	var combat_hud: _CombatHUD = ui_overlay.get_node_or_null("CombatHUD") as _CombatHUD
+	if combat_hud != null:
+		for child: Node in combat_hud.get_children():
+			if child is Label:
+				(child as Label).modulate.a = 0.0
+				child.queue_free()
+
+	# 4. Reset any occluded status bars to full visibility.
+	for child: Node in _enemies_node.get_children():
+		if child is Node2D:
+			var status_bar: EntityStatusBar = child.get_node_or_null("StatusBar") as EntityStatusBar
+			if status_bar != null:
+				status_bar.modulate.a = 1.0
+	if _player != null:
+		var player_status_bar: EntityStatusBar = (
+			_player.get_node_or_null("StatusBar") as EntityStatusBar
+		)
+		if player_status_bar != null:
+			player_status_bar.modulate.a = 1.0
+
+	var tm: _ToastManager = AutoloadHelper.toast_manager()
+	if tm != null:
+		tm.show_toast("Animations skipped", _ToastManager.ToastType.T_01)
 
 
 func _setup_camera() -> void:
@@ -421,7 +481,15 @@ func _clamp_camera_position() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if _turn_manager == null or _turn_manager.current_state != TurnManager.CombatState.PLAYER_TURN:
+	if _turn_manager == null:
+		return
+
+	# FIX #602: Skip all animations (Spacebar) during any combat phase.
+	if event is InputEventKey and event.pressed and event.keycode == KEY_SPACE:
+		_skip_animations()
+		return
+
+	if _turn_manager.current_state != TurnManager.CombatState.PLAYER_TURN:
 		return
 
 	# FIX #596: Undo / rewind (Ctrl+Z or Backspace)
@@ -820,6 +888,8 @@ func _on_entity_state_changed(
 
 	if not entity.is_player and was_alive and is_now_dead:
 		_room_kills += 1
+		# FIX #602: Lethal screenshake on enemy death.
+		trigger_camera_shake(CAMERA_SHAKE_MAX_OFFSET * 1.5)
 
 
 func _calculate_shards() -> int:

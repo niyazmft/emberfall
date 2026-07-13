@@ -310,5 +310,14 @@ func _print_debug(msg: String) -> void:
 		print("SettingsManager: %s" % msg)
 
 
+## FIX #602: Convenience getter for settings values.
+## Returns `fallback` if the category or key does not exist.
+func get_value(category: String, key: String, fallback: Variant = null) -> Variant:
+	var cat: Dictionary = settings.get(category, {}) as Dictionary
+	if cat.has(key):
+		return cat[key]
+	return fallback
+
+
 func _print_error(msg: String) -> void:
 	push_error("SettingsManager: %s" % msg)
