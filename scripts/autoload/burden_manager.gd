@@ -361,6 +361,16 @@ func get_bd_climb_width_captions() -> Dictionary:
 	return _caption_bridge.get_bd_climb_width_captions()
 
 
+## FIX #604: Returns the per-run burden trigger count for save serialization.
+func get_trigger_count_this_run() -> int:
+	return _burden_trigger_count
+
+
+## FIX #604: Returns the current burden noun index for save serialization.
+func get_last_noun_index() -> int:
+	return _burden_noun_index
+
+
 func _print_debug(msg: String) -> void:
 	if OS.is_debug_build():
 		print("BurdenManager: %s" % msg)

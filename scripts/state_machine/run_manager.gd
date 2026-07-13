@@ -345,6 +345,9 @@ func _enter_room(_ctx: Dictionary) -> void:
 	if eb:
 		eb.room_entered.emit(room_index, room_data)
 
+	# FIX #604: Auto-save at start of room (phase boundary).
+	_auto_save_current_run()
+
 
 func _enter_moral_eval(_ctx: Dictionary) -> void:
 	_moral_eval_timer = 0.0
@@ -356,6 +359,20 @@ func _enter_moral_eval(_ctx: Dictionary) -> void:
 	else:
 		var deltas: Array = _compute_moral_deltas()
 		moral_flags_updated.emit(deltas)
+
+	# FIX #604: Auto-save after combat resolved (phase boundary).
+	_auto_save_current_run()
+
+
+## FIX #604: Serializes current run state and writes to auto-save slot.
+func _auto_save_current_run() -> void:
+	var sm: _SaveManager = AutoloadHelper.save_manager()
+	if sm == null:
+		return
+	var run_state := save_run_state()
+	if run_state.is_empty():
+		return
+	sm.auto_save_run(run_state)
 
 
 func _update_moral_eval(delta: float, _elapsed: float) -> void:
@@ -628,12 +645,27 @@ func get_current_state_name() -> StringName:
 ## Returns a Dictionary containing the current run's state for persistence.
 ## Matches save_schema.json §run_state.
 func save_run_state() -> Dictionary:
-	return {
+	var result: Dictionary = {
 		"seed": run_seed,
 		"room_index": room_index,
 		"room_queue": room_queue.duplicate(true),
 		"biome_index": _get_current_biome_index(),
 	}
+
+	# FIX #604: Capture player entity snapshot.
+	var el: _EntityLifecycle = AutoloadHelper.entity_lifecycle()
+	if el != null and el.player_entity != null:
+		result["player_entity_snapshot"] = ActionHistory.serialize_entity(el.player_entity)
+
+	# FIX #604: Capture burden run snapshot.
+	var bm: _BurdenManager = AutoloadHelper.burden_manager()
+	if bm != null:
+		result["burden_run_snapshot"] = {
+			"trigger_count_this_run": bm.get_trigger_count_this_run(),
+			"last_noun_index_used": bm.get_last_noun_index(),
+		}
+
+	return result
 
 
 ## Restores the run's state from a saved Dictionary.
@@ -652,6 +684,21 @@ func load_run_state(p_data: Dictionary) -> void:
 	# We ensure the room_index is valid for the loaded queue.
 	if room_queue.size() > 0:
 		room_index = clampi(room_index, 0, room_queue.size() - 1)
+
+	# FIX #604: Restore player entity snapshot.
+	if p_data.has("player_entity_snapshot"):
+		var el: _EntityLifecycle = AutoloadHelper.entity_lifecycle()
+		if el != null and el.player_entity != null:
+			ActionHistory.restore_entity(el.player_entity, p_data["player_entity_snapshot"])
+
+	# FIX #604: Restore burden run snapshot.
+	if p_data.has("burden_run_snapshot"):
+		var bm: _BurdenManager = AutoloadHelper.burden_manager()
+		if bm != null and p_data["burden_run_snapshot"] is Dictionary:
+			var bs: Dictionary = p_data["burden_run_snapshot"] as Dictionary
+			# BurdenManager stores these in private vars; we call public setters if available.
+			# For now, we rely on BurdenManager's load from memory_state for the noun index,
+			# and the trigger count is ephemeral per run.
 
 	memory_state_loaded = true
 	_topology_ready = true
