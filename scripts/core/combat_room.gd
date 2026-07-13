@@ -167,6 +167,14 @@ func _setup_hud() -> void:
 		var turn_banner := turn_banner_scene.instantiate()
 		ui_overlay.add_child(turn_banner)
 
+	# FIX #597: Setup hover preview manager.
+	var hover_preview := HoverPreviewManager.new()
+	hover_preview.name = "HoverPreviewManager"
+	ui_overlay.add_child(hover_preview)
+	var player_entity := CombatEntity.get_entity(_player)
+	if player_entity:
+		hover_preview.setup(player_entity)
+
 
 func _setup_turn_manager() -> void:
 	_turn_manager = TurnManager.new()
@@ -409,6 +417,54 @@ func _unhandled_input(event: InputEvent) -> void:
 		if _combat_input.current_state == CombatInput.State.TARGETING:
 			_combat_input._stop_targeting()
 		_turn_manager.end_player_turn()
+
+
+func _input(event: InputEvent) -> void:
+	## FIX #597: Update hover preview on mouse motion.
+	if event is InputEventMouseMotion:
+		_update_hover_preview()
+
+
+func _update_hover_preview() -> void:
+	var hover_preview: HoverPreviewManager = ui_overlay.get_node_or_null("HoverPreviewManager")
+	if hover_preview == null:
+		return
+
+	if _turn_manager == null or _turn_manager.current_state != TurnManager.CombatState.PLAYER_TURN:
+		hover_preview.clear()
+		return
+
+	if not grid_renderer:
+		return
+
+	var grid_pos: Vector2i = grid_renderer.mouse_to_grid()
+	if not _grid_system or not _grid_system.is_in_bounds(grid_pos.x, grid_pos.y):
+		hover_preview.clear()
+		return
+
+	# Check for enemy at hovered tile
+	var found_enemy: bool = false
+	for child: Node in _enemies_node.get_children():
+		if not child is Node2D:
+			continue
+		var enemy_node: Node2D = child as Node2D
+		var enemy_ent: Entity = CombatEntity.get_entity(enemy_node)
+		if (
+			enemy_ent
+			and enemy_ent.x == grid_pos.x
+			and enemy_ent.y == grid_pos.y
+			and enemy_ent.hp > 0
+		):
+			found_enemy = true
+			hover_preview.show_enemy_preview(enemy_ent, enemy_ent.entity_name)
+			break
+
+	if not found_enemy:
+		var tile: TacTileData = _grid_system.get_tile(grid_pos.x, grid_pos.y)
+		if tile:
+			hover_preview.show_tile_preview(tile, false)
+		else:
+			hover_preview.clear()
 
 
 func _try_move_player(dx: int, dy: int) -> void:
