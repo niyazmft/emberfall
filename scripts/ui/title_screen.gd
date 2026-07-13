@@ -21,9 +21,12 @@ func _ready() -> void:
 	quit_btn.text = tr("menu.title.quit")
 	premise_label.text = tr("TITLE_PREMISE")
 
-	# Enable Continue if a save exists
+	# Enable Continue if a save OR auto-save exists
 	var save_manager: _SaveManager = AutoloadHelper.save_manager()
-	if save_manager != null and save_manager.has_save():
+	var has_any_save: bool = false
+	if save_manager != null:
+		has_any_save = save_manager.has_save() or save_manager.has_auto_save()
+	if has_any_save:
 		continue_btn.disabled = false
 	else:
 		continue_btn.disabled = true

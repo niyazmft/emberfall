@@ -51,6 +51,11 @@ class_name _SaveManager
 ## Absolute path to the single save file written by the engine.
 const SAVE_PATH: String = "user://save_state.json"
 
+## FIX #604: Auto-save directory and file paths for mid-run crash recovery.
+const AUTO_SAVE_DIR: String = "user://saves"
+const AUTO_SAVE_PATH: String = "user://saves/auto.json"
+const AUTO_SAVE_SLOTS: int = 3  ## Rotating FIFO: auto_1.json … auto_3.json
+
 ## Incremented whenever the schema changes in a breaking way.
 ## Mismatch on load triggers a push_warning but does NOT abort the load.
 const SAVE_VERSION: int = 1
@@ -68,6 +73,12 @@ signal save_failed(reason: String)
 
 ## Emitted when load_game() cannot read or parse the file.
 signal load_failed(reason: String)
+
+## FIX #604: Emitted after a successful auto-save write.
+signal auto_save_completed(path: String)
+
+## FIX #604: Emitted when auto_save_run() cannot write the file.
+signal auto_save_failed(reason: String)
 
 # ── Lifecycle ──────────────────────────────────────────────────────────────
 
@@ -219,6 +230,71 @@ func delete_save() -> void:
 		_print_debug("delete_save: removed %s" % SAVE_PATH)
 
 
+## FIX #604 ── Auto-Save API ───────────────────────────────────────────────
+
+
+## Serializes `run_state` to JSON and writes it to AUTO_SAVE_PATH with
+## atomic rename and rotating FIFO backup slots (auto_1 … auto_3).
+##
+## Returns OK on success, or a FileAccess error code on failure.
+func auto_save_run(run_state: Dictionary) -> Error:
+	# Ensure auto-save directory exists.
+	var dir_err: Error = _ensure_auto_save_dir()
+	if dir_err != OK:
+		var reason: String = "Failed to create auto-save directory (error %d)" % dir_err
+		push_error("[SaveManager] auto_save_run: %s" % reason)
+		auto_save_failed.emit(reason)
+		return dir_err
+
+	# Rotate existing backups before overwriting the current slot.
+	_rotate_auto_saves()
+
+	var save_data: Dictionary = run_state.duplicate(true)
+	save_data["version"] = SAVE_VERSION
+	save_data["save_timestamp_iso"] = Time.get_datetime_string_from_system(false, true)
+	save_data["platform"] = OS.get_name()
+
+	var json_text: String = JSON.stringify(save_data, "\t")
+	var write_err: Error = _atomic_write_json(AUTO_SAVE_PATH, json_text)
+	if write_err != OK:
+		var reason: String = "Atomic write failed with error %d" % write_err
+		push_error("[SaveManager] auto_save_run: %s" % reason)
+		auto_save_failed.emit(reason)
+		return write_err
+
+	_print_debug("auto_save_run: wrote %d bytes to %s" % [json_text.length(), AUTO_SAVE_PATH])
+	auto_save_completed.emit(AUTO_SAVE_PATH)
+
+	# FIX #604: Steam Cloud sync (silently skipped if Steam unavailable).
+	var steam_mgr: _SteamManager = AutoloadHelper.steam_manager()
+	if steam_mgr != null and steam_mgr._steam_initialized:
+		steam_mgr.sync_cloud_save(AUTO_SAVE_PATH, "auto.json")
+
+	return OK
+
+
+## Reads and parses the auto-save file.
+## Returns an empty Dictionary {} if no auto-save exists.
+func load_auto_save() -> Dictionary:
+	if not FileAccess.file_exists(AUTO_SAVE_PATH):
+		return {}
+	return _load_json_file(AUTO_SAVE_PATH)
+
+
+## Returns true if an auto-save file is present on disk.
+func has_auto_save() -> bool:
+	return FileAccess.file_exists(AUTO_SAVE_PATH)
+
+
+## Deletes all auto-save files (current + backup slots).
+func delete_auto_save() -> void:
+	for slot: int in range(0, AUTO_SAVE_SLOTS + 1):
+		var path: String = AUTO_SAVE_DIR + "/auto" + ("_%d" % slot if slot > 0 else "") + ".json"
+		if FileAccess.file_exists(path):
+			DirAccess.remove_absolute(path)
+	_print_debug("delete_auto_save: cleared all auto-save slots.")
+
+
 ## Returns true if a save file is present on disk.
 func has_save() -> bool:
 	return FileAccess.file_exists(SAVE_PATH)
@@ -232,3 +308,69 @@ func has_save() -> bool:
 func _print_debug(msg: String) -> void:
 	if OS.is_debug_build():
 		print("[SaveManager] %s" % msg)
+
+
+## FIX #604: Ensures the auto-save directory exists.
+func _ensure_auto_save_dir() -> Error:
+	if DirAccess.dir_exists_absolute(AUTO_SAVE_DIR):
+		return OK
+	var err: Error = DirAccess.make_dir_recursive_absolute(AUTO_SAVE_DIR)
+	return err
+
+
+## FIX #604: Rotates auto-save backup slots (FIFO).
+## Moves auto_2 → auto_3, auto_1 → auto_2, auto → auto_1.
+func _rotate_auto_saves() -> void:
+	for slot: int in range(AUTO_SAVE_SLOTS, 0, -1):
+		var src: String = AUTO_SAVE_DIR + "/auto%s.json" % ("_%d" % (slot - 1) if slot > 1 else "")
+		var dst: String = AUTO_SAVE_DIR + "/auto_%d.json" % slot
+		if FileAccess.file_exists(src):
+			if FileAccess.file_exists(dst):
+				DirAccess.remove_absolute(dst)
+			DirAccess.rename_absolute(src, dst)
+
+
+## FIX #604: Writes JSON text to a temporary file, then atomically renames it.
+## Prevents save corruption if the game crashes during write.
+func _atomic_write_json(path: String, json_text: String) -> Error:
+	var tmp_path: String = path + ".tmp"
+	var file: FileAccess = FileAccess.open(tmp_path, FileAccess.WRITE)
+	if file == null:
+		return FileAccess.get_open_error()
+	file.store_string(json_text)
+	file.close()
+
+	# Remove old file if it exists (rename may fail on some platforms).
+	if FileAccess.file_exists(path):
+		DirAccess.remove_absolute(path)
+
+	var rename_err: Error = DirAccess.rename_absolute(tmp_path, path)
+	if rename_err != OK:
+		# Fallback: try direct write if atomic rename fails.
+		file = FileAccess.open(path, FileAccess.WRITE)
+		if file == null:
+			return FileAccess.get_open_error()
+		file.store_string(json_text)
+		file.close()
+
+	return OK
+
+
+## FIX #604: Loads and parses a JSON file at `path`.
+## Returns empty Dictionary on any error.
+func _load_json_file(path: String) -> Dictionary:
+	var file: FileAccess = FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		return {}
+	var raw_text: String = file.get_as_text()
+	file.close()
+
+	var json := JSON.new()
+	var err := json.parse(raw_text)
+	if err != OK:
+		return {}
+
+	var raw_data: Variant = json.data
+	if typeof(raw_data) != TYPE_DICTIONARY:
+		return {}
+	return raw_data as Dictionary

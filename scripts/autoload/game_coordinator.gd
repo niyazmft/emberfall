@@ -41,23 +41,38 @@ func cmd_continue_game() -> void:
 		return
 
 	var data := save_manager.load_game()
-	if data.is_empty():
-		push_warning("GameCoordinator: Attempted to continue but no save found.")
+	var run_state: Dictionary = {}
+
+	# FIX #604: Try auto-save first, then fall back to main save.
+	if save_manager.has_auto_save():
+		var auto_data: Dictionary = save_manager.load_auto_save()
+		if not auto_data.is_empty():
+			run_state = auto_data
+			_print_debug("Continue: loaded from auto-save.")
+
+	if run_state.is_empty() and not data.is_empty():
+		if data.has("run_state") and typeof(data["run_state"]) == TYPE_DICTIONARY:
+			run_state = data["run_state"] as Dictionary
+			_print_debug("Continue: loaded from main save.")
+
+	if run_state.is_empty():
+		push_warning("GameCoordinator: Attempted to continue but no save or auto-save found.")
 		return
 
 	var run_manager := AutoloadHelper.run_manager()
-	if (
-		run_manager != null
-		and data.has("run_state")
-		and typeof(data["run_state"]) == TYPE_DICTIONARY
-	):
-		run_manager.load_run_state(data["run_state"])
+	if run_manager != null:
+		run_manager.load_run_state(run_state)
 		await _change_scene(COMBAT_ROOM_SCENE)
 	else:
 		push_warning("GameCoordinator: No valid run_state Dictionary found in save data.")
 		var tm := AutoloadHelper.toast_manager()
 		if tm != null:
 			tm.show_toast("Save File Corrupted!", _ToastManager.ToastType.T_04)
+
+
+func _print_debug(msg: String) -> void:
+	if OS.is_debug_build():
+		print("GameCoordinator: %s" % msg)
 
 
 func _change_scene(path: String) -> void:
