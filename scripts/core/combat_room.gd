@@ -38,6 +38,9 @@ const CAMERA_FOLLOW_SPEED: float = 3.0
 const CAMERA_SHAKE_DURATION: float = 0.2
 const CAMERA_SHAKE_MAX_OFFSET: float = 4.0
 
+## Undo / rewind state (FIX #596)
+var _action_history: ActionHistory = ActionHistory.new()
+
 
 func _ready() -> void:
 	_grid_system = AutoloadHelper.grid_system()
@@ -85,6 +88,15 @@ func _exit_tree() -> void:
 		if lifecycle.mwt_reached.is_connected(_on_mwt_reached):
 			lifecycle.mwt_reached.disconnect(_on_mwt_reached)
 		lifecycle.clear_timers()
+
+	# FIX #596: Disconnect undo signal.
+	if is_instance_valid(_turn_manager):
+		if _turn_manager.turn_started.is_connected(_on_turn_started_undo):
+			_turn_manager.turn_started.disconnect(_on_turn_started_undo)
+
+	if is_instance_valid(_combat_input):
+		if _combat_input.action_about_to_execute.is_connected(_on_action_about_to_execute):
+			_combat_input.action_about_to_execute.disconnect(_on_action_about_to_execute)
 
 
 func _on_room_entered(p_room_index: int, room_data: Dictionary) -> void:
@@ -138,10 +150,16 @@ func _on_room_entered(p_room_index: int, room_data: Dictionary) -> void:
 	_combat_input = CombatInput.new(_player, _enemies_node, grid_renderer)
 	add_child(_combat_input)
 	_combat_input.attack_executed.connect(_on_attack_executed)
+	# FIX #596: Capture undo snapshot before attack/move actions.
+	_combat_input.action_about_to_execute.connect(_on_action_about_to_execute)
 
 	if _turn_manager:
 		_turn_manager.queue_free()
 	_setup_turn_manager()
+
+	# FIX #596: Clear undo history at start of each player turn.
+	if not _turn_manager.turn_started.is_connected(_on_turn_started_undo):
+		_turn_manager.turn_started.connect(_on_turn_started_undo)
 
 	# Spawn props
 	_spawn_props(room_data)
@@ -400,18 +418,30 @@ func _unhandled_input(event: InputEvent) -> void:
 	if _turn_manager == null or _turn_manager.current_state != TurnManager.CombatState.PLAYER_TURN:
 		return
 
+	# FIX #596: Undo / rewind (Ctrl+Z or Backspace)
+	if event is InputEventKey and event.pressed:
+		var is_ctrl_z: bool = event.keycode == KEY_Z and event.ctrl_pressed
+		var is_backspace: bool = event.keycode == KEY_BACKSPACE
+		if is_ctrl_z or is_backspace:
+			_undo_last_action()
+			return
+
 	# Delegate to combat input handler first (handles targeting cancel on right-click)
 	if _combat_input and _combat_input.handle_input(event):
 		return
 
 	# Handle player movement via Input Actions
 	if event.is_action_pressed("move_up"):
+		_push_snapshot("Move Up")
 		_try_move_player(0, -1)
 	elif event.is_action_pressed("move_down"):
+		_push_snapshot("Move Down")
 		_try_move_player(0, 1)
 	elif event.is_action_pressed("move_left"):
+		_push_snapshot("Move Left")
 		_try_move_player(-1, 0)
 	elif event.is_action_pressed("move_right"):
+		_push_snapshot("Move Right")
 		_try_move_player(1, 0)
 	elif event.is_action_pressed("combat_end_turn"):
 		if _combat_input.current_state == CombatInput.State.TARGETING:
@@ -612,6 +642,65 @@ func _on_turn_started(entity: Entity, is_player: bool) -> void:
 func _on_attack_executed(_target: Node2D, _damage: int) -> void:
 	## Brief camera shake on attack impact.
 	trigger_camera_shake(CAMERA_SHAKE_MAX_OFFSET)
+
+
+# ── Undo / Rewind System (FIX #596) ──────────────────────────────────
+
+
+func _on_turn_started_undo(entity: Entity, is_player: bool) -> void:
+	## Clear undo history when the player turn starts (new turn = fresh stack).
+	if is_player:
+		_action_history.clear()
+
+
+func _on_action_about_to_execute(action_type: String) -> void:
+	## Capture snapshot before a player action mutates state.
+	_push_snapshot(action_type.capitalize())
+
+
+func _push_snapshot(action_description: String) -> void:
+	var player_ent: Entity = CombatEntity.get_entity(_player)
+	if player_ent == null:
+		return
+
+	var player_snap: Dictionary = ActionHistory.serialize_entity(player_ent)
+	var enemy_snaps: Array[Dictionary] = []
+	for child: Node in _enemies_node.get_children():
+		var enemy_ent: Entity = CombatEntity.get_entity(child)
+		if enemy_ent != null:
+			enemy_snaps.append(ActionHistory.serialize_entity(enemy_ent))
+
+	_action_history.push_snapshot(player_snap, enemy_snaps, action_description)
+
+
+func _undo_last_action() -> void:
+	if not _action_history.can_undo():
+		return
+
+	var snapshot: Dictionary = _action_history.undo()
+	if snapshot.is_empty():
+		return
+
+	# Restore player state.
+	var player_snap: Dictionary = snapshot.get("player", {})
+	var player_ent: Entity = CombatEntity.get_entity(_player)
+	if player_ent != null and not player_snap.is_empty():
+		ActionHistory.restore_entity(player_ent, player_snap)
+
+	# Restore enemy states.
+	var enemy_snaps: Array = snapshot.get("enemies", []) as Array
+	var enemy_idx: int = 0
+	for child: Node in _enemies_node.get_children():
+		var enemy_ent: Entity = CombatEntity.get_entity(child)
+		if enemy_ent != null and enemy_idx < enemy_snaps.size():
+			ActionHistory.restore_entity(enemy_ent, enemy_snaps[enemy_idx])
+			enemy_idx += 1
+
+	# Brief visual feedback.
+	trigger_camera_shake(1.0)
+	var tm: _ToastManager = AutoloadHelper.toast_manager()
+	if tm != null:
+		tm.show_toast("Rewind: " + snapshot.get("description", ""), _ToastManager.ToastType.T_01)
 
 
 func _on_boss_hp_changed(new_hp: int, _old_hp: int) -> void:

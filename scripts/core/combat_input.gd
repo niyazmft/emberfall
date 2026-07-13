@@ -11,6 +11,8 @@ signal targeting_cancelled
 signal attack_executed(target: Node2D, damage: int)
 signal move_targeting_started
 signal move_targeting_cancelled
+## FIX #596: Emitted before a player action mutates state, allowing CombatRoom to capture undo snapshot.
+signal action_about_to_execute(action_type: String)
 
 enum State { IDLE, TARGETING, MOVE_TARGETING }
 
@@ -210,6 +212,9 @@ func _execute_attack() -> void:
 		player_ent, target_ent, cover_tiles
 	)
 
+	# FIX #596: Notify CombatRoom to capture undo snapshot before state mutation.
+	action_about_to_execute.emit("attack")
+
 	var lifecycle: _EntityLifecycle = AutoloadHelper.entity_lifecycle()
 	if lifecycle:
 		lifecycle.apply_damage(player_ent, target_ent, damage)
@@ -293,6 +298,9 @@ func _execute_move_to(tx: int, ty: int) -> void:
 	var cost: int = CombatFormula.action_cost("move_cardinal")
 	if entity.ap < cost:
 		return
+
+	# FIX #596: Notify CombatRoom to capture undo snapshot before state mutation.
+	action_about_to_execute.emit("move")
 
 	entity.set_grid_position(tx, ty)
 	entity.ap -= cost
