@@ -300,6 +300,13 @@ func _enter_sanctum(_ctx: Dictionary) -> void:
 	var bm: _BurdenManager = AutoloadHelper.burden_manager()
 	if bm != null:
 		bm.reset()
+	# FIX #599: Clear blessing and build tracker on sanctum entry.
+	var bsys: BlessingSystem = AutoloadHelper.blessing_system()
+	if bsys != null:
+		bsys.clear()
+	var bt: BuildTracker = AutoloadHelper.build_tracker()
+	if bt != null:
+		bt.set_blessing(null)
 
 
 func _enter_biome_generation(_ctx: Dictionary) -> void:
@@ -665,6 +672,16 @@ func save_run_state() -> Dictionary:
 			"last_noun_index_used": bm.get_last_noun_index(),
 		}
 
+	# FIX #599: Save selected blessing.
+	var bsys: BlessingSystem = AutoloadHelper.blessing_system()
+	if bsys != null and not bsys.current_blessing_id().is_empty():
+		result["blessing_id"] = bsys.current_blessing_id()
+
+	# FIX #599: Save build tracker data.
+	var bt: BuildTracker = AutoloadHelper.build_tracker()
+	if bt != null:
+		result["build_summary"] = bt.to_summary()
+
 	return result
 
 
@@ -699,6 +716,17 @@ func load_run_state(p_data: Dictionary) -> void:
 			# BurdenManager stores these in private vars; we call public setters if available.
 			# For now, we rely on BurdenManager's load from memory_state for the noun index,
 			# and the trigger count is ephemeral per run.
+
+	# FIX #599: Restore blessing selection.
+	if p_data.has("blessing_id"):
+		var bsys: BlessingSystem = AutoloadHelper.blessing_system()
+		if bsys != null:
+			var saved_id: String = p_data["blessing_id"] as String
+			var blessings: Array[Dictionary] = bsys.generate_blessings(run_seed)
+			for i: int in range(blessings.size()):
+				if blessings[i].get("id", "") == saved_id:
+					bsys.select_blessing(i)
+					break
 
 	memory_state_loaded = true
 	_topology_ready = true

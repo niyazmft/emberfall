@@ -13,17 +13,20 @@ static func compute_damage(
 	defender_def: int,
 	position_modifier: float,
 	elemental_modifier: float,
-	memory_synergy: float
+	memory_synergy: float,
+	## FIX #599: Optional blessing damage multiplier (default 1.0).
+	blessing_multiplier: float = 1.0
 ) -> int:
 	## DAMAGE_DEALT = ⌊ (D_BASE + OFF – DEF) × POSITION_MODIFIER
-	##                  × ELEMENTAL_MODIFIER × (1 + MEMORY_SYNERGY) ⌋
+	##                  × ELEMENTAL_MODIFIER × (1 + MEMORY_SYNERGY) × BLESSING_MULT ⌋
 	##
 	## Parameters:
-	##   attacker_off — attacker’s offence stat
-	##   defender_def — defender’s defence stat
+	##   attacker_off — attacker's offence stat
+	##   defender_def — defender's defence stat
 	##   position_modifier — float ∈ [0.5, 1.5]
 	##   elemental_modifier — float (default 1.0)
 	##   memory_synergy — float ∈ [0.0, 0.30] (default 0.0)
+	##   blessing_multiplier — float (default 1.0)
 	##
 	## Returns: integer damage ≥ 1 (guaranteed attrition)
 
@@ -35,6 +38,7 @@ static func compute_damage(
 	raw *= position_modifier
 	raw *= elemental_modifier
 	raw *= (1.0 + memory_synergy)
+	raw *= blessing_multiplier
 
 	return DeterministicMath.damage_floor(raw)
 
@@ -44,12 +48,18 @@ static func compute_damage_from_entities(
 	defender: Entity,
 	cover_tiles: Array[Vector2i],
 	elemental_modifier: float = 1.0,
-	memory_synergy: float = 0.0
+	memory_synergy: float = 0.0,
+	## FIX #599: Optional element string for blessing modifier lookup.
+	element: String = ""
 ) -> int:
 	## Convenience overload: derive OFF/DEF from entity stat blocks
 	## and compute position modifier automatically.
+	## Also applies blessing damage multiplier if BlessingSystem has a selection.
 	var pos_mod: float = calculate_position_modifier(attacker, defender, cover_tiles)
-	return compute_damage(attacker.off, defender.def_, pos_mod, elemental_modifier, memory_synergy)
+	var blessing_mult: float = _get_blessing_damage_multiplier(element)
+	return compute_damage(
+		attacker.off, defender.def_, pos_mod, elemental_modifier, memory_synergy, blessing_mult
+	)
 
 
 # ── Position Modifier §3.3 ────────────────────────────────────────
@@ -157,6 +167,14 @@ static func elemental_modifier(interaction_type: String) -> float:
 static func clamp_memory_synergy(value: float) -> float:
 	## §2.1: MEMORY_SYNERGY scalar capped at +0.30.
 	return DeterministicMath.clampf(value, 0.0, GameConstants.MEMORY_SYNERGY_MAX)
+
+
+## FIX #599: Query active blessing for damage multiplier.
+static func _get_blessing_damage_multiplier(element: String = "") -> float:
+	var bs: BlessingSystem = AutoloadHelper.blessing_system()
+	if bs == null:
+		return 1.0
+	return bs.damage_multiplier(element)
 
 
 # ── Action Cost Look-Up §3.2 ──────────────────────────────────────
