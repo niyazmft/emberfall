@@ -1,0 +1,161 @@
+{
+  "blessings": {
+    "_description": "Run Blessings that modify core mechanics. Each blessing creates distinct build paths.",
+    "pool": [
+      {
+        "id": "bless_wind_discipline",
+        "name_key": "BLESS_WIND_DISCIPLINE",
+        "description_key": "BLESS_WIND_DISCIPLINE_DESC",
+        "tags": ["wind", "glass_cannon"],
+        "modifiers": {
+          "ap_cost_wind": -1,
+          "damage_wind": -0.20,
+          "spd_bonus": 2
+        }
+      },
+      {
+        "id": "bless_oil_presence",
+        "name_key": "BLESS_OIL_PRESENCE",
+        "description_key": "BLESS_OIL_PRESENCE_DESC",
+        "tags": ["oil", "zone_control"],
+        "modifiers": {
+          "oil_duration_extra": 3,
+          "def_bonus": 3
+        }
+      },
+      {
+        "id": "bless_fire_fury",
+        "name_key": "BLESS_FIRE_FURY",
+        "description_key": "BLESS_FIRE_FURY_DESC",
+        "tags": ["fire", "pyromaniac"],
+        "modifiers": {
+          "damage_fire": 0.25,
+          "hp_max_bonus": -10
+        }
+      },
+      {
+        "id": "bless_water_clarity",
+        "name_key": "BLESS_WATER_CLARITY",
+        "description_key": "BLESS_WATER_CLARITY_DESC",
+        "tags": ["water", "tactician"],
+        "modifiers": {
+          "ap_regen_bonus": 1,
+          "damage_all": -0.10
+        }
+      },
+      {
+        "id": "bless_earth_roots",
+        "name_key": "BLESS_EARTH_ROOTS",
+        "description_key": "BLESS_EARTH_ROOTS_DESC",
+        "tags": ["tank", "survivor"],
+        "modifiers": {
+          "hp_max_bonus": 20,
+          "def_bonus": 4,
+          "spd_bonus": -2
+        }
+      },
+      {
+        "id": "bless_lightning_instinct",
+        "name_key": "BLESS_LIGHTNING_INSTINCT",
+        "description_key": "BLESS_LIGHTNING_INSTINCT_DESC",
+        "tags": ["speed", "assassin"],
+        "modifiers": {
+          "spd_bonus": 5,
+          "first_strike_bonus": 0.30,
+          "def_bonus": -2
+        }
+      },
+      {
+        "id": "bless_burden_forge",
+        "name_key": "BLESS_BURDEN_FORGE",
+        "description_key": "BLESS_BURDEN_FORGE_DESC",
+        "tags": ["burden", "moral"],
+        "modifiers": {
+          "damage_per_moral_flag": 0.02,
+          "moral_gain_multiplier": 1.5
+        }
+      },
+      {
+        "id": "bless_pacifist_oath",
+        "name_key": "BLESS_PACIFIST_OATH",
+        "description_key": "BLESS_PACIFIST_OATH_DESC",
+        "tags": ["pacifist", "healer"],
+        "modifiers": {
+          "spare_heal_amount": 15,
+          "damage_all": -0.40,
+          "def_bonus": 5
+        }
+      },
+      {
+        "id": "bless_combo_master",
+        "name_key": "BLESS_COMBO_MASTER",
+        "description_key": "BLESS_COMBO_MASTER_DESC",
+        "tags": ["combo", "versatile"],
+        "modifiers": {
+          "combo_damage_bonus": 0.20,
+          "ap_cost_combo": -1
+        }
+      },
+      {
+        "id": "bless_vanguard",
+        "name_key": "BLESS_VANGUARD",
+        "description_key": "BLESS_VANGUARD_DESC",
+        "tags": ["melee", "bruiser"],
+        "modifiers": {
+          "adjacent_damage_bonus": 0.20,
+          "ap_cost_melee": -1
+        }
+      },
+      {
+        "id": "bless_sniper_eye",
+        "name_key": "BLESS_SNIPER_EYE",
+        "description_key": "BLESS_SNIPER_EYE_DESC",
+        "tags": ["ranged", "precision"],
+        "modifiers": {
+          "range_damage_bonus": 0.25,
+          "damage_melee": -0.15
+        }
+      },
+      {
+        "id": "bless_adaptive_shell",
+        "name_key": "BLESS_ADAPTIVE_SHELL",
+        "description_key": "BLESS_ADAPTIVE_SHELL_DESC",
+        "tags": ["defensive", "adaptive"],
+        "modifiers": {
+          "damage_taken_first_hit": -0.50,
+          "def_bonus": 2
+        }
+      },
+      {
+        "id": "bless_echo_parasite",
+        "name_key": "BLESS_ECHO_PARASITE",
+        "description_key": "BLESS_ECHO_PARASITE_DESC",
+        "tags": ["echo", "burden"],
+        "modifiers": {
+          "enemy_kill_hp_steal": 5,
+          "moral_gain_multiplier": 0.5
+        }
+      },
+      {
+        "id": "bless_ember_blood",
+        "name_key": "BLESS_EMBER_BLOOD",
+        "description_key": "BLESS_EMBER_BLOOD_DESC",
+        "tags": ["fire", "desperation"],
+        "modifiers": {
+          "damage_all": 0.10,
+          "desperation_multiplier": 3.0
+        }
+      },
+      {
+        "id": "bless_tide_walker",
+        "name_key": "BLESS_TIDE_WALKER",
+        "description_key": "BLESS_TIDE_WALKER_DESC",
+        "tags": ["water", "mobility"],
+        "modifiers": {
+          "ap_cost_move": -1,
+          "move_range_bonus": 1
+        }
+      }
+    ]
+  }
+}

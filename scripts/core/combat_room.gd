@@ -158,6 +158,15 @@ func _on_room_entered(p_room_index: int, room_data: Dictionary) -> void:
 	if player_ent:
 		player_ent.hp_changed.connect(_on_player_hp_changed)
 
+	# FIX #599: Apply blessing stat bonuses to player entity.
+	_apply_blessing_to_player(player_ent)
+
+	# FIX #599: Initialize build tracker for this run.
+	var bt: BuildTracker = AutoloadHelper.build_tracker()
+	if bt != null:
+		var bs: BlessingSystem = AutoloadHelper.blessing_system()
+		bt.set_blessing(bs)
+
 	# Show internal monologue on first room entry (room_index 0)
 	if p_room_index == 0:
 		var dm: _DialogueManager = AutoloadHelper.dialogue_manager()
@@ -678,7 +687,7 @@ func _on_desperation_pressed() -> void:
 	if target_ent == null:
 		return
 
-	# 2x damage via deterministic formula.
+	# 2x damage via deterministic formula, modified by blessing multiplier.
 	var cover_tiles: Array[Vector2i] = []
 	if _grid_system:
 		for tile: TacTileData in _grid_system.all_tiles():
@@ -687,7 +696,13 @@ func _on_desperation_pressed() -> void:
 	var base_damage: int = CombatFormula.compute_damage_from_entities(
 		player_ent, target_ent, cover_tiles
 	)
-	var desperation_damage: int = DeterministicMath.damage_floor(float(base_damage) * 2.0)
+	var mult: float = 2.0
+	var bs: BlessingSystem = AutoloadHelper.blessing_system()
+	if bs != null:
+		mult = bs.desperation_multiplier()
+		if mult <= 0.0:
+			mult = 2.0
+	var desperation_damage: int = DeterministicMath.damage_floor(float(base_damage) * mult)
 
 	var lifecycle: _EntityLifecycle = AutoloadHelper.entity_lifecycle()
 	if lifecycle:
@@ -715,7 +730,38 @@ func _on_desperation_pressed() -> void:
 		)
 
 
+## FIX #599: Apply blessing stat bonuses to the player entity at run start.
+func _apply_blessing_to_player(player_ent: Entity) -> void:
+	if player_ent == null:
+		return
+	var bs: BlessingSystem = AutoloadHelper.blessing_system()
+	if bs == null or bs.current_blessing_id().is_empty():
+		return
+
+	var hp_bonus: int = bs.hp_max_bonus()
+	var def_bonus: int = bs.def_bonus()
+	var spd_bonus: int = bs.spd_bonus()
+
+	if hp_bonus != 0:
+		player_ent.hp_max = player_ent.hp_max + hp_bonus
+		player_ent.hp = player_ent.hp + hp_bonus
+	if def_bonus != 0:
+		player_ent.def_ = player_ent.def_ + def_bonus
+	if spd_bonus != 0:
+		player_ent.spd = player_ent.spd + spd_bonus
+
+
 func _on_combat_ended(victory: bool) -> void:
+	# FIX #599: Record build data at end of combat.
+	var bt: BuildTracker = AutoloadHelper.build_tracker()
+	if bt != null:
+		if victory:
+			bt.record_room_cleared()
+		var player_ent: Entity = CombatEntity.get_entity(_player)
+		if player_ent != null:
+			bt.record_damage_taken(_room_damage_taken)
+			bt.set_moral_weight(player_ent.moral_flag)
+
 	if victory:
 		if _boss_entity and _boss_entity.archetype_id == "overgrown_guardian":
 			var rm := AutoloadHelper.run_manager()
@@ -985,6 +1031,10 @@ func _on_entity_state_changed(
 		_room_kills += 1
 		# FIX #602: Lethal screenshake on enemy death.
 		trigger_camera_shake(CAMERA_SHAKE_MAX_OFFSET * 1.5)
+		# FIX #599: Track kill in build tracker.
+		var bt: BuildTracker = AutoloadHelper.build_tracker()
+		if bt != null:
+			bt.record_kill()
 
 
 func _calculate_shards() -> int:

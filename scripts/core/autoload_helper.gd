@@ -194,6 +194,16 @@ static func transition_layer() -> _TransitionLayer:
 	return get_autoload("TransitionLayer") as _TransitionLayer
 
 
+## FIX #599: Returns the BlessingSystem autoload, or null.
+static func blessing_system() -> BlessingSystem:
+	return get_autoload("BlessingSystem") as BlessingSystem
+
+
+## FIX #599: Returns the BuildTracker autoload, or null.
+static func build_tracker() -> BuildTracker:
+	return get_autoload("BuildTracker") as BuildTracker
+
+
 ## Returns the UIAudioManager autoload, or null.
 static func ui_audio_manager() -> _UIAudioManager:
 	return get_autoload("UIAudioManager") as _UIAudioManager

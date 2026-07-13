@@ -24,7 +24,41 @@ func cmd_new_game() -> void:
 	if save_manager != null:
 		save_manager.delete_save()
 
+	# FIX #599: Show blessing selection before entering combat.
+	await _show_blessing_selection()
 	await _change_scene(COMBAT_ROOM_SCENE)
+
+
+## FIX #599: Display blessing selection modal and wait for player choice.
+func _show_blessing_selection() -> void:
+	var bs: BlessingSystem = AutoloadHelper.blessing_system()
+	if bs == null:
+		return
+	var run_manager := AutoloadHelper.run_manager()
+	var seed: int = run_manager.run_seed if run_manager else 0
+	var blessings: Array[Dictionary] = bs.generate_blessings(seed)
+	if blessings.is_empty():
+		return
+
+	var tree := get_tree()
+	if tree == null:
+		return
+
+	var modal := BlessingSelectionModal.new()
+	modal.name = "BlessingSelectionModal"
+	tree.root.add_child(modal)
+	modal.set_blessings(blessings)
+
+	var chosen_index: int = -1
+	var callable := func(idx: int) -> void: chosen_index = idx
+	modal.blessing_chosen.connect(callable)
+	while chosen_index == -1:
+		await tree.process_frame
+	modal.blessing_chosen.disconnect(callable)
+	bs.select_blessing(chosen_index)
+
+	if modal.is_inside_tree():
+		modal.queue_free()
 
 
 ## Continues a run from the last save.

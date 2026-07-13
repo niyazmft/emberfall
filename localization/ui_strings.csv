@@ -191,3 +191,18 @@ SETTINGS_HELP_SCREEN_READER,Enable text-to-speech narration for UI and combat ev
 BE_PHASE_B_TITLE_FIRST,The Witness,,,
 BE_PHASE_B_TITLE_REPEAT,The Return,,,
 BE_NUMBNESS_TITLE,The Silence,,,
+BLESSING_SELECT_TITLE,Choose Your Blessing,Choose Your Blessing,Choose Your Blessing,Choose Your Blessing
+BLESSING_SELECT_INSTRUCTION,This blessing will shape your entire run.,This blessing will shape your entire run.,This blessing will shape your entire run.,This blessing will shape your entire run.
+BLESSING_SELECT_BUTTON,Select,Select,Select,Select
+BLESS_WIND_DISCIPLINE,Wind Discipline,Wind Discipline,Wind Discipline,Wind Discipline
+BLESS_WIND_DISCIPLINE_DESC,Wind spells cost -1 AP but deal -20% damage. You move with unnatural speed.,Wind spells cost -1 AP but deal -20% damage. You move with unnatural speed.,Wind spells cost -1 AP but deal -20% damage. You move with unnatural speed.,Wind spells cost -1 AP but deal -20% damage. You move with unnatural speed.
+BLESS_OIL_PRESENCE,Oil Presence,Oil Presence,Oil Presence,Oil Presence
+BLESS_OIL_PRESENCE_DESC,Oil pools persist 3 extra turns. Your defenses harden around viscous terrain.,Oil pools persist 3 extra turns. Your defenses harden around viscous terrain.,Oil pools persist 3 extra turns. Your defenses harden around viscous terrain.,Oil pools persist 3 extra turns. Your defenses harden around viscous terrain.
+BLESS_FIRE_FURY,Fire Fury,Fire Fury,Fire Fury,Fire Fury
+BLESS_FIRE_FURY_DESC,Fire damage +25% but max HP -10. The flame demands sacrifice.,Fire damage +25% but max HP -10. The flame demands sacrifice.,Fire damage +25% but max HP -10. The flame demands sacrifice.,Fire damage +25% but max HP -10. The flame demands sacrifice.
+BLESS_WATER_CLARITY,Water Clarity,Water Clarity,Water Clarity,Water Clarity
+BLESS_WATER_CLARITY_DESC,AP regen +1 per turn but all damage -10%. Patience is its own weapon.,AP regen +1 per turn but all damage -10%. Patience is its own weapon.,AP regen +1 per turn but all damage -10%. Patience is its own weapon.,AP regen +1 per turn but all damage -10%. Patience is its own weapon.
+BLESS_EARTH_ROOTS,Earth Roots,Earth Roots,Earth Roots,Earth Roots
+BLESS_EARTH_ROOTS_DESC,Max HP +20 and DEF +4 but SPD -2. You become an immovable object.,Max HP +20 and DEF +4 but SPD -2. You become an immovable object.,Max HP +20 and DEF +4 but SPD -2. You become an immovable object.,Max HP +20 and DEF +4 but SPD -2. You become an immovable object.
+BLESS_LIGHTNING_INSTINCT,Lightning Instinct,Lightning Instinct,Lightning Instinct,Lightning Instinct
+BLESS_LIGHTNING_INSTINCT_DESC,SPD +5 and first strike +30% but DEF -2. Strike before they see you.,SPD +5 and first strike +30% but DEF -2. Strike before they see you.,SPD +5 and first strike +30% but DEF -2. Strike before they see you.,SPD +5 and first strike +30% but DEF -2. Strike before they see you.

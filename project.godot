@@ -52,6 +52,8 @@ InputRouter="*res://scripts/autoload/input_router.gd"
 AmbientNarrator="*res://scripts/autoload/ambient_narrator.gd"
 SecretRoomTrigger="*res://scripts/autoload/secret_room_trigger.gd"
 SteamManager="*res://scripts/autoload/steam_manager.gd"
+BlessingSystem="*res://scripts/core/blessing_system.gd"
+BuildTracker="*res://scripts/core/build_tracker.gd"
 
 [debug]
 
