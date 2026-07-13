@@ -3,25 +3,47 @@ extends Control
 
 ## EntityStatusBar
 ## Displays HP via a styled ProgressBar with color-coded fill and numeric label,
-## and AP via dynamic TextureRect pips (diamond shapes).
+## AP via dynamic TextureRect pips, and status effect badges.
 
 const _AP_FULL: Texture2D = preload("res://assets/sprites/ap_gem.png")
 const _AP_EMPTY: Texture2D = preload("res://assets/sprites/ap_gem_empty.png")
+
+## FIX #601: Status badge colors for entity states.
+const BADGE_STUNNED: Color = Color(0.6, 0.2, 0.8, 0.9)  # Purple
+const BADGE_DYING: Color = Color(0.9, 0.15, 0.15, 0.9)  # Crimson
+const BADGE_ELITE: Color = Color(1.0, 0.84, 0.0, 0.9)  # Gold
+const BADGE_COVER: Color = Color(0.2, 0.7, 0.3, 0.9)  # Green
 
 var _lerp_speed: float = 10.0
 var _target_hp: float = 0.0
 var _max_hp: int = 1
 var target_entity_node: Node2D = null
+var _entity: Entity = null
 
 @onready var hp_bar: ProgressBar = %HPBar
 @onready var hp_label: Label = %HPLabel
 @onready var ap_container: HBoxContainer = %APContainer
+var _badge_container: HBoxContainer = null
 
 
 func _ready() -> void:
 	process_priority = 100
 	_load_config()
 	_style_hp_bar()
+	_setup_badge_container()
+
+
+## FIX #601: Create badge container above HP bar for status effects.
+func _setup_badge_container() -> void:
+	_badge_container = HBoxContainer.new()
+	_badge_container.alignment = BoxContainer.ALIGNMENT_CENTER
+	_badge_container.add_theme_constant_override("separation", 4)
+	_badge_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# Insert before the VBoxContainer's first child so badges appear above HP bar.
+	var vbox: VBoxContainer = $VBoxContainer as VBoxContainer
+	if vbox != null:
+		vbox.add_child(_badge_container)
+		vbox.move_child(_badge_container, 0)
 
 
 func set_occluded(is_occluded: bool) -> void:
@@ -120,6 +142,59 @@ func update_hp(p_current: int, p_max_hp: int) -> void:
 ## Deprecated: Use update_hp
 func updateHp(p_current: int, p_max_hp: int) -> void:
 	update_hp(p_current, p_max_hp)
+
+
+## FIX #601: Update status badges based on entity state.
+func update_badges(entity_ref: Entity) -> void:
+	_entity = entity_ref
+	if _badge_container == null or entity_ref == null:
+		return
+
+	# Clear existing badges.
+	for child: Node in _badge_container.get_children():
+		_badge_container.remove_child(child)
+		child.queue_free()
+
+	# Stunned badge
+	if entity_ref.state == Entity.State.STUNNED:
+		_add_badge("STN", BADGE_STUNNED)
+
+	# Dying badge
+	if entity_ref.state == Entity.State.DYING:
+		_add_badge("DYING", BADGE_DYING)
+
+	# Elite badge (if archetype_id indicates elite — check via parent node)
+	if target_entity_node is BaseEnemy:
+		var be: BaseEnemy = target_entity_node as BaseEnemy
+		if not be.elite_type.is_empty():
+			_add_badge(be.elite_type.to_upper().substr(0, 3), BADGE_ELITE)
+
+
+func _add_badge(text: String, color: Color) -> void:
+	var badge: PanelContainer = PanelContainer.new()
+	var style: StyleBoxFlat = StyleBoxFlat.new()
+	style.bg_color = color
+	style.corner_radius_top_left = 3
+	style.corner_radius_top_right = 3
+	style.corner_radius_bottom_right = 3
+	style.corner_radius_bottom_left = 3
+	badge.add_theme_stylebox_override("panel", style)
+
+	var label: Label = Label.new()
+	label.text = text
+	label.add_theme_color_override("font_color", Color.WHITE)
+	label.add_theme_font_size_override("font_size", 9)
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+
+	var margin: MarginContainer = MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 4)
+	margin.add_theme_constant_override("margin_top", 1)
+	margin.add_theme_constant_override("margin_right", 4)
+	margin.add_theme_constant_override("margin_bottom", 1)
+	margin.add_child(label)
+	badge.add_child(margin)
+
+	_badge_container.add_child(badge)
 
 
 ## Update AP pips to show current AP out of max (yellow/gold diamond shapes)

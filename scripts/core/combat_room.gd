@@ -193,6 +193,12 @@ func _setup_hud() -> void:
 	if player_entity:
 		hover_preview.setup(player_entity)
 
+	# FIX #601: Setup enemy intent panel.
+	var intent_panel := EnemyIntentPanel.new()
+	intent_panel.name = "EnemyIntentPanel"
+	ui_overlay.add_child(intent_panel)
+	intent_panel.visible = false
+
 
 func _setup_turn_manager() -> void:
 	_turn_manager = TurnManager.new()
@@ -497,6 +503,33 @@ func _update_hover_preview() -> void:
 			hover_preview.clear()
 
 
+## FIX #601: Update status badges on all entity status bars.
+func _update_status_badges() -> void:
+	for child: Node in _enemies_node.get_children():
+		if not child is Node2D:
+			continue
+		var enemy_node: Node2D = child as Node2D
+		var enemy_ent: Entity = CombatEntity.get_entity(enemy_node)
+		if enemy_ent == null:
+			continue
+		var status_bar: EntityStatusBar = (
+			enemy_node.get_node_or_null("StatusBar") as EntityStatusBar
+		)
+		if status_bar == null:
+			continue
+		status_bar.update_badges(enemy_ent)
+
+	# Update player badge too
+	if _player != null:
+		var player_ent: Entity = CombatEntity.get_entity(_player)
+		if player_ent != null:
+			var player_status_bar: EntityStatusBar = (
+				_player.get_node_or_null("StatusBar") as EntityStatusBar
+			)
+			if player_status_bar != null:
+				player_status_bar.update_badges(player_ent)
+
+
 func _try_move_player(dx: int, dy: int) -> void:
 	var entity := CombatEntity.get_entity(_player)
 	if not entity:
@@ -637,6 +670,21 @@ func _on_turn_started(entity: Entity, is_player: bool) -> void:
 				if child_ent == entity:
 					_camera_target = child
 					break
+
+	# FIX #601: Refresh enemy intent panel at start of player turn.
+	var intent_panel: EnemyIntentPanel = ui_overlay.get_node_or_null("EnemyIntentPanel")
+	if intent_panel != null:
+		if is_player:
+			var enemy_nodes: Array[Node2D] = []
+			for child: Node in _enemies_node.get_children():
+				if child is Node2D:
+					enemy_nodes.append(child)
+			intent_panel.refresh(enemy_nodes)
+		else:
+			intent_panel.clear()
+
+	# FIX #601: Update status badges for all entities.
+	_update_status_badges()
 
 
 func _on_attack_executed(_target: Node2D, _damage: int) -> void:
