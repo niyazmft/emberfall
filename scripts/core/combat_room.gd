@@ -18,6 +18,8 @@ var _enemies_node: Node2D
 var _combat_input: CombatInput
 var _turn_manager: TurnManager
 var _room_kills: int = 0
+var _room_damage_taken: int = 0
+var _desperation_available: bool = true
 var _reflection_text: String = ""
 var _current_room_data: Dictionary = {}
 var _boss_entity: Entity = null
@@ -93,6 +95,11 @@ func _exit_tree() -> void:
 			lifecycle.mwt_reached.disconnect(_on_mwt_reached)
 		lifecycle.clear_timers()
 
+	# FIX #600: Disconnect player hp tracking.
+	var player_ent := CombatEntity.get_entity(_player)
+	if player_ent and player_ent.hp_changed.is_connected(_on_player_hp_changed):
+		player_ent.hp_changed.disconnect(_on_player_hp_changed)
+
 	# FIX #596: Disconnect undo signal.
 	if is_instance_valid(_turn_manager):
 		if _turn_manager.turn_started.is_connected(_on_turn_started_undo):
@@ -115,6 +122,8 @@ func _on_room_entered(p_room_index: int, room_data: Dictionary) -> void:
 
 	_current_room_data = room_data
 	_room_kills = 0
+	_room_damage_taken = 0
+	_desperation_available = true
 
 	# Clear existing entities if any
 	for child: Node in entity_container.get_children():
@@ -141,6 +150,13 @@ func _on_room_entered(p_room_index: int, room_data: Dictionary) -> void:
 			_boss_entity = e
 			_boss_entity.hp_changed.connect(_on_boss_hp_changed)
 			break
+
+	# FIX #600: Track player damage taken.
+	var player_ent := CombatEntity.get_entity(_player)
+	if player_ent and player_ent.hp_changed.is_connected(_on_player_hp_changed):
+		player_ent.hp_changed.disconnect(_on_player_hp_changed)
+	if player_ent:
+		player_ent.hp_changed.connect(_on_player_hp_changed)
 
 	# Show internal monologue on first room entry (room_index 0)
 	if p_room_index == 0:
@@ -183,6 +199,9 @@ func _setup_hud() -> void:
 			combat_hud.setup(player_entity, _turn_manager, _combat_input)
 			if not combat_hud.move_pressed.is_connected(_on_hud_move_pressed):
 				combat_hud.move_pressed.connect(_on_hud_move_pressed)
+			# FIX #600: Wire desperation strike signal.
+			if not combat_hud.desperation_pressed.is_connected(_on_desperation_pressed):
+				combat_hud.desperation_pressed.connect(_on_desperation_pressed)
 
 	var turn_banner_scene := load(TURN_BANNER_SCENE_PATH) as PackedScene
 	if turn_banner_scene:
@@ -626,6 +645,76 @@ func _on_hud_move_pressed() -> void:
 		_combat_input._stop_targeting()
 
 
+## FIX #600: Desperation Strike — costs all AP, deals 2x damage to nearest enemy.
+func _on_desperation_pressed() -> void:
+	if not _desperation_available:
+		return
+	if _turn_manager == null or _turn_manager.current_state != TurnManager.CombatState.PLAYER_TURN:
+		return
+
+	var player_ent: Entity = CombatEntity.get_entity(_player)
+	if player_ent == null or player_ent.ap <= 0:
+		return
+
+	# Find nearest alive enemy.
+	var nearest_enemy: Node2D = null
+	var nearest_dist: int = GameConstants.GRID_W * GameConstants.GRID_H
+	var player_pos: Vector2i = player_ent.grid_position()
+	for child: Node in _enemies_node.get_children():
+		if not child is Node2D:
+			continue
+		var enemy_ent: Entity = CombatEntity.get_entity(child)
+		if enemy_ent == null or enemy_ent.hp <= 0:
+			continue
+		var dist: int = maxi(absi(enemy_ent.x - player_pos.x), absi(enemy_ent.y - player_pos.y))
+		if dist < nearest_dist:
+			nearest_dist = dist
+			nearest_enemy = child
+
+	if nearest_enemy == null:
+		return
+
+	var target_ent: Entity = CombatEntity.get_entity(nearest_enemy)
+	if target_ent == null:
+		return
+
+	# 2x damage via deterministic formula.
+	var cover_tiles: Array[Vector2i] = []
+	if _grid_system:
+		for tile: TacTileData in _grid_system.all_tiles():
+			if tile.has_cover():
+				cover_tiles.append(tile.coords)
+	var base_damage: int = CombatFormula.compute_damage_from_entities(
+		player_ent, target_ent, cover_tiles
+	)
+	var desperation_damage: int = DeterministicMath.damage_floor(float(base_damage) * 2.0)
+
+	var lifecycle: _EntityLifecycle = AutoloadHelper.entity_lifecycle()
+	if lifecycle:
+		lifecycle.apply_damage(player_ent, target_ent, desperation_damage)
+	else:
+		target_ent.apply_damage(desperation_damage)
+
+	# Cost all AP.
+	player_ent.ap = 0
+
+	# Mark as used.
+	_desperation_available = false
+	var combat_hud: _CombatHUD = ui_overlay.get_node_or_null("CombatHUD") as _CombatHUD
+	if combat_hud != null and combat_hud.bottom_console != null:
+		combat_hud.bottom_console.mark_desperation_used()
+
+	# Visual feedback.
+	trigger_camera_shake(CAMERA_SHAKE_MAX_OFFSET * 2.0)
+	var eb: _EventBus = AutoloadHelper.event_bus()
+	if eb:
+		eb.floating_text_requested.emit(
+			str(desperation_damage) + "!",
+			nearest_enemy.get_global_transform_with_canvas().origin + Vector2(0, -40),
+			Color(0.9, 0.1, 0.1)
+		)
+
+
 func _on_combat_ended(victory: bool) -> void:
 	if victory:
 		if _boss_entity and _boss_entity.archetype_id == "overgrown_guardian":
@@ -828,6 +917,12 @@ func _on_boss_hp_changed(new_hp: int, _old_hp: int) -> void:
 		_spawn_reinforcements()
 
 
+## FIX #600: Track total damage taken this room.
+func _on_player_hp_changed(new_hp: int, old_hp: int) -> void:
+	if old_hp > new_hp:
+		_room_damage_taken += (old_hp - new_hp)
+
+
 func _spawn_reinforcements() -> void:
 	if not _current_room_data.has("reinforcements"):
 		return
@@ -935,5 +1030,52 @@ func _show_defeat_modal() -> void:
 			var summary: Dictionary = {
 				"turns": _turn_manager.round_number,
 				"rooms": rm.room_index if rm else 0,
+				"kills": _room_kills,
+				"damage_taken": _room_damage_taken,
+				"hint": _select_death_hint(),
 			}
 			modal.setup(summary)
+
+
+## FIX #600: Select a contextual death hint based on room state.
+func _select_death_hint() -> String:
+	var cfg: _ConfigLoader = AutoloadHelper.config_loader()
+	if cfg == null:
+		return ""
+	var hints_data: Dictionary = cfg.getValue("death_hints", "", {})
+	var hints: Array = hints_data.get("hints", []) as Array
+	if hints.is_empty():
+		return ""
+
+	# Determine which hint to show based on room state.
+	var player_ent: Entity = CombatEntity.get_entity(_player)
+	var trigger: String = ""
+	if player_ent != null:
+		var hp_pct: float = float(player_ent.hp_max - player_ent.hp) / float(player_ent.hp_max)
+		if _room_damage_taken >= player_ent.hp_max / 2 and hp_pct >= 0.75:
+			trigger = "cover_ignored"
+		elif _room_damage_taken >= player_ent.hp_max / 2:
+			trigger = "elevation_damage"
+		elif _desperation_available:
+			trigger = "died_without_desperation"
+
+	# Find a hint matching the trigger.
+	for hint_item: Variant in hints:
+		if hint_item is Dictionary:
+			var hint: Dictionary = hint_item as Dictionary
+			if hint.get("trigger", "") == trigger:
+				var key: String = hint.get("localization_key", "")
+				if not key.is_empty():
+					var text: String = tr(key)
+					if text != key:
+						return text
+					return hint.get("text", "")
+
+	# Fallback: first hint.
+	var first: Dictionary = hints[0] as Dictionary
+	var key: String = first.get("localization_key", "")
+	if not key.is_empty():
+		var text: String = tr(key)
+		if text != key:
+			return text
+	return first.get("text", "")

@@ -53,10 +53,12 @@ func _update_summary_display() -> void:
 	var defeat_config: Dictionary = config.getValue("end_screens", "defeat", {})
 	var summary_keys: Array = defeat_config.get("summary_keys", [])
 
-	# Mapping of keys to summary data values
+	# FIX #600: Expanded key mapping with kills and damage taken.
 	var key_map: Dictionary = {
 		"HUD_SUMMARY_TURNS": _summary_data.get("turns", 0),
-		"HUD_SUMMARY_ROOMS": _summary_data.get("rooms", 0)
+		"HUD_SUMMARY_ROOMS": _summary_data.get("rooms", 0),
+		"HUD_SUMMARY_KILLS": _summary_data.get("kills", 0),
+		"HUD_SUMMARY_DAMAGE": _summary_data.get("damage_taken", 0),
 	}
 
 	for key: String in summary_keys:
@@ -78,6 +80,20 @@ func _update_summary_display() -> void:
 		narr_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		narr_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		summary_container.add_child(narr_lbl)
+
+	# FIX #600: Append contextual death hint if available.
+	var hint_text: String = _summary_data.get("hint", "")
+	if not hint_text.is_empty():
+		var spacer: Control = Control.new()
+		spacer.custom_minimum_size = Vector2(0, 8)
+		summary_container.add_child(spacer)
+		var hint_lbl: Label = Label.new()
+		hint_lbl.text = "💡 " + hint_text
+		hint_lbl.add_theme_color_override("font_color", Color(0.95, 0.8, 0.3))
+		hint_lbl.add_theme_font_size_override("font_size", 14)
+		hint_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		hint_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		summary_container.add_child(hint_lbl)
 
 
 func _select_defeat_narrative() -> String:
