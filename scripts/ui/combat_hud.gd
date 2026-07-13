@@ -341,10 +341,19 @@ func show_floating_text(text: String, position: Vector2, color: Color) -> void:
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 
+	# FIX #602: Read floating text duration from config for snappier feedback.
+	var float_duration: float = 1.0
+	var cfg: _ConfigLoader = AutoloadHelper.config_loader()
+	if cfg:
+		var fb: Dictionary = cfg.getValue("feedback_config", "", {})
+		if fb.has("damage_numbers"):
+			var dn: Dictionary = fb["damage_numbers"] as Dictionary
+			float_duration = float(dn.get("duration_seconds", 1.0))
+
 	# Use label.create_tween() instead of get_tree().create_tween() for lifecycle safety
 	var tween: Tween = label.create_tween()
-	tween.tween_property(label, "position:y", final_pos.y - 20.0, 1.0)
-	tween.parallel().tween_property(label, "modulate:a", 0.0, 1.0)
+	tween.tween_property(label, "position:y", final_pos.y - 20.0, float_duration)
+	tween.parallel().tween_property(label, "modulate:a", 0.0, float_duration)
 	tween.tween_callback(
 		func() -> void:
 			if is_instance_valid(label) and label.is_inside_tree():

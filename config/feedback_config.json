@@ -2,17 +2,19 @@
   "feedback_config": {
     "_description": "Combat feedback timing and visual parameters.",
     "hit_flash": {
-      "duration_seconds": 0.15,
+      "duration_seconds": 0.12,
       "color": "#FFFFFF"
     },
     "damage_numbers": {
       "rise_pixels": 40,
-      "duration_seconds": 1.0,
+      "duration_seconds": 0.4,
       "font_size": 18
     },
     "screen_shake": {
       "default_intensity": 4.0,
-      "default_duration": 0.2
+      "default_duration": 0.2,
+      "lethal_intensity": 6.0,
+      "lethal_duration": 0.25
     }
   }
 }
