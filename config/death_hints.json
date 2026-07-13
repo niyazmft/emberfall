@@ -1,0 +1,43 @@
+{
+  "death_hints": {
+    "_description": "Contextual hints shown on defeat screen based on death cause. Each hint unlocks permanently once triggered.",
+    "hints": [
+      {
+        "id": "hint_elevation",
+        "trigger": "elevation_damage",
+        "text": "Elevation affects both damage dealt and received. High ground is worth fighting for.",
+        "localization_key": "HINT_ELEVATION"
+      },
+      {
+        "id": "hint_cover",
+        "trigger": "cover_ignored",
+        "text": "Cover tiles reduce incoming damage. Positioning matters as much as attacking.",
+        "localization_key": "HINT_COVER"
+      },
+      {
+        "id": "hint_ap_management",
+        "trigger": "out_of_ap",
+        "text": "AP regenerates each turn, but spending it all leaves you defenseless. Plan your actions.",
+        "localization_key": "HINT_AP_MANAGEMENT"
+      },
+      {
+        "id": "hint_desperation",
+        "trigger": "died_without_desperation",
+        "text": "When HP drops below 25%, a Desperation Strike becomes available. It costs all AP but deals devastating damage.",
+        "localization_key": "HINT_DESPERATION"
+      },
+      {
+        "id": "hint_elite_priority",
+        "trigger": "elite_kill",
+        "text": "Elite enemies amplify nearby foes. Consider eliminating them first to reduce pressure.",
+        "localization_key": "HINT_ELITE_PRIORITY"
+      },
+      {
+        "id": "hint_combo_unlock",
+        "trigger": "combo_unavailable",
+        "text": "Elemental combos multiply damage. Unlock new abilities in the Sanctum to discover powerful synergies.",
+        "localization_key": "HINT_COMBO_UNLOCK"
+      }
+    ]
+  }
+}

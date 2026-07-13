@@ -4,6 +4,8 @@ extends Control
 ## Manages HUD layout and bottom chrome reflow.
 
 signal move_pressed
+## FIX #600: Emitted when Desperation Strike button is pressed.
+signal desperation_pressed
 
 var _player_entity: Entity
 var _turn_manager: TurnManager
@@ -165,6 +167,10 @@ func setup(player_entity: Entity, turn_manager: TurnManager, combat_input: Comba
 		bottom_console.move_button.pressed.connect(_on_move_pressed)
 		bottom_console.attack_button.pressed.connect(_on_attack_pressed)
 		bottom_console.end_turn_button.pressed.connect(_on_end_turn_pressed)
+		# FIX #600: Wire desperation button signal.
+		if bottom_console.desperation_pressed.is_connected(_on_desperation_pressed):
+			bottom_console.desperation_pressed.disconnect(_on_desperation_pressed)
+		bottom_console.desperation_pressed.connect(_on_desperation_pressed)
 
 	# Apply button micro-animations
 	var animator: _ButtonAnimator = _ButtonAnimator.new()
@@ -242,6 +248,11 @@ func _on_move_pressed() -> void:
 		_combat_input.enter_move_targeting_mode()
 	move_pressed.emit()
 	_log_from_config("move_hint")
+
+
+## FIX #600: Forward desperation signal to CombatRoom.
+func _on_desperation_pressed() -> void:
+	desperation_pressed.emit()
 
 
 func _on_attack_pressed() -> void:
