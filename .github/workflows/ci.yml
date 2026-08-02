@@ -21,7 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Set up Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: '20'
       - name: Install markdownlint-cli
@@ -29,7 +29,7 @@ jobs:
       - name: Lint Markdown (check only)
         run: markdownlint '**/*.md' --ignore node_modules --ignore .git
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: '3.10'
       - name: Install gdtoolkit
@@ -51,7 +51,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: '3.10'
       - name: Run deterministic math cross-validator
